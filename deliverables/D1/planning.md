@@ -6,6 +6,8 @@
  
 #### Q1: What is the product?
 
+  Test to see if commit works
+
  > Short (1 - 2 min' read)
  * Start with a single sentence, high-level description of the product.
  * Be clear - Describe the problem you are solving in simple terms.
