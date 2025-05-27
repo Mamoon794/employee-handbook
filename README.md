@@ -19,6 +19,7 @@ Our partner is **Arshad Merali** from Rivvi, a Toronto-based fintech company foc
 - **Public Users:** Employees across Canada seeking clarification on general work rights
 - **Private Users:** Employees granted access to their employer’s internal policies via secure login
 
+
 ## MVP - Minimum Viable Product
 
 1. **Public Q&A:** Users can ask legal work-related questions through the chatbot.
