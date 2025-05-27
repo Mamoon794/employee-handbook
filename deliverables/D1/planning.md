@@ -182,14 +182,11 @@ For instance, AI-related tasks will primarily go to **Isa and Uzima** (AI Engine
 ## Potential Risks
 
 #### Q13. What are some potential risks to your project?
-* Now that you have defined your project, what risks can you identify that might impact it?
-* Some examples of risks at this planning stage could include:
-  * Uncertainties regarding a specific feature
-  * Misaligned expectations or conflicts
-  * Lack of clarity in execution or decision-making
-  * Limited access to data, systems, or other dependencies
-  * User stories that are too abstract or too simple
-* For each risk, provide a brief bullet point and then explain the risk in detail. 
+1. AI Hallucinations: One significant risk is the potential for the AI chatbot to generate inaccurate or fabricated information (hallucinations), which could mislead users or cause implementation challenges
+2. Feature Ambiguity: There may be differing interpretations of key features, leading to confusion around the scope, functionality or intentions behind design. This could result in mismatched expectations between team members and the partner.
+3. Imbalance prioritization of tasks or features: There’s a risk of over-focusing on certain features at the expense of others, which might lead to an uneven user experience or meeting deadlines for deliveries.
+4. Lack of Employer Engagement: The success and accuracy of the private user chatbot depends on employers actively uploading and maintaining their company policies, so if they do not participate fully, employees won’t benefit from tailored responses 
+5. Imbalanced workload between frontend and backend teams: There’s a possibility that the workload between front and back end may become uneven since the technical scope is still evolving and it is unclear how much effort and time each side requires, which may lead to delays or coordination issues.
 
 #### Q14. What are some potential mitigation strategies for the risks you identified?
 
