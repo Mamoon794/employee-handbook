@@ -1,6 +1,6 @@
 # Employee Handbook App
 
-## Overview
+## Overview 
 
 The **Employee Handbook App** is a web-based platform that helps workers understand their rights and company policies using an AI-powered chatbot. It features both public and private access levels, providing support for general legal information and organization-specific policies. 
 
