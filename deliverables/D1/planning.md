@@ -23,9 +23,14 @@
 
 #### Q2: Who are your target users?
 
-  > Short (1 - 2 min' read max)
- * Be specific (e.g. a 'a third-year university student taking CSC301 and studying Computer Science' and not 'a student')
- * **Feel free to use personas. You can create your personas as part of this Markdown file, or add a link to an external site (for example, [Xtensio](https://xtensio.com/user-persona/)).**
+## Target Users
+The Employee Handbook App is built for two main user groups:
+1. **Public Users**  
+   These are general employees across Canada who want to understand their legal work rights. They don’t have access to internal company documents but can use the app to ask questions like “Am I entitled to paid breaks?” and get clear, chatbot-generated answers with links to legal sources.
+
+2. **Private Users**  
+   These are employees with access to their specific company’s internal policies. They log in securely to view company policies and use the chatbot to ask questions like “How do I request vacation?” and get accurate, policy-linked responses.
+
 
 #### Q3: Why would your users choose your product? What are they using today to solve their problem/need?
 
@@ -79,6 +84,15 @@ Do a team-building activity in-person or online. This can be playing an online g
 * Provide a few sentences on what you did and share a picture or other evidence of your team building activity.
 * Share at least three fun facts from members of you team (total not 3 for each member).
 
+## Team-Building Activity
+Yes, we met online for a team-building social activity. We spent about 1 hour and 40 minutes playing a few fun online games together, including **Codenames**, **Skribbl**, and **Gartic Phone**. All team members attended, and we had a great time bonding and getting to know each other better in a relaxed setting.
+### Fun Facts from Our Team:
+- We briefly debated whether frogs are consumed  
+- Mamoon and Uzima like *Avatar*  
+- Maya is in Greece  
+- As a group, we’ve identified that arrows are very important in drawings
+- 
+![](Picture1.png)
 
 #### Q7: What are the roles & responsibilities on the team?
 
@@ -116,13 +130,40 @@ List/describe the artifacts you will produce to organize your team. (We strongly
 
 #### Q10: What are the rules regarding how your team works?
 
-**Communications:**
- * What is the expected frequency? What methods/channels will be used? 
- * If you have a partner project, what is your process for communicating with your partner? Who is responsible?
- 
-**Collaboration: (Share your responses to Q8 & Q9 from A1)**
- * How are people held accountable for attending meetings, completing action items? what is your process?
- * How will you address the issue if one person doesn't contribute or is not responsive?
+## Communication
+### Frequency and Channels:
+- The team meets twice a week:  
+  Tuesdays: 7–8pm  
+  Sundays: 11am–1pm  
+
+- Meetings are held online.
+- During weeks with upcoming assignments or deliverables, we may schedule additional meetings as needed.
+- We will use **Discord** for real-time team communication and discussions between meetings.
+- For task tracking and collaboration, we use **GitHub Issues** and **structured Google Docs** for task management.
+### For partner project communication, we will:
+- Assign one or more team members (likely the Product Manager, Olivia, and Scrum Master, Uzima) to serve as the main points of contact.
+- Ask questions, give updates, and share meeting notes proactively.
+- Hold at least 2 meetings with the partner before D1 is due (held on **Friday 10–11 am** and **Monday 10–11 am**), and then continue regular syncs as needed.
+---
+## Collaboration & Accountability
+### Attendance and Action Items:
+- Team members are expected to attend all scheduled meetings unless they have a valid conflict communicated in advance.
+- All meetings will have minutes documented.
+- During each meeting, we will review action items, track task progress, and flag blockers.
+### Task Tracking and Status:
+- We will use **GitHub Issues** to track feature development, bugs, improvements, and questions.
+- Tasks will be prioritized based on **MVP goals** and **urgency**.
+- The **Development Managers (Maya and Mal)** and the **Scrum Master (Uzima)** will help ensure task assignments are clear and progress is monitored.
+
+### Assignment of Work:
+Tasks are assigned based on each member’s role, strengths, and current load, with flexibility for learning and collaboration.  
+For instance, AI-related tasks will primarily go to **Isa and Uzima** (AI Engineers), while back-end tasks will be picked up by **Mal, Maya, Mamoon, Uzima, and Hussain**.
+### If a Team Member is Unresponsive or Not Contributing:
+
+- First, we will reach out directly via Discord to check in and understand the issue.
+- If unresponsiveness continues, the Scrum Master and Development Managers will intervene and potentially redistribute the workload.
+- If the issue persists and affects deliverables, we will inform the course staff (TA/Instructor).
+
 
 ## Organisation Details
 
@@ -151,8 +192,37 @@ List/describe the artifacts you will produce to organize your team. (We strongly
 * For each risk, provide a brief bullet point and then explain the risk in detail. 
 
 #### Q14. What are some potential mitigation strategies for the risks you identified?
-* Examples of mitigation strategies:
-  * More communication with the partner might help with improving clarity.
-  * Adding more details for an user story might make it less abstract.
-  * Adding an extra user story might increase the project complexity, making it less simple.
-* It's ok if you are unable to find mitigation strategies for all the risks right now.
+
+## Risks and Mitigation Strategies
+
+### Risk: AI Chatbot Hallucinations  
+**Mitigation Strategies:**
+- Limit chatbot responses to only pull from trusted legal/policy sources.  
+- Provide clear citations and links with every answer so users can verify the information.  
+- Implement a feedback feature allowing users to flag incorrect or unclear responses.  
+- Include a disclaimer stating that the chatbot is not offering legal advice.
+---
+### Risk: Different Interpretations of Feature Definitions or Expectations  
+**Mitigation Strategies:**
+- Improve clarity by writing detailed user stories and acceptance criteria.  
+- Use visual mockups or flow diagrams to illustrate features before implementation.  
+- Review requirements regularly in meetings and during check-ins with our project partner.
+---
+### Risk: Imbalanced Prioritization of Tasks or Features  
+**Mitigation Strategies:**
+- Align all prioritization decisions with the MVP goals and the four priorities outlined in the project brief.  
+- Revisit and adjust task priorities during weekly meetings as needed.  
+- Ensure that the Scrum Master and Development Managers maintain balanced workload distribution and track progress.
+---
+
+### Risk: Lack of Employer Engagement  
+**Mitigation Strategies:**
+- Design an onboarding flow that guides employers through uploading policies step-by-step.  
+- Include reminder prompts and tooltips in the employer dashboard to encourage policy updates.  
+- Build a feedback mechanism: if no company data exists, the chatbot gracefully defaults to general public law responses.
+---
+### Risk: Imbalanced Workload Between Frontend and Backend Teams  
+**Mitigation Strategies:**
+- Continuously review and refine the technical task breakdown as requirements evolve.  
+- Track how much work each task will take using GitHub Issues and adjust who works on what based on that.  
+- Encourage collaboration between frontend and backend developers.
