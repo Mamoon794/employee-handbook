@@ -115,7 +115,10 @@ Describe meetings (and other events) you are planning to have.
  * Other events could be coding sessions, code reviews, quick weekly sync meeting online, etc.
  * You should have 2 meetings with your project partner (if you have one) before D1 is due. Describe them here:
    * You must keep track of meeting minutes and add them to your repo under "deliverables/minutes" folder
-   * You must have a regular meeting schedule established for the rest of the term.  
+   * You must have a regular meeting schedule established for the rest of the term.
+   * 
+
+ 
 
 #### Q9: How will you organize your team?
 
@@ -127,6 +130,11 @@ List/describe the artifacts you will produce to organize your team. (We strongly
    * **How do you prioritize tasks?**
    * How do tasks get assigned to team members?
    * How do you determine the status of work from inception to completion?
+  
+- We may use slack/discord to facilitate communication between the group members
+- We will create issues on github for new feature updates, bugs, and improvements. This way, we will be able to help each other out with any issues/blockers. 
+- We can use a project management software like Jira to organize tasks and stories, or utilize docs to structure them as well. 
+
 
 #### Q10: What are the rules regarding how your team works?
 
@@ -171,6 +179,8 @@ For instance, AI-related tasks will primarily go to **Isa and Uzima** (AI Engine
 * Given the team structure of your partner, what role do you think your team will play?
 * Examples include product development that includes developing new features, or quality assurance that includes developing features that test the product reliability, or software maintenance that includes fixing crucial bugs in the product.
 * Provide examples of why you think you fit this role.
+
+  
 
 #### Q12. How does your project fit within the overall product from the partner?
 * Look at the big picture of the product and think about how your project fits into this product.
