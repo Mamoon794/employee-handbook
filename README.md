@@ -90,17 +90,16 @@ Students will only reference the work they did in their resume, interviews, etc.
 
 ## CSC301_Programmers Roles 
 
-| **Name**     | **Roles**                                            | **Experience** |
-|--------------|------------------------------------------------------|----------------------------------|
-| Maya         | Backend Developer, Development Manager               |                                  |
-| Olivia       | UI/UX Designer, Product Manager                      |                                  |
-| Mamoon       | Backend Developer, Frontend Developer                |                                  |
-| Isabella     | AI Engineer, DevOps Engineer                         |                                  |
-| Maleeha      | Frontend Developer, UI/UX Designer, Development Manager |                               |
-| Hussain      | Backend Developer, Frontend Developer                | I have experience building full-stack applications, including designing responsive user interfaces and developing RESTful APIs with secure authentication flows. I've also maintained large-scale projects with high user engagements and retention.
+| **Name**     | **Roles**                                               | **Experience**                                                                                                                       |
+|--------------|---------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------|
+| Maya         | Backend Developer, Development Manager                  |                                                                                                                                      |
+| Olivia       | UI/UX Designer, Product Manager                         |                                                                                                                                      |
+| Mamoon       | Backend Developer, Frontend Developer                   |                                                                                                                                      |
+| Isabella     | AI Engineer, DevOps Engineer                            |                                                                                                                                      |
+| Maleeha      | Frontend Developer, UI/UX Designer, Development Manager |                                                                                                                                      |
+| Hussain      | Backend Developer, Frontend Developer                   | I have experience building full-stack applications, including designing responsive user interfaces and developing RESTful APIs with secure authentication flows. I've also maintained large-scale projects with high user engagements and retention. |
+| Uzima        | AI Engineer, Scrum Master                               |                                                                                                                                      |
 
-                           |
-| Uzima        | AI Engineer, Scrum Master                            |                                  |
 
 
 
