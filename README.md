@@ -75,17 +75,37 @@ Our partner is **Arshad Merali** from Rivvi, a Toronto-based fintech company foc
 
 Students will only reference the work they did in their resume, interviews, etc. They agree to not share the code or software in any capacity with anyone unless their partner has agreed to it.
 
-## Team 301_Programmers 
+## Role Descriptions 
 
-| Name         | Roles                                |
-|--------------|--------------------------------------|
-| Maya         | Backend, Development Manager         |
-| Olivia       | UI/UX, Product Manager               |
-| Mamoon       | Backend, Frontend                    |
-| Isabella     | AI Engineer, DevOps                  |
-| Maleeha      | Frontend, UI/UX, Development Manager |
-| Hussain      | Backend                              |
-| Uzima        | AI Engineer, Scrum Master            |
+| **Role**             | **Description**                                                                 |
+|----------------------|----------------------------------------------------------------------------------|
+| Backend Developer    | Implements server-side logic, APIs, authentication, and ensures data flow to frontend. |
+| Frontend Developer   | Builds responsive UI components and is mainly responsible for the user interface.      |
+| UI/UX Designer       |                                                                                  |
+| AI Engineer          |                                                                                  |
+| DevOps Engineer      |                                                                                  |
+| Product Manager      |                                                                                  |
+| Development Manager  |                                                                                  |
+| Scrum Master         |                                                                                  |
+
+## CSC301_Programmers Roles 
+
+| **Name**     | **Roles**                                            | **Experience** |
+|--------------|------------------------------------------------------|----------------------------------|
+| Maya         | Backend Developer, Development Manager               |                                  |
+| Olivia       | UI/UX Designer, Product Manager                      |                                  |
+| Mamoon       | Backend Developer, Frontend Developer                |                                  |
+| Isabella     | AI Engineer, DevOps Engineer                         |                                  |
+| Maleeha      | Frontend Developer, UI/UX Designer, Development Manager |                               |
+| Hussain      | Backend Developer, Frontend Developer                | I have experience building full-stack applications, including designing responsive user interfaces and developing RESTful APIs with secure authentication flows. I've also maintained large-scale projects with high user engagements and retention.
+
+                           |
+| Uzima        | AI Engineer, Scrum Master                            |                                  |
+
+
+
+
+
 
 ## Partner
 
