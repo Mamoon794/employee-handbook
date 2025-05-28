@@ -5,21 +5,20 @@
 ## Product Details
  
 #### Q1: What is the product?
-What we will be building is essentially a chat bot which allows the users/employees to ask questions about the workplace guidelines and receive clear answers. This is to make it easier for employees and non-employees to find answers to any workplace related question that they may have. I think it should be emphasized that this should not be used as a place to get legal advice regarding workplace policies. It is more of an information booth.
+We will be building a chatbot-based Employee Handbook App called *Gail* which allows users/employees to ask questions about workplace guidelines and receive clear answers. This is to make it easier for employees and non-employees to find answers to any workplace-related question that they may have. It should be emphasized that this should not be used as a place to get legal advice regarding workplace policies. It is more of an information booth.
 
-#### About:
-Our partner, Arshad Merali, is from a fintech company called Rivvi. It is a Toronto based company founded in 2020. Their goal is to provide tools to improve people’s financial health
+##### About
+Our partner, Arshad Merali, is from a fintech company called Rivvi. It is a Toronto-based company founded in 2020. Their goal is to provide tools to improve individuals' financial health.
 
-#### What they want?
-Our partner wants a website that will work on phone, tablets, and computers. The website will have 2 sections:
-1. The first section will be for public users. Where they will have access to general public information and can get an understanding of their worker rights.
+##### What they want
+Our partner wants a webapp that will work on phones, tablets, and computers. The website will have two sections:
+1. The first section will be for public users. They will have access to general public information and can get an understanding of their worker rights.
 2. The second section will be for private users. These are users given access to their company’s own guidelines and policies. They will be able to ask questions privately and not have to worry about being judged.
 
-The chatbot will provide links as it gives answers so that it can be verified where the information is coming from. It will also have the ability for a login page which differentiates the public and private users. Private users can login to see company rules and policies and ask questions to the chatbot and get clear answers with links to where the answers came from.
+The chatbot will provide links as it gives answers so that it can be verified where the information is coming from. It will also have a login page which differentiates between the public and private users. Private users can log in to see company rules and policies, ask questions to the chatbot, and get clear answers with links to where the answers came from.
 
 #### Q2: Who are your target users?
 
-## Target Users
 The Employee Handbook App is built for two main user groups:
 1. **Public Users**  
    These are general employees across Canada who want to understand their legal work rights. They don’t have access to internal company documents but can use the app to ask questions like “Am I entitled to paid breaks?” and get clear, chatbot-generated answers with links to legal sources.
@@ -236,19 +235,20 @@ For instance, AI-related tasks will primarily go to **Isa and Uzima** (AI Engine
 ## Organisation Details
 
 #### Q11. How does your team fit within the overall team organisation of the partner?
-* Given the team structure of your partner, what role do you think your team will play?
-* Examples include product development that includes developing new features, or quality assurance that includes developing features that test the product reliability, or software maintenance that includes fixing crucial bugs in the product.
-* Provide examples of why you think you fit this role.
 
-  
+Our team is taking on a product development role within Rivvi's broader organizational structure. Rivvi’s core team is focused on building and maintaining the company’s core modules, such as payroll, time tracking, and scheduling. For example, the CTO manages the core product, while two developers are presently working on the payroll engine. Since our team is building the Employee Handbook App from the ground up as an independent, stand-alone module, a product development role is the most appropriate fit for our team.
+
+Furthermore, we are contributing to product expansion and helping Rivvi explore new service verticals. Our goal is to deliver an effective solution that can be used by multiple companies and user groups while supporting both public and private access.
 
 #### Q12. How does your project fit within the overall product from the partner?
 
-Our project is the first working prototype (MVP) of an AI-powered chatbot platform that helps both public and private users access employment rights and company policies through a conversational interface. We are responsible for building the core features: a chatbot for legal and company-specific questions, public vs authenticated employee access, secure login and registration, an employer dashboard to upload policies, linked sources in chatbot responses.
+Our project is the first working prototype (MVP) of an AI-powered chatbot platform that helps both public and private users access employment rights and company policies through a conversational interface. We are responsible for building the core features: a chatbot for legal and company-specific questions, public vs authenticated employee access, secure login and registration, an employer dashboard to upload policies, and linked sources in chatbot responses.
+
+This chatbot is designed as a separate offering from Rivvi’s core product, meaning customers of this new tool do not necessarily need to be existing Rivvi customers. This new module is intended to integrate well with Rivvi’s ecosystem, despite being able to function independently.
 
 Below is our mockup of the interface for the MVP.
 
-Our team is responsible for the full development, both front and back end. Success for the partner means delivering a fully functional MVP that includes all core features necessary for real-world use. The MVP should be stable, usable across devices and ready for testing by real users. 
+Our team is responsible for the full development, both frontend and backend. Success for the partner means delivering a fully functional MVP that includes all core features necessary for real-world use. The MVP should be stable, usable across devices and ready for testing by real users. 
 
 
 ## Potential Risks
