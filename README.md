@@ -1,8 +1,8 @@
 # Employee Handbook App
 
-## Overview 
+## Overview
 
-The **Employee Handbook App** is a web-based platform that helps workers understand their rights and company policies using an AI-powered chatbot. It features both public and private access levels, providing support for general legal information and organization-specific policies. 
+The **Employee Handbook App** is a web-based platform that helps workers understand their rights and company policies using an AI-powered chatbot. It features both public and private access levels, providing support for general legal information and organization-specific policies.
 
 Our partner is **Arshad Merali** from Rivvi, a Toronto-based fintech company focused on improving financial health and workplace transparency.
 
@@ -18,7 +18,6 @@ Our partner is **Arshad Merali** from Rivvi, a Toronto-based fintech company foc
 
 - **Public Users:** Employees across Canada seeking clarification on general work rights
 - **Private Users:** Employees granted access to their employer’s internal policies via secure login
-
 
 ## MVP - Minimum Viable Product
 
@@ -41,17 +40,20 @@ Our partner is **Arshad Merali** from Rivvi, a Toronto-based fintech company foc
 ## Tech Stack
 
 ### Frontend
+
 - **Framework:** Next.js
 - **UI Libraries:** React, shadcn/ui
 - **Styling:** Tailwind CSS
 - **Icons:** Lucide Icons
 
 ### Backend & AI
+
 - **Languages:** TypeScript (main app), Python (AI module)
 - **NLP Tools:** LangChain, LLM APIs
 - **API Routing:** Vercel API Routes
 
 ### Storage & Infrastructure
+
 - **Database:** Firebase
 - **Vector DB:** Pinecone
 - **Authentication:** Clerk
@@ -64,7 +66,6 @@ Our partner is **Arshad Merali** from Rivvi, a Toronto-based fintech company foc
 
 > Note: As this project is in early development, this section will evolve.
 
-
 ## Task Management
 
 - GitHub Issues and a shared structured doc for dev tracking
@@ -75,36 +76,30 @@ Our partner is **Arshad Merali** from Rivvi, a Toronto-based fintech company foc
 
 Students will only reference the work they did in their resume, interviews, etc. They agree to not share the code or software in any capacity with anyone unless their partner has agreed to it.
 
-## Role Descriptions 
+## Role Descriptions
 
-| **Role**             | **Description**                                                                 |
-|----------------------|----------------------------------------------------------------------------------|
-| Backend Developer    | Implements server-side logic, APIs, authentication, and ensures data flow to frontend. |
-| Frontend Developer   | Builds responsive UI components and is mainly responsible for the user interface.      |
-| UI/UX Designer       |                                                                                  |
-| AI Engineer          |                                                                                  |
-| DevOps Engineer      |                                                                                  |
-| Product Manager      |                                                                                  |
-| Development Manager  |                                                                                  |
-| Scrum Master         |                                                                                  |
+| **Role**            | **Description**                                                                                                                                                                                                 |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Backend Developer   | Implements server-side logic, APIs, authentication, and ensures data flow to frontend.                                                                                                                          |
+| Frontend Developer  | Builds responsive UI components and is mainly responsible for the user interface.                                                                                                                               |
+| UI/UX Designer      |                                                                                                                                                                                                                 |
+| AI Engineer         | Builds RAG pipelines to process questions and generate responses; integrates LLM APIs; develops REST APIs for frontend integration; ingests policies into a vector database; optimizes the system for accuracy. |
+| DevOps Engineer     | Deploys the entire project on Vercel; sets up the CI/CD pipeline; manages credentials.                                                                                                                          |
+| Product Manager     |                                                                                                                                                                                                                 |
+| Development Manager |                                                                                                                                                                                                                 |
+| Scrum Master        |                                                                                                                                                                                                                 |
 
-## CSC301_Programmers Roles 
+## CSC301_Programmers Roles
 
-| **Name**     | **Roles**                                               | **Experience**                                                                                                                       |
-|--------------|---------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------|
-| Maya         | Backend Developer, Development Manager                  |                                                                                                                                      |
-| Olivia       | UI/UX Designer, Product Manager                         |                                                                                                                                      |
-| Mamoon       | Backend Developer, Frontend Developer                   |                                                                                                                                      |
-| Isabella     | AI Engineer, DevOps Engineer                            |                                                                                                                                      |
-| Maleeha      | Frontend Developer, UI/UX Designer, Development Manager |                                                                                                                                      |
-| Hussain      | Backend Developer, Frontend Developer                   | I have experience building full-stack applications, including designing responsive user interfaces and developing RESTful APIs with secure authentication flows. I've also maintained large-scale projects with high user engagements and retention. |
-| Uzima        | AI Engineer, Scrum Master                               |                                                                                                                                      |
-
-
-
-
-
-
+| **Name** | **Roles**                                               | **Experience**                                                                                                                                                                                                                                       |
+| -------- | ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Maya     | Backend Developer, Development Manager                  |                                                                                                                                                                                                                                                      |
+| Olivia   | UI/UX Designer, Product Manager                         |                                                                                                                                                                                                                                                      |
+| Mamoon   | Backend Developer, Frontend Developer                   |                                                                                                                                                                                                                                                      |
+| Isabella | AI Engineer, DevOps Engineer                            | I have experience building AI apps in other domains, and want to gain experience with LLM. I’ve used Docker in CSC309 and would like to sharpen my skills. Additionally, I want to gain experience with CI/CD.                                       |
+| Maleeha  | Frontend Developer, UI/UX Designer, Development Manager |                                                                                                                                                                                                                                                      |
+| Hussain  | Backend Developer, Frontend Developer                   | I have experience building full-stack applications, including designing responsive user interfaces and developing RESTful APIs with secure authentication flows. I've also maintained large-scale projects with high user engagements and retention. |
+| Uzima    | AI Engineer, Scrum Master                               |                                                                                                                                                                                                                                                      |
 
 ## Partner
 
