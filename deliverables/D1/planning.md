@@ -127,9 +127,11 @@ List/describe the artifacts you will produce to organize your team. (We strongly
    * How do tasks get assigned to team members?
    * How do you determine the status of work from inception to completion?
   
-- We may use slack/discord to facilitate communication between the group members
-- We will create issues on github for new feature updates, bugs, and improvements. This way, we will be able to help each other out with any issues/blockers. 
-- We can use a project management software like Jira to organize tasks and stories, or utilize docs to structure them as well. 
+We'll use Slack or Discord to stay in touch as a team and have quick conversations when we need to collaborate. For keeping track of our development work, we'll create GitHub issues whenever we need to add new features, fix bugs, or make improvements. This approach will help us stay organized, solve problems quickly, and support each other along the way.
+
+We might also use a project management tool like Jira to organize and prioritize our tasks and user stories. If that doesn't work for us, we can use shared documents to keep track of our work and monitor our progress.RetryClaude can make mistakes. Please double-check responses.
+
+We’ll keep track of what needs to get done by maintaining a shared backlog of user stories and tasks, organized either in Jira or the shared document. Tasks will be prioritized based on importance to the MVP and upcoming deliverables, with input from the team during our weekly meetings. We'll label tasks by priority and complexity to help with planning. Tasks will be assigned based on each member’s strengths, role, and interest, but there’s also flexibility to pair up or switch if someone wants to try something new. To track the status of work, each task will move through stages like “To Do,” “In Progress,” “Code Review,” and “Done,” allowing the whole team to see what’s being worked on and what’s complete. 
 
 
 #### Q10: What are the rules regarding how your team works?
