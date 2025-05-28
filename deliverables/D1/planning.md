@@ -5,21 +5,17 @@
 ## Product Details
  
 #### Q1: What is the product?
+What we will be building is essentially a chat bot which allows the users/employees to ask questions about the workplace guidelines and receive clear answers. This is to make it easier for employees and non-employees to find answers to any workplace related question that they may have. I think it should be emphasized that this should not be used as a place to get legal advice regarding workplace policies. It is more of an information booth.
 
-  Test to see if commit works
+#### About:
+Our partner, Arshad Merali, is from a fintech company called Rivvi. It is a Toronto based company founded in 2020. Their goal is to provide tools to improve people’s financial health
 
- > Short (1 - 2 min' read)
- * Start with a single sentence, high-level description of the product.
- * Be clear - Describe the problem you are solving in simple terms.
- * Specify if you have a partner, who they are (role/title), and the organization information.
- * Be concrete. For example:
-    * What are you planning to build? Is it a website, mobile app, browser extension, command-line app, etc.?      
-    * When describing the problem/need, give concrete examples of common use cases.
-    * Assume the reader knows nothing about the partner or the problem domain and provide the necessary context. 
- * Focus on *what* your product does, and avoid discussing *how* you're going to implement it.      
-   For example: This is not the time or the place to talk about which programming language and/or framework you are planning to use.
- * **Feel free (and very much encouraged) to include useful diagrams, mock-ups and/or links**.
+#### What they want?
+Our partner wants a website that will work on phone, tablets, and computers. The website will have 2 sections:
+1. The first section will be for public users. Where they will have access to general public information and can get an understanding of their worker rights.
+2. The second section will be for private users. These are users given access to their company’s own guidelines and policies. They will be able to ask questions privately and not have to worry about being judged.
 
+The chatbot will provide links as it gives answers so that it can be verified where the information is coming from. It will also have the ability for a login page which differentiates the public and private users. Private users can login to see company rules and policies and ask questions to the chatbot and get clear answers with links to where the answers came from.
 
 #### Q2: Who are your target users?
 
