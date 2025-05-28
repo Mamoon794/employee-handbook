@@ -39,6 +39,29 @@ The Employee Handbook App is built for two main user groups:
     * Does this application exist in another form? If so, how does your differ and provide value to the users?
     * How does this align with your partner's organization's values/mission/mandate?
 
+Whether someone is searching for workplace-related laws or private company policies, efficiently finding this information can be a daunting task. A Google search often leads to inconsistent results consisting of hard-to-interpret legal jargon and most companies use hard-to-navigate platforms like SharePoint to share documents. Our product directly solves this issue by providing a simple interface for users to ask questions and get instant answers. This can be especially beneficial for people who are afraid to ask questions due to nervousness or fear of sounding unknowledgeable, including new hires.
+
+There are many benefits to our chatbot-based web app:
+- Instant, judgment-free access to reliable information  
+Users can privately ask sensitive or “simple” questions without fear of judgment. This encourages engagement, while increasing access to crucial knowledge.
+
+- Time-saving and ease-of-use  
+Digging through HR manuals or waiting for HR replies is too time-consuming. The chatbot allows users to get fast answers with links to relevant public laws or internal documents for verification.
+
+- Better accuracy and discoverability  
+Answers are backed by specific PDFs and links from public policy resources or company-uploaded documents.
+
+- Customized information for various users  
+Public users access Canadian and provincial workplace rights, while private employees can log in to query company-specific policies. Company representatives can upload company documents and manage employees. Hence, the experience is highly relevant to each user group.
+
+Robofy’s HR Policy Chatbot is a similar AI assistant that helps employees access internal company policies and workplace guidelines. However, Robofy is designed for internal use. Our product expands on this by also considering users searching for information about public labor laws. 
+
+Glean AI offers enterprise-wide search across platforms like Slack, Jira, GitHub, etc. It’s a complex tool designed for broad internal knowledge management. In contrast, our product is a standalone solution focused on delivering workplace policy information. It’s especially suited to small businesses without large IT teams.
+
+Our product delivers value by empowering employees (B2C) and helping companies improve internal communication and policy accessibility (B2B).
+
+Furthermore, our partner, Rivvi, supports transparency and empowerment. Our product aligns with these values by enhancing access to essential workplace knowledge that directly affects employee morale and confidence.
+
 #### Q4: What are the user stories that make up the Minumum Viable Product (MVP)?
 
  * At least 5 user stories concerning the main features of the application - note that this can broken down further
