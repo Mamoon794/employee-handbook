@@ -153,13 +153,16 @@ Acceptance Criteria: Users should be able to terminate their account in an intui
 
 - How will you deploy the application?
 
-The application will be deployed on Vercel
+The application will be deployed on Vercel.
 
 - Describe the architecture - what are the high level components or patterns you will use? Diagrams are useful here.
 
 This application has a series of high-level components including the Frontend, Backend, AI Service, Authentication, Vector Database, and Monitoring & Analytics. It uses RAG (Retrieval-Augmented Generation) in order to combine any document retrievals with LLMs to ensure accurate, cited responses. Additionally, microservices, JWT-based authentication, and CI/CD also make up aspects of this application. In the diagram below, arrows demonstrate primary data flows.
 
 ![](Picture2.JPG)
+
+The following diagram illustrates the target users of our app, the core features it offers, and the external services it integrates with.
+
 ![](diagram.png)
 
 - Will you be using third party applications or APIs? If so, what are they?
