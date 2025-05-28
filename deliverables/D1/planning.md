@@ -69,26 +69,35 @@ Furthermore, our partner, Rivvi, supports transparency and empowerment. Our prod
  * User stories must contain acceptance criteria. Examples of user stories with different formats can be found here: https://www.justinmind.com/blog/user-story-examples/. **It is important that you provide a link to an artifact containing your user stories**.
  * If you have a partner, these must be reviewed and accepted by them. You need to include the evidence of partner approval (e.g., screenshot from email) or at least communication to the partner (e.g., email you sent)
 
-User Story #1: As a user of this application, I want to learn about the general laws in the workforce in order to better understand the current policies of jobs.
+User Story #1: As a user of this application, I want to learn about the general laws in the workforce in order to better understand the current policies of jobs.  
 Acceptance Criteria: An unauthenticated user should be able to access the AI chatbot, send simple queries, and receive appropriate, up-to-date answers.
 
-User Story #2: As an employee using this application, I want to find the specific documents and sources that state my work-related entitlements in order to have reassurance and prevent embarrassment by my seemingly low-level or redundant questions. Acceptance Criteria: After registering, an employee should be able to access relevant information from the AI chatbot specific to their company’s policies in a quick and intuitive way.
+User Story #2: As an employee using this application, I want to find the specific documents and sources that state my work-related entitlements in order to have reassurance and prevent embarrassment by my seemingly low-level or redundant questions.  
+Acceptance Criteria: After registering, an employee should be able to access relevant information from the AI chatbot specific to their company’s policies in a quick and intuitive way.
 
-User Story #3: As the head of a company (employer) using this application, I want to have an isolated space for my employees to better understand the company's policies in order to affirm that we have the same understanding of workplace relations. Acceptance Criteria: A company head should be able to register their company with the application and upload general company policies for their employees.
+User Story #3: As the head of a company (employer) using this application, I want to have an isolated space for my employees to better understand the company's policies in order to affirm that we have the same understanding of workplace relations.  
+Acceptance Criteria: A company head should be able to register their company with the application and upload general company policies for their employees.
 
-User Story #4: As an employer or an employee, I want to have reassurance that the information that I’m getting is accurate and up to date. Acceptance Criteria: The AI chatbot will provide links at the end of each message it sends which will contain the information text from which it generated the response from.
+User Story #4: As an employer or an employee, I want to have reassurance that the information that I’m getting is accurate and up to date.  
+Acceptance Criteria: The AI chatbot will provide links at the end of each message it sends which will contain the information text from which it generated the response from.
 
-User Story #5: As a newly registered employee using this application, I want to join my company’s space so that I can view and interact with the specific policies uploaded by my employer. Acceptance Criteria: After registration, an employee should be able to search for or enter a unique company code to join their employer’s company space. Once joined, the employee should be able to view uploaded policies and use the chatbot to ask questions based on company-specific documents.
+User Story #5: As a newly registered employee using this application, I want to join my company’s space so that I can view and interact with the specific policies uploaded by my employer.  
+Acceptance Criteria: After registration, an employee should be able to search for or enter a unique company code to join their employer’s company space. Once joined, the employee should be able to view uploaded policies and use the chatbot to ask questions based on company-specific documents.
 
-User Story #6: As a registered user using this application, I want to view my personal history of questions and chatbot answers so that I can easily revisit previous information without having to ask the same question again. Acceptance Criteria: After logging in, a registered user should be able to open a “My History” page that shows only their own past questions with the corresponding chatbot responses and source links, accessible to only that user.
+User Story #6: As a registered user using this application, I want to view my personal history of questions and chatbot answers so that I can easily revisit previous information without having to ask the same question again.  
+Acceptance Criteria: After logging in, a registered user should be able to open a “My History” page that shows only their own past questions with the corresponding chatbot responses and source links, accessible to only that user.
 
-User Story #7: As the financer of a company using this application, I want to be able to access the usage analytics and subscription costs so I can budget for the platform and track ROI. Acceptance Criteria: Upon logging in, a company financer should view relevant details on their dashboard in the form of a chart.
+User Story #7: As the financer of a company using this application, I want to be able to access the usage analytics and subscription costs so I can budget for the platform and track ROI.  
+Acceptance Criteria: Upon logging in, a company financer should view relevant details on their dashboard in the form of a chart.
 
-User Story #8: As a regional administrator using this application, I want to be able to upload workplace documents specific to my area so employees have access to relevant regional company policies. Acceptance Criteria: Upon logging in, a regional administrator should be able to upload relevant documents in the same way the company head can, but which will only be accessible by the respective regional employees. 
+User Story #8: As a regional administrator using this application, I want to be able to upload workplace documents specific to my area so employees have access to relevant regional company policies.  
+Acceptance Criteria: Upon logging in, a regional administrator should be able to upload relevant documents in the same way the company head can, but which will only be accessible by the respective regional employees. 
 
-User Story #9: As a registered user using this application, I want to be able to change my password so I can ensure the security of my account. Acceptance Criteria: Upon logging in, a user should have an option to change their password through their profile/settings.
+User Story #9: As a registered user using this application, I want to be able to change my password so I can ensure the security of my account.  
+Acceptance Criteria: Upon logging in, a user should have an option to change their password through their profile/settings.
 
-User Story #10: As a registered user using this application, I want to be able to delete my account so it is no longer under the company’s registered users. Acceptance Criteria: Users should be able to terminate their account in an intuitive way through their profile/settings if they ever choose to. 
+User Story #10: As a registered user using this application, I want to be able to delete my account so it is no longer under the company’s registered users.  
+Acceptance Criteria: Users should be able to terminate their account in an intuitive way through their profile/settings if they ever choose to. 
 
 
 #### Q5: Have you decided on how you will build it? Share what you know now or tell us the options you are considering.
