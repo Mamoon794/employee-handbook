@@ -202,17 +202,33 @@ Yes, we met online via Discord for a team-building social activity. We spent abo
 
 #### Q7: What are the roles & responsibilities on the team?
 
-Describe the different roles on the team and the responsibilities associated with each role.
+## Role Descriptions
 
-- Roles should reflect the structure of your team and be appropriate for your project. One person may have multiple roles.
-- Add role(s) to your Team-[Team_Number]-[Team_Name].csv file on the main folder.
-- At least one person must be identified as the dedicated partner liaison. They need to have great organization and communication skills.
-- Everyone must contribute to code. Students who don't contribute to code enough will receive a lower mark at the end of the term.
+| **Role**            | **Description**                                                                                                                                                                                                                                                |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Backend Developer   | Implements server-side logic, APIs, authentication, and ensures data flow to frontend.                                                                                                                                                                         |
+| Frontend Developer  | Builds responsive UI components and is mainly responsible for the user interface.                                                                                                                                                                              |
+| UI/UX Designer      | Designs wireframes, user flows, and high-fidelity Figma prototype; collaborates with developers to ensure designs are implemented accurately; ensures interface is user-friendly, accessible, and meets both business requirements and user needs.             |
+| AI Engineer         | Builds RAG pipelines to process questions and generate responses; integrates LLM APIs; develops REST APIs for AI-related features; ingests policies into a vector database; optimizes the system for accuracy; performs web scraping if PDFs are not provided. |
+| DevOps Engineer     | Deploys the entire project on Vercel; sets up the CI/CD pipeline; manages credentials.                                                                                                                                                                         |
+| Product Manager     | Communicates with partner to schedule meetings, deliver updates and ask questions; ensures project stays within scope and aligns with partner vision; coordinates team workflow and task assignments.                                                          |
+| Development Manager | Ensures technical execution is flawless, handles code quality and architecture, makes sure team is meeting deadlines and helps solve technical issues as they arise                                                                                            |
+|                     |
+| Scrum Master        |                                                                                                                                                                                                                                                                |
 
-List each team member and:
+## CSC301_Programmers Roles
 
-- A description of their role(s) and responsibilities including the components they'll work on and non-software related work
-- Why did you choose them to take that role? Specify if they are interested in learning that part, experienced in it, or any other reasons. Do no make things up. This part is not graded but may be reviewed later.
+| **Name** | **Roles**                                           | **Experience**                                                                                                                                                                                                                                                                                                                                                            |
+| -------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Maya     | Backend Developer, Development Manager              |                                                                                                                                                                                                                                                                                                                                                                           |
+| Olivia   | UI/UX Designer, Product Manager, Frontend Developer | I have experience with Figma and front-end development through personal projects, professional experience, and academic work, including CSC309. I’ve also had startup experience, where I worked closely with businesses and partners to align product goals and guide development.                                                                                       |
+| Mamoon   | Backend Developer, Frontend Developer               |                                                                                                                                                                                                                                                                                                                                                                           |
+| Isabella | AI Engineer, DevOps Engineer                        | In my CSC309 project, I tested and deployed everything manually, so this time I’m interested in exploring CI/CD to streamline the development workflow. Additionally, I want to gain experience working with large language models (LLMs), as my previous AI experience has been in other domains.                                                                        |
+|          |
+| Maleeha  | Backend developer, Frontend developer, UI/UX        | I have experience with full stack development from courses like CSC309, and although I do feel slightly more comfortable working with the backend, I want to gain more confidence when it comes to the frontend. Additionally, I’m also quite interested in user interface and user-centered design from my time in CSC318 and hope to put my knowledge to good use here. |
+| Hussain  | Backend Developer, Frontend Developer               | I have experience building full-stack applications, including designing responsive user interfaces and developing RESTful APIs with secure authentication flows. I've also maintained large-scale projects with high user engagements and retention.                                                                                                                      |
+| Uzima    | AI Engineer, Scrum Master                           |                                                                                                                                                                                                                                                                                                                                                                           |
+
 
 #### Q8: How will you work as a team?
 
