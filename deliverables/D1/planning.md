@@ -74,7 +74,7 @@ User Story #10: As a registered user using this application, I want to be able t
  * What is the technology stack? Specify languages, frameworks, libraries, PaaS products or tools to be used or being considered. 
  * How will you deploy the application?
  * Describe the architecture - what are the high level components or patterns you will use? Diagrams are useful here.
-   ![](Picture2.png)
+   ![](Picture2.JPG)
  * Will you be using third party applications or APIs? If so, what are they?
 
 ----
