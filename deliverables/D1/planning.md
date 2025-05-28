@@ -135,14 +135,14 @@ Do a team-building activity in-person or online. This can be playing an online g
 * Provide a few sentences on what you did and share a picture or other evidence of your team building activity.
 * Share at least three fun facts from members of you team (total not 3 for each member).
 
-## Team-Building Activity
-Yes, we met online for a team-building social activity. We spent about 1 hour and 40 minutes playing a few fun online games together, including **Codenames**, **Skribbl**, and **Gartic Phone**. All team members attended, and we had a great time bonding and getting to know each other better in a relaxed setting.
-### Fun Facts from Our Team:
-- We briefly debated whether frogs are consumed  
-- Mamoon and Uzima like *Avatar*  
-- Maya is in Greece  
-- As a group, we’ve identified that arrows are very important in drawings
-- 
+##### Team-Building Activity
+Yes, we met online via Discord for a team-building social activity. We spent about 1 hour and 40 minutes playing a few fun online games together, including **Codenames**, **Skribbl**, and **Gartic Phone**. All team members attended, and we had a great time bonding and getting to know each other better in a relaxed setting.
+##### Fun Facts from Our Team:
+- We briefly debated whether frogs are edible while playing Codenames.
+- Mamoon and Uzima like *Avatar: The Last Airbender*.
+- Maya is in Greece.
+- As a group, we’ve identified that arrows are very important in drawings while playing Skribbl.
+
 ![](Picture1.png)
 
 #### Q7: What are the roles & responsibilities on the team?
@@ -167,9 +167,38 @@ Describe meetings (and other events) you are planning to have.
  * You should have 2 meetings with your project partner (if you have one) before D1 is due. Describe them here:
    * You must keep track of meeting minutes and add them to your repo under "deliverables/minutes" folder
    * You must have a regular meeting schedule established for the rest of the term.
-   * 
 
- 
+##### Internal Team Meetings
+ Our team will meet twice a week (online via Discord) on a regular schedule to ensure consistent progress and communication:
+
+- **Tuesdays from 7 PM – 8 PM**
+- **Sundays from 12 PM – 1 PM**
+
+These meetings will serve several purposes:
+
+- Share individual progress and blockers
+- Collaboratively plan next steps and upcoming tasks
+- Prepare and refine questions for our TA and/or partner
+- Conduct informal code reviews and demos of current features
+- Troubleshoot problems together and align on implementation details
+
+We will also hold ad hoc coding sessions and reviews as needed, especially around deadlines.
+
+##### Partner Meetings
+
+Partner meetings involve aligning on the product vision by asking questions to ensure clarity, while also sharing progress.
+
+We have had two meetings with our partner:
+
+- **Partner Meeting 1**: Friday, May 23, 2025, 10 AM – 11 AM (Zoom)  
+  Covered introductions, project scope, expectations, and key features.
+- **Partner Meeting 2**: Monday, May 26, 2025, 10 AM - 11 AM (Zoom)  
+  Asked follow-up questions, gathered feedback on Figma design.
+
+All partner meeting minutes have been added to the repo under the `deliverables/minutes` folder.
+
+We plan to establish a weekly partner meeting schedule. For now, Mondays at 10 AM - 11 AM seems suitable for everyone.
+
 
 #### Q9: How will you organize your team?
 
