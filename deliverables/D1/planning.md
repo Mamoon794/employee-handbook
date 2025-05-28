@@ -30,15 +30,6 @@ The Employee Handbook App is built for two main user groups:
 
 #### Q3: Why would your users choose your product? What are they using today to solve their problem/need?
 
-> Short (1 - 2 min' read max)
- * We want you to "connect the dots" for us - Why does your product (as described in your answer to Q1) fits the needs of your users (as described in your answer to Q2)?
- * Explain the benefits of your product explicitly & clearly. For example:
-    * Save users time (how and how much?)
-    * Allow users to discover new information (which information? And, why couldn't they discover it before?)
-    * Provide users with more accurate and/or informative data (what kind of data? Why is it useful to them?)
-    * Does this application exist in another form? If so, how does your differ and provide value to the users?
-    * How does this align with your partner's organization's values/mission/mandate?
-
 Whether someone is searching for workplace-related laws or private company policies, efficiently finding this information can be a daunting task. A Google search often leads to inconsistent results consisting of hard-to-interpret legal jargon and most companies use hard-to-navigate platforms like SharePoint to share documents. Our product directly solves this issue by providing a simple interface for users to ask questions and get instant answers. This can be especially beneficial for people who are afraid to ask questions due to nervousness or fear of sounding unknowledgeable, including new hires.
 
 There are many benefits to our chatbot-based web app:
@@ -130,11 +121,6 @@ Briefly describe which option you have agreed to.
 
 #### Q6: Have you met with your team?
 
-Do a team-building activity in-person or online. This can be playing an online game, meeting for bubble tea, lunch, or any other activity you all enjoy.
-* Get to know each other on a more personal level.
-* Provide a few sentences on what you did and share a picture or other evidence of your team building activity.
-* Share at least three fun facts from members of you team (total not 3 for each member).
-
 ##### Team-Building Activity
 Yes, we met online via Discord for a team-building social activity. We spent about 1 hour and 40 minutes playing a few fun online games together, including **Codenames**, **Skribbl**, and **Gartic Phone**. All team members attended, and we had a great time bonding and getting to know each other better in a relaxed setting.
 ##### Fun Facts from Our Team:
@@ -160,19 +146,11 @@ List each team member and:
 
 #### Q8: How will you work as a team?
 
-Describe meetings (and other events) you are planning to have. 
- * When and where? Recurring or ad hoc? In-person or online?
- * What's the purpose of each meeting?
- * Other events could be coding sessions, code reviews, quick weekly sync meeting online, etc.
- * You should have 2 meetings with your project partner (if you have one) before D1 is due. Describe them here:
-   * You must keep track of meeting minutes and add them to your repo under "deliverables/minutes" folder
-   * You must have a regular meeting schedule established for the rest of the term.
-
 ##### Internal Team Meetings
  Our team will meet twice a week (online via Discord) on a regular schedule to ensure consistent progress and communication:
 
-- **Tuesdays from 7 PM – 8 PM**
-- **Sundays from 12 PM – 1 PM**
+- **Tuesdays: 7 PM - 8 PM**
+- **Sundays: 12 PM - 1 PM**
 
 These meetings will serve several purposes:
 
