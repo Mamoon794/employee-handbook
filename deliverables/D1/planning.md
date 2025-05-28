@@ -179,11 +179,13 @@ For instance, AI-related tasks will primarily go to **Isa and Uzima** (AI Engine
   
 
 #### Q12. How does your project fit within the overall product from the partner?
-* Look at the big picture of the product and think about how your project fits into this product.
-* Is your project the first step towards building this product? Is it the first prototype? Are you developing the frontend of a product whose backend is developed by the partner? Are you building the release pipelines for a product that is developed by the partner? Are you building a core feature set and take full ownership of these features?
-* You should also provide details of who else is contributing to what parts of the product, if you have this information. This is more important if the project that you will be working on has strong coupling with parts that will be contributed to by members other than your team (e.g., from a partner).
-* You can be creative for these questions and even use a graphical or pictorial representation to demonstrate the fit.
-* Briefly specify what your partner considers a success for this project. Do they want you to build specific features? Publish a usable product? Just a prototype? Be as specific as you can be at this point.
+
+Our project is the first working prototype (MVP) of an AI-powered chatbot platform that helps both public and private users access employment rights and company policies through a conversational interface. We are responsible for building the core features: a chatbot for legal and company-specific questions, public vs authenticated employee access, secure login and registration, an employer dashboard to upload policies, linked sources in chatbot responses.
+
+Below is our mockup of the interface for the MVP.
+
+Our team is responsible for the full development, both front and back end. Success for the partner means delivering a fully functional MVP that includes all core features necessary for real-world use. The MVP should be stable, usable across devices and ready for testing by real users. 
+
 
 ## Potential Risks
 
