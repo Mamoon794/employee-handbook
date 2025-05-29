@@ -9,11 +9,11 @@
 
 We will be building a chatbot-based Employee Handbook App called _Gail_ which allows users/employees to ask questions about workplace guidelines and receive clear answers. This is to make it easier for employees and non-employees to find answers to any workplace-related question that they may have. It should be emphasized that this should not be used as a place to get legal advice regarding workplace policies. It is more of an information booth.
 
-##### About
+#### About
 
 Our partner, Arshad Merali, is from a fintech company called Rivvi. It is a Toronto-based company founded in 2020. Their goal is to provide tools to improve individuals' financial health.
 
-##### What they want
+#### What they want
 
 Our partner wants a webapp that will work on phones, tablets, and computers. The website will have two sections:
 
@@ -95,7 +95,6 @@ Acceptance Criteria: Users should be able to terminate their account in an intui
 
 ### Q5: Have you decided on how you will build it? Share what you know now or tell us the options you are considering.
 
-> Short (1-2 min' read max)
 > The following is the technology Stack:
 
 - **Framework**
@@ -183,11 +182,11 @@ We have agreed on Option 5: We will only reference the work we did in our resume
 
 ### Q6: Have you met with your team?
 
-##### Team-Building Activity
+#### Team-Building Activity
 
 Yes, we met online via Discord for a team-building social activity. We spent about 1 hour and 40 minutes playing a few fun online games together, including **Codenames**, **Skribbl**, and **Gartic Phone**. All team members attended, and we had a great time bonding and getting to know each other better in a relaxed setting.
 
-##### Fun Facts from Our Team:
+#### Fun Facts from Our Team:
 
 - We briefly debated whether frogs are edible while playing Codenames.
 - Mamoon and Uzima like _Avatar: The Last Airbender_.
@@ -196,7 +195,7 @@ Yes, we met online via Discord for a team-building social activity. We spent abo
 
 ![](Picture1.png)
 
-#### Q7: What are the roles & responsibilities on the team?
+### Q7: What are the roles & responsibilities on the team?
 
 ## Role Descriptions
 
@@ -228,7 +227,7 @@ Yes, we met online via Discord for a team-building social activity. We spent abo
 
 ### Q8: How will you work as a team?
 
-##### Internal Team Meetings
+#### Internal Team Meetings
 
 Our team will meet twice a week (online via Discord) on a regular schedule to ensure consistent progress and communication:
 
@@ -245,7 +244,7 @@ These meetings will serve several purposes:
 
 We will also hold ad hoc coding sessions and reviews as needed, especially around deadlines.
 
-##### Partner Meetings
+#### Partner Meetings
 
 Partner meetings involve aligning on the product vision by asking questions to ensure clarity, while also sharing progress.
 
@@ -298,7 +297,6 @@ We’ll keep track of what needs to get done by maintaining a shared backlog of 
 - Ask questions, give updates, and share meeting notes proactively.
 - Hold at least 2 meetings with the partner before D1 is due (held on **Friday 10–11 am** and **Monday 10–11 am**), and then continue regular syncs as needed.
 
----
 
 ### Collaboration & Accountability
 
@@ -369,7 +367,6 @@ Our team is responsible for the full development, both frontend and backend. Suc
 - Implement a feedback feature allowing users to flag incorrect or unclear responses.
 - Include a disclaimer stating that the chatbot is not offering legal advice.
 
----
 
 ### Risk: Different Interpretations of Feature Definitions or Expectations
 
@@ -379,7 +376,6 @@ Our team is responsible for the full development, both frontend and backend. Suc
 - Use visual mockups or flow diagrams to illustrate features before implementation.
 - Review requirements regularly in meetings and during check-ins with our project partner.
 
----
 
 ### Risk: Imbalanced Prioritization of Tasks or Features
 
@@ -389,7 +385,6 @@ Our team is responsible for the full development, both frontend and backend. Suc
 - Revisit and adjust task priorities during weekly meetings as needed.
 - Ensure that the Scrum Master and Development Managers maintain balanced workload distribution and track progress.
 
----
 
 ### Risk: Lack of Employer Engagement
 
@@ -399,7 +394,6 @@ Our team is responsible for the full development, both frontend and backend. Suc
 - Include reminder prompts and tooltips in the employer dashboard to encourage policy updates.
 - Build a feedback mechanism: if no company data exists, the chatbot gracefully defaults to general public law responses.
 
----
 
 ### Risk: Imbalanced Workload Between Frontend and Backend Teams
 
