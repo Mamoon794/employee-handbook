@@ -210,7 +210,6 @@ Yes, we met online via Discord for a team-building social activity. We spent abo
 | DevOps Engineer     | Deploys the entire project on Vercel; sets up the CI/CD pipeline; manages credentials.                                                                                                                                                                         |
 | Product Manager     | Communicates with partner to schedule meetings, deliver updates and ask questions; ensures project stays within scope and aligns with partner vision; coordinates team workflow and task assignments.                                                          |
 | Development Manager | Ensures technical execution is flawless, handles code quality and architecture, makes sure team is meeting deadlines and helps solve technical issues as they arise                                                                                            |
-|                     |
 | Scrum Master        |                                                                                                                                                                                                                                                                |
 
 ## CSC301_Programmers Roles
@@ -298,7 +297,6 @@ We’ll keep track of what needs to get done by maintaining a shared backlog of 
 - Ask questions, give updates, and share meeting notes proactively.
 - Hold at least 2 meetings with the partner before D1 is due (held on **Friday 10–11 am** and **Monday 10–11 am**), and then continue regular syncs as needed.
 
-
 ### Collaboration & Accountability
 
 #### Attendance and Action Items:
@@ -368,7 +366,6 @@ Our team is responsible for the full development, both frontend and backend. Suc
 - Implement a feedback feature allowing users to flag incorrect or unclear responses.
 - Include a disclaimer stating that the chatbot is not offering legal advice.
 
-
 ### Risk: Different Interpretations of Feature Definitions or Expectations
 
 **Mitigation Strategies:**
@@ -376,7 +373,6 @@ Our team is responsible for the full development, both frontend and backend. Suc
 - Improve clarity by writing detailed user stories and acceptance criteria.
 - Use visual mockups or flow diagrams to illustrate features before implementation.
 - Review requirements regularly in meetings and during check-ins with our project partner.
-
 
 ### Risk: Imbalanced Prioritization of Tasks or Features
 
@@ -386,7 +382,6 @@ Our team is responsible for the full development, both frontend and backend. Suc
 - Revisit and adjust task priorities during weekly meetings as needed.
 - Ensure that the Scrum Master and Development Managers maintain balanced workload distribution and track progress.
 
-
 ### Risk: Lack of Employer Engagement
 
 **Mitigation Strategies:**
@@ -394,7 +389,6 @@ Our team is responsible for the full development, both frontend and backend. Suc
 - Design an onboarding flow that guides employers through uploading policies step-by-step.
 - Include reminder prompts and tooltips in the employer dashboard to encourage policy updates.
 - Build a feedback mechanism: if no company data exists, the chatbot gracefully defaults to general public law responses.
-
 
 ### Risk: Imbalanced Workload Between Frontend and Backend Teams
 
