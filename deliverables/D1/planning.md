@@ -203,31 +203,30 @@ Yes, we met online via Discord for a team-building social activity. We spent abo
 
 ### Q7: What are the roles & responsibilities on the team?
 
-## Role Descriptions
+#### Role Descriptions
 
 | **Role**            | **Description**                                                                                                                                                                                                                                                |
 | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Backend Developer   | Implements server-side logic, APIs, authentication, and ensures data flow to frontend.                                                                                                                                                                         |
-| Frontend Developer  | Builds responsive UI components and is mainly responsible for the user interface.                                                                                                                                                                              |
+| Backend Developer   | Design and build RESTful APIs to serve chatbot responses, manage user data, manage dashboard metrics, and handle authentication; integrate with Firebase database (Firestore) for data storage of user profiles, documents, chat logs, and role-based access; build endpoints for uploading and parsing PDFs; handle Stripe integration for billing logic (monthly billing, storing invoices, payment history); log key actions/events for admin dashboards; write unit and integration tests |
+| Frontend Developer  | Builds responsive UI components and is mainly responsible for the user interface. |
 | UI/UX Designer      | Designs wireframes, user flows, and high-fidelity Figma prototype; collaborates with developers to ensure designs are implemented accurately; ensures interface is user-friendly, accessible, and meets both business requirements and user needs.             |
 | AI Engineer         | Builds RAG pipelines to process questions and generate responses; integrates LLM APIs; develops REST APIs for AI-related features; ingests policies into a vector database; optimizes the system for accuracy; performs web scraping if PDFs are not provided. |
-| DevOps Engineer     | Deploys the entire project on Vercel; sets up the CI/CD pipeline; manages credentials.                                                                                                                                                                         |
+| DevOps Engineer     | Deploys the entire project on Vercel; sets up the CI/CD pipeline; manages credentials. |
 | Product Manager     | Communicates with partner to schedule meetings, deliver updates and ask questions; ensures project stays within scope and aligns with partner vision; coordinates team workflow and task assignments.                                                          |
 | Development Manager | Ensures technical execution is flawless, handles code quality and architecture, makes sure team is meeting deadlines and helps solve technical issues as they arise                                                                                            |
-| Scrum Master        |                                                                                                                                                                                                                                                                |
+| Scrum Master        | Facilitates team meetings to support consistent progress; helps resolve blockers and workflow issues; promotes clear communication and collaboration; keeps the team aligned on goals and timelines |
 
-## CSC301_Programmers Roles
+#### CSC301_Programmers Roles
 
 | **Name** | **Roles**                                           | **Experience**                                                                                                                                                                                                                                                                                                                                                            |
 | -------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Maya     | Backend Developer, Development Manager              |                                                                                                                                                                                                                                                                                                                                                                           |
+| Maya     | Backend Developer, Development Manager              | I’ve developed a foundation in backend programming through courses and projects that involved building systems in Python, Java, and C (server-side logic and data flow). I’m excited to expand my skill set by taking on new challenges throughout this project. |
 | Olivia   | UI/UX Designer, Product Manager, Frontend Developer | I have experience with Figma and front-end development through personal projects, professional experience, and academic work, including CSC309. I’ve also had startup experience, where I worked closely with businesses and partners to align product goals and guide development.                                                                                       |
 | Mamoon   | Backend Developer, Frontend Developer               | I have experience with both frontend and backend development from when I took CSC309. We were required to work with backend languages like php, node.js, express. And frontend languages like html, react. I also have experience in full stack development from my internship where I regularly work with both frontend and backend development.                         |
-| Isabella | AI Engineer, DevOps Engineer                        | In my CSC309 project, I tested and deployed everything manually, so this time I’m interested in exploring CI/CD to streamline the development workflow. Additionally, I want to gain experience working with large language models (LLMs), as my previous AI experience has been in other domains.                                                                        |
-|          |
+| Isabella | AI Engineer, DevOps Engineer                        | In my CSC309 project, I tested and deployed everything manually, so this time I’m interested in exploring CI/CD to streamline the development workflow. Additionally, I want to gain experience working with large language models (LLMs), as my previous AI experience has been in other domains. |
 | Maleeha  | Backend developer, Frontend developer, UI/UX        | I have experience with full stack development from courses like CSC309, and although I do feel slightly more comfortable working with the backend, I want to gain more confidence when it comes to the frontend. Additionally, I’m also quite interested in user interface and user-centered design from my time in CSC318 and hope to put my knowledge to good use here. |
 | Hussain  | Backend Developer, Frontend Developer               | I have experience building full-stack applications, including designing responsive user interfaces and developing RESTful APIs with secure authentication flows. I've also maintained large-scale projects with high user engagements and retention.                                                                                                                      |
-| Uzima    | AI Engineer, Scrum Master                           |                                                                                                                                                                                                                                                                                                                                                                           |
+| Uzima    | Backend Developer, AI Engineer, Scrum Master                           | I have backend experience with Java from a 12-month internship, as well as Python and C from coursework, making Backend Developer a strong fit. I also have full-stack and database experience from CSC309 and CSC343. I can work as an AI Engineer as well, having taken CSC311 (ML) and integrated Gemini AI into a chatbot in a previous hackathon. Furthermore, I’m a strong communicator and team facilitator, so I’ve taken on the Scrum Master role. |
 
 ### Q8: How will you work as a team?
 
@@ -264,15 +263,6 @@ All partner meeting minutes have been added to the repo under the `deliverables/
 We plan to establish a weekly partner meeting schedule. For now, Mondays at 10 AM - 11 AM seems suitable for everyone.
 
 ### Q9: How will you organize your team?
-
-List/describe the artifacts you will produce to organize your team. (We strongly recommend that you use standard collaboration tools like Linear.app, Jira, Slack, Discord, GitHub.)
-
-- Artifacts can be To-Do lists, Task boards, schedule(s), meeting minutes, etc.
-- We want to understand:
-  - How do you keep track of what needs to get done? (You must grant your TA and partner access to systems you use to manage work)
-  - **How do you prioritize tasks?**
-  - How do tasks get assigned to team members?
-  - How do you determine the status of work from inception to completion?
 
 We'll use Slack or Discord to stay in touch as a team and have quick conversations when we need to collaborate. For keeping track of our development work, we'll create GitHub issues whenever we need to add new features, fix bugs, or make improvements. This approach will help us stay organized, solve problems quickly, and support each other along the way.
 
