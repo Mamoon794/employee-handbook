@@ -62,6 +62,11 @@ Our partner is **Arshad Merali** from Rivvi, a Toronto-based fintech company foc
 - **Analytics:** Google Analytics
 - **Payment Gateway:** Stripe (if needed)
 
+## Tech Architecture 
+
+<img src="https://github.com/user-attachments/assets/6c2eacb8-838f-4294-88ca-380eca06c24e" width="700" height="500" />
+
+
 ## Development Setup
 
 > Note: As this project is in early development, this section will evolve.
