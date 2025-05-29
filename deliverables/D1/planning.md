@@ -59,11 +59,9 @@ Our product delivers value by empowering employees (B2C) and helping companies i
 Furthermore, our partner, Rivvi, supports transparency and empowerment. Our product aligns with these values by enhancing access to essential workplace knowledge that directly affects employee morale and confidence.
 
 ### Q4: What are the user stories that make up the Minumum Viable Product (MVP)?
-
-- At least 5 user stories concerning the main features of the application - note that this can broken down further
-- You must follow proper user story format (as taught in lecture) `As a <user of the app>, I want to <do something in the app> in order to <accomplish some goal>`
-- User stories must contain acceptance criteria. Examples of user stories with different formats can be found here: https://www.justinmind.com/blog/user-story-examples/. **It is important that you provide a link to an artifact containing your user stories**.
 - If you have a partner, these must be reviewed and accepted by them. You need to include the evidence of partner approval (e.g., screenshot from email) or at least communication to the partner (e.g., email you sent)
+
+Link to User Stories: https://docs.google.com/document/d/1yIHUToKC76WnYHRgZRx1r7Kq3qAUZxyQUnGDbTiM9Rw/edit?usp=sharing 
 
 User Story #1: As a user of this application, I want to learn about the general laws in the workforce in order to better understand the current policies of jobs.  
 Acceptance Criteria: An unauthenticated user should be able to access the AI chatbot, send simple queries, and receive appropriate, up-to-date answers.
