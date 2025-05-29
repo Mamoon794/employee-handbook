@@ -31,14 +31,12 @@ The chatbot will provide links as it gives answers so that it can be verified wh
 The Employee Handbook App is built for two main user groups:
 
 1. **Public Users**  
-   These are general employees across Canada who want to understand their legal work rights. They don’t have access to internal company documents but can use the app to ask questions like “Am I entitled to paid breaks?” and get clear, chatbot-generated answers with links to legal sources.
+   Public users are general employees across Canada who want to understand their legal work rights and often struggle to gather information by navigating multiple government websites. They need an easy-to-use tool that provides clear answers. As public users, they don’t have access to internal company documents but can use the app to ask questions like “Am I entitled to paid breaks?” and receive straightforward, chatbot-generated responses with links to relevant legal sources.
 
 2. **Private Users**  
-   These are employers and employees within a company. These users are split into different roles based on access levels: Employee, Financial Person, Administrator, and Owner.
+   Private users are individuals within a company, including employees, financial staff, administrators, and owners. These users log in securely and are grouped by access levels. Employees often need quick answers about internal policies like “how to record work hours” but may struggle to find that information if their company lacks internal sites or if the information is difficult to locate. The chatbot provides responses tailored specifically to their company.
 
-   Employees log in securely to view their company’s internal policies and use the chatbot to ask questions like “How do I request vacation?” and receive accurate, policy-based responses.
-
-   Financial Persons, Administrators, and Owners have broader access. In addition to using the chatbot, they can view analytics, manage subscriptions and employee accounts, and upload policy documents to enable the chatbot to provide relevant responses.
+   Financial persons, administrators, and owners have broader responsibilities. They need tools to manage employee accounts and internal documents. They benefit from having a centralized place to update policies and ensure employees receive accurate answers, which helps reduce overhead and improves internal communication.
 
 ### Q3: Why would your users choose your product? What are they using today to solve their problem/need?
 
