@@ -194,7 +194,7 @@ Yes, we met online via Discord for a team-building social activity. We spent abo
 - Maya is in Greece.
 - As a group, we’ve identified that arrows are very important in drawings while playing Skribbl.
 
-![](Picture1.png)
+![](team.png)
 
 ### Q7: What are the roles & responsibilities on the team?
 
