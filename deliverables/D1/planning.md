@@ -343,7 +343,10 @@ Our project is the first working prototype (MVP) of an AI-powered chatbot platfo
 
 This chatbot is designed as a separate offering from Rivvi’s core product, meaning customers of this new tool do not necessarily need to be existing Rivvi customers. This new module is intended to integrate well with Rivvi’s ecosystem, despite being able to function independently.
 
-Below is our mockup of the interface for the MVP.
+Below are some screens, but not all, from our mockup of the interface for the MVP.
+![](screen1.png)
+![](screen2.png)
+![](screen3.png)
 
 Our team is responsible for the full development, both frontend and backend. Success for the partner means delivering a fully functional MVP that includes all core features necessary for real-world use. The MVP should be stable, usable across devices and ready for testing by real users. 
 
