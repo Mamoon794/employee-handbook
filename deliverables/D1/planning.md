@@ -59,7 +59,8 @@ Our product delivers value by empowering employees (B2C) and helping companies i
 Furthermore, our partner, Rivvi, supports transparency and empowerment. Our product aligns with these values by enhancing access to essential workplace knowledge that directly affects employee morale and confidence.
 
 ### Q4: What are the user stories that make up the Minumum Viable Product (MVP)?
-Link to User Stories: https://docs.google.com/document/d/1yIHUToKC76WnYHRgZRx1r7Kq3qAUZxyQUnGDbTiM9Rw/edit?usp=sharing 
+
+Link to User Stories: https://docs.google.com/document/d/1yIHUToKC76WnYHRgZRx1r7Kq3qAUZxyQUnGDbTiM9Rw/edit?usp=sharing
 
 User Story #1: As a user of this application, I want to learn about the general laws in the workforce in order to better understand the current policies of jobs.  
 Acceptance Criteria: An unauthenticated user should be able to access the AI chatbot, send simple queries, and receive appropriate, up-to-date answers.
@@ -147,8 +148,6 @@ Here is proof of communication to our partner.
 
   - Google Analytics
 
-This application has a series of high-level components including the Frontend, Backend, AI Service, Authentication, Vector Database, and Monitoring & Analytics. It uses RAG (Retrieval-Augmented Generation) in order to combine any document retrievals with LLMs to ensure accurate, cited responses. Additionally, microservices, JWT-based authentication, and CI/CD also make up aspects of this application. The application will be deployed on Vercel.
-
 In the diagram below, arrows demonstrate primary data flows.
 
 ![](Picture2.JPG)
@@ -157,7 +156,7 @@ The following diagram illustrates the target users of our app, the core features
 
 ![](diagram.png)
 
-This application has a set of high-level components, including the Frontend, Backend, AI Service, Authentication, Vector Database, and Monitoring & Analytics. It uses RAG (Retrieval-Augmented Generation) to combine document retrieval with LLMs for more accurate, cited responses. Microservices, JWT-based authentication, and CI/CD are also part of the system. The app will be deployed on Vercel. We’ll use third-party tools like Clerk (auth), Stripe (payments), Firebase (database), Pinecone (vector DB), Sentry (monitoring), and Google Analytics (analytics). For AI features, we may integrate LangChain and LLM APIs.
+This application is built with a set of high-level components, including the frontend, backend, AI service, authentication, vector database, and monitoring and analytics. It integrates several third-party tools such as Clerk for authentication, Stripe for payments, Firebase for the database, Pinecone for vector storage, Sentry for error monitoring, and Google Analytics for user insights. The app uses Retrieval-Augmented Generation (RAG) to enhance LLM responses by combining document retrieval with language models for more accurate, cited answers. The app will be hosted on Vercel.
 
 ---
 
@@ -216,15 +215,14 @@ Yes, we met online via Discord for a team-building social activity. We spent abo
 
 | **Name** | **Roles**                                           | **Experience**                                                                                                                                                                                                                                                                                                                                                            |
 | -------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Maya     | Backend Developer, Development Manager              |                                                                                                                                                                                                                                                                                                                                                                           |
+| Maya     | Backend Developer, Development Manager              | I’ve developed a foundation in backend programming through courses and projects that involved building systems in Python, Java, and C (server-side logic and data flow). I’m excited to expand my skill set by taking on new challenges throughout this project.                                                                        |
 | Olivia   | UI/UX Designer, Product Manager, Frontend Developer | I have experience with Figma and front-end development through personal projects, professional experience, and academic work, including CSC309. I’ve also had startup experience, where I worked closely with businesses and partners to align product goals and guide development.                                                                                       |
-| Mamoon   | Backend Developer, Frontend Developer |   I have experience with both frontend and backend development from when I took CSC309. We were required to work with backend languages like php, node.js, express. And frontend languages like html, react. I also have experience in full stack development from my internship where I regularly work with both frontend and backend development.                                                                                                                                                                                                                                                                                                                                                                        |
+| Mamoon   | Backend Developer, Frontend Developer               | I have experience with both frontend and backend development from when I took CSC309. We were required to work with backend languages like php, node.js, express. And frontend languages like html, react. I also have experience in full stack development from my internship where I regularly work with both frontend and backend development.                         |
 | Isabella | AI Engineer, DevOps Engineer                        | In my CSC309 project, I tested and deployed everything manually, so this time I’m interested in exploring CI/CD to streamline the development workflow. Additionally, I want to gain experience working with large language models (LLMs), as my previous AI experience has been in other domains.                                                                        |
 |          |
 | Maleeha  | Backend developer, Frontend developer, UI/UX        | I have experience with full stack development from courses like CSC309, and although I do feel slightly more comfortable working with the backend, I want to gain more confidence when it comes to the frontend. Additionally, I’m also quite interested in user interface and user-centered design from my time in CSC318 and hope to put my knowledge to good use here. |
 | Hussain  | Backend Developer, Frontend Developer               | I have experience building full-stack applications, including designing responsive user interfaces and developing RESTful APIs with secure authentication flows. I've also maintained large-scale projects with high user engagements and retention.                                                                                                                      |
-| Uzima    | AI Engineer, Scrum Master                           |                                                                                                                                                                                                                                                                                                                                                                           |
-
+| Uzima    | Backend Developer, AI Engineer, Scrum Master                           | I have backend experience with Java from a 12-month internship, as well as Python and C from coursework, making Backend Developer a strong fit. I also have full-stack and database experience from CSC309 and CSC343. I can work as an AI Engineer as well, having taken CSC311 (ML) and integrated Gemini AI into a chatbot in a previous hackathon. Furthermore, I’m a strong communicator and team facilitator, so I’ve taken on the Scrum Master role.                                                                        |
 
 ### Q8: How will you work as a team?
 
