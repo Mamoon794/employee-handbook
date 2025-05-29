@@ -34,7 +34,7 @@ The Employee Handbook App is built for two main user groups:
    These are general employees across Canada who want to understand their legal work rights. They don’t have access to internal company documents but can use the app to ask questions like “Am I entitled to paid breaks?” and get clear, chatbot-generated answers with links to legal sources.
 
 2. **Private Users**  
-   These are employers and employees within a company. Employees are split into different roles based on access levels: Employee, Financial Person, Administrator, and Owner.
+   These are employers and employees within a company. These users are split into different roles based on access levels: Employee, Financial Person, Administrator, and Owner.
 
    Employees log in securely to view their company’s internal policies and use the chatbot to ask questions like “How do I request vacation?” and receive accurate, policy-based responses.
 
