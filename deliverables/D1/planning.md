@@ -36,7 +36,7 @@ The Employee Handbook App is built for two main user groups:
 
    Employees log in securely to view their company’s internal policies and use the chatbot to ask questions like “How do I request vacation?” and receive accurate, policy-based responses.
 
-   Financial Persons, Administrators, and Owners have broader access. In addition to using the chatbot, they can view analytics, manage subscriptions or employee accounts, and upload policy documents that power the chatbot's responses.
+   Financial Persons, Administrators, and Owners have broader access. In addition to using the chatbot, they can view analytics, manage subscriptions and employee accounts, and upload policy documents to enable the chatbot to provide relevant responses.
 
 ### Q3: Why would your users choose your product? What are they using today to solve their problem/need?
 
