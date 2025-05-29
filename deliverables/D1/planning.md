@@ -5,7 +5,7 @@
 
 ## Product Details
 
-#### Q1: What is the product?
+### Q1: What is the product?
 
 We will be building a chatbot-based Employee Handbook App called _Gail_ which allows users/employees to ask questions about workplace guidelines and receive clear answers. This is to make it easier for employees and non-employees to find answers to any workplace-related question that they may have. It should be emphasized that this should not be used as a place to get legal advice regarding workplace policies. It is more of an information booth.
 
@@ -22,7 +22,7 @@ Our partner wants a webapp that will work on phones, tablets, and computers. The
 
 The chatbot will provide links as it gives answers so that it can be verified where the information is coming from. It will also have a login page which differentiates between the public and private users. Private users can log in to see company rules and policies, ask questions to the chatbot, and get clear answers with links to where the answers came from.
 
-#### Q2: Who are your target users?
+### Q2: Who are your target users?
 
 The Employee Handbook App is built for two main user groups:
 
@@ -32,7 +32,7 @@ The Employee Handbook App is built for two main user groups:
 2. **Private Users**  
    These are employees with access to their specific company’s internal policies. They log in securely to view company policies and use the chatbot to ask questions like “How do I request vacation?” and get accurate, policy-linked responses.
 
-#### Q3: Why would your users choose your product? What are they using today to solve their problem/need?
+### Q3: Why would your users choose your product? What are they using today to solve their problem/need?
 
 Whether someone is searching for workplace-related laws or private company policies, efficiently finding this information can be a daunting task. A Google search often leads to inconsistent results consisting of hard-to-interpret legal jargon and most companies use hard-to-navigate platforms like SharePoint to share documents. Our product directly solves this issue by providing a simple interface for users to ask questions and get instant answers. This can be especially beneficial for people who are afraid to ask questions due to nervousness or fear of sounding unknowledgeable, including new hires.
 
@@ -58,7 +58,7 @@ Our product delivers value by empowering employees (B2C) and helping companies i
 
 Furthermore, our partner, Rivvi, supports transparency and empowerment. Our product aligns with these values by enhancing access to essential workplace knowledge that directly affects employee morale and confidence.
 
-#### Q4: What are the user stories that make up the Minumum Viable Product (MVP)?
+### Q4: What are the user stories that make up the Minumum Viable Product (MVP)?
 
 - At least 5 user stories concerning the main features of the application - note that this can broken down further
 - You must follow proper user story format (as taught in lecture) `As a <user of the app>, I want to <do something in the app> in order to <accomplish some goal>`
@@ -95,7 +95,7 @@ Acceptance Criteria: Upon logging in, a user should have an option to change the
 User Story #10: As a registered user using this application, I want to be able to delete my account so it is no longer under the company’s registered users.  
 Acceptance Criteria: Users should be able to terminate their account in an intuitive way through their profile/settings if they ever choose to.
 
-#### Q5: Have you decided on how you will build it? Share what you know now or tell us the options you are considering.
+### Q5: Have you decided on how you will build it? Share what you know now or tell us the options you are considering.
 
 > Short (1-2 min' read max)
 > The following is the technology Stack:
@@ -183,7 +183,7 @@ We have agreed on Option 5: We will only reference the work we did in our resume
 
 ## Teamwork Details
 
-#### Q6: Have you met with your team?
+### Q6: Have you met with your team?
 
 ##### Team-Building Activity
 
@@ -228,7 +228,7 @@ Yes, we met online via Discord for a team-building social activity. We spent abo
 | Uzima    | AI Engineer, Scrum Master                           |                                                                                                                                                                                                                                                                                                                                                                           |
 
 
-#### Q8: How will you work as a team?
+### Q8: How will you work as a team?
 
 ##### Internal Team Meetings
 
@@ -262,7 +262,7 @@ All partner meeting minutes have been added to the repo under the `deliverables/
 
 We plan to establish a weekly partner meeting schedule. For now, Mondays at 10 AM - 11 AM seems suitable for everyone.
 
-#### Q9: How will you organize your team?
+### Q9: How will you organize your team?
 
 List/describe the artifacts you will produce to organize your team. (We strongly recommend that you use standard collaboration tools like Linear.app, Jira, Slack, Discord, GitHub.)
 
@@ -279,11 +279,11 @@ We might also use a project management tool like Jira to organize and prioritize
 
 We’ll keep track of what needs to get done by maintaining a shared backlog of user stories and tasks, organized either in Jira or the shared document. Tasks will be prioritized based on importance to the MVP and upcoming deliverables, with input from the team during our weekly meetings. We'll label tasks by priority and complexity to help with planning. Tasks will be assigned based on each member’s strengths, role, and interest, but there’s also flexibility to pair up or switch if someone wants to try something new. To track the status of work, each task will move through stages like “To Do,” “In Progress,” “Code Review,” and “Done,” allowing the whole team to see what’s being worked on and what’s complete.
 
-#### Q10: What are the rules regarding how your team works?
+### Q10: What are the rules regarding how your team works?
 
-## Communication
+### Communication
 
-### Frequency and Channels:
+#### Frequency and Channels:
 
 - The team meets twice a week:  
   Tuesdays: 7–8pm  
@@ -294,7 +294,7 @@ We’ll keep track of what needs to get done by maintaining a shared backlog of 
 - We will use **Discord** for real-time team communication and discussions between meetings.
 - For task tracking and collaboration, we use **GitHub Issues** and **structured Google Docs** for task management.
 
-### For partner project communication, we will:
+#### For partner project communication, we will:
 
 - Assign one or more team members (likely the Product Manager, Olivia, and Scrum Master, Uzima) to serve as the main points of contact.
 - Ask questions, give updates, and share meeting notes proactively.
@@ -302,40 +302,40 @@ We’ll keep track of what needs to get done by maintaining a shared backlog of 
 
 ---
 
-## Collaboration & Accountability
+### Collaboration & Accountability
 
-### Attendance and Action Items:
+#### Attendance and Action Items:
 
 - Team members are expected to attend all scheduled meetings unless they have a valid conflict communicated in advance.
 - All meetings will have minutes documented.
 - During each meeting, we will review action items, track task progress, and flag blockers.
 
-### Task Tracking and Status:
+#### Task Tracking and Status:
 
 - We will use **GitHub Issues** to track feature development, bugs, improvements, and questions.
 - Tasks will be prioritized based on **MVP goals** and **urgency**.
 - The **Development Managers (Maya and Mal)** and the **Scrum Master (Uzima)** will help ensure task assignments are clear and progress is monitored.
 
-### Assignment of Work:
+#### Assignment of Work:
 
 Tasks are assigned based on each member’s role, strengths, and current load, with flexibility for learning and collaboration.  
 For instance, AI-related tasks will primarily go to **Isa and Uzima** (AI Engineers), while back-end tasks will be picked up by **Mal, Maya, Mamoon, Uzima, and Hussain**.
 
-### If a Team Member is Unresponsive or Not Contributing:
+#### If a Team Member is Unresponsive or Not Contributing:
 
 - First, we will reach out directly via Discord to check in and understand the issue.
 - If unresponsiveness continues, the Scrum Master and Development Managers will intervene and potentially redistribute the workload.
 - If the issue persists and affects deliverables, we will inform the course staff (TA/Instructor).
 
-## Organisation Details
+### Organisation Details
 
-#### Q11. How does your team fit within the overall team organisation of the partner?
+### Q11. How does your team fit within the overall team organisation of the partner?
 
 Our team is taking on a product development role within Rivvi's broader organizational structure. Rivvi’s core team is focused on building and maintaining the company’s core modules, such as payroll, time tracking, and scheduling. For example, the CTO manages the core product, while two developers are presently working on the payroll engine. Since our team is building the Employee Handbook App from the ground up as an independent, stand-alone module, a product development role is the most appropriate fit for our team.
 
 Furthermore, we are contributing to product expansion and helping Rivvi explore new service verticals. Our goal is to deliver an effective solution that can be used by multiple companies and user groups while supporting both public and private access.
 
-#### Q12. How does your project fit within the overall product from the partner?
+### Q12. How does your project fit within the overall product from the partner?
 
 Our project is the first working prototype (MVP) of an AI-powered chatbot platform that helps both public and private users access employment rights and company policies through a conversational interface. We are responsible for building the core features: a chatbot for legal and company-specific questions, public vs authenticated employee access, secure login and registration, an employer dashboard to upload policies, and linked sources in chatbot responses.
 
@@ -350,7 +350,7 @@ Our team is responsible for the full development, both frontend and backend. Suc
 
 ## Potential Risks
 
-#### Q13. What are some potential risks to your project?
+### Q13. What are some potential risks to your project?
 
 1. AI Hallucinations: One significant risk is the potential for the AI chatbot to generate inaccurate or fabricated information (hallucinations), which could mislead users or cause implementation challenges
 2. Feature Ambiguity: There may be differing interpretations of key features, leading to confusion around the scope, functionality or intentions behind design. This could result in mismatched expectations between team members and the partner.
@@ -358,9 +358,9 @@ Our team is responsible for the full development, both frontend and backend. Suc
 4. Lack of Employer Engagement: The success and accuracy of the private user chatbot depends on employers actively uploading and maintaining their company policies, so if they do not participate fully, employees won’t benefit from tailored responses
 5. Imbalanced workload between frontend and backend teams: There’s a possibility that the workload between front and back end may become uneven since the technical scope is still evolving and it is unclear how much effort and time each side requires, which may lead to delays or coordination issues.
 
-#### Q14. What are some potential mitigation strategies for the risks you identified?
+### Q14. What are some potential mitigation strategies for the risks you identified?
 
-## Risks and Mitigation Strategies
+### Risks and Mitigation Strategies
 
 ### Risk: AI Chatbot Hallucinations
 
