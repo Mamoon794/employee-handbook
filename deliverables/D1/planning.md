@@ -59,8 +59,6 @@ Our product delivers value by empowering employees (B2C) and helping companies i
 Furthermore, our partner, Rivvi, supports transparency and empowerment. Our product aligns with these values by enhancing access to essential workplace knowledge that directly affects employee morale and confidence.
 
 ### Q4: What are the user stories that make up the Minumum Viable Product (MVP)?
-- If you have a partner, these must be reviewed and accepted by them. You need to include the evidence of partner approval (e.g., screenshot from email) or at least communication to the partner (e.g., email you sent)
-
 Link to User Stories: https://docs.google.com/document/d/1yIHUToKC76WnYHRgZRx1r7Kq3qAUZxyQUnGDbTiM9Rw/edit?usp=sharing 
 
 User Story #1: As a user of this application, I want to learn about the general laws in the workforce in order to better understand the current policies of jobs.  
@@ -92,6 +90,9 @@ Acceptance Criteria: Upon logging in, a user should have an option to change the
 
 User Story #10: As a registered user using this application, I want to be able to delete my account so it is no longer under the company’s registered users.  
 Acceptance Criteria: Users should be able to terminate their account in an intuitive way through their profile/settings if they ever choose to.
+
+Here is proof of communication to our partner.
+![](UserStoryEmail.JPG)
 
 ### Q5: Have you decided on how you will build it? Share what you know now or tell us the options you are considering.
 
