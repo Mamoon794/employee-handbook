@@ -6,13 +6,17 @@
 ## Product Details
 
 #### Q1: What is the product?
-We will be building a chatbot-based Employee Handbook App called *Gail* which allows users/employees to ask questions about workplace guidelines and receive clear answers. This is to make it easier for employees and non-employees to find answers to any workplace-related question that they may have. It should be emphasized that this should not be used as a place to get legal advice regarding workplace policies. It is more of an information booth.
+
+We will be building a chatbot-based Employee Handbook App called _Gail_ which allows users/employees to ask questions about workplace guidelines and receive clear answers. This is to make it easier for employees and non-employees to find answers to any workplace-related question that they may have. It should be emphasized that this should not be used as a place to get legal advice regarding workplace policies. It is more of an information booth.
 
 ##### About
+
 Our partner, Arshad Merali, is from a fintech company called Rivvi. It is a Toronto-based company founded in 2020. Their goal is to provide tools to improve individuals' financial health.
 
 ##### What they want
+
 Our partner wants a webapp that will work on phones, tablets, and computers. The website will have two sections:
+
 1. The first section will be for public users. They will have access to general public information and can get an understanding of their worker rights.
 2. The second section will be for private users. These are users given access to their company’s own guidelines and policies. They will be able to ask questions privately and not have to worry about being judged.
 
@@ -94,8 +98,8 @@ Acceptance Criteria: Users should be able to terminate their account in an intui
 #### Q5: Have you decided on how you will build it? Share what you know now or tell us the options you are considering.
 
 > Short (1-2 min' read max)
+> The following is the technology Stack:
 
-- What is the technology stack? Specify languages, frameworks, libraries, PaaS products or tools to be used or being considered.
 - **Framework**
 
   - Next.js
@@ -145,13 +149,9 @@ Acceptance Criteria: Users should be able to terminate their account in an intui
 
   - Google Analytics
 
-- How will you deploy the application?
+This application has a series of high-level components including the Frontend, Backend, AI Service, Authentication, Vector Database, and Monitoring & Analytics. It uses RAG (Retrieval-Augmented Generation) in order to combine any document retrievals with LLMs to ensure accurate, cited responses. Additionally, microservices, JWT-based authentication, and CI/CD also make up aspects of this application. The application will be deployed on Vercel.
 
-The application will be deployed on Vercel.
-
-- Describe the architecture - what are the high level components or patterns you will use? Diagrams are useful here.
-
-This application has a series of high-level components including the Frontend, Backend, AI Service, Authentication, Vector Database, and Monitoring & Analytics. It uses RAG (Retrieval-Augmented Generation) in order to combine any document retrievals with LLMs to ensure accurate, cited responses. Additionally, microservices, JWT-based authentication, and CI/CD also make up aspects of this application. In the diagram below, arrows demonstrate primary data flows.
+In the diagram below, arrows demonstrate primary data flows.
 
 ![](Picture2.JPG)
 
@@ -159,9 +159,7 @@ The following diagram illustrates the target users of our app, the core features
 
 ![](diagram.png)
 
-- Will you be using third party applications or APIs? If so, what are they?
-
-Yes. We will use third-party applications including Clerk (auth), Stripe (payments), Firebase (database), Pinecone (vector DB), Sentry (monitoring), and Google Analytics (analytics). For AI features, we may integrate LangChain and LLM APIs.
+This application has a set of high-level components, including the Frontend, Backend, AI Service, Authentication, Vector Database, and Monitoring & Analytics. It uses RAG (Retrieval-Augmented Generation) to combine document retrieval with LLMs for more accurate, cited responses. Microservices, JWT-based authentication, and CI/CD are also part of the system. The app will be deployed on Vercel. We’ll use third-party tools like Clerk (auth), Stripe (payments), Firebase (database), Pinecone (vector DB), Sentry (monitoring), and Google Analytics (analytics). For AI features, we may integrate LangChain and LLM APIs.
 
 ---
 
@@ -343,10 +341,12 @@ Our project is the first working prototype (MVP) of an AI-powered chatbot platfo
 
 This chatbot is designed as a separate offering from Rivvi’s core product, meaning customers of this new tool do not necessarily need to be existing Rivvi customers. This new module is intended to integrate well with Rivvi’s ecosystem, despite being able to function independently.
 
-Below is our mockup of the interface for the MVP.
+Below are some screens, but not all, from our mockup of the interface for the MVP.
+![](screen1.png)
+![](screen2.png)
+![](screen3.png)
 
-Our team is responsible for the full development, both frontend and backend. Success for the partner means delivering a fully functional MVP that includes all core features necessary for real-world use. The MVP should be stable, usable across devices and ready for testing by real users. 
-
+Our team is responsible for the full development, both frontend and backend. Success for the partner means delivering a fully functional MVP that includes all core features necessary for real-world use. The MVP should be stable, usable across devices and ready for testing by real users.
 
 ## Potential Risks
 
