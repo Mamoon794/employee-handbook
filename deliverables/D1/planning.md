@@ -103,7 +103,7 @@ Here is proof of communication to our partner.
 
 ### Q5: Have you decided on how you will build it? Share what you know now or tell us the options you are considering.
 
-> The following is the technology Stack:
+The following is the technology Stack:
 
 - **Framework**
 
@@ -168,9 +168,7 @@ This application is built with a set of high-level components, including the fro
 
 ## Intellectual Property Confidentiality Agreement
 
-> Note this section is **not marked** but must be completed briefly if you have a partner. If you have any questions, please ask on Piazza.
->
-> **By default, you own any work that you do as part of your coursework.** However, some partners may want you to keep the project confidential after the course is complete. As part of your first deliverable, you should discuss and agree upon an option with your partner. Examples include:
+Below are some confidentiality options:
 
 1. You can share the software and the code freely with anyone with or without a license, regardless of domain, for any use.
 2. You can upload the code to GitHub or other similar publicly available domains.
@@ -178,11 +176,7 @@ This application is built with a set of high-level components, including the fro
 4. You will share the code under an open-source license and distribute it as you wish but only the partner can access the system deployed during the course.
 5. You will only reference the work you did in your resume, interviews, etc. You agree to not share the code or software in any capacity with anyone unless your partner has agreed to it.
 
-**Your partner cannot ask you to sign any legal agreements or documents pertaining to non-disclosure, confidentiality, IP ownership, etc.**
-
-Briefly describe which option you have agreed to.
-
-We have agreed on Option 5: We will only reference the work we did in our resumes and interviews. We agree not to share the code or software in any capacity with anyone unless our partner has explicitly agreed to it.
+From the options above, the partner and our team have agreed on Option 5. Specifically, we will only reference the work we did in our resumes and interviews. We agree not to share the code or software in any capacity with anyone unless our partner has explicitly agreed to it.
 
 ## Teamwork Details
 
