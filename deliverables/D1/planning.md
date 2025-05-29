@@ -9,6 +9,8 @@
 
 Link to Figma Prototype: https://www.figma.com/design/a8k08eH7k677z5P0MQQUEz/D1-Mockup?node-id=0-1&t=lsJnCGrCFwap98EB-1
 
+Since this is an entirely new project and the partner did not have any existing prototype, we created the mockup from scratch based on the partner’s requirements. The design was reviewed and approved by the partner.
+
 We will be building a chatbot-based Employee Handbook App called _Gail_ which allows users/employees to ask questions about workplace guidelines and receive clear answers. This is to make it easier for employees and non-employees to find answers to any workplace-related question that they may have. It should be emphasized that this should not be used as a place to get legal advice regarding workplace policies. It is more of an information booth.
 
 #### About
