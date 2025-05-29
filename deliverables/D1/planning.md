@@ -92,7 +92,7 @@ User Story #10: As a registered user using this application, I want to be able t
 Acceptance Criteria: Users should be able to terminate their account in an intuitive way through their profile/settings if they ever choose to.
 
 Here is proof of communication to our partner.
-![](Picture2.JPG)
+![](UserStoryEmail.JPG)
 
 ### Q5: Have you decided on how you will build it? Share what you know now or tell us the options you are considering.
 
