@@ -79,7 +79,7 @@ Our partner is **Arshad Merali** from Rivvi, a Toronto-based fintech company foc
 
 ## Intellectual Property
 
-Students will only reference the work they did in their resume, interviews, etc. They agree to not share the code or software in any capacity with anyone unless their partner has agreed to it.                                                                                                                                                                                                                                                                                                                                       |
+Students will only reference the work they did in their resume, interviews, etc. They agree to not share the code or software in any capacity with anyone unless their partner has agreed to it.
 
 ## Partner
 

@@ -1,9 +1,9 @@
-Partner's name:
-Partner's title:
+Partner's name: Arshad Merali
+Partner's title: Founder & CEO
 Partner's email: arshad@rivvi.com
 
-Primary partner contact:
-Secondary partner contact:
+Primary partner contact: Arshad Merali
+Secondary partner contact: N/A
 
-TA's name: Ruitao Lai
-TA's email: r.lai@mail.utoronto.ca
+TA's name: Abdullah Rasul
+TA's email: abdullah.rasul@mail.utoronto.ca
