@@ -15,13 +15,8 @@ export default function ProvincePopup({ onSave }: ProvincePopupProps) {
   const [selectedProvince, setSelectedProvince] = useState("");
 
   useEffect(() => {
-    const storedProvince = localStorage.getItem("province");
-    if (!storedProvince) {
-      setOpen(true);
-    } else {
-      onSave(storedProvince);
-    }
-  }, [onSave]);
+    setOpen(true);
+  }, []);
 
   const handleConfirm = () => {
     if (!selectedProvince) return;
