@@ -17,14 +17,14 @@ export default function SignUp() {
         <div className="flex flex-col sm:flex-row gap-6 mb-6">
           {/* Employee */}
           <button className="w-64 h-36 border rounded-2xl flex flex-col items-center justify-center hover:bg-gray-50 transition-colors">
-            <Users size={48} className="mb-2" />
-            <span className="text-lg font-medium">Continue as employee</span>
+            <Users size={48} className="mb-2 text-black" />
+            <span className="text-lg font-medium text-black">Continue as employee</span>
           </button>
 
           {/* Employer */}
           <button className="w-64 h-36 border rounded-2xl flex flex-col items-center justify-center hover:bg-gray-50 transition-colors">
-            <User size={48} className="mb-2" />
-            <span className="text-lg font-medium">Continue as Employer</span>
+            <User size={48} className="mb-2 text-black" />
+            <span className="text-lg font-medium text-black">Continue as Employer</span>
           </button>
         </div>
 
