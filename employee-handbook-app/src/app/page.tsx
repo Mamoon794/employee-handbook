@@ -41,8 +41,8 @@ export default function Home() {
             Sign up
           </button>
         </div>
-      </header>
-
+      </header> 
+      
       <main className="flex-1 flex flex-col items-center justify-center px-6 max-w-4xl mx-auto w-full">
         <h2 className="text-4xl font-medium text-gray-900 mb-12 text-center">
           What can I help you with?
