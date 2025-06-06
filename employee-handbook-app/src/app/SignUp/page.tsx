@@ -18,7 +18,7 @@ export default function SignUp() {
           {/* Employee */}
           <button className="w-64 h-36 border rounded-2xl flex flex-col items-center justify-center hover:bg-gray-50 transition-colors">
             <Users size={48} className="mb-2 text-black" />
-            <span className="text-lg font-medium text-black">Continue as employee</span>
+            <span className="text-lg font-medium text-black">Continue as Employee</span>
           </button>
 
           {/* Employer */}
