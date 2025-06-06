@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 const provinces = [
   "Alberta", "British Columbia", "Manitoba", "New Brunswick",
   "Newfoundland and Labrador", "Nova Scotia", "Ontario",
-  "Prince Edward Island", "Quebec", "Saskatchewan"
+  "Prince Edward Island", "Quebec", "Saskatchewan", "Northwest Territories", 
+  "Nunavut", "Yukon"
 ];
 
 interface ProvincePopupProps {
@@ -15,25 +16,21 @@ export default function ProvincePopup({ onSave }: ProvincePopupProps) {
   const [selectedProvince, setSelectedProvince] = useState("");
 
   useEffect(() => {
-    const storedProvince = localStorage.getItem("province");
-    if (!storedProvince) {
-      setOpen(true);
-    } else {
-      onSave(storedProvince);
-    }
-  }, [onSave]);
+    setOpen(true);
+  }, []);
 
   const handleConfirm = () => {
     if (!selectedProvince) return;
+    //saves the province to localStorage in the browser
     localStorage.setItem("province", selectedProvince);
     onSave(selectedProvince);
-    setOpen(false);
+    setOpen(false); //closes the popup
   };
 
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-25">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white">
       <div className="bg-white rounded-lg shadow-md p-8 w-[95%] max-w-md text-center">
         <h2 className="text-2xl font-semibold mb-6 text-gray-800">
           Select your province
@@ -52,9 +49,6 @@ export default function ProvincePopup({ onSave }: ProvincePopupProps) {
               </option>
             ))}
           </select>
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-            <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-          </div>
         </div>
 
         <button
