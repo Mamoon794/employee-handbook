@@ -1,0 +1,1 @@
+This folder is supposed to hold any configuration files that are needed for database 
