@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 const provinces = [
   "Alberta", "British Columbia", "Manitoba", "New Brunswick",
   "Newfoundland and Labrador", "Nova Scotia", "Ontario",
-  "Prince Edward Island", "Quebec", "Saskatchewan"
+  "Prince Edward Island", "Quebec", "Saskatchewan", "Northwest Territories", 
+  "Nunavut", "Yukon"
 ];
 
 interface ProvincePopupProps {
