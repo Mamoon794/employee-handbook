@@ -1,103 +1,38 @@
-import React from 'react';
+'use client';
+
 import { Users, User } from 'lucide-react';
 
-const containerStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  height: '100vh',
-  fontFamily: 'Montserrat, sans-serif',
-  background: '#fff',
-};
-
-const headerStyle: React.CSSProperties = {
-  alignSelf: 'flex-start',
-  margin: '55px 0 0 60px',
-  fontWeight: 'bold',
-  fontSize: '2rem',
-  color: '#2c5282',
-  fontStyle: 'italic',
-  fontFamily: 'Montserrat, sans-serif',
-};
-
-const titleStyle: React.CSSProperties = {
-  marginTop: '80px',
-  marginBottom: '40px',
-  fontWeight: 'bold',
-  fontSize: '2rem',
-  color: '#2c5282',
-  textAlign: 'center',
-  fontFamily: 'Montserrat, sans-serif',
-};
-
-const cardContainerStyle: React.CSSProperties = {
-  display: 'flex',
-  gap: '40px',
-  marginBottom: '50px',
-};
-
-const cardStyle: React.CSSProperties = {
-  width: '420px',
-  height: '220px',
-  border: '1px solid #222',
-  borderRadius: '25px',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  cursor: 'pointer',
-  transition: 'box-shadow 0.2s',
-  background: '#fff',
-};
-
-
-const labelStyle: React.CSSProperties = {
-  fontSize: '1.5rem',
-  fontWeight: 500,
-  fontFamily: 'Montserrat, sans-serif',
-};
-
-const loginPromptStyle: React.CSSProperties = {
-  marginTop: '30px',
-  fontWeight: 600,
-  fontSize: '1.2rem',
-  fontFamily: 'Montserrat, sans-serif',
-};
-
-const loginButtonStyle: React.CSSProperties = {
-  marginTop: '20px',
-  marginBottom: '60px',
-  background: '#23398D',
-  color: '#fff',
-  border: 'none',
-  borderRadius: '30px',
-  padding: '15px 45px',
-  fontSize: '1.2rem',
-  fontWeight: 500,
-  cursor: 'pointer',
-  fontFamily: 'Montserrat, sans-serif',
-}; 
-
-const SignUp: React.FC = () => {
+export default function SignUp() {
   return (
-    <div style={containerStyle}>
-      <div style={headerStyle}>Gail</div>
-      <div style={titleStyle}>Register to get started</div>
-      <div style={cardContainerStyle}>
-        <div style={cardStyle}>
-            <Users size={64} />
-          <div style={labelStyle}>Continue as employee</div>
+    <div className="min-h-screen bg-white flex flex-col">
+      <header className="flex justify-between items-center px-6 py-4">
+        <h1 className="text-2xl font-bold text-blue-800">Gail</h1>
+      </header>
+
+      <main className="flex-1 flex flex-col items-center justify-center px-6">
+        <h2 className="text-2xl sm:text-3xl font-semibold text-blue-800 mb-10 text-center">
+          Register to get started
+        </h2>
+
+        <div className="flex flex-col sm:flex-row gap-6 mb-6">
+          {/* Employee */}
+          <button className="w-64 h-36 border rounded-2xl flex flex-col items-center justify-center hover:bg-gray-50 transition-colors">
+            <Users size={48} className="mb-2" />
+            <span className="text-lg font-medium">Continue as employee</span>
+          </button>
+
+          {/* Employer */}
+          <button className="w-64 h-36 border rounded-2xl flex flex-col items-center justify-center hover:bg-gray-50 transition-colors">
+            <User size={48} className="mb-2" />
+            <span className="text-lg font-medium">Continue as Employer</span>
+          </button>
         </div>
-        <div style={cardStyle}>
-            <User size={64} />
-          <div style={labelStyle}>Continue as Employer</div>
-        </div>
-      </div>
-      <div style={loginPromptStyle}>Already have an account?</div>
-      <button style={loginButtonStyle}>Log in</button>
+
+        <p className="text-gray-700 text-md mb-3">Already have an account?</p>
+        <button className="px-6 py-2 bg-blue-800 text-white rounded-full font-medium hover:bg-blue-700 transition-colors">
+          Log in
+        </button>
+      </main>
     </div>
   );
-};
-
-export default SignUp;
+}
