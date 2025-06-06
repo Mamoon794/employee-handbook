@@ -1,10 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Search } from 'lucide-react';
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
+  const router = useRouter();
 
   const suggestedQuestions = [
     "Do I get paid breaks?",
@@ -29,6 +31,10 @@ export default function Home() {
     }
   };
 
+  const handleSignUp = () => {
+    router.push('/SignUp');
+  };
+
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <header className="flex justify-between items-center px-6 py-4">
@@ -37,7 +43,10 @@ export default function Home() {
           <button className="px-6 py-2 bg-blue-800 text-white rounded-full font-medium hover:bg-blue-700 transition-colors">
             Log In
           </button>
-          <button className="px-6 py-2 border border-gray-300 text-gray-700 rounded-full font-medium hover:bg-gray-50 transition-colors">
+          <button 
+            onClick={handleSignUp}
+            className="px-6 py-2 border border-gray-300 text-gray-700 rounded-full font-medium hover:bg-gray-50 transition-colors"
+          >
             Sign up
           </button>
         </div>
