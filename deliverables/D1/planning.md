@@ -261,7 +261,7 @@ We plan to establish a weekly partner meeting schedule. For now, Mondays at 10 A
 
 We'll use Slack or Discord to stay in touch as a team and have quick conversations when we need to collaborate. For keeping track of our development work, we'll create GitHub issues whenever we need to add new features, fix bugs, or make improvements. This approach will help us stay organized, solve problems quickly, and support each other along the way.
 
-We might also use a project management tool like Jira to organize and prioritize our tasks and user stories. If that doesn't work for us, we can use shared documents to keep track of our work and monitor our progress.RetryClaude can make mistakes. Please double-check responses.
+We might also use a project management tool like Jira to organize and prioritize our tasks and user stories. If that doesn't work for us, we can use shared documents to keep track of our work and monitor our progress.
 
 We’ll keep track of what needs to get done by maintaining a shared backlog of user stories and tasks, organized either in Jira or the shared document. Tasks will be prioritized based on importance to the MVP and upcoming deliverables, with input from the team during our weekly meetings. We'll label tasks by priority and complexity to help with planning. Tasks will be assigned based on each member’s strengths, role, and interest, but there’s also flexibility to pair up or switch if someone wants to try something new. To track the status of work, each task will move through stages like “To Do,” “In Progress,” “Code Review,” and “Done,” allowing the whole team to see what’s being worked on and what’s complete.
 
