@@ -30,7 +30,7 @@ export default function ProvincePopup({ onSave }: ProvincePopupProps) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-25">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white">
       <div className="bg-white rounded-lg shadow-md p-8 w-[95%] max-w-md text-center">
         <h2 className="text-2xl font-semibold mb-6 text-gray-800">
           Select your province
