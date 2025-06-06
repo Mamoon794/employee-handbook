@@ -59,6 +59,12 @@ export const createChat = async (chatData: Omit<Chat, "id">) => {
   });
 };
 
+export const getChat = async (chatId: string) => {
+  const docRef = doc(db, "chats", chatId);
+  const docSnap = await getDoc(docRef);
+  return docSnap.exists() ? ({ id: docSnap.id, ...docSnap.data() } as Chat) : null;
+};
+
 // subcollections - messages (under each chat)
 export const addMessageToChat = async (
   chatId: string,
