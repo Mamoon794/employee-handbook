@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from dotenv import load_dotenv
 import os
+import sys
 from langchain.chat_models import init_chat_model
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_pinecone import PineconeVectorStore
@@ -48,12 +49,9 @@ def root():
 
 # Scrape web page, only load specific tags: h1, h2, h3, p
 loader = WebBaseLoader(
-    web_paths=("https://www.ontario.ca/document/your-guide-employment-standards-act-0",),
+    web_paths=("https://laws-lois.justice.gc.ca/eng/acts/l-2/FullText.html",),
     bs_kwargs=dict(
-        parse_only=bs4.SoupStrainer(
-            tags=("h1", "h2", "h3", "p"),
-            # class_=("post-content", "post-title", "post-header")
-        )
+        parse_only=bs4.SoupStrainer(["h1", "h2", "h3", "p"]),
     ),
 )
 docs = loader.load()
@@ -61,16 +59,25 @@ assert len(docs) == 1
 print(f"Total characters: {len(docs[0].page_content)}")
 print(docs[0].page_content[:500])
 
-# Split document into smaller chunks
+# Split the text into smaller chunks: a list of Document objects
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, # chunk size (characters)
                                             chunk_overlap=200, # chunk overlap (characters)
                                                 add_start_index=True,  # track index in original document
                                                 )
 all_splits = text_splitter.split_documents(docs)
 print(f"Split blog post into {len(all_splits)} sub-documents.")
+print(f"Total size: {sys.getsizeof(all_splits)} bytes")
 
-# Index chunks
-_ = vector_store.add_documents(documents=all_splits)
+# Convert the Document objects to emmbeddings and upload to Pinecone vector store
+def batch_add_documents(vector_store, documents, batch_size=100):
+    for i in range(0, len(documents), batch_size):
+        batch = documents[i:i + batch_size]
+        try:
+            vector_store.add_documents(batch)
+        except Exception as e:
+            print(f"Failed to upload batch {i // batch_size + 1}: {e}")
+
+batch_add_documents(vector_store, all_splits, batch_size=50)
 
 # Load prompt template from LangChain Hub
 prompt = hub.pull("rlm/rag-prompt", 
