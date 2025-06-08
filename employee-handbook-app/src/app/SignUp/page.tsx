@@ -29,7 +29,9 @@ export default function SignUp() {
         </div>
 
         <p className="text-gray-700 text-md mb-3">Already have an account?</p>
-        <button className="px-6 py-2 bg-blue-800 text-white rounded-full font-medium hover:bg-blue-700 transition-colors">
+        
+        {/* Matching Confirm button style */}
+        <button className="bg-blue-800 text-white font-semibold px-6 py-3 rounded-md hover:bg-blue-700 transition-colors">
           Log in
         </button>
       </main>
