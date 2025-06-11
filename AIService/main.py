@@ -112,6 +112,7 @@ graph = graph_builder.compile()
     
 # param class for user input in POST /responses
 class UserMessage(BaseModel):
+    province: str
     question: str
 
 @app.post("/responses")
