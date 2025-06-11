@@ -1,2 +1,10 @@
 .DS_Store
 node_modules/
+.env
+venv/
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
