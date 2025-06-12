@@ -11,8 +11,12 @@ import bs4
 from langchain import hub
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_core.documents import Document
+from langchain_core.tools import tool
+from langchain_core.messages import SystemMessage
+from langgraph.prebuilt import ToolNode, tools_condition
+from langgraph.checkpoint.memory import MemorySaver
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langgraph.graph import START, StateGraph
+from langgraph.graph import START, StateGraph, MessagesState, END
 from typing_extensions import List, TypedDict
 from pydantic import BaseModel
 
@@ -49,7 +53,7 @@ def root():
 
 # Scrape web page, only load specific tags: h1, h2, h3, p
 loader = WebBaseLoader(
-    web_paths=("https://laws-lois.justice.gc.ca/eng/acts/l-2/FullText.html",),
+    web_paths=("https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/00_96113_01",),
     bs_kwargs=dict(
         parse_only=bs4.SoupStrainer(["h1", "h2", "h3", "p"]),
     ),
@@ -92,24 +96,101 @@ class State(TypedDict):
 
 
 # find chunks in vector store that are relevant to the question
-def retrieve(state: State):
-    retrieved_docs = vector_store.similarity_search(state["question"])
-    return {"context": retrieved_docs}
+# def retrieve(state: State):
+#     retrieved_docs = vector_store.similarity_search(state["question"])
+#     return {"context": retrieved_docs}
 
 # Put question and the retrieved context into the prompt, and generate an answer using the LLM
-def generate(state: State):
-    docs_content = "\n\n".join(doc.page_content for doc in state["context"])
-    messages = prompt.invoke({"question": state["question"], "context": docs_content})
-    response = llm.invoke(messages)
-    return {"answer": response.content}
+# def generate(state: State):
+#     docs_content = "\n\n".join(doc.page_content for doc in state["context"])
+#     messages = prompt.invoke({"question": state["question"], "context": docs_content})
+#     response = llm.invoke(messages)
+#     return {"answer": response.content}
+
+@tool(response_format="content_and_artifact")
+def retrieve(query: str):
+    """Retrieve information related to a query."""
+    retrieved_docs = vector_store.similarity_search(query, k=5)
+    serialized = "\n\n".join(
+        (f"Source: {doc.metadata}\n" f"Content: {doc.page_content}")
+        for doc in retrieved_docs
+    )
+    return serialized, retrieved_docs
+
+# Step 1: Generate an AIMessage that may include a tool-call to be sent.
+def query_or_respond(state: MessagesState):
+    """Generate tool call for retrieval or respond."""
+    llm_with_tools = llm.bind_tools([retrieve])
+    response = llm_with_tools.invoke(state["messages"])
+    # MessagesState appends messages to state instead of overwriting
+    return {"messages": [response]}
+
+
+# Step 2: Execute the retrieval.
+tools = ToolNode([retrieve])
+
+
+# Step 3: Generate a response using the retrieved content.
+def generate(state: MessagesState):
+    """Generate answer."""
+    # Get generated ToolMessages
+    recent_tool_messages = []
+    for message in reversed(state["messages"]):
+        if message.type == "tool":
+            recent_tool_messages.append(message)
+        else:
+            break
+    tool_messages = recent_tool_messages[::-1]
+
+    # Format into prompt
+    docs_content = "\n\n".join(doc.content for doc in tool_messages)
+    system_message_content = (
+        "You are an assistant for question-answering tasks. "
+        "Use the following pieces of retrieved context to answer "
+        "the question. If you don't know the answer, say that you "
+        "don't know. Use three sentences maximum and keep the "
+        "answer concise."
+        "\n\n"
+        f"{docs_content}"
+    )
+    conversation_messages = [
+        message
+        for message in state["messages"]
+        if message.type in ("human", "system")
+        or (message.type == "ai" and not message.tool_calls)
+    ]
+    prompt = [SystemMessage(system_message_content)] + conversation_messages
+
+    # Run
+    response = llm.invoke(prompt)
+    return {"messages": [response]}
 
 
 # Build the state graph so that POST /responses can invoke the graph
 # with the user question, and return the answer
-graph_builder = StateGraph(State).add_sequence([retrieve, generate])
-graph_builder.add_edge(START, "retrieve")
-graph = graph_builder.compile()
-    
+# graph_builder = StateGraph(State).add_sequence([retrieve, generate])
+# graph_builder.add_edge(START, "retrieve")
+# graph = graph_builder.compile()
+
+graph_builder = StateGraph(MessagesState)
+graph_builder.add_node(query_or_respond)
+graph_builder.add_node(tools)
+graph_builder.add_node(generate)
+
+graph_builder.set_entry_point("query_or_respond")
+graph_builder.add_conditional_edges(
+    "query_or_respond",
+    tools_condition,
+    {END: END, "tools": "tools"},
+)
+graph_builder.add_edge("tools", "generate")
+graph_builder.add_edge("generate", END)
+
+memory = MemorySaver()
+graph = graph_builder.compile(checkpointer=memory)
+
+config = {"configurable": {"thread_id": "abc123"}}
+
 # param class for user input in POST /responses
 class UserMessage(BaseModel):
     question: str
@@ -120,8 +201,16 @@ def get_response(userMessage: UserMessage):
     Get a response from the AI model based on the query.
     """
     try:
-        response = graph.invoke({"question": userMessage.question})
-        print(response["answer"])
+        # response = graph.invoke({"question": userMessage.question})
+        # print(response["answer"])
+
+        for step in graph.stream(
+            {"messages": [{"role": "user", "content": userMessage.question}]},
+            stream_mode="values",
+            config=config,
+        ):
+            response = step["messages"][-1]
+            step["messages"][-1].pretty_print()
 
         return {"response": response}
     except Exception as e:
