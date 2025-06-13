@@ -9,7 +9,7 @@ from pinecone import Pinecone
 
 import bs4
 from langchain import hub
-from langchain_community.document_loaders import WebBaseLoader
+from langchain_community.document_loaders import WebBaseLoader, PyPDFLoader
 from langchain_core.documents import Document
 from langchain_core.tools import tool
 from langchain_core.messages import SystemMessage
@@ -19,6 +19,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langgraph.graph import START, StateGraph, MessagesState, END
 from typing_extensions import List, TypedDict
 from pydantic import BaseModel
+import pprint
 
 # Load environment variables
 load_dotenv()
@@ -52,25 +53,35 @@ def root():
     return {"message": "Welcome to the AI Service!"}
 
 # Scrape web page, only load specific tags: h1, h2, h3, p
-loader = WebBaseLoader(
+webloader = WebBaseLoader(
     web_paths=("https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/00_96113_01",),
     bs_kwargs=dict(
         parse_only=bs4.SoupStrainer(["h1", "h2", "h3", "p"]),
     ),
 )
-docs = loader.load()
-assert len(docs) == 1
-print(f"Total characters: {len(docs[0].page_content)}")
-print(docs[0].page_content[:500])
+web_docs = webloader.load()
+assert len(web_docs) == 1
+print(f"Total characters: {len(web_docs[0].page_content)}")
+print(web_docs[0].page_content[:500])
 
 # Split the text into smaller chunks: a list of Document objects
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, # chunk size (characters)
                                             chunk_overlap=200, # chunk overlap (characters)
                                                 add_start_index=True,  # track index in original document
                                                 )
-all_splits = text_splitter.split_documents(docs)
-print(f"Split blog post into {len(all_splits)} sub-documents.")
-print(f"Total size: {sys.getsizeof(all_splits)} bytes")
+web_splits = text_splitter.split_documents(web_docs)
+print(f"Split website into {len(web_splits)} sub-documents.")
+print(f"Total size: {sys.getsizeof(web_splits)} bytes")
+
+pdfloader = PyPDFLoader("https://www.nslegislature.ca/sites/default/files/legc/statutes/labour%20standards%20code.pdf", mode="page")
+pdf_docs = pdfloader.load()
+print(len(pdf_docs), "PDF pages loaded.")
+pdf_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+
+pdf_splits = pdf_splitter.split_documents(pdf_docs)
+print(f"Split pdf into {len(pdf_splits)} sub-documents.")
+print(f"Total size: {sys.getsizeof(pdf_splits)} bytes")
+all_splits = web_splits + pdf_docs
 
 # Convert the Document objects to emmbeddings and upload to Pinecone vector store
 def batch_add_documents(vector_store, documents, batch_size=100):
@@ -110,7 +121,7 @@ class State(TypedDict):
 @tool(response_format="content_and_artifact")
 def retrieve(query: str):
     """Retrieve information related to a query."""
-    retrieved_docs = vector_store.similarity_search(query, k=5)
+    retrieved_docs = vector_store.similarity_search(query, k=8)
     serialized = "\n\n".join(
         (f"Source: {doc.metadata}\n" f"Content: {doc.page_content}")
         for doc in retrieved_docs
@@ -193,6 +204,7 @@ config = {"configurable": {"thread_id": "abc123"}}
 
 # param class for user input in POST /responses
 class UserMessage(BaseModel):
+    province: str
     question: str
 
 @app.post("/responses")
