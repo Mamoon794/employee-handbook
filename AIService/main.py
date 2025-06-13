@@ -81,7 +81,7 @@ pdf_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200
 pdf_splits = pdf_splitter.split_documents(pdf_docs)
 print(f"Split pdf into {len(pdf_splits)} sub-documents.")
 print(f"Total size: {sys.getsizeof(pdf_splits)} bytes")
-all_splits = web_splits + pdf_docs
+all_splits = web_splits + pdf_splits
 
 # Convert the Document objects to emmbeddings and upload to Pinecone vector store
 def batch_add_documents(vector_store, documents, batch_size=100):
