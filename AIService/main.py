@@ -62,8 +62,8 @@ webloader = WebBaseLoader(
 )
 web_docs = webloader.load()
 assert len(web_docs) == 1
-print(f"Total characters: {len(web_docs[0].page_content)}")
-print(web_docs[0].page_content[:500])
+# print(f"Total characters: {len(web_docs[0].page_content)}")
+# print(web_docs[0].page_content[:500])
 
 # Split the text into smaller chunks: a list of Document objects
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, # chunk size (characters)
@@ -71,17 +71,17 @@ text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, # chunk size (ch
                                                 add_start_index=True,  # track index in original document
                                                 )
 web_splits = text_splitter.split_documents(web_docs)
-print(f"Split website into {len(web_splits)} sub-documents.")
-print(f"Total size: {sys.getsizeof(web_splits)} bytes")
+# print(f"Split website into {len(web_splits)} sub-documents.")
+# print(f"Total size: {sys.getsizeof(web_splits)} bytes")
 
 pdfloader = PyPDFLoader("https://www.nslegislature.ca/sites/default/files/legc/statutes/labour%20standards%20code.pdf", mode="page")
 pdf_docs = pdfloader.load()
-print(len(pdf_docs), "PDF pages loaded.")
+# print(len(pdf_docs), "PDF pages loaded.")
 pdf_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
 
 pdf_splits = pdf_splitter.split_documents(pdf_docs)
-print(f"Split pdf into {len(pdf_splits)} sub-documents.")
-print(f"Total size: {sys.getsizeof(pdf_splits)} bytes")
+# print(f"Split pdf into {len(pdf_splits)} sub-documents.")
+# print(f"Total size: {sys.getsizeof(pdf_splits)} bytes")
 all_splits = web_splits + pdf_splits
 
 # Convert the Document objects to emmbeddings and upload to Pinecone vector store
@@ -234,13 +234,18 @@ def get_response(userMessage: UserMessage):
 
             artifact = []
             if last_tool_message:
-                print("Last ToolMessage content:", last_tool_message.content)
+                # print("Last ToolMessage content:", last_tool_message.content)
                 if hasattr(last_tool_message, "artifact"):
                     for doc in last_tool_message.artifact:
-                        source = doc.metadata.get("source", "unknown")
-                        docMetadata = {"source": source, "content": doc.page_content}
-                        artifact.append(docMetadata)
-                        print("Doc content:", doc.page_content)
+                        print("doc:", doc)
+                        if not isinstance(doc, Document):
+                            print("Skipping non-Document type:", type(doc))
+                            continue
+                        if hasattr(doc, "metadata") and hasattr(doc, "page_content"):
+                            source = doc.metadata.get("source", "unknown")
+                            docMetadata = {"source": source, "content": doc.page_content}
+                            artifact.append(docMetadata)
+                            # print("Doc content:", doc.page_content)
                     # artifact = last_tool_message.artifact
             else:
                 print("No ToolMessage found.")
@@ -248,7 +253,7 @@ def get_response(userMessage: UserMessage):
             response = step["messages"][-1]
             finalResponse = response.content if hasattr(response, "content") else response
 
-            step["messages"][-1].pretty_print()
+            # step["messages"][-1].pretty_print()
 
         return {"response": finalResponse, "metadata": artifact}
     except Exception as e:
