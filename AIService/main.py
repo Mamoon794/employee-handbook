@@ -17,6 +17,7 @@ from langgraph.prebuilt import ToolNode, tools_condition
 from langgraph.checkpoint.memory import MemorySaver
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langgraph.graph import START, StateGraph, MessagesState, END
+from langchain_core.messages import ToolMessage
 from typing_extensions import List, TypedDict
 from pydantic import BaseModel
 import pprint
@@ -54,9 +55,9 @@ def root():
 
 # Scrape web page, only load specific tags: h1, h2, h3, p
 webloader = WebBaseLoader(
-    web_paths=("https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/00_96113_01",),
+    web_paths=("https://novascotia.ca/lae/employmentrights/",),
     bs_kwargs=dict(
-        parse_only=bs4.SoupStrainer(["h1", "h2", "h3", "p"]),
+        parse_only=bs4.SoupStrainer(["h1", "h2", "h3", "p", "li"]),
     ),
 )
 web_docs = webloader.load()
@@ -221,10 +222,45 @@ def get_response(userMessage: UserMessage):
             stream_mode="values",
             config=config,
         ):
+            # print("Step:")
+            # print(step)
+            # print(len(step["messages"]))
+            messages = step["messages"]
+            # Find the last ToolMessage by reversing the list and checking type
+            last_tool_message = next(
+                (m for m in reversed(messages) if isinstance(m, ToolMessage)),
+                None  # default if no ToolMessage is found
+            )
+
+            artifact = []
+            if last_tool_message:
+                print("Last ToolMessage content:", last_tool_message.content)
+                if hasattr(last_tool_message, "artifact"):
+                    for doc in last_tool_message.artifact:
+                        source = doc.metadata.get("source", "unknown")
+                        docMetadata = {"source": source, "content": doc.page_content}
+                        artifact.append(docMetadata)
+                        print("Doc content:", doc.page_content)
+                    # artifact = last_tool_message.artifact
+            else:
+                print("No ToolMessage found.")
+
             response = step["messages"][-1]
+            finalResponse = response.content if hasattr(response, "content") else response
+
             step["messages"][-1].pretty_print()
 
-        return {"response": response}
+        return {"response": finalResponse, "metadata": artifact}
     except Exception as e:
         print(f"An error occurred: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# step = {
+#     "messages": [
+#         HumanMessage(...),       # no artifact
+#         AIMessage(...),          # no artifact
+#         ToolMessage(...),        # has .artifact
+#         ...
+#     ]
+# }
