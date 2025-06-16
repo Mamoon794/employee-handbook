@@ -13,8 +13,7 @@
   },
   "dependencies": {
     "@firebase/firestore": "^4.7.17",
-    "firebase": "^11.9.0",
-    "next": "15.3.3",
+    "firebase": "^11.9.1",
     "lucide-react": "^0.513.0",
     "next": "15.3.3",
     "react": "^19.0.0",

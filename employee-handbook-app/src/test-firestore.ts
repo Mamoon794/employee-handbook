@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { createUser, getUser, createCompany, addDocument } from "./models/dbOperations";
 
 async function testFirestore() {
