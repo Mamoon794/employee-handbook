@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from dotenv import load_dotenv
 import os
 import sys
+import time
 from langchain.chat_models import init_chat_model
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_pinecone import PineconeVectorStore
@@ -17,7 +18,6 @@ from langgraph.prebuilt import ToolNode, tools_condition
 from langgraph.checkpoint.memory import MemorySaver
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langgraph.graph import START, StateGraph, MessagesState, END
-from langchain_core.messages import ToolMessage
 from typing_extensions import List, TypedDict
 from pydantic import BaseModel
 import pprint
@@ -45,13 +45,6 @@ embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
 pc = Pinecone(api_key=pc_api_key)
 index = pc.Index(index_name)
 vector_store = PineconeVectorStore(embedding=embeddings, index=index)
-
-# Initialize FastAPI application
-app = FastAPI()
-
-@app.get("/")
-def root():
-    return {"message": "Welcome to the AI Service!"}
 
 # Scrape web page, only load specific tags: h1, h2, h3, p
 webloader = WebBaseLoader(
@@ -99,26 +92,6 @@ batch_add_documents(vector_store, all_splits, batch_size=50)
 prompt = hub.pull("rlm/rag-prompt", 
                 api_url="https://api.smith.langchain.com")
 
-
-# Define what data is input and output of the application
-class State(TypedDict):
-    question: str
-    context: List[Document]
-    answer: str
-
-
-# find chunks in vector store that are relevant to the question
-# def retrieve(state: State):
-#     retrieved_docs = vector_store.similarity_search(state["question"])
-#     return {"context": retrieved_docs}
-
-# Put question and the retrieved context into the prompt, and generate an answer using the LLM
-# def generate(state: State):
-#     docs_content = "\n\n".join(doc.page_content for doc in state["context"])
-#     messages = prompt.invoke({"question": state["question"], "context": docs_content})
-#     response = llm.invoke(messages)
-#     return {"answer": response.content}
-
 @tool(response_format="content_and_artifact")
 def retrieve(query: str):
     """Retrieve information related to a query."""
@@ -140,7 +113,6 @@ def query_or_respond(state: MessagesState):
 
 # Step 2: Execute the retrieval.
 tools = ToolNode([retrieve])
-
 
 # Step 3: Generate a response using the retrieved content.
 def generate(state: MessagesState):
@@ -176,14 +148,6 @@ def generate(state: MessagesState):
     # Run
     response = llm.invoke(prompt)
     return {"messages": [response]}
-
-
-# Build the state graph so that POST /responses can invoke the graph
-# with the user question, and return the answer
-# graph_builder = StateGraph(State).add_sequence([retrieve, generate])
-# graph_builder.add_edge(START, "retrieve")
-# graph = graph_builder.compile()
-
 graph_builder = StateGraph(MessagesState)
 graph_builder.add_node(query_or_respond)
 graph_builder.add_node(tools)
@@ -201,73 +165,3 @@ graph_builder.add_edge("generate", END)
 memory = MemorySaver()
 graph = graph_builder.compile(checkpointer=memory)
 
-config = {"configurable": {"thread_id": "1"}}
-
-# param class for user input in POST /responses
-class UserMessage(BaseModel):
-    province: str
-    question: str
-
-@app.post("/responses")
-def get_response(userMessage: UserMessage):
-    """
-    Get a response from the AI model based on the query.
-    """
-    try:
-        # response = graph.invoke({"question": userMessage.question})
-        # print(response["answer"])
-
-        for step in graph.stream(
-            {"messages": [{"role": "user", "content": userMessage.question}]},
-            stream_mode="values",
-            config=config,
-        ):
-            # print("Step:")
-            # print(step)
-            # print(len(step["messages"]))
-            messages = step["messages"]
-            # Find the last ToolMessage by reversing the list and checking type
-            last_tool_message = next(
-                (m for m in reversed(messages) if isinstance(m, ToolMessage)),
-                None  # default if no ToolMessage is found
-            )
-
-            artifact = []
-            if last_tool_message:
-                # print("Last ToolMessage content:", last_tool_message.content)
-                if hasattr(last_tool_message, "artifact"):
-                    for doc in last_tool_message.artifact:
-                        print("doc:", doc)
-                        if not isinstance(doc, Document):
-                            print("Skipping non-Document type:", type(doc))
-                            continue
-                        if hasattr(doc, "metadata") and hasattr(doc, "page_content"):
-                            source = doc.metadata.get("source", "")
-                            title = doc.metadata.get("title", "") # only websites have
-                            page = doc.metadata.get("page", "") # only websites have
-                            docMetadata = {"source": source, "title": title, "page": page, "content": doc.page_content}
-                            artifact.append(docMetadata)
-                            # print("Doc content:", doc.page_content)
-                    # artifact = last_tool_message.artifact
-            else:
-                print("No ToolMessage found.")
-
-            response = step["messages"][-1]
-            finalResponse = response.content if hasattr(response, "content") else response
-
-            # step["messages"][-1].pretty_print()
-
-        return {"response": finalResponse, "metadata": artifact}
-    except Exception as e:
-        print(f"An error occurred: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-# step = {
-#     "messages": [
-#         HumanMessage(...),       # no artifact
-#         AIMessage(...),          # no artifact
-#         ToolMessage(...),        # has .artifact
-#         ...
-#     ]
-# }
