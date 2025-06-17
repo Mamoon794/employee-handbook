@@ -1,4 +1,3 @@
-from fastapi import FastAPI, HTTPException
 from dotenv import load_dotenv
 import os
 import sys
@@ -11,7 +10,6 @@ from pinecone import Pinecone
 import bs4
 from langchain import hub
 from langchain_community.document_loaders import WebBaseLoader, PyPDFLoader
-from langchain_core.documents import Document
 from langchain_core.tools import tool
 from langchain_core.messages import SystemMessage
 from langgraph.prebuilt import ToolNode, tools_condition
@@ -19,7 +17,6 @@ from langgraph.checkpoint.memory import MemorySaver
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langgraph.graph import START, StateGraph, MessagesState, END
 from typing_extensions import List, TypedDict
-from pydantic import BaseModel
 import pprint
 
 # Load environment variables
