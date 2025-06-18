@@ -1,12 +1,12 @@
 import { getUserChats, getChat } from "../../../../models/dbOperations";
 
-export async function GET(request: Request, { params }: { params: { theID: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ theID: string }> }) {
     const url = new URL(request.url);
-    const isUserID = url.searchParams.get("iUserID");
+    const isUserID = url.searchParams.get("isUserID");
     const { theID } = await params;
     try{
         let chats;
-        if (isUserID){
+        if (isUserID && isUserID === "true") {
             chats = await getUserChats(theID);
         }
         else{
