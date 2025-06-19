@@ -30,7 +30,7 @@ export default function Dashboard() {
           <p className="text-lg text-black font-bold mb-12 text-center">It seems there are currently no files uploaded.</p>
           <button className="bg-[#294494] text-white font-extrabold px-12 py-5 rounded-xl text-xl hover:bg-blue-900 transition-colors shadow-md">Upload Documents</button>
         </div>
-        {/* Employee Stats Card */}
+        {/* Employee Stat Card */}
         <div className="w-full max-w-sm bg-[#f5f7fb] rounded-xl shadow-lg flex flex-col items-center py-12 px-8">
           <div className="text-5xl font-extrabold text-black mb-2">57</div>
           <div className="text-xl font-bold text-black mb-10 text-center">Employees Registered</div>
