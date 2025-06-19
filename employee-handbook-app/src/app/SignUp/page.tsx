@@ -1,8 +1,11 @@
 'use client';
 
 import { Users, User } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function SignUp() {
+  const router = useRouter(); 
+
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <header className="flex justify-between items-center px-6 py-4">
@@ -16,22 +19,31 @@ export default function SignUp() {
 
         <div className="flex flex-col sm:flex-row gap-6 mb-6">
           {/* Employee */}
-          <button className="w-64 h-36 border rounded-2xl flex flex-col items-center justify-center hover:bg-gray-50 transition-colors">
+          <button 
+            onClick={() => router.push('/SignUp/employee/[...rest]')} 
+            className="w-64 h-36 border rounded-2xl flex flex-col items-center justify-center hover:bg-gray-50 transition-colors"
+          >
             <Users size={48} className="mb-2 text-black" />
             <span className="text-lg font-medium text-black">Continue as Employee</span>
           </button>
 
           {/* Employer */}
-          <button className="w-64 h-36 border rounded-2xl flex flex-col items-center justify-center hover:bg-gray-50 transition-colors">
+          <button 
+            onClick={() => router.push('/SignUp/employer/[...rest]')}
+            className="w-64 h-36 border rounded-2xl flex flex-col items-center justify-center hover:bg-gray-50 transition-colors"
+          >
             <User size={48} className="mb-2 text-black" />
             <span className="text-lg font-medium text-black">Continue as Employer</span>
           </button>
         </div>
-
+        
         <p className="text-gray-700 text-md mb-3">Already have an account?</p>
         
-        {/* Matching Confirm button style */}
-        <button className="bg-blue-800 text-white font-semibold px-6 py-3 rounded-md hover:bg-blue-700 transition-colors">
+        {/* Login button with navigation */}
+        <button 
+          onClick={() => router.push('/LogIn/[...rest]')}
+          className="bg-blue-800 text-white font-semibold px-6 py-3 rounded-md hover:bg-blue-700 transition-colors"
+        >
           Log in
         </button>
       </main>
