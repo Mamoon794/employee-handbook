@@ -48,4 +48,5 @@ export interface Document {
   description?: string;
   uploadDate: Date;
   isPublic: boolean;
+  province: string;
 }
