@@ -43,11 +43,9 @@ export default function Home() {
   };
 
   return (
-    <div className="grid items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 text-center">
-
-      <ProvincePopup onSave={(prov) => setProvince(prov)} />
     <div className="min-h-screen bg-white flex flex-col">
+      <ProvincePopup onSave={(prov) => setProvince(prov)} />
+      
       <header className="flex justify-between items-center px-6 py-4">
         <h1 className="text-2xl font-bold text-blue-800">Gail</h1>
         <div className="flex gap-3">
@@ -102,7 +100,5 @@ export default function Home() {
         </p>
       </main>
     </div>
-  </div>
-  </div>
   );
 }
