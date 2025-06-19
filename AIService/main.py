@@ -13,6 +13,7 @@ def root():
     return {"message": "Welcome to the AI Service!"}
 
 # param class for user input in POST /responses
+
 class RAGInput(BaseModel):
     province: str
     question: str

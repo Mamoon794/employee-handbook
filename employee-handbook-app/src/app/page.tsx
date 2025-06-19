@@ -1,10 +1,29 @@
+/* eslint-disable */
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Search } from 'lucide-react';
+import { useUser, UserButton } from '@clerk/nextjs';
+
+import Image from "next/image";
+import ProvincePopup from "../../components/province";
 
 export default function Home() {
+  const [province, setProvince] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [answer, setAnswer] = useState<string | null>(null);
+  const router = useRouter();
+  const { isSignedIn } = useUser();
+
+  useEffect(() => {
+    const stored = localStorage.getItem('province');
+    if (stored) setProvince(stored);
+  }, []);
+
+  useEffect(() => {
+    console.log(answer);
+  }, [answer]);
 
   const suggestedQuestions = [
     "Do I get paid breaks?",
@@ -12,9 +31,31 @@ export default function Home() {
     "Do I get sick days?"
   ];
 
-  const handleSearch = () => {
-    if (searchQuery.trim()) {
-      // can call the api routes here for backend 
+  const handleSearch = async () => {
+    if (!searchQuery.trim() || !province) return;
+    try {
+      const res = await fetch('/api/public/message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          province,
+          question: searchQuery,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await res.json();
+      if (data.response && data.response.answer) {
+        setAnswer(data.response.answer);
+      } else {
+        setAnswer('Oops, something went wrong.');
+      }
+    } catch (err) {
+      console.error(err);
+      setAnswer('Oops, something went wrong.');
     }
   };
 
@@ -29,21 +70,67 @@ export default function Home() {
     }
   };
 
+  const handleSignUp = () => {
+    router.push('/SignUp');
+  };
+
+  const handleLogIn = () => {
+    router.push('/LogIn/[...rest]');
+  };
+
   return (
     <div className="min-h-screen bg-white flex flex-col">
+      <ProvincePopup onSave={(prov) => setProvince(prov)} />
+      
       <header className="flex justify-between items-center px-6 py-4">
         <h1 className="text-2xl font-bold text-blue-800">Gail</h1>
         <div className="flex gap-3">
           <button className="px-6 py-2 bg-blue-800 text-white rounded-full font-medium hover:bg-blue-700 transition-colors">
             Log In
           </button>
-          <button className="px-6 py-2 border border-gray-300 text-gray-700 rounded-full font-medium hover:bg-gray-50 transition-colors">
+          <button 
+            onClick={handleSignUp}
+            className="px-6 py-2 border border-gray-300 text-gray-700 rounded-full font-medium hover:bg-gray-50 transition-colors"
+          >
             Sign up
           </button>
         </div>
-      </header>
-
+      </header> 
+      
       <main className="flex-1 flex flex-col items-center justify-center px-6 max-w-4xl mx-auto w-full">
+    <div className="min-h-screen bg-white">
+      <div className="max-w-7xl mx-auto px-6 py-4">
+        <header className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-blue-800">Gail</h1>
+          <div className="flex gap-3 items-center">
+            {!isSignedIn ? (
+              <>
+                <button 
+                  onClick={handleLogIn}
+                  className="px-6 py-2 bg-blue-800 text-white rounded-full font-medium hover:bg-blue-700 transition-colors"
+                >
+                  Log In
+                </button>
+                <button 
+                  onClick={handleSignUp}
+                  className="px-6 py-2 border border-gray-300 text-gray-700 rounded-full font-medium hover:bg-gray-50 transition-colors"
+                >
+                  Sign up
+                </button>
+              </>
+            ) : (
+              <div className="flex items-center">
+                <UserButton afterSignOutUrl="/" />
+              </div>
+            )}
+          </div>
+        </header>
+      </div>
+
+      <main className="min-h-[calc(100vh-80px)] flex flex-col items-center justify-center px-6 max-w-7xl mx-auto w-full">
+        {/* <ProvincePopup onSave={(prov) => setProvince(prov)} /> */}
+        {!isSignedIn && <ProvincePopup onSave={(prov) => setProvince(prov)} />}
+        
         <h2 className="text-4xl font-medium text-gray-900 mb-12 text-center">
           What can I help you with?
         </h2>
@@ -66,7 +153,7 @@ export default function Home() {
             placeholder="Ask anything"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyPress}
             className="w-full px-6 py-4 border border-gray-300 rounded-full text-lg text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-14"
           />
           <button
