@@ -1,6 +1,6 @@
 import { getUser } from "../../../../models/dbOperations";
 
-export async function GET(request: Request, { params }: { params: { userID: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ userID: string }> }) {
     const { userID } = await params;
     try {
         const user = await getUser(userID);
