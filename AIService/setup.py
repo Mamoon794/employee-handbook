@@ -20,10 +20,6 @@ from langgraph.graph import START, StateGraph, MessagesState, END
 from typing_extensions import List, TypedDict
 import pprint
 
-# Load your JSON file
-with open("providedDoc.json") as f:
-    jsonData = json.load(f)
-
 # Load environment variables
 load_dotenv()
 
@@ -48,71 +44,8 @@ pc = Pinecone(api_key=pc_api_key)
 index = pc.Index(index_name)
 vector_store = PineconeVectorStore(embedding=embeddings, index=index)
 
-def load_and_split_html(url):
-    try:
-        webloader = WebBaseLoader(
-            web_paths=(url,),
-            bs_kwargs=dict(parse_only=bs4.SoupStrainer(["h1", "h2", "h3", "p", "li"]))
-        )
-        web_docs = webloader.load()
-        web_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-        return web_splitter.split_documents(web_docs)
-    except Exception as e:
-        print(f"[HTML] Failed to load {url}: {e}")
-        return []
-    
-def load_and_split_pdf(url):
-    try:
-        pdfloader = PyPDFLoader(url, mode="page")
-        pdf_docs = pdfloader.load()
-        pdf_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-        return pdf_splitter.split_documents(pdf_docs)
-    except Exception as e:
-        print(f"[PDF] Failed to load {url}: {e}")
-        return []
-    
-def process_docs(docs):
-    splits = []
-    for doc in docs:
-        doc_type = doc.get("type")
-        url = doc.get("url")
-        if not url:
-            continue
-        if doc_type == "html":
-            splits.extend(load_and_split_html(url))
-        elif doc_type == "pdf":
-            splits.extend(load_and_split_pdf(url))
-    return splits
-
-# Convert the Document objects to emmbeddings and upload to Pinecone vector store
-def batch_add_documents(vector_store, documents, namespace, batch_size=100):
-    for i in range(0, len(documents), batch_size):
-        batch = documents[i:i + batch_size]
-        try:
-            vector_store.add_documents(batch, namespace=namespace)
-        except Exception as e:
-            print(f"Failed to upload batch {i // batch_size + 1}: {e}")
-
-def index_documents():
-    general_splits = process_docs(jsonData.get("general", []))
-    index.delete(delete_all=True, namespace="general")
-    batch_add_documents(vector_store, general_splits, namespace="general", batch_size=50)
-
-    for province in jsonData.get("provinces", []):
-        province_id = province.get("id")
-        if not province_id:
-            continue
-        print(f"Processing province: {province_id}")
-        province_splits = process_docs(province.get("docs", []))
-        # Add namespace to each document's metadata
-        index.delete(delete_all=True, namespace=province_id)
-        batch_add_documents(vector_store, province_splits, namespace=province_id, batch_size=50)
-
-# index_documents()
-
 # Load prompt template from LangChain Hub
-prompt = hub.pull("rlm/rag-prompt", 
-                api_url="https://api.smith.langchain.com")
+prompt = hub.pull("rlm/rag-prompt", api_url="https://api.smith.langchain.com")
 
 @tool(response_format="content_and_artifact")
 def retrieve(query: str, province: str):
@@ -188,6 +121,77 @@ graph_builder.add_edge("generate", END)
 memory = MemorySaver()
 graph = graph_builder.compile(checkpointer=memory)
 
+def load_and_split_html(url):
+    try:
+        webloader = WebBaseLoader(
+            web_paths=(url,),
+            bs_kwargs=dict(parse_only=bs4.SoupStrainer(["h1", "h2", "h3", "p", "li"]))
+        )
+        web_docs = webloader.load()
+        web_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+        return web_splitter.split_documents(web_docs)
+    except Exception as e:
+        print(f"[HTML] Failed to load {url}: {e}")
+        return []
+    
+def load_and_split_pdf(url):
+    try:
+        pdfloader = PyPDFLoader(url, mode="page")
+        pdf_docs = pdfloader.load()
+        pdf_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+        return pdf_splitter.split_documents(pdf_docs)
+    except Exception as e:
+        print(f"[PDF] Failed to load {url}: {e}")
+        return []
+    
+def process_docs(docs):
+    splits = []
+    for doc in docs:
+        doc_type = doc.get("type")
+        url = doc.get("url")
+        if not url:
+            continue
+        if doc_type == "html":
+            splits.extend(load_and_split_html(url))
+        elif doc_type == "pdf":
+            splits.extend(load_and_split_pdf(url))
+    return splits
+
+# Convert the Document objects to emmbeddings and upload to Pinecone vector store
+def batch_add_documents(vector_store, documents, namespace, batch_size=100):
+    for i in range(0, len(documents), batch_size):
+        batch = documents[i:i + batch_size]
+        try:
+            vector_store.add_documents(batch, namespace=namespace)
+        except Exception as e:
+            print(f"Failed to upload batch {i // batch_size + 1}: {e}")
+
+def index_documents():
+    general_splits = process_docs(jsonData.get("general", []))
+    if "general" in namespaces:
+        index.delete(delete_all=True, namespace="general")
+    batch_add_documents(vector_store, general_splits, namespace="general", batch_size=50)
+
+    for province in jsonData.get("provinces", []):
+        province_id = province.get("id")
+        if not province_id:
+            continue
+        print(f"Processing province: {province_id}")
+        province_splits = process_docs(province.get("docs", []))
+        # Add namespace to each document's metadata
+        if province_id in namespaces:
+            index.delete(delete_all=True, namespace=province_id)
+        batch_add_documents(vector_store, province_splits, namespace=province_id, batch_size=50)
+
+
 if __name__ == "__main__":
+    # Load your JSON file
+    with open("providedDoc.json") as f:
+        jsonData = json.load(f)
+
+    index.describe_index_stats()
+    stats = index.describe_index_stats()
+    namespaces = stats.get("namespaces", {})
+
     index_documents()
     print("Indexing completed.")
