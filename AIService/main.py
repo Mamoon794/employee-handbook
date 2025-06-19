@@ -18,29 +18,24 @@ class RAGInput(BaseModel):
     question: str
     thread_id: str = "1"  # default thread_id, can be overridden
 
-# config={"configurable": {"thread_id": "1"}}
-
 @app.post("/responses")
 def get_response(userMessage: RAGInput):
     """
     Get a response from the AI model based on the query.
     """
-    province_mappings = {"Alberta": "AB", "British Columbia": "BC", "Manitoba": "MB",
-                   "New Brunswick": "NB", "Newfoundland and Labrador": "NL",
-                   "Nova Scotia": "NS", "Northwest Territories": "NT", "Nunavut": "NU",
-                   "Ontario": "ON", "Prince Edward Island": "PE",
-                   "Quebec": "QC", "Saskatchewan": "SK", "Yukon": "YT"}
-    print("province_mappings[userMessage.province]:", province_mappings[userMessage.province])
+    # province_mappings = {"Alberta": "AB", "British Columbia": "BC", "Manitoba": "MB",
+    #                "New Brunswick": "NB", "Newfoundland and Labrador": "NL",
+    #                "Nova Scotia": "NS", "Northwest Territories": "NT", "Nunavut": "NU",
+    #                "Ontario": "ON", "Prince Edward Island": "PE",
+    #                "Quebec": "QC", "Saskatchewan": "SK", "Yukon": "YT"}
+    # print("province_mappings[userMessage.province]:", province_mappings[userMessage.province])
     try:
         for step in graph.stream(
-              {
-                "messages": [{"role": "user", "content": userMessage.question}],
-                "province": province_mappings[userMessage.province],
-            },
+            {"messages": [{"role": "user", "content": f"question: {userMessage.question}. If no province is specified, use {userMessage.province}."}]},
             stream_mode="values",
             config={"configurable": {"thread_id": userMessage.thread_id}},
         ):
-            print("step:", step)
+            # print("step:", step)
             messages = step["messages"]
             # Find the last ToolMessage by reversing the list and checking type
             last_tool_message = next(
@@ -59,7 +54,7 @@ def get_response(userMessage: RAGInput):
                             continue
                         if hasattr(doc, "metadata") and hasattr(doc, "page_content"):
                             source = doc.metadata.get("source", "")
-                            title = doc.metadata.get("title", "") # only pdf have
+                            title = doc.metadata.get("title", "")
                             page = doc.metadata.get("page", "") # only pdf have
                             docMetadata = {"source": source, "title": title, "page": page, "content": doc.page_content}
                             context.append(docMetadata)

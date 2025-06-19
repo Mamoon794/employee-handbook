@@ -1,0 +1,74 @@
+{
+  "general": [
+    {
+      "type": "html",
+      "title": "Minimum Wage Rates and Overtime Rules in Canada",
+      "url": "https://www.cfib-fcei.ca/en/tools-resources/minimum-wage-rates-overtime-rules-canada"
+    },
+    {
+      "type": "html",
+      "title": "Current and Forthcoming General Minimum Wage Rates in Canada",
+      "url": "https://minwage-salairemin.service.canada.ca/en/general.html"
+    },
+    {
+      "type": "html",
+      "title": "Canada Labour Code",
+      "url": "https://laws-lois.justice.gc.ca/eng/acts/l-2/FullText.html"
+    }
+  ],
+  "provinces": [
+    {
+      "id": "AB",
+      "name": "Alberta",
+      "docs": [
+        {
+          "type": "html",
+          "title": "Employment Standards Code",
+          "url": "https://kings-printer.alberta.ca/1266.cfm?page=e09.cfm&leg_type=Acts&isbncln=9780779851355&display=html"
+        },
+        {
+          "type": "pdf",
+          "title": "Employment Standards Guide for Employees",
+          "url": "https://open.alberta.ca/dataset/8b776a10-f427-41ce-b1ff-7cad5b94e962/resource/7f1a5147-d028-4ba4-8277-bd5cb2062cc1/download/lbr-es-guide-for-employees-2021-07.pdf"
+        },
+        {
+          "type": "html",
+          "title": "Employment standards - Rules",
+          "url": "https://www.alberta.ca/alberta-employment-standards-rules"
+        }
+      ]
+    },
+    {
+      "id": "BC",
+      "name": "British Columbia",
+      "docs": [
+        {
+          "type": "html",
+          "title": "Employment Standards",
+          "url": "https://www2.gov.bc.ca/gov/content/employment-business/employment-standards-advice/employment-standards"
+        },
+        {
+          "type": "html",
+          "title": "Employment Standards Act",
+          "url": "https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/00_96113_01"
+        }
+      ]
+    },
+    {
+      "id": "NS",
+      "name": "Nova Scotia",
+      "docs": [
+        {
+          "type": "pdf",
+          "title": "Labour Standards Code",
+          "url": "https://www.nslegislature.ca/sites/default/files/legc/statutes/labour%20standards%20code.pdf"
+        },
+        {
+          "type": "html",
+          "title": "Employment Rights",
+          "url": "https://novascotia.ca/lae/employmentrights/"
+        }
+      ]
+    }
+  ]
+}

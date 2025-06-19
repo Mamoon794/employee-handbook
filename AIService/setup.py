@@ -52,11 +52,11 @@ def retrieve(query: str, province: str):
     """Retrieve employment-related information by searching indexed documents in the given province. 
     Parameters:
     - query: the user's question.
-    - province: the 2-letter province code (e.g., 'ON', 'AB')."""
+    - province: province name like "Alberta", "British Columbia", etc."""
     print("province:", province)
     retrieved_docs = vector_store.similarity_search(query, k=8, namespace=province)
     serialized = "\n\n".join(
-        (f"Source: {doc.metadata}\n" f"Content: {doc.page_content}")
+        (f"DocMetadata: {doc.metadata}\n" f"DocContent: {doc.page_content}")
         for doc in retrieved_docs
     )
     return serialized, retrieved_docs
@@ -121,14 +121,16 @@ graph_builder.add_edge("generate", END)
 memory = MemorySaver()
 graph = graph_builder.compile(checkpointer=memory)
 
-def load_and_split_html(url):
+def load_and_split_html(url, title):
     try:
         webloader = WebBaseLoader(
             web_paths=(url,),
             bs_kwargs=dict(parse_only=bs4.SoupStrainer(["h1", "h2", "h3", "p", "li"]))
         )
         web_docs = webloader.load()
-        web_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+        for doc in web_docs:
+            doc.metadata["title"] = title
+        web_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200, add_start_index=True)
         return web_splitter.split_documents(web_docs)
     except Exception as e:
         print(f"[HTML] Failed to load {url}: {e}")
@@ -149,10 +151,11 @@ def process_docs(docs):
     for doc in docs:
         doc_type = doc.get("type")
         url = doc.get("url")
+        title = doc.get("title")
         if not url:
             continue
         if doc_type == "html":
-            splits.extend(load_and_split_html(url))
+            splits.extend(load_and_split_html(url, title))
         elif doc_type == "pdf":
             splits.extend(load_and_split_pdf(url))
     return splits
@@ -166,32 +169,32 @@ def batch_add_documents(vector_store, documents, namespace, batch_size=100):
         except Exception as e:
             print(f"Failed to upload batch {i // batch_size + 1}: {e}")
 
-def index_documents():
+def index_documents(namespaces):
     general_splits = process_docs(jsonData.get("general", []))
     if "general" in namespaces:
         index.delete(delete_all=True, namespace="general")
     batch_add_documents(vector_store, general_splits, namespace="general", batch_size=50)
 
     for province in jsonData.get("provinces", []):
-        province_id = province.get("id")
-        if not province_id:
+        province_name = province.get("name")
+        if not province_name:
             continue
-        print(f"Processing province: {province_id}")
+        print(f"Processing province: {province_name}")
         province_splits = process_docs(province.get("docs", []))
         # Add namespace to each document's metadata
-        if province_id in namespaces:
-            index.delete(delete_all=True, namespace=province_id)
-        batch_add_documents(vector_store, province_splits, namespace=province_id, batch_size=50)
+        if province_name in namespaces:
+            index.delete(delete_all=True, namespace=province_name)
+        batch_add_documents(vector_store, province_splits, namespace=province_name, batch_size=50)
 
 
 if __name__ == "__main__":
     # Load your JSON file
-    with open("providedDoc.json") as f:
+    with open("providedDocSample.json") as f:
         jsonData = json.load(f)
 
     index.describe_index_stats()
     stats = index.describe_index_stats()
     namespaces = stats.get("namespaces", {})
 
-    index_documents()
+    index_documents(namespaces)
     print("Indexing completed.")
