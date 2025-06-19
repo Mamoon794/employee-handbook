@@ -7,6 +7,7 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_pinecone import PineconeVectorStore
 from pinecone import Pinecone
 
+import json
 import bs4
 from langchain import hub
 from langchain_community.document_loaders import WebBaseLoader, PyPDFLoader
@@ -18,6 +19,10 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langgraph.graph import START, StateGraph, MessagesState, END
 from typing_extensions import List, TypedDict
 import pprint
+
+# Load your JSON file
+with open("providedDoc.json") as f:
+    jsonData = json.load(f)
 
 # Load environment variables
 load_dotenv()
@@ -43,56 +48,80 @@ pc = Pinecone(api_key=pc_api_key)
 index = pc.Index(index_name)
 vector_store = PineconeVectorStore(embedding=embeddings, index=index)
 
-# Scrape web page, only load specific tags: h1, h2, h3, p
-webloader = WebBaseLoader(
-    web_paths=("https://novascotia.ca/lae/employmentrights/",),
-    bs_kwargs=dict(
-        parse_only=bs4.SoupStrainer(["h1", "h2", "h3", "p", "li"]),
-    ),
-)
-web_docs = webloader.load()
-assert len(web_docs) == 1
-# print(f"Total characters: {len(web_docs[0].page_content)}")
-# print(web_docs[0].page_content[:500])
-
-# Split the text into smaller chunks: a list of Document objects
-text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, # chunk size (characters)
-                                            chunk_overlap=200, # chunk overlap (characters)
-                                                add_start_index=True,  # track index in original document
-                                                )
-web_splits = text_splitter.split_documents(web_docs)
-# print(f"Split website into {len(web_splits)} sub-documents.")
-# print(f"Total size: {sys.getsizeof(web_splits)} bytes")
-
-pdfloader = PyPDFLoader("https://www.nslegislature.ca/sites/default/files/legc/statutes/labour%20standards%20code.pdf", mode="page")
-pdf_docs = pdfloader.load()
-# print(len(pdf_docs), "PDF pages loaded.")
-pdf_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-
-pdf_splits = pdf_splitter.split_documents(pdf_docs)
-# print(f"Split pdf into {len(pdf_splits)} sub-documents.")
-# print(f"Total size: {sys.getsizeof(pdf_splits)} bytes")
-all_splits = web_splits + pdf_splits
+def load_and_split_html(url):
+    try:
+        webloader = WebBaseLoader(
+            web_paths=(url,),
+            bs_kwargs=dict(parse_only=bs4.SoupStrainer(["h1", "h2", "h3", "p", "li"]))
+        )
+        web_docs = webloader.load()
+        web_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+        return web_splitter.split_documents(web_docs)
+    except Exception as e:
+        print(f"[HTML] Failed to load {url}: {e}")
+        return []
+    
+def load_and_split_pdf(url):
+    try:
+        pdfloader = PyPDFLoader(url, mode="page")
+        pdf_docs = pdfloader.load()
+        pdf_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+        return pdf_splitter.split_documents(pdf_docs)
+    except Exception as e:
+        print(f"[PDF] Failed to load {url}: {e}")
+        return []
+    
+def process_docs(docs):
+    splits = []
+    for doc in docs:
+        doc_type = doc.get("type")
+        url = doc.get("url")
+        if not url:
+            continue
+        if doc_type == "html":
+            splits.extend(load_and_split_html(url))
+        elif doc_type == "pdf":
+            splits.extend(load_and_split_pdf(url))
+    return splits
 
 # Convert the Document objects to emmbeddings and upload to Pinecone vector store
-def batch_add_documents(vector_store, documents, batch_size=100):
+def batch_add_documents(vector_store, documents, namespace, batch_size=100):
     for i in range(0, len(documents), batch_size):
         batch = documents[i:i + batch_size]
         try:
-            vector_store.add_documents(batch)
+            vector_store.add_documents(batch, namespace=namespace)
         except Exception as e:
             print(f"Failed to upload batch {i // batch_size + 1}: {e}")
 
-batch_add_documents(vector_store, all_splits, batch_size=50)
+def index_documents():
+    general_splits = process_docs(jsonData.get("general", []))
+    index.delete(delete_all=True, namespace="general")
+    batch_add_documents(vector_store, general_splits, namespace="general", batch_size=50)
+
+    for province in jsonData.get("provinces", []):
+        province_id = province.get("id")
+        if not province_id:
+            continue
+        print(f"Processing province: {province_id}")
+        province_splits = process_docs(province.get("docs", []))
+        # Add namespace to each document's metadata
+        index.delete(delete_all=True, namespace=province_id)
+        batch_add_documents(vector_store, province_splits, namespace=province_id, batch_size=50)
+
+# index_documents()
 
 # Load prompt template from LangChain Hub
 prompt = hub.pull("rlm/rag-prompt", 
                 api_url="https://api.smith.langchain.com")
 
 @tool(response_format="content_and_artifact")
-def retrieve(query: str):
-    """Retrieve information related to a query."""
-    retrieved_docs = vector_store.similarity_search(query, k=8)
+def retrieve(query: str, province: str):
+    """Retrieve employment-related information by searching indexed documents in the given province. 
+    Parameters:
+    - query: the user's question.
+    - province: the 2-letter province code (e.g., 'ON', 'AB')."""
+    print("province:", province)
+    retrieved_docs = vector_store.similarity_search(query, k=8, namespace=province)
     serialized = "\n\n".join(
         (f"Source: {doc.metadata}\n" f"Content: {doc.page_content}")
         for doc in retrieved_docs
@@ -106,7 +135,6 @@ def query_or_respond(state: MessagesState):
     response = llm_with_tools.invoke(state["messages"])
     # MessagesState appends messages to state instead of overwriting
     return {"messages": [response]}
-
 
 # Step 2: Execute the retrieval.
 tools = ToolNode([retrieve])
@@ -126,11 +154,7 @@ def generate(state: MessagesState):
     # Format into prompt
     docs_content = "\n\n".join(doc.content for doc in tool_messages)
     system_message_content = (
-        "You are an assistant for question-answering tasks. "
-        "Use the following pieces of retrieved context to answer "
-        "the question. If you don't know the answer, say that you "
-        "don't know. Use three sentences maximum and keep the "
-        "answer concise."
+        "You are an assistant for question-answering tasks. If a retrieval tool is available, use it to get relevant information before answering. Only answer without it if you're absolutely sure."
         "\n\n"
         f"{docs_content}"
     )
@@ -145,6 +169,8 @@ def generate(state: MessagesState):
     # Run
     response = llm.invoke(prompt)
     return {"messages": [response]}
+
+
 graph_builder = StateGraph(MessagesState)
 graph_builder.add_node(query_or_respond)
 graph_builder.add_node(tools)
@@ -162,3 +188,6 @@ graph_builder.add_edge("generate", END)
 memory = MemorySaver()
 graph = graph_builder.compile(checkpointer=memory)
 
+if __name__ == "__main__":
+    index_documents()
+    print("Indexing completed.")
