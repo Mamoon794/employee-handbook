@@ -1,0 +1,219 @@
+{
+  "general": [
+    {
+      "type": "html",
+      "title": "Minimum Wage Rates and Overtime Rules in Canada",
+      "url": "https://www.cfib-fcei.ca/en/tools-resources/minimum-wage-rates-overtime-rules-canada"
+    },
+    {
+      "type": "html",
+      "title": "Current and Forthcoming General Minimum Wage Rates in Canada",
+      "url": "https://minwage-salairemin.service.canada.ca/en/general.html"
+    },
+    {
+      "type": "html",
+      "title": "Canada Labour Code",
+      "url": "https://laws-lois.justice.gc.ca/eng/acts/l-2/FullText.html"
+    }
+  ],
+  "provinces": [
+    {
+      "id": "AB",
+      "name": "Alberta",
+      "docs": [
+        {
+          "type": "html",
+          "title": "Employment Standards Code",
+          "url": "https://kings-printer.alberta.ca/1266.cfm?page=e09.cfm&leg_type=Acts&isbncln=9780779851355&display=html"
+        },
+        {
+          "type": "pdf",
+          "title": "Employment Standards Guide for Employees",
+          "url": "https://open.alberta.ca/dataset/8b776a10-f427-41ce-b1ff-7cad5b94e962/resource/7f1a5147-d028-4ba4-8277-bd5cb2062cc1/download/lbr-es-guide-for-employees-2021-07.pdf"
+        },
+        {
+          "type": "html",
+          "title": "Employment standards - Rules",
+          "url": "https://www.alberta.ca/alberta-employment-standards-rules"
+        }
+      ]
+    },
+    {
+      "id": "BC",
+      "name": "British Columbia",
+      "docs": [
+        {
+          "type": "html",
+          "title": "Employment Standards",
+          "url": "https://www2.gov.bc.ca/gov/content/employment-business/employment-standards-advice/employment-standards"
+        },
+        {
+          "type": "html",
+          "title": "Employment Standards Act",
+          "url": "https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/00_96113_01"
+        }
+      ]
+    },
+    {
+      "id": "MB",
+      "name": "Manitoba",
+      "docs": [
+        {
+          "type": "pdf",
+          "title": "The Employment Standards Code",
+          "url": "https://web2.gov.mb.ca/laws/statutes/ccsm/_pdf.php?cap=e110"
+        },
+        {
+          "type": "html",
+          "title": "Employment Standards",
+          "url": "https://www.gov.mb.ca/labour/standards/category,common_issues,factsheet.html"
+        }
+      ]
+    },
+    {
+      "id": "NB",
+      "name": "New Brunswick",
+      "docs": [
+        {
+          "type": "pdf",
+          "title": "Employment Standards Act",
+          "url": "https://laws.gnb.ca/en/pdf/cs/E-7.2.pdf"
+        },
+        {
+          "type": "html",
+          "title": "Employment Standards",
+          "url": "https://www.gnb.ca/en/topic/jobs-workplaces/labour-market-workforce/employment-standards.html"
+        }
+      ]
+    },
+    {
+      "id": "NL",
+      "name": "Newfoundland and Labrador",
+      "docs": [
+        {
+          "type": "html",
+          "title": "Labour Standards Act",
+          "url": "https://assembly.nl.ca/legislation/sr/statutes/l02.htm"
+        }
+      ]
+    },
+    {
+      "id": "NS",
+      "name": "Nova Scotia",
+      "docs": [
+        {
+          "type": "pdf",
+          "title": "Labour Standards Code",
+          "url": "https://www.nslegislature.ca/sites/default/files/legc/statutes/labour%20standards%20code.pdf"
+        },
+        {
+          "type": "html",
+          "title": "Employment Rights",
+          "url": "https://novascotia.ca/lae/employmentrights/"
+        }
+      ]
+    },
+    {
+      "id": "NT",
+      "name": "Northwest Territories",
+      "docs": [
+        {
+          "type": "pdf",
+          "title": "Employment Standards Act",
+          "url": "https://www.justice.gov.nt.ca/en/files/legislation/employment-standards/employment-standards.a.pdf"
+        },
+        {
+          "type": "html",
+          "title": "Employment Standards",
+          "url": "https://www.ece.gov.nt.ca/en/employment-standards"
+        }
+      ]
+    },
+    {
+      "id": "NU",
+      "name": "Nunavut",
+      "docs": [
+        {
+          "type": "html",
+          "title": "Labour Standards Act",
+          "url": "https://www.nunavutlegislation.ca/en/consolidated-law/labour-standards-act-official-consolidation"
+        }
+      ]
+    },
+    {
+      "id": "ON",
+      "name": "Ontario",
+      "docs": [
+        {
+          "type": "html",
+          "title": "Employment Standards Act, 2000",
+          "url": "https://www.ontario.ca/laws/statute/s00041"
+        },
+        {
+          "type": "html",
+          "title": "Employment Standards Act",
+          "url": "https://www.ontario.ca/document/your-guide-employment-standards-act-0"
+        }
+      ]
+    },
+    {
+      "id": "PE",
+      "name": "Prince Edward Island",
+      "docs": [
+        {
+          "type": "html",
+          "title": "Employment Standards Act",
+          "url": "https://www.princeedwardisland.ca/sites/default/files/legislation/e-06-2-employment_standards_act.pdf"
+        },
+        {
+          "type": "html",
+          "title": "Employment Standards",
+          "url": "https://www.princeedwardisland.ca/en/information/workforce-advanced-learning-and-population/employment-standards-in-pei"
+        }
+      ]
+    },
+    {
+      "id": "QC",
+      "name": "Quebec",
+      "docs": [
+        {
+          "type": "html",
+          "title": "Act Respecting Labour Standards",
+          "url": "https://www.legisquebec.gouv.qc.ca/en/document/cs/n-1.1"
+        },
+        {
+          "type": "html",
+          "title": "Working Conditions",
+          "url": "https://www.cnesst.gouv.qc.ca/en/working-conditions"
+        }
+      ]
+    },
+    {
+      "id": "SK",
+      "name": "Saskatchewan",
+      "docs": [
+        {
+          "type": "html",
+          "title": "Employment Standards",
+          "url": "https://www.saskatchewan.ca/business/employment-standards"
+        }
+      ]
+    },
+    {
+      "id": "YT",
+      "name": "Yukon",
+      "docs": [
+        {
+          "type": "pdf",
+          "title": "Employment Standards Act",
+          "url": "https://laws.yukon.ca/cms/images/LEGISLATION/PRINCIPAL/2002/2002-0072/2002-0072.pdf"
+        },
+        {
+          "type": "html",
+          "title": "Employer Responsibilities",
+          "url": "https://yukon.ca/en/doing-business/employer-responsibilities"
+        }
+      ]
+    }
+  ]
+}
