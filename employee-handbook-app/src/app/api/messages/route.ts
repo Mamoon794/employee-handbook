@@ -1,6 +1,6 @@
 import {Message} from "../../../models/schema";
-
 import {addMessageToChat} from "../../../models/dbOperations";
+import { Sentry } from "../../../lib/sentry";
 
 export async function POST(request: Request){
     try{
@@ -9,6 +9,7 @@ export async function POST(request: Request){
         return new Response(JSON.stringify({"message": "Message added successfully", id: messageDoc.id }), { status: 201 });
     } catch (error) {
         console.error("Error adding message to chat:", error);
+        Sentry.captureException(error);
         return new Response(JSON.stringify({ "error": "Failed to add message to chat" }), { status: 500 });
     }
 }

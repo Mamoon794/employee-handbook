@@ -79,6 +79,25 @@ export default function Home() {
   };
 
   return (
+    <div className="min-h-screen bg-white flex flex-col">
+      <ProvincePopup onSave={(prov) => setProvince(prov)} />
+      
+      <header className="flex justify-between items-center px-6 py-4">
+        <h1 className="text-2xl font-bold text-blue-800">Gail</h1>
+        <div className="flex gap-3">
+          <button className="px-6 py-2 bg-blue-800 text-white rounded-full font-medium hover:bg-blue-700 transition-colors">
+            Log In
+          </button>
+          <button 
+            onClick={handleSignUp}
+            className="px-6 py-2 border border-gray-300 text-gray-700 rounded-full font-medium hover:bg-gray-50 transition-colors"
+          >
+            Sign up
+          </button>
+        </div>
+      </header> 
+      
+      <main className="flex-1 flex flex-col items-center justify-center px-6 max-w-4xl mx-auto w-full">
     <div className="min-h-screen bg-white">
       <div className="max-w-7xl mx-auto px-6 py-4">
         <header className="flex justify-between items-center">
