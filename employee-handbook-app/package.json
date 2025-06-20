@@ -13,26 +13,34 @@
     "tsc:test": "tsc -p tsconfig.test.json"
   },
   "dependencies": {
+    "@clerk/clerk-react": "^5.32.0",
+    "@clerk/nextjs": "^6.22.0",
+    "@clerk/types": "^4.60.1",
     "@firebase/firestore": "^4.7.17",
+    "@sentry/nextjs": "^8",
     "axios": "^1.10.0",
     "firebase": "^11.9.1",
     "firebase-admin": "^13.4.0",
     "lucide-react": "^0.513.0",
     "next": "15.3.3",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-hook-form": "^7.58.0",
+    "svix": "^1.67.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/jest": "^30.0.0",
     "@types/node": "^20.17.58",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv": "^16.5.0",
     "eslint": "^9",
     "eslint-config-next": "15.3.3",
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
-    "tsx": "^4.7.0",
+    "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   }
 }
