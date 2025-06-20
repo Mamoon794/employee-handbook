@@ -2,8 +2,10 @@
 
 import { useState } from 'react';
 import { Search, Plus, Menu, Pencil } from 'lucide-react';
+import axiosInstance from './axiosConfig';
 
 function ChatSideBar(){
+
     return(
         <aside className="w-64 bg-[#1F2251] text-white flex flex-col min-h-screen relative">
         <div className="flex justify-between items-center p-4">
@@ -83,4 +85,39 @@ function InputMessage({value}: {value?: string}) {
     )
 }
 
-export {ChatSideBar, MessageThread, InputMessage};
+
+function Header(){
+    const [loggedIn, setLoggedIn] = useState(false);
+    function handleLogout() {
+        localStorage.removeItem('user');
+        setLoggedIn(false);
+    };
+
+    async function handleLogin() {
+        const currentUser = await axiosInstance.get('/api/users/SwC8fwogabgujB5McVac');
+        localStorage.setItem('user', JSON.stringify(currentUser.data));
+        setLoggedIn(true);
+    }
+    
+    return(
+        <header className="flex justify-between items-center px-6 py-4">
+          <h1 className="text-2xl font-bold text-blue-800">Gail</h1>
+          {loggedIn ? (
+            <button className="px-4 py-2 text-sm border rounded-full text-gray-700 hover:bg-gray-50" onClick={handleLogout}>Log Out</button>
+          ):(
+            <div className="flex gap-3">
+          <button className="px-6 py-2 bg-blue-800 text-white rounded-full font-medium hover:bg-blue-700 transition-colors" onClick={handleLogin}>
+            Log In
+          </button>
+          <button 
+            className="px-6 py-2 border border-gray-300 text-gray-700 rounded-full font-medium hover:bg-gray-50 transition-colors"
+          >
+            Sign up
+          </button>
+        </div>
+          )}
+        </header>
+    )
+}
+
+export {ChatSideBar, MessageThread, InputMessage, Header};
