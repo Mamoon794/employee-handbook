@@ -1,10 +1,12 @@
 'use client';
 
-import {ChatSideBar, MessageThread, InputMessage, Header} from '../globalComponents';
+import { useState } from 'react';
+import {ChatSideBar, MessageThread, InputMessage, Header} from '../global_components';
 
 
 
 export default function ChatUI() {
+  const [messages, setMessages] = useState([] as { type: "user" | "bot"; content: string; links?: { title: string; url: string }[] }[]);
   
   const dummyMessages: { type: "user" | "bot"; content: string; links?: { title: string; url: string }[] }[] = [
     {type: 'user', content: 'Am I entitled to get paid breaks?'},
@@ -24,7 +26,7 @@ export default function ChatUI() {
   return (
     <div className="min-h-screen flex bg-white">
       {/* Sidebar (History) */}
-      <ChatSideBar />
+      <ChatSideBar setMessages={setMessages} />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-h-screen">

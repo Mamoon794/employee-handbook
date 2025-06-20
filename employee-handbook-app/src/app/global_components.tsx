@@ -1,19 +1,73 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Search, Plus, Menu, Pencil } from 'lucide-react';
-import axiosInstance from './axiosConfig';
+import axiosInstance from './axios_config';
+import { useRouter } from 'next/navigation';
+import { useUser, UserButton } from '@clerk/nextjs';
 
-function ChatSideBar(){
+interface message{
+    type: 'user' | 'bot';
+    content: string;
+    links?: { title: string; url: string }[];
+}
+
+interface Chat {
+    id: string;
+    title: string;
+};
+
+function ChatSideBar({setMessages}: {setMessages: (messages: message[]) => void}) {
+    const [chats, setChats] = useState<Chat[]>([]);
+    const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
+
+    useEffect(() => {
+      async function fetchChats() {
+        const allChats = await axiosInstance.get('/chats');
+        const chatData = allChats.data.map((chat: any) => ({
+          id: chat.id,
+          title: chat.title,
+        }));
+        setChats(chatData);
+        if (chatData.length > 0) {
+          setSelectedChat(chatData[0]);
+          // Fetch messages for the first chat
+          const firstChatMessages = await axiosInstance.get(`/chat/${chatData[0].id}/messages`);
+          setMessages(firstChatMessages.data);
+        }
+      }
+      fetchChats();
+    }, []);
+
+    async function handleChatChange(currChat: Chat){
+        setSelectedChat(currChat);
+        const currMessages = await axiosInstance.get(`/chat/${currChat.id}/messages`)
+        setMessages(currMessages.data);
+    }
+
 
     return(
         <aside className="w-64 bg-[#1F2251] text-white flex flex-col min-h-screen relative">
         <div className="flex justify-between items-center p-4">
           <Menu className="text-gray-400" />
-          <Pencil className="text-gray-400" />
         </div>
         <div className="px-4 text-sm text-gray-300 mb-2">Today</div>
-        <button className="bg-[#343769] text-white text-left px-4 py-2 mx-4 rounded-lg hover:bg-[#45488f]">Paid breaks</button>
+        {chats.map((chat) => (
+          <button
+            key={chat.id}
+            className="bg-[#343769] text-white text-left px-4 py-2 mx-4 rounded-lg hover:bg-[#45488f]"
+            onClick={() => {
+              handleChatChange(chat);
+            }}
+          >
+            <div className="flex items-center justify-between">
+              <span className="font-medium">{chat.title}</span>
+              {selectedChat?.id === chat.id && (
+                <Pencil className="text-gray-400" />
+              )}
+            </div>
+          </button>
+        ))}
 
         {/* New Chat Button */}
         <button className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-300 rounded-full p-2 hover:bg-gray-400">
@@ -87,35 +141,43 @@ function InputMessage({value}: {value?: string}) {
 
 
 function Header(){
-    const [loggedIn, setLoggedIn] = useState(false);
-    function handleLogout() {
-        localStorage.removeItem('user');
-        setLoggedIn(false);
+  const { isSignedIn } = useUser();
+    const router = useRouter();
+    function handleSignup() {
+        router.push('/SignUp');
     };
 
-    async function handleLogin() {
-        const currentUser = await axiosInstance.get('/api/users/SwC8fwogabgujB5McVac');
-        localStorage.setItem('user', JSON.stringify(currentUser.data));
-        setLoggedIn(true);
+    function handleLogin() {
+      router.push('/LogIn/[...rest]');
     }
+
+
     
     return(
         <header className="flex justify-between items-center px-6 py-4">
           <h1 className="text-2xl font-bold text-blue-800">Gail</h1>
-          {loggedIn ? (
-            <button className="px-4 py-2 text-sm border rounded-full text-gray-700 hover:bg-gray-50" onClick={handleLogout}>Log Out</button>
-          ):(
-            <div className="flex gap-3">
-          <button className="px-6 py-2 bg-blue-800 text-white rounded-full font-medium hover:bg-blue-700 transition-colors" onClick={handleLogin}>
-            Log In
-          </button>
-          <button 
-            className="px-6 py-2 border border-gray-300 text-gray-700 rounded-full font-medium hover:bg-gray-50 transition-colors"
-          >
-            Sign up
-          </button>
-        </div>
-          )}
+          <div className="flex gap-3 items-center">
+            {!isSignedIn ? (
+              <>
+                <button 
+                  onClick={handleLogin}
+                  className="px-6 py-2 bg-blue-800 text-white rounded-full font-medium hover:bg-blue-700 transition-colors"
+                >
+                  Log In
+                </button>
+                <button 
+                  onClick={handleSignup}
+                  className="px-6 py-2 border border-gray-300 text-gray-700 rounded-full font-medium hover:bg-gray-50 transition-colors"
+                >
+                  Sign up
+                </button>
+              </>
+            ) : (
+              <div className="flex items-center">
+                <UserButton afterSignOutUrl="/" />
+              </div>
+            )}
+          </div>
         </header>
     )
 }

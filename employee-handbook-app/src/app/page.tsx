@@ -126,6 +126,7 @@ export default function Home() {
           </div>
         </header>
       </div>
+      
 
       <main className="min-h-[calc(100vh-80px)] flex flex-col items-center justify-center px-6 max-w-7xl mx-auto w-full">
         {/* <ProvincePopup onSave={(prov) => setProvince(prov)} /> */}
@@ -167,6 +168,8 @@ export default function Home() {
         <p className="text-gray-500 text-sm mt-8 text-center">
           Gail can make mistakes. Your privacy is protected.
         </p>
+      </main>
+      </div>
       </main>
     </div>
   );
