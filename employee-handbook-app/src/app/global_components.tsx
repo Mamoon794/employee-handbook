@@ -1,29 +1,28 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Search, Plus, Menu, Pencil } from 'lucide-react';
+import { useEffect, useState, Dispatch, SetStateAction } from 'react';
+import { Search, Plus, Menu, Trash2 } from 'lucide-react';
 import axiosInstance from './axios_config';
 import { useRouter } from 'next/navigation';
 import { useUser, UserButton } from '@clerk/nextjs';
+import { Message } from '../models/schema'; 
 
-interface message{
-    type: 'user' | 'bot';
-    content: string;
-    links?: { title: string; url: string }[];
-}
 
 interface Chat {
     id: string;
     title: string;
 };
 
-function ChatSideBar({setMessages}: {setMessages: (messages: message[]) => void}) {
+function ChatSideBar({setMessages, setCurrChatId}: {setMessages: Dispatch<SetStateAction<Message[]>>, setCurrChatId: (chatId: string) => void}) {
     const [chats, setChats] = useState<Chat[]>([]);
     const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
+    const [userId, setUserId] = useState<string | null>(null);
 
     useEffect(() => {
       async function fetchChats() {
-        const allChats = await axiosInstance.get('/chats');
+        const localUserId = localStorage.getItem('userId');
+        setUserId(localUserId);
+        const allChats = await axiosInstance.get(`/api/chat/${localUserId}?isUserID=true`);
         const chatData = allChats.data.map((chat: any) => ({
           id: chat.id,
           title: chat.title,
@@ -32,17 +31,42 @@ function ChatSideBar({setMessages}: {setMessages: (messages: message[]) => void}
         if (chatData.length > 0) {
           setSelectedChat(chatData[0]);
           // Fetch messages for the first chat
-          const firstChatMessages = await axiosInstance.get(`/chat/${chatData[0].id}/messages`);
-          setMessages(firstChatMessages.data);
+          const firstChatMessages = await axiosInstance.get(`/api/chat/${chatData[0].id}`);
+          setMessages(firstChatMessages.data.messages);
+          setCurrChatId(chatData[0].id);
         }
       }
+
       fetchChats();
     }, []);
 
     async function handleChatChange(currChat: Chat){
         setSelectedChat(currChat);
-        const currMessages = await axiosInstance.get(`/chat/${currChat.id}/messages`)
-        setMessages(currMessages.data);
+        const currMessages = await axiosInstance.get(`/api/chat/${currChat.id}`)
+        setMessages(currMessages.data.messages);
+        setCurrChatId(currChat.id);
+    }
+
+    async function handleNewChat() {
+        if (!userId) return;
+
+        const newChat = {
+            title: `Chat with ${new Date().toLocaleDateString()}-${chats.length + 1}`,
+            userId: userId,
+            messages: [] as Message[],
+        };
+
+        try {
+            const response = await axiosInstance.post('/api/chat', newChat);
+            const createdChat = response.data
+            console.log('New chat created:', createdChat);
+            setChats([{ id: createdChat.id, title: newChat.title }, ...chats]);
+            setSelectedChat({ id: createdChat.id, title: newChat.title });
+            setMessages(newChat.messages || []);
+            setCurrChatId(createdChat.id);
+        } catch (error) {
+            console.error('Error creating new chat:', error);
+        }
     }
 
 
@@ -52,9 +76,9 @@ function ChatSideBar({setMessages}: {setMessages: (messages: message[]) => void}
           <Menu className="text-gray-400" />
         </div>
         <div className="px-4 text-sm text-gray-300 mb-2">Today</div>
-        {chats.map((chat) => (
+        {chats.map((chat, index) => (
           <button
-            key={chat.id}
+            key={`${chat.id}-${index}`}
             className="bg-[#343769] text-white text-left px-4 py-2 mx-4 rounded-lg hover:bg-[#45488f]"
             onClick={() => {
               handleChatChange(chat);
@@ -63,7 +87,20 @@ function ChatSideBar({setMessages}: {setMessages: (messages: message[]) => void}
             <div className="flex items-center justify-between">
               <span className="font-medium">{chat.title}</span>
               {selectedChat?.id === chat.id && (
-                <Pencil className="text-gray-400" />
+                <Trash2 className="text-gray-400" onClick={()=>{
+                  axiosInstance.delete(`/api/chat/${chat.id}`)
+                    .then(() => {
+                      setChats(chats.filter(c => c.id !== chat.id));
+                      if (selectedChat?.id === chat.id) {
+                        setSelectedChat(null);
+                        setMessages([]);
+                        setCurrChatId('');
+                      }
+                    })
+                    .catch(error => {
+                      console.error('Error deleting chat:', error);
+                    });
+                }} />
               )}
             </div>
           </button>
@@ -71,22 +108,12 @@ function ChatSideBar({setMessages}: {setMessages: (messages: message[]) => void}
 
         {/* New Chat Button */}
         <button className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-300 rounded-full p-2 hover:bg-gray-400">
-          <Plus className="text-[#1F2251]" />
+          <Plus className="text-[#1F2251]" onClick={handleNewChat} />
         </button>
       </aside>
     )
 }
 
-type Links = {
-    title: string;
-    url: string;
-}
-
-type Message = {
-    type: 'user' | 'bot';
-    content: string;
-    links?: Links[];
-};
 
 
 
@@ -95,7 +122,7 @@ function MessageThread({messageList}: {messageList: Message[]}) {
         <div className="flex flex-col gap-6 py-6">
             {messageList.map((message, index) => (
                 <div key={index} className='flex flex-col'>
-                {message.type === 'user' ? (
+                {message.isFromUser ? (
                     <div className="self-end bg-[#f1f2f9] text-gray-800 p-4 rounded-2xl max-w-[70%] shadow-sm">
                         <p>{message.content}</p>
                         </div>
@@ -103,7 +130,7 @@ function MessageThread({messageList}: {messageList: Message[]}) {
 
                         <div className="self-start bg-gray-100 text-gray-800 p-4 rounded-2xl max-w-[70%] shadow-sm">
                         <p>{message.content}</p>
-                        {message.links && message.links.map((link, linkIndex) => (
+                        {message.sources && message.sources.map((link, linkIndex) => (
                         <a
                             key={`${index}-${linkIndex}`}
                             href={link.url}
@@ -121,14 +148,28 @@ function MessageThread({messageList}: {messageList: Message[]}) {
 }
 
 
-function InputMessage({value}: {value?: string}) {
-    const [inputValue, setInputValue] = useState(value || '');
+function InputMessage({chatId, setMessages}: {chatId: string, setMessages: Dispatch<SetStateAction<Message[]>>}) {
+    const [inputValue, setInputValue] = useState('');
     return(
         <div className="relative w-full max-w-3xl mx-auto">
             <input
               type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && inputValue.trim() !== '') {
+                    const newMessage: Omit<Message, 'createdAt'> = {
+                        isFromUser: true,
+                        content: inputValue,
+                    };
+                    setMessages((prevMessages) => [...prevMessages, newMessage as Message]);
+                    axiosInstance.put(`/api/chat/${chatId}/add-message`, {
+                        messageData: newMessage
+                    })
+                  
+                  setInputValue('');
+                }
+              }}
               placeholder="Ask anything"
               className="w-full px-6 py-4 border border-gray-300 rounded-full text-lg text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-14"
             />
@@ -141,7 +182,7 @@ function InputMessage({value}: {value?: string}) {
 
 
 function Header(){
-  const { isSignedIn } = useUser();
+  const { isSignedIn, user } = useUser();
     const router = useRouter();
     function handleSignup() {
         router.push('/SignUp');
@@ -151,6 +192,20 @@ function Header(){
       router.push('/LogIn/[...rest]');
     }
 
+    useEffect(() => {
+        if (isSignedIn && user) {
+            axiosInstance.get(`/api/users/${user.id}?isClerkID=true`)
+            .then(response => {
+              localStorage.setItem('userId', response.data[0].id);
+            })
+            .catch(error => {
+              console.error('Error fetching user data:', error);
+            });
+        } 
+        else {
+            localStorage.removeItem('userId');
+        }
+    }, [isSignedIn, user]);
 
     
     return(

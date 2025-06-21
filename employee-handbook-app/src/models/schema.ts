@@ -38,7 +38,7 @@ export interface Message {
   id?: string;
   content: string;
   isFromUser: boolean;
-  sources?: string[]; // for any cited sources
+  sources?: Link[]; // for any cited sources
   createdAt: Date;
 }
 
@@ -49,4 +49,9 @@ export interface Document {
   description?: string;
   uploadDate: Date;
   isPublic: boolean;
+}
+
+interface Link{
+  title: string;
+  url: string;
 }

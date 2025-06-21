@@ -29,6 +29,13 @@ export const getUser = async (userId: string) => {
   return docSnap.exists ? ({ id: docSnap.id, ...docSnap.data() } as User) : null;
 };
 
+export const getClerkUser = async (clerkId: string) => {
+  const theQuery = usersRef.where("clerkUserId", "==", clerkId);
+  const querySnapshot = await theQuery.get();
+  return querySnapshot.docs.map((doc: firestore.QueryDocumentSnapshot<firestore.DocumentData>) => ({ id: doc.id, ...doc.data() } as User));
+}
+  
+
 // // collections - companies
 const companiesRef = db.collection("companies");
 
@@ -84,6 +91,16 @@ export const addMessageToChat = async (
     throw new Error(`Failed to add message to chat with ID ${chatId}.`);
   }
   return docRef;
+};
+
+export const deleteChat = async (chatId: string) => {
+  const docRef = chatsRef.doc(chatId);
+  const docSnap = await docRef.get();
+  if (!docSnap.exists) {
+    throw new Error(`Chat with ID ${chatId} does not exist.`);
+  }
+  await docRef.delete();
+  return { message: `Chat with ID ${chatId} deleted successfully.` };
 };
 
 // // collections - documents
