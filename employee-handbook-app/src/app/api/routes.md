@@ -57,11 +57,11 @@
 	- Body: Create a new message with the chatID and messageData:
 	  ```json
 		chatID: string; 
-		messageData: {
+		messageData: 
 			content: string;
 			isFromUser: boolean;
 			sources?: string[]; // for any cited sources
-		}
+		
 	  ```
 	- Response: Returns the created message object.
 
