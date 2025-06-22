@@ -21,12 +21,16 @@
     "axios": "^1.10.0",
     "firebase": "^11.9.1",
     "firebase-admin": "^13.4.0",
+    "fs": "^0.0.1-security",
+    "http2": "^3.3.6",
     "lucide-react": "^0.513.0",
+    "net": "^1.0.2",
     "next": "15.3.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.58.0",
-    "svix": "^1.67.0"
+    "svix": "^1.67.0",
+    "tls": "^0.0.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
