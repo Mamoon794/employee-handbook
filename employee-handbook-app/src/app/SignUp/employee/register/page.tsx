@@ -1,4 +1,4 @@
-/* eslint-disable */
+/* eslint-disable react/no-unescaped-entities */
 // finishing page for employee registration >> creates user in db
 
 'use client';
@@ -6,8 +6,8 @@ import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
-import { createUser } from '@/models/dbOperations';
 import type { UserType, User } from '@/models/schema';
+import axiosInstance from '@/app/axios_config';
 
 export default function EmployeeRegistrationForm() {
   const { user: clerkUser } = useUser();
@@ -44,7 +44,7 @@ export default function EmployeeRegistrationForm() {
       createdAt: new Date(),
       updatedAt: new Date()
     };
-    await createUser(userData);
+    await axiosInstance.post('/api/users', userData);
     console.log('User created successfully'); // debugging
 
     console.log('Updating Clerk metadata...'); // debugging

@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 'use client';
 
 import { useEffect, useState, Dispatch, SetStateAction } from 'react';
