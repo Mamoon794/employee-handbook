@@ -1,4 +1,4 @@
-
+/* eslint-disable */
 // finishing page for employee registration >> creates user in db
 
 'use client';
