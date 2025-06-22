@@ -162,7 +162,6 @@ export default function Analytics() {
                 ))}
               </div>
               
-              {/* Simple visual bar chart */}
               <div className="mt-6 space-y-2">
                 {provinceData.map((item, index) => (
                   <div key={item.province} className="flex items-center space-x-3">
