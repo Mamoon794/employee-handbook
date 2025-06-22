@@ -9,6 +9,7 @@
     - Body: The user object to create.
     - Example Body:
         ```json
+		clerkUserId: string; // references Clerk user ID
         firstName: "Test",
         lastName: "User",
         primaryEmail: "test@company.com",
@@ -38,20 +39,29 @@
 	- Parameters:
 		- `userID`: The ID of the user to fetch chats for.
 	- Response: Returns an array of chat objects.
+
+5. **DELETE /api/chat/[chatID]**
+	- Description: Deletes a chat by its ID.
+	- Parameters:
+		- `chatID`: The ID of the chat to delete.
+	- Response: Returns a success message or confirmation of deletion.
+
+
+
   
 
-5. **POST /api/chat/messages**
-	- Description: Saves a message with chatID and messageData.
+5. **POST /api/chat/[chatID]/add-message**
+	- Description: Adds a new message to an existing chat.
+	- Parameters:
+		- `chatID`: The ID of the chat to which the message will be added.
 	- Body: Create a new message with the chatID and messageData:
 	  ```json
-		chatId: string; 
-		messageData: {
-			chatId: string; // references chat
+		chatID: string; 
+		messageData: 
 			content: string;
 			isFromUser: boolean;
 			sources?: string[]; // for any cited sources
-			createdAt: Date;
-		}
+		
 	  ```
 	- Response: Returns the created message object.
 
