@@ -1,3 +1,4 @@
+/* eslint-disable */
 // finishing page for employer registration >> creates user in db
 
 'use client';

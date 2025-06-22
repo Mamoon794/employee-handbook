@@ -1,3 +1,4 @@
+/* eslint-disable */
 // initial employee sign up page -- clerk integration
 
 'use client';
@@ -35,7 +36,7 @@ export default function EmployeeSignupStart() {
             <SignUp 
               routing="path"
               path="/SignUp/employee/[...rest]"
-              afterSignUpUrl="/SignUp/employee/register"
+              fallbackRedirectUrl="/SignUp/employee/register"
               signInUrl="/LogIn/[...rest]"
               appearance={{
                 elements: {

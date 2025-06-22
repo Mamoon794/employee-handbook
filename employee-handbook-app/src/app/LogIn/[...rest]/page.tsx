@@ -38,7 +38,7 @@ export default function EmployeeLogin() {
             <SignIn 
               routing="path"
               path="/LogIn/[...rest]"
-              afterSignInUrl="/"
+              fallbackRedirectUrl="/"
               signUpUrl="/SignUp"
               appearance={{
                 elements: {

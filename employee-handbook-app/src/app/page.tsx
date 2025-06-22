@@ -147,6 +147,7 @@ export default function Home() {
           Gail can make mistakes. Your privacy is protected.
         </p>
       </main>
-    </div>
+      </div>
+     
   );
 }
