@@ -1,17 +1,6 @@
-/* eslint-disable */
 import { db } from "../dbConfig/firebaseConfig";
-import {
-  collection,
-  doc,
-  addDoc,
-  getDoc,
-  setDoc,
-  updateDoc,
-  query,
-  where,
-  getDocs,
-  collectionGroup
-} from "firebase/firestore";
+import { Timestamp } from "firebase-admin/firestore";
+import {firestore} from 'firebase-admin';
 import {
   User,
   UserType,
@@ -22,81 +11,119 @@ import {
 } from "./schema";
 
 // collections - users
-const usersRef = collection(db, "users");
+const usersRef = db.collection("users");
 
 export const createUser = async (userData: Omit<User, "id">) => {
-  return await addDoc(usersRef, {
+  const dataToAdd = {
     ...userData,
     createdAt: new Date(),
     updatedAt: new Date(),
-  });
+  }
+  const docRef = await usersRef.add(dataToAdd);
+  return docRef;
 };
 
 export const getUser = async (userId: string) => {
-  const docRef = doc(db, "users", userId);
-  const docSnap = await getDoc(docRef);
-  return docSnap.exists() ? ({ id: docSnap.id, ...docSnap.data() } as User) : null;
+  const docRef = usersRef.doc(userId);
+  const docSnap = await docRef.get();
+  return docSnap.exists ? ({ id: docSnap.id, ...docSnap.data() } as User) : null;
 };
 
-// collections - companies
-const companiesRef = collection(db, "companies");
+export const getClerkUser = async (clerkId: string) => {
+  const theQuery = usersRef.where("clerkUserId", "==", clerkId);
+  const querySnapshot = await theQuery.get();
+  return querySnapshot.docs.map((doc: firestore.QueryDocumentSnapshot<firestore.DocumentData>) => ({ id: doc.id, ...doc.data() } as User));
+}
+  
+
+// // collections - companies
+const companiesRef = db.collection("companies");
 
 export const createCompany = async (companyData: Omit<Company, "id">) => {
-  return await addDoc(companiesRef, {
+  const dataToAdd = {
     ...companyData,
     createdAt: new Date(),
     updatedAt: new Date(),
-  });
+  };
+  const docRef = await companiesRef.add(dataToAdd);
+  return docRef;
 };
 
-// collection - chats
-const chatsRef = collection(db, "chats");
+// // collection - chats
+const chatsRef = db.collection("chats");
 
 export const createChat = async (chatData: Omit<Chat, "id">) => {
-  return await addDoc(chatsRef, {
+  const dataToAdd = {
     ...chatData,
     createdAt: new Date(),
     updatedAt: new Date(),
-  });
+  };
+  const docRef = await chatsRef.add(dataToAdd);
+  return docRef;
 };
 
 export const getChat = async (chatId: string) => {
-  const docRef = doc(db, "chats", chatId);
-  const docSnap = await getDoc(docRef);
-  return docSnap.exists() ? ({ id: docSnap.id, ...docSnap.data() } as Chat) : null;
+  const docRef = chatsRef.doc(chatId);
+  const docSnap = await docRef.get();
+  const docData = docSnap.data();
+  if (docData.createdAt instanceof Timestamp) docData.createdAt = docData.createdAt.toDate();
+  if (docData.updatedAt instanceof Timestamp) docData.updatedAt = docData.updatedAt.toDate();
+  return docSnap.exists ? ({ id: docSnap.id, ...docData } as Chat) : null;
 };
 
-// subcollections - messages (under each chat)
+// // subcollections - messages (under each chat)
 export const addMessageToChat = async (
   chatId: string,
   messageData: Omit<Message, "id">
 ) => {
-  const messagesRef = collection(db, "chats", chatId, "messages");
-  return await addDoc(messagesRef, {
+  const theChat = await getChat(chatId);
+  if (!theChat) {
+    throw new Error(`Chat with ID ${chatId} does not exist.`);
+  }
+  const messages = theChat.messages || [];
+  const dataToAdd = {
     ...messageData,
     createdAt: new Date(),
-  });
+  };
+  messages.push(dataToAdd);
+  const docRef = await chatsRef.doc(chatId).update({ messages });
+  if (!docRef) {
+    throw new Error(`Failed to add message to chat with ID ${chatId}.`);
+  }
+  return docRef;
 };
 
-// collections - documents
-const documentsRef = collection(db, "documents");
+export const deleteChat = async (chatId: string) => {
+  const docRef = chatsRef.doc(chatId);
+  const docSnap = await docRef.get();
+  if (!docSnap.exists) {
+    throw new Error(`Chat with ID ${chatId} does not exist.`);
+  }
+  await docRef.delete();
+  return { message: `Chat with ID ${chatId} deleted successfully.` };
+};
+
+// // collections - documents
+const documentsRef = db.collection("documents");
 
 export const addDocument = async (documentData: Omit<Document, "id">) => {
-  return await addDoc(documentsRef, {
-    ...documentData,
-    uploadDate: new Date(),
-  });
+  const dataToAdd = {
+      ...documentData,
+      uploadDate: new Date(),
+    };
+  const docRef = await documentsRef.add(dataToAdd);
+  return docRef;
 };
 
-// advanced queries
+// // advanced queries
 export const getUserChats = async (userId: string) => {
-  const q = query(chatsRef, where("userId", "==", userId));
-  const querySnapshot = await getDocs(q);
-  return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Chat));
+  const theQuery = chatsRef.where("userId", "==", userId);
+  const querySnapshot = await theQuery.get();
+  return querySnapshot.docs.map((doc: firestore.QueryDocumentSnapshot<firestore.DocumentData>) => ({ id: doc.id, ...doc.data() } as Chat));
 };
 
 export const getCompanyDocuments = async (companyId: string) => {
-  const q = query(documentsRef, where("companyId", "==", companyId));
-  const querySnapshot = await getDocs(q);
-  return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Document));
+  const theQuery = documentsRef.where("companyId", "==", companyId);
+  const querySnapshot = await theQuery.get();
+  return querySnapshot.docs.map((doc: firestore.QueryDocumentSnapshot<firestore.DocumentData>) => ({ id: doc.id, ...doc.data() } as Document));
 };
