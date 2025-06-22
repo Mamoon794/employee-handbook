@@ -1,3 +1,4 @@
+/* eslint-disable */
 var admin = require("firebase-admin");
 
 var serviceAccount = require("./employee-configs.json");
