@@ -38,11 +38,11 @@ export default function Home() {
   };
 
   const handleSignUp = () => {
-    router.push('/SignUp');
+    router.push('/sign-up');
   };
 
   const handleLogIn = () => {
-    router.push('/LogIn/[...rest]');
+    router.push('/log-in/[...rest]');
   };
 
   return (
