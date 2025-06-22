@@ -1,0 +1,32 @@
+{
+  "general": [
+    {
+      "type": "html",
+      "title": "Minimum Wage Rates and Overtime Rules in Canada",
+      "url": "https://www.cfib-fcei.ca/en/tools-resources/minimum-wage-rates-overtime-rules-canada"
+    },
+    {
+      "type": "html",
+      "title": "Current and Forthcoming General Minimum Wage Rates in Canada",
+      "url": "https://minwage-salairemin.service.canada.ca/en/general.html"
+    }
+  ],
+  "provinces": [
+    {
+      "id": "NS",
+      "name": "Nova Scotia",
+      "docs": [
+        {
+          "type": "pdf",
+          "title": "Labour Standards Code",
+          "url": "https://www.nslegislature.ca/sites/default/files/legc/statutes/labour%20standards%20code.pdf"
+        },
+        {
+          "type": "html",
+          "title": "Employment Rights",
+          "url": "https://novascotia.ca/lae/employmentrights/"
+        }
+      ]
+    }
+  ]
+}
