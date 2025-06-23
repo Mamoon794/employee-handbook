@@ -6,6 +6,51 @@ The **Employee Handbook App** is a web-based platform that helps workers underst
 
 Our partner is **Arshad Merali** from Rivvi, a Toronto-based fintech company focused on improving financial health and workplace transparency.
 
+## Link of the app
+The app is hosted on [placeholder].
+
+## Setup (For Developers)
+
+This project consists of two parts:
+
+* **Next.js App** — handles most endpoints and the user interface
+* **AI Service** — powers the AI chatbot through a separate Python backend
+
+### 1. Next.js App
+
+To start the main app:
+
+```bash
+cd employee-handbook-app
+npm install
+npm run dev
+```
+
+### 2. AI Service (for chatbot only)
+
+To start the AI backend:
+
+```bash
+cd AIService
+pip install -r requirements.txt
+uvicorn main:app --reload
+```
+
+To load documents into Pinecone, run the following in a new terminal:
+
+```bash
+cd AIService
+python scrapeAllData.py   # Scrapes and saves data to a pickle file
+python setup.py           # Uploads data from the pickle file to Pinecone
+```
+
+**Requirements:**
+
+* Node.js and npm
+* Python 3.x and pip
+
+## Documentation
+
 ## Core Features
 
 - AI Chatbot that answers employee questions
