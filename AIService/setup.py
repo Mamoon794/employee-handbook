@@ -196,8 +196,8 @@ def index_documents():
     stats = index.describe_index_stats()
     existing_namespaces = stats.get("namespaces", {})
     for namespace, docs in allData.items():
-        print("Processing namespace:", namespace)
-        print("Number of documents in namespace:", len(docs))
+        # print("Processing namespace:", namespace)
+        # print("Number of documents in namespace:", len(docs))
         if not isinstance(docs, list) or docs == []:
             print("docs == []: ", docs == [])
             print(f"Skipping non-list entry for namespace {namespace}: {docs}")
@@ -205,7 +205,7 @@ def index_documents():
         splits = process_docs(docs)
         if namespace in existing_namespaces:
             index.delete(delete_all=True, namespace=namespace)
-        print("length of splits:", len(splits))
+        # print("length of splits:", len(splits))
         batch_add_documents(vector_store, splits, namespace=namespace, batch_size=50)
 
 if __name__ == "__main__":

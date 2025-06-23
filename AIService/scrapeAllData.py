@@ -159,9 +159,9 @@ if __name__ == "__main__":
     crawl_seed_urls("providedDocSample.json")
 
     # with same domain restriction: 21687, without domain restriction: 27398
-    print(f"Total documents extracted: {len(extracted_docs)}")
-    for namespace, docs in extracted_docs.items():
-        print(f"number of documents in namespace '{namespace}': {len(docs)}")
+    # print(f"Total documents extracted: {len(extracted_docs)}")
+    # for namespace, docs in extracted_docs.items():
+    #     print(f"number of documents in namespace '{namespace}': {len(docs)}")
 
     # Save the extracted documents to a pickle file
     with open("extracted_docs.pkl", "wb") as f:
