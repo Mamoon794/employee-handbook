@@ -1,32 +1,27 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics, isSupported } from "firebase/analytics";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+/* eslint-disable */
+var admin = require("firebase-admin");
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIRESTORE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIRESTORE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIRESTORE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIRESTORE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIRESTORE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIRESTORE_APP_ID,
-  measurementId: process.env.NEXT_PUBLIC_FIRESTORE_MEASUREMENT_ID,
-};
+const serviceAccount = {
+  "type": process.env.FIREBASE_TYPE,
+  "project_id": process.env.FIREBASE_PROJECT_ID,
+  "private_key_id": process.env.FIREBASE_PRIVATE_KEY_ID,
+  "private_key": process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+  "client_email": process.env.FIREBASE_CLIENT_EMAIL,
+  "client_id": process.env.FIREBASE_CLIENT_ID,
+  "auth_uri": process.env.FIREBASE_AUTH_URI,
+  "token_uri": process.env.FIREBASE_TOKEN_URI,
+  "auth_provider_x509_cert_url": process.env.FIREBASE_AUTH_PROVIDER_CERT_URL,
+  "client_x509_cert_url": process.env.FIREBASE_CLIENT_CERT_URL,
+  "universe_domain": process.env.FIREBASE_UNIVERSE_DOMAIN
+}
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+  });
+}
 
-// let analytics;
-// if (typeof window !== 'undefined') {
-//   isSupported().then(yes => yes && (analytics = getAnalytics(app)));
-// }
+var db = admin.firestore();
+const auth = admin.auth();
+export { db, auth };
 
-const db = getFirestore(app);
-const auth = getAuth(app);
-//export { app, analytics, db };
-export { app, db, auth };

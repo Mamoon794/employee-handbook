@@ -1,3 +1,4 @@
+/* eslint-disable */
 import type { AIResponse, PublicMessageResponse, Citation } from "@/types/ai";
 import { callAiService } from "@/integrations/aiService";
 

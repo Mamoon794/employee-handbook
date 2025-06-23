@@ -30,14 +30,15 @@ export interface Chat {
   companyId?: string; // null if public chat
   createdAt: Date;
   updatedAt: Date;
+  messages?: Message[]; // array of messages in the chat
+  title?: string; // optional title for the chat
 }
 
 export interface Message {
   id?: string;
-  chatId: string; // references chat
   content: string;
   isFromUser: boolean;
-  sources?: string[]; // for any cited sources
+  sources?: Link[]; // for any cited sources
   createdAt: Date;
 }
 
@@ -48,4 +49,9 @@ export interface Document {
   description?: string;
   uploadDate: Date;
   isPublic: boolean;
+}
+
+interface Link{
+  title: string;
+  url: string;
 }

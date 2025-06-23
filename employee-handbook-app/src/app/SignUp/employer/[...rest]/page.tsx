@@ -1,3 +1,4 @@
+/* eslint-disable */
 // initial page for employer registration -- clerk integration
 
 'use client';

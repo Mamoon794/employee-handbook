@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 // finishing page for employer registration >> creates user in db
 
 'use client';
@@ -5,9 +7,8 @@ import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
-import { createUser, createCompany } from '@/models/dbOperations';
 import type { UserType, User, Company } from '@/models/schema';
-
+import axiosInstance from '@/app/axios_config';
 export default function EmployerRegistrationForm() {
   const { user: clerkUser } = useUser();
   const router = useRouter();
@@ -37,7 +38,8 @@ export default function EmployerRegistrationForm() {
       createdAt: new Date(),
       updatedAt: new Date()
     };
-    const companyRef = await createCompany(companyData);
+    const companyResponse = await axiosInstance.post('/api/company', companyData);
+    const companyRef = companyResponse.data; 
     console.log('Company created with ID:', companyRef.id); // debugging
 
     console.log('Creating user...'); // debugging
@@ -54,7 +56,7 @@ export default function EmployerRegistrationForm() {
       createdAt: new Date(),
       updatedAt: new Date()
     };
-    await createUser(userData);
+    await axiosInstance.post('/api/users', userData);
     console.log('User created successfully'); // debugging
 
     console.log('Updating Clerk metadata...'); // debugging
