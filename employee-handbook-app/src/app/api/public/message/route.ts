@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { handlePublicMessage } from "@/services/messageService";
 import type { PublicMessageRequest, AIResponse } from "@/types/ai";

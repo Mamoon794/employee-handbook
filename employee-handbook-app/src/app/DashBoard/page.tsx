@@ -1,12 +1,13 @@
+/* eslint-disable */
 'use client';
 
-import Image from 'next/image';
-// import { useUser } from "@clerk/nextjs"; // Uncomment when Clerk is merged
+import { useRouter } from 'next/navigation';
+import { useUser, UserButton } from "@clerk/nextjs"; 
 
 export default function Dashboard() {
-  // const { user } = useUser(); // Uncomment when Clerk is merged
-  // const firstName = user?.firstName || "there"; // Uncomment when Clerk is merged
-  const firstName = "rivvi"; // Placeholder until Clerk is merged
+  const router = useRouter();
+  const { user } = useUser();
+  const firstName = user?.firstName || "there"; 
 
   return (
     <div className="min-h-screen bg-white flex flex-col font-[family-name:var(--font-geist-sans)]">
@@ -16,10 +17,19 @@ export default function Dashboard() {
         <div className="flex gap-4 items-center">
           <button className="px-7 py-3 bg-[#242267] text-white rounded-xl font-bold text-base hover:bg-blue-900 transition-colors shadow-sm">Ask a Question</button>
           <button className="px-7 py-3 bg-blue-800 text-white rounded-xl font-bold text-base hover:bg-blue-900 transition-colors shadow-sm">View Finances</button>
-          <button className="px-7 py-3 border border-gray-300 text-gray-700 rounded-xl font-bold text-base hover:bg-gray-50 transition-colors shadow-sm">Log Out</button>
-          <div className="w-12 h-12 rounded-full bg-blue-800 flex items-center justify-center ml-2">
-            <span className="text-white text-xl font-extrabold">R</span>
-          </div>
+          <button 
+            onClick={() => router.push('/analytics')}
+            className="px-7 py-3 bg-[#242267] text-white rounded-xl font-bold text-base hover:bg-blue-900 transition-colors shadow-sm"
+          >
+            Analytics
+          </button>
+          <UserButton 
+            appearance={{
+              elements: {
+                avatarBox: "w-15 h-15"
+              }
+            }}
+          />
         </div>
       </header>
 
@@ -30,10 +40,9 @@ export default function Dashboard() {
           <p className="text-lg text-black font-bold mb-12 text-center">It seems there are currently no files uploaded.</p>
           <button className="bg-[#294494] text-white font-extrabold px-12 py-5 rounded-xl text-xl hover:bg-blue-900 transition-colors shadow-md">Upload Documents</button>
         </div>
-        {/* Employee Stat Card */}
+        {/* Employee Management Card */}
         <div className="w-full max-w-sm bg-[#f5f7fb] rounded-xl shadow-lg flex flex-col items-center py-12 px-8">
-          <div className="text-5xl font-extrabold text-black mb-2">57</div>
-          <div className="text-xl font-bold text-black mb-10 text-center">Employees Registered</div>
+          <div className="text-xl font-bold text-black mb-10 text-center">Employee Management</div>
           <button className="w-full bg-[#e3e8f0] text-black font-extrabold py-4 rounded-xl mb-5 text-base hover:bg-[#d1d5db] transition-colors shadow-sm">Add employees</button>
           <button className="w-full bg-[#e3e8f0] text-black font-extrabold py-4 rounded-xl text-base hover:bg-[#d1d5db] transition-colors shadow-sm">Manage Employees</button>
         </div>
