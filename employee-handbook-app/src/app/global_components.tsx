@@ -7,8 +7,8 @@ import { Search, Plus, Menu, Trash2 } from 'lucide-react';
 import axiosInstance from './axios_config';
 import { useRouter } from 'next/navigation';
 import { useUser, UserButton } from '@clerk/nextjs';
-import { Message } from '../models/schema'; 
-
+import { Link, Message } from '../models/schema'; 
+import { Citation } from '@/types/ai';
 
 interface Chat {
     id: string;
@@ -117,7 +117,7 @@ function ChatSideBar({setMessages, setCurrChatId}: {setMessages: Dispatch<SetSta
 }
 
 
-function MessageThread({messageList}: {messageList: Message[]}) {
+function MessageThread({messageList, error}: {messageList: Message[], error: string}) {
     return (
         <div className="flex flex-col gap-6 py-6">
             {messageList.map((message, index) => (
@@ -156,19 +156,54 @@ function InputMessage({
   setError,
 }: {
   isPrivate: boolean;
-  province?: string;
-  chatId: string;
+  province?: string | null;
+  chatId?: string;
   setMessages: Dispatch<SetStateAction<Message[]>>;
   setError: Dispatch<SetStateAction<string>>;
 }) {
   const [inputValue, setInputValue] = useState('');
 
-  const addMessage = (newMessage: Message) => {
-    setMessages((prevMessages) => [...prevMessages, newMessage]);
+  const errorMessage = 'Oops, something went wrong. Want to try again?'
+
+  const submitUserMessage = async () => {
+    if (!inputValue.trim()) return;
+
+    try {
+      const userMessage: Omit<Message, 'createdAt'> = {
+        isFromUser: true,
+        content: inputValue,
+      };
+      setMessages((prevMessages) => [...prevMessages, userMessage as Message]);
+      setInputValue('');
+      setError('');
+
+      if (isPrivate) {
+        axiosInstance.put(`/api/chat/${chatId}/add-message`, {
+          messageData: userMessage
+        });
+        await handlePrivateChat();
+      } else {
+        await handlePublicChat();
+      }
+    } catch (err) {
+      console.error(errorMessage);
+      setError(errorMessage);
+    }
   };
   
-  const handleSearchPublic = async () => {
-    if (!inputValue.trim() || !province) return;
+  function mapCitationsToLinks(citations: Citation[]): Link[] {
+    return citations.map(citation => ({
+      title: citation.title,
+      url: citation.fragmentUrl || citation.originalUrl // Use fragmentUrl if available, fallback to originalUrl
+    }));
+  }
+
+  const handlePrivateChat = async () => {
+    // TODO: call the private user chat endpoint (not yet implemented) and add bot message to list of messages
+  };
+
+  const handlePublicChat = async () => {
+    if (!province) return;
 
     try {
       const res = await fetch('/api/public/message', {
@@ -186,24 +221,26 @@ function InputMessage({
 
       const data = await res.json();
       if (data.response) {
-        const newMessage = {
+        const botMessage = {
           content: data.response,
           isFromUser: false,
           createdAt: new Date(),
-          sources: ,
+          sources: mapCitationsToLinks(data.citations),
         }
-        addMessage(newMessage as Message);
+        setMessages((prevMessages) => [...prevMessages, botMessage as Message]);
       } else {
-        setError('Oops, something went wrong.');
+        setError(errorMessage);
       }
     } catch (err) {
       console.error(err);
-      setError('Oops, something went wrong.');
+      setError(errorMessage);
     }
   };
 
-  const handleSearchPrivate = async () => {
-    // TODO: call the private user chat endpoint and add message
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      submitUserMessage();
+    }
   };
   
   return(
@@ -212,48 +249,12 @@ function InputMessage({
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && inputValue.trim() !== '') {
-                const newMessage: Omit<Message, 'createdAt'> = {
-                  isFromUser: true,
-                  content: inputValue,
-                };
-                setMessages((prevMessages) => [...prevMessages, newMessage as Message]);
-                
-                // save message to db (private user)
-                if (isPrivate) {
-                  axiosInstance.put(`/api/chat/${chatId}/add-message`, {
-                    messageData: newMessage
-                  });
-                  handleSearchPrivate();
-                } else {
-                  handleSearchPublic();
-                }
-                setInputValue('');
-              }
-            }}
+            onKeyDown={handleKeyDown}
             placeholder="Ask anything"
             className="w-full px-6 py-4 border border-gray-300 rounded-full text-lg text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-14"
           />
           <button className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-          onClick={() => {
-            const newMessage: Omit<Message, 'createdAt'> = {
-              isFromUser: true,
-              content: inputValue,
-            };
-            setMessages((prevMessages) => [...prevMessages, newMessage as Message]);
-            
-            // save message to db (private user)
-            if (isPrivate) {
-              axiosInstance.put(`/api/chat/${chatId}/add-message`, {
-                messageData: newMessage
-              });
-              handleSearchPrivate();
-            } else {
-              handleSearchPublic();
-            }
-            setInputValue('');
-          }}
+          onClick={submitUserMessage}
           >
             <Search className="w-6 h-6" />
           </button>
@@ -262,16 +263,9 @@ function InputMessage({
 }
 
 
-function Header(){
-  const { isSignedIn, user } = useUser();
+function Header({ province, setProvince }: { province: string; setProvince: (prov: string) => void }) {
+    const { isSignedIn, user } = useUser();
     const router = useRouter();
-    function handleSignup() {
-        router.push('/SignUp');
-    };
-
-    function handleLogin() {
-      router.push('/LogIn/[...rest]');
-    }
 
     useEffect(() => {
         if (isSignedIn && user) {
@@ -295,18 +289,9 @@ function Header(){
           <div className="flex gap-3 items-center">
             {!isSignedIn ? (
               <>
-                <button 
-                  onClick={handleLogin}
-                  className="px-6 py-2 bg-blue-800 text-white rounded-full font-medium hover:bg-blue-700 transition-colors"
-                >
-                  Log In
-                </button>
-                <button 
-                  onClick={handleSignup}
-                  className="px-6 py-2 border border-gray-300 text-gray-700 rounded-full font-medium hover:bg-gray-50 transition-colors"
-                >
-                  Sign up
-                </button>
+                {province !== "" && <span className="px-4"><ProvinceDropdown province={province} setProvince={setProvince} /></span>}
+                <LogIn />
+                <SignUp />
               </>
             ) : (
               <div className="flex items-center">
@@ -316,6 +301,89 @@ function Header(){
           </div>
         </header>
     )
+}
+
+export function LogIn() {
+  const router = useRouter();
+
+  const handleLogin = () => {
+    router.push('/LogIn/[...rest]');
+  };
+
+  return (
+    <button
+      onClick={handleLogin}
+      className="bg-blue-800 text-white font-semibold px-6 py-2 rounded-md hover:bg-blue-600 transition-colors"
+    >
+      Log in
+    </button>
+  );
+}
+
+function SignUp() {
+  const router = useRouter();
+
+  const handleSignUp = () => {
+    router.push('/SignUp');
+  };
+
+  return (
+    <button
+      onClick={handleSignUp}
+      className="border border-gray-300 text-gray-700 font-semibold px-6 py-2 rounded-md hover:bg-gray-200 transition-colors"
+    >
+      Sign up
+    </button>
+  );
+}
+
+function ProvinceDropdown({
+  province,
+  setProvince,
+}: {
+  province: string;
+  setProvince: (prov: string) => void;
+}) {
+  const provinceMap: { [fullName: string]: string } = {
+    "Alberta": "AB",
+    "British Columbia": "BC",
+    "Manitoba": "MB",
+    "New Brunswick": "NB",
+    "Newfoundland and Labrador": "NL",
+    "Northwest Territories": "NT",
+    "Nova Scotia": "NS",
+    "Nunavut": "NU",
+    "Ontario": "ON",
+    "Prince Edward Island": "PE",
+    "Quebec": "QC",
+    "Saskatchewan": "SK",
+    "Yukon": "YT"
+  };
+
+  const reverseProvinceMap: { [abbr: string]: string } = Object.fromEntries(
+    Object.entries(provinceMap).map(([full, abbr]) => [abbr, full])
+  );
+
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const abbr = e.target.value;
+    const full = reverseProvinceMap[abbr];
+    if (full) {
+      setProvince(full);
+    }
+  };
+
+  return (
+    <select
+      value={provinceMap[province]}
+      onChange={handleChange}
+      className="text-gray-700 font-semibold px-4 py-2 rounded-md hover:bg-gray-50 transition-colors w-[60px]"
+    >
+      <option value="" disabled>Select</option>
+      {Object.values(provinceMap).map((abbr) => (
+        <option key={abbr} value={abbr}>{abbr}</option>
+      ))}
+    </select>
+  );
 }
 
 export {ChatSideBar, MessageThread, InputMessage, Header};

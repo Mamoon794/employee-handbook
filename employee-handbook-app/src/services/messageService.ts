@@ -33,6 +33,8 @@ export async function handlePublicMessage(
         };
     });
 
+    console.log(citations);
+
     return {
         response: aiResult.response,
         citations,

@@ -25,7 +25,7 @@ export default function ChatUI() {
         {/* Chat Area */}
         <main className="flex-1 flex flex-col justify-between px-6 pb-6">
           {/* Message Thread */}
-          <MessageThread messageList={messages} />
+          <MessageThread messageList={messages} error={error} />
 
           {/* Input Bar */}
           <InputMessage isPrivate={true} setMessages={setMessages} chatId={currChatId} setError={setError}/>

@@ -14,7 +14,7 @@ export interface AIResponse {
 
 export interface Document {
     source: string;
-    type: string;
+    // type: string;
     title: string;
     page: string;
     content: string;
