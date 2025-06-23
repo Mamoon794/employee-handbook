@@ -19,6 +19,8 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langgraph.graph import START, StateGraph, MessagesState, END
 from typing_extensions import List, TypedDict
 import pprint
+import pickle
+from langchain_core.documents import Document
 
 # Load environment variables
 load_dotenv()
@@ -49,12 +51,14 @@ prompt = hub.pull("rlm/rag-prompt", api_url="https://api.smith.langchain.com")
 
 @tool(response_format="content_and_artifact")
 def retrieve(query: str, province: str):
-    """Retrieve employment-related information by searching indexed documents in the given province. 
+    """Retrieve employment-related information by searching indexed documents in the given province. If no province is specified, it defaults to "General". 
     Parameters:
     - query: the user's question.
     - province: province name like "Alberta", "British Columbia", etc."""
     print("province:", province)
-    retrieved_docs = vector_store.similarity_search(query, k=8, namespace=province)
+    province_docs = vector_store.similarity_search(query, k=8, namespace=province)
+    general_docs = vector_store.similarity_search(query, k=4, namespace="General")
+    retrieved_docs = province_docs + general_docs
     serialized = "\n\n".join(
         (f"DocMetadata: {doc.metadata}\n" f"DocContent: {doc.page_content}")
         for doc in retrieved_docs
@@ -87,7 +91,10 @@ def generate(state: MessagesState):
     # Format into prompt
     docs_content = "\n\n".join(doc.content for doc in tool_messages)
     system_message_content = (
-        "You are an assistant for question-answering tasks. If a retrieval tool is available, use it to get relevant information before answering. Only answer without it if you're absolutely sure."
+        "You are an assistant for question-answering tasks. If a retrieval "
+        "tool is available, use it to get relevant information before answering. "
+        "Answer with some details. If you really can't get the answer from the documents, "
+        "you can say things like I don't have enough information.\n\n"
         "\n\n"
         f"{docs_content}"
     )
@@ -125,7 +132,7 @@ def load_and_split_html(url, title):
     try:
         webloader = WebBaseLoader(
             web_paths=(url,),
-            bs_kwargs=dict(parse_only=bs4.SoupStrainer(["h1", "h2", "h3", "p", "li"]))
+            bs_kwargs=dict(parse_only=bs4.SoupStrainer(["h1", "h2", "h3", "h4", "p", "li"]))
         )
         web_docs = webloader.load()
         for doc in web_docs:
@@ -146,18 +153,33 @@ def load_and_split_pdf(url):
         print(f"[PDF] Failed to load {url}: {e}")
         return []
     
+def split_html(doc):
+    try:
+        web_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200, add_start_index=True)
+        return web_splitter.split_documents([doc])
+    except Exception as e:
+        print(f"[HTML] Failed to load {doc.metadata.get('title', '')}: {e}")
+        return []
+    
+def split_pdf(doc):
+    try:
+        pdf_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+        return pdf_splitter.split_documents([doc])
+    except Exception as e:
+        print(f"[PDF] Failed to load {doc.metadata.get('title', '')}: {e}")
+        return []
+    
 def process_docs(docs):
     splits = []
+    # print("Processing documents...")
+    # print(docs[0])  # Print first 100 characters of the first document
+    # print(f"Type of doc: {type(docs[0])}")
     for doc in docs:
-        doc_type = doc.get("type")
-        url = doc.get("url")
-        title = doc.get("title")
-        if not url:
-            continue
+        doc_type = doc.metadata.get("type", "")
         if doc_type == "html":
-            splits.extend(load_and_split_html(url, title))
+            splits.extend(split_html(doc))
         elif doc_type == "pdf":
-            splits.extend(load_and_split_pdf(url))
+            splits.extend(split_pdf(doc))
     return splits
 
 # Convert the Document objects to emmbeddings and upload to Pinecone vector store
@@ -169,32 +191,30 @@ def batch_add_documents(vector_store, documents, namespace, batch_size=100):
         except Exception as e:
             print(f"Failed to upload batch {i // batch_size + 1}: {e}")
 
-def index_documents(namespaces):
-    general_splits = process_docs(jsonData.get("general", []))
-    if "general" in namespaces:
-        index.delete(delete_all=True, namespace="general")
-    batch_add_documents(vector_store, general_splits, namespace="general", batch_size=50)
-
-    for province in jsonData.get("provinces", []):
-        province_name = province.get("name")
-        if not province_name:
+def index_documents():
+    index.describe_index_stats()
+    stats = index.describe_index_stats()
+    existing_namespaces = stats.get("namespaces", {})
+    for namespace, docs in allData.items():
+        # print("Processing namespace:", namespace)
+        # print("Number of documents in namespace:", len(docs))
+        if not isinstance(docs, list) or docs == []:
+            print("docs == []: ", docs == [])
+            print(f"Skipping non-list entry for namespace {namespace}: {docs}")
             continue
-        print(f"Processing province: {province_name}")
-        province_splits = process_docs(province.get("docs", []))
-        # Add namespace to each document's metadata
-        if province_name in namespaces:
-            index.delete(delete_all=True, namespace=province_name)
-        batch_add_documents(vector_store, province_splits, namespace=province_name, batch_size=50)
-
+        splits = process_docs(docs)
+        if namespace in existing_namespaces:
+            index.delete(delete_all=True, namespace=namespace)
+        # print("length of splits:", len(splits))
+        batch_add_documents(vector_store, splits, namespace=namespace, batch_size=50)
 
 if __name__ == "__main__":
     # Load your JSON file
-    with open("providedDocSample.json") as f:
-        jsonData = json.load(f)
+    # with open("providedDocSample.json") as f:
+    #     allData = json.load(f)
 
-    index.describe_index_stats()
-    stats = index.describe_index_stats()
-    namespaces = stats.get("namespaces", {})
+    with open("extracted_docs.pkl", "rb") as f:
+        allData = pickle.load(f)
 
-    index_documents(namespaces)
+    index_documents()
     print("Indexing completed.")

@@ -1,0 +1,581 @@
+{
+	"info": {
+		"_postman_id": "ee981238-1bbd-4ee1-ab85-6a68d89273b1",
+		"name": "AIService",
+		"description": "This AI service powers the chatbot. The app uses only the `http://127.0.0.1:8000/responses` endpoint.\n\nRequests require two fields: province and question. If the response is not expected to be related to a specific province, province should be \"General\".\n\nThe response contains the chatbot’s answer and a metadata list of documents used as context. Each document includes source URL, type (html or pdf), title, page, and content.\n\nThe chatbot answers based on data in the vector database, which currently covers General (federal), Alberta (AB), British Columbia (BC), and Nova Scotia (NS).",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40031897",
+		"_collection_link": "https://csc309-project-5729.postman.co/workspace/fdef7ac2-ec5a-45ea-a911-16207349500f/collection/40031897-ee981238-1bbd-4ee1-ab85-6a68d89273b1?action=share&source=collection_link&creator=40031897"
+	},
+	"item": [
+		{
+			"name": "ON",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"province\": \"Ontario\",\n    \"question\": \"What are the type of enforcement action?\" \n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/responses",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"responses"
+					]
+				},
+				"description": "This tests how the chatbot responds when it cannot find a relevant answer."
+			},
+			"response": [
+				{
+					"name": "ask something that's not in the vector db",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"province\": \"Ontario\",\n    \"question\": \"What are the type of enforcement action?\" \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/responses",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"responses"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "date",
+							"value": "Mon, 23 Jun 2025 18:06:40 GMT"
+						},
+						{
+							"key": "server",
+							"value": "uvicorn"
+						},
+						{
+							"key": "content-length",
+							"value": "4629"
+						},
+						{
+							"key": "content-type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"response\": \"I am unable to provide information on the types of enforcement actions for Ontario specifically from the documents I have.\",\n    \"metadata\": [\n        {\n            \"source\": \"https://laws-lois.justice.gc.ca/PDF/L-2.pdf\",\n            \"type\": \"pdf\",\n            \"title\": \"\",\n            \"page\": 356,\n            \"content\": \"(i) le montant de la sanction à imposer, ou le ba-\\nrème de sanctions à appliquer, aux employeurs ou à\\ndes catégories d’employeurs,\\n(ii) les critères à prendre en compte pour la déter-\\nmination de la sanction,\\n(iii) le paiement de la sanction imposée,\\n(iv) le recouvrement, à titre de créance, de toute\\nsanction impayée;\\nc) concernant les personnes, individuellement ou par\\ncatégorie, qui sont considérées comme coautrices\\nd’une violation et le montant de la sanction à leur im-\\nposer, ou le barème de sanctions à appliquer;\\nd) concernant la preuve nécessaire pour établir la vio-\\nlation;\\ne) concernant les attributions du Conseil et les per-\\nsonnes, individuellement ou par catégorie, qui\\npeuvent exercer des attributions relativement au ré-\\ngime, notamment la désignation de telles personnes\\nou catégories de personnes par le Conseil;\\nf) concernant les poursuites pour violation, notam-\\nment relativement à ce qui suit\\u202f:\\n(i) l’introduction d’une poursuite,\"\n        },\n        {\n            \"source\": \"https://laws-lois.justice.gc.ca/PDF/L-2.pdf\",\n            \"type\": \"pdf\",\n            \"title\": \"\",\n            \"page\": 311,\n            \"content\": \"Labour Code, Canada Code canadien du travail\\nPART IV Administrative Monetary Penalties PARTIE IV Sanctions administratives pécuniaires\\nRegulations Règlements\\nSection 270 Article 270\\nCurrent to May 27, 2025\\nLast amended on June 20, 2024\\n291 À jour au 27 mai 2025\\nDernière modification le 20 juin 2024\\nRegulations Règlements\\nRegulations Règlements\\n270 (1) The Governor in Council may make regulations\\n(a) designating as a violation that may be proceeded\\nwith in accordance with this Part\\n(i) the contravention of any specified provision of\\nPart II or III or of any regulations made under\\nthose Parts,\\n(ii) the contravention of any direction, or of any di-\\nrection of any specified class of directions, issued\\nunder any provision of Part II or of any regulations\\nmade under that Part,\\n(iii) the contravention of any order, or of any order\\nof any specified class of orders, made or issued un-\\nder any provision of Part II or III or of any regula-\\ntions made under those Parts, or\"\n        },\n        {\n            \"source\": \"https://laws-lois.justice.gc.ca/PDF/L-2.pdf\",\n            \"type\": \"pdf\",\n            \"title\": \"\",\n            \"page\": 146,\n            \"content\": \"vention de reprendre son travail;\\nb) de réintégrer dans son emploi tout ancien employé\\ntouché par la contravention;\\nc) de verser à tout employé ou ancien employé touché\\npar la contravention une indemnité équivalant au\\nplus, à son avis, à la rémunération qui lui aurait été\\npayée s’il n’y avait pas eu contravention;\\nd) d’annuler toute mesure disciplinaire prise à l’en-\\ncontre d’un employé touché par la contravention et de\\npayer à celui-ci une indemnité équivalant au plus, à\\nson avis, à la sanction pécuniaire ou autre qui lui a été\\nimposée par l’employeur.\\nEnforcement of orders Exécution des ordonnances\\n(2) Any person affected by an order of the Board under\\nsubsection (1), or the Head on the request of such a per-\\nson, may, after 14 days from the day on which the order\\nis made, or from the day provided in the order for com-\\npliance, whichever is later, file in the Federal Court a\\ncopy of the order, exclusive of reasons.\\n(2) Toute personne concernée par une ordonnance du\"\n        },\n        {\n            \"source\": \"https://laws-lois.justice.gc.ca/PDF/L-2.pdf\",\n            \"type\": \"pdf\",\n            \"title\": \"\",\n            \"page\": 313,\n            \"content\": \"Labour Code, Canada Code canadien du travail\\nPART IV Administrative Monetary Penalties PARTIE IV Sanctions administratives pécuniaires\\nCommission of Violations Violations\\nSections 274-276 Articles 274-276\\nCurrent to May 27, 2025\\nLast amended on June 20, 2024\\n293 À jour au 27 mai 2025\\nDernière modification le 20 juin 2024\\n(a) any officer, director, agent or mandatary of the\\ncorporation;\\n(b) any senior official in the department; or\\n(c) any other person exercising managerial or supervi-\\nsory functions in the corporation or department.\\n2017, c. 20, s. 377.\\ncadres supérieurs ou fonctionnaires exerçant des fonc-\\ntions de gestion ou de surveillance pour les violations\\nperpétrées par les ministères.\\n2017, ch. 20, art. 377.\\nProof of violation — employees Preuve — employés\\n275 In any proceedings under this Part against a person\\nor a department in relation to a violation, it is sufficient\\nproof of the violation to establish that it was committed\"\n        }\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "ask about favourite food",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"province\": \"\",\n    \"question\": \"What is my favorite food?\" \n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/responses",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"responses"
+					]
+				},
+				"description": "The chatbot is conversational and remembers the user’s previous messages."
+			},
+			"response": [
+				{
+					"name": "tell chatbot about my favourite food",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"province\": \"\",\n    \"question\": \"my favorite food is chocolate\" \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/responses",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"responses"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "date",
+							"value": "Mon, 23 Jun 2025 18:13:43 GMT"
+						},
+						{
+							"key": "server",
+							"value": "uvicorn"
+						},
+						{
+							"key": "content-length",
+							"value": "86"
+						},
+						{
+							"key": "content-type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"response\": \"OK. I will remember that your favorite food is chocolate.\",\n    \"metadata\": []\n}"
+				},
+				{
+					"name": "ask about favourite food",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"province\": \"\",\n    \"question\": \"What is my favorite food?\" \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/responses",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"responses"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "date",
+							"value": "Mon, 23 Jun 2025 18:14:27 GMT"
+						},
+						{
+							"key": "server",
+							"value": "uvicorn"
+						},
+						{
+							"key": "content-length",
+							"value": "61"
+						},
+						{
+							"key": "content-type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"response\": \"Your favorite food is chocolate.\",\n    \"metadata\": []\n}"
+				}
+			]
+		},
+		{
+			"name": "Alberta",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"province\": \"Alberta\",\n    \"question\": \"What is the minimum wage?\" \n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/responses",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"responses"
+					]
+				},
+				"description": "This tests how the chatbot responds when it finds a relevant answer."
+			},
+			"response": [
+				{
+					"name": "minimum wage",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"province\": \"Alberta\",\n    \"question\": \"What is the minimum wage?\" \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/responses",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"responses"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "date",
+							"value": "Mon, 23 Jun 2025 18:20:51 GMT"
+						},
+						{
+							"key": "server",
+							"value": "uvicorn"
+						},
+						{
+							"key": "content-length",
+							"value": "14493"
+						},
+						{
+							"key": "content-type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"response\": \"Here's the minimum wage information for Alberta:\\n\\n*   **General minimum wage:** $15/hour\\n*   **Under 18 and a student:** $13/hour (some exceptions apply)\\n*   **Under 18 and not a student:** $15/hour\",\n    \"metadata\": [\n        {\n            \"source\": \"https://open.alberta.ca/dataset/8b776a10-f427-41ce-b1ff-7cad5b94e962/resource/7f1a5147-d028-4ba4-8277-bd5cb2062cc1/download/lbr-es-guide-for-employees-2021-07.pdf\",\n            \"type\": \"pdf\",\n            \"title\": \"Employment Standards Guide for Employees\",\n            \"page\": 0,\n            \"content\": \"Learn more at alberta.ca/EmploymentStandards \\n©2021 Government of Alberta  |  July 26, 2021  |  Labour and Immigration \\n   \\n  \\nEmployment Standards  \\nGuide for Employees \\nBasic information on pay, time off, breaks, and more \\nMinimum wage \\nMinimum wage is the lowest hourly rate an employer can \\npay. Current minimum wage is: \\n18 and over $15/hour \\nUnder 18 and a student \\n$13/hour \\n(some exceptions apply) \\nUnder 18 and not a student $15/hour \\nMaximum hours per workday \\nTypically, no one should be working more than 12 hours in a \\nrow. Exceptions can be made if there is an accident or \\nurgent work is required. \\nIf you’re working a split shift, your work hours need to remain \\nwithin a 12-hour period. So, if you start work at 9 a.m., you \\nshouldn’t be expected to work past 9 p.m. \\nBreaks \\nLENGTH OF SHIFT  BREAKS \\n5 hours or less No break entitlement \\nMore than 5 hours but less \\nthan 10 hours At least one 30-minute break \\n10 hours or more At least two 30-minute breaks\"\n        },\n        {\n            \"source\": \"https://open.alberta.ca/publications/employment-standards-guide-for-youth\",\n            \"type\": \"html\",\n            \"title\": \"Employment standards guide for youth : basic information on types of work, hours of work, and pay - Open Government\",\n            \"page\": \"\",\n            \"content\": \"None}, {'display_name': 'employees', 'id': 'e7813c83-2dfe-458f-87d2-b99797dd0128', 'name': 'employees', 'state': 'active', 'vocabulary_id': None}, {'display_name': 'employment standards', 'id': 'be80646d-f5f9-4a67-80b6-c06eba99cfab', 'name': 'employment standards', 'state': 'active', 'vocabulary_id': None}, {'display_name': 'hours of work', 'id': 'ff9abfc8-b77c-41c4-9857-60cc5a3d9081', 'name': 'hours of work', 'state': 'active', 'vocabulary_id': None}, {'display_name': 'minimum wage', 'id': '0b1a63ab-55ee-4d1a-afc9-c117481130cb', 'name': 'minimum wage', 'state': 'active', 'vocabulary_id': None}, {'display_name': 'permits', 'id': '109a0c17-fa35-4d0a-b701-af42a673d5f6', 'name': 'permits', 'state': 'active', 'vocabulary_id': None}, {'display_name': 'types of work', 'id': '0bae5258-11d4-460e-9f4a-9ba9312518f9', 'name': 'types of work', 'state': 'active', 'vocabulary_id': None}], 'groups': [], 'relationships_as_subject': [], 'relationships_as_object': [], 'tracking_summary': {'total':\"\n        },\n        {\n            \"source\": \"https://www.alberta.ca/payment-earnings\",\n            \"type\": \"html\",\n            \"title\": \"Employment standards rules – Payment of earnings | Alberta.ca\",\n            \"page\": \"\",\n            \"content\": \"Minimum wage Overtime hours and overtime pay Payment of earnings Termination and lay-off Vacations and vacation pay Youth employment laws Basic rules Employers must pay their employees at least once a month, or use one of the following pay periods listed below: daily weekly bi-weekly semi-monthly Employers must also: provide employees with a statement of earnings for each pay period keep employment records for 3 years pay employees within 10 consecutive days after the end of the pay period, unless employment is terminated Resources Easy check – Payment of earnings Employment standards tool kit for employers – Module 2: Payment of earnings includes; Sample pay statement Sample employee time tracking sheet Webinar – Payment of earnings Employment standards guide for employees How earnings are paid Employers must pay an employee at least the minimum wage . Employees must be paid in Canadian currency. Employees may be paid by cash, cheque or similar document, drawn on an insured financial\"\n        },\n        {\n            \"source\": \"https://open.alberta.ca/dataset/156fb188-6ff4-4074-be74-4db5bd21552d/resource/20d3f965-1b1a-4bc6-878c-b45c24eff008/download/lbr-es-guide-for-youth-2021-07.pdf\",\n            \"type\": \"pdf\",\n            \"title\": \"Employment Standards Guide for Youth\",\n            \"page\": 1,\n            \"content\": \"The minimum wage is $13 for all hours worked. School \\nbreak times vary from school to school. School breaks \\ninclude summer vacation, Christmas or winter holidays, and \\nspring break. \\n \\nMINIMUM \\nWAGE RATE  SCHOOL IN SESSION  SCHOOL \\nBREAKS \\n First 28 \\nhours \\nHour 29 and \\nafter All hours \\nStudents under \\n18 $13 $15 $13 \\nNon-students \\nunder 18 $15 $15 $15 \\nStudents 18 \\nand over $15 $15 $15 \\n2 or 3 hour minimum \\nIf you’re called in for a meeting or to work a shift but then \\nsent home, you must be paid whichever works out to be \\nmore: \\n• your hourly wage multiplied by the time actually worked, or \\n• 3 hours at a rate of at least minimum wage. \\nThe exception is if you’re a 13-14 year old working on a \\nschool day. In that case, you must be paid whichever works \\nout to be more: \\n• your hourly wage multiplied by the time actually worked, or \\n• 2 hours at a rate of at least minimum wage. \\nOther work rules \\nAll employees in Alberta are covered by Employment\"\n        },\n        {\n            \"source\": \"https://www.alberta.ca/hours-work-rest\",\n            \"type\": \"html\",\n            \"title\": \"Employment standards rules – Hours of work and rest | Alberta.ca\",\n            \"page\": \"\",\n            \"content\": \"short periods or split shifts Unless an employer has a variance, the following minimum standards apply: 3-hour minimum Employees must be paid for at least 3 hours of pay at the minimum wage each time they are required to report to work, come to work for short periods, or are sent home early by the employer. The 3-hour minimum applies as long as the decision to leave work early comes from the employer. This 3-hour minimum does not apply if the decision to leave work early is an employee decision and the employee does not make themselves available to work the full 3 hours. This applies to illness or any other reason the employee leaves work early. If an employee works for fewer than 3 consecutive hours, the employer must pay whichever works out to be more: the employee’s hourly wage multiplied by the time actually worked, or 3 hours at a rate of at least minimum wage 2-hour minimum The following employees must be paid minimum compensation for at least 2 hours at not less than minimum\"\n        },\n        {\n            \"source\": \"https://www.alberta.ca/hours-work-rest\",\n            \"type\": \"html\",\n            \"title\": \"Employment standards rules – Hours of work and rest | Alberta.ca\",\n            \"page\": \"\",\n            \"content\": \"whichever is greater the rate of pay for meetings or training cannot be less than the minimum wage the pay received by the employee must equal or exceed the amount described in the section on minimum compensation for short periods of work if the meeting or training is not compulsory but is directly related to the employee’s work, and the employee attends, they must be paid the wages agreed to, and overtime if applicable; the employee must receive at least the minimum compensation as described above At home ‘on call’ or ‘on standby’ If an employee is not required to perform work at home, no payment is required. Being ‘on call’ or ‘on standby’ is not considered work. If an employee is required to perform work, the employee is entitled to the 3-hour pay minimum for each period worked. Working short periods or split shifts Unless an employer has a variance, the following minimum standards apply: 3-hour minimum Employees must be paid for at least 3 hours of pay at the minimum wage each\"\n        },\n        {\n            \"source\": \"https://open.alberta.ca/dataset/156fb188-6ff4-4074-be74-4db5bd21552d/resource/20d3f965-1b1a-4bc6-878c-b45c24eff008/download/lbr-es-guide-for-youth-2021-07.pdf\",\n            \"type\": \"pdf\",\n            \"title\": \"Employment Standards Guide for Youth\",\n            \"page\": 1,\n            \"content\": \"Work not in retail or hospitality \\nYou can work between 12:01 a.m. and 6:00 a.m. However, \\nyou need: \\n• parental or guardian consent \\n• adult supervision. \\nParental permission \\nIf you’re 14 or under, you will need permission from a parent \\nor guardian to work. \\nIf you’re 15 -17 you only require permission from a parent or \\nguardian if you work during restricted hours at night.  \\nMinimum wage \\nMinimum wage is the lowest hourly rate an employer can \\npay. \\nMinimum wage is different for students under the age of 18. \\nA “student” is someone who attends school up to grade 12, \\npostsecondary, or vocational school. \\nStudent minimum wage - school in session \\n• For the first 28 hours per week, $13/hour \\n• For hours 29 and up, $15/hour \\nStudent minimum wage - school breaks \\nThe minimum wage is $13 for all hours worked. School \\nbreak times vary from school to school. School breaks \\ninclude summer vacation, Christmas or winter holidays, and \\nspring break. \\n \\nMINIMUM\"\n        },\n        {\n            \"source\": \"https://www.alberta.ca/hours-work-rest\",\n            \"type\": \"html\",\n            \"title\": \"Employment standards rules – Hours of work and rest | Alberta.ca\",\n            \"page\": \"\",\n            \"content\": \"by the time actually worked, or 3 hours at a rate of at least minimum wage 2-hour minimum The following employees must be paid minimum compensation for at least 2 hours at not less than minimum wage (or Job Creation Student Wage for students under 18): school bus drivers part-time employees of non-profit recreation or athletic programs run by a municipality, Metis Settlement or community service organization home care employees 13-, 14- and 15-year-olds who work on a school day If an employee is required to work a split shift and there is more than a 1-hour break between the 2 segments of the shift, the employee must be paid the minimum compensation required for each segment of their shift. Exempt occupations The following jobs are exempt from the minimum standards for hours of work and rest: Caregivers counsellors or instructors at a non-profit educational or recreational camp for children, handicapped individuals, or religious groups domestic employees (employees are exempt only\"\n        },\n        {\n            \"source\": \"https://laws-lois.justice.gc.ca/PDF/L-2.pdf\",\n            \"type\": \"pdf\",\n            \"title\": \"\",\n            \"page\": 202,\n            \"content\": \"Labour Code, Canada Code canadien du travail\\nPART III Standard Hours, Wages, Vacations and Holidays PARTIE III Durée normale du travail, salaire, congés et jours fériés\\nDIVISION II Minimum Wage and Age of Employment SECTION II Salaire et âge minimums\\nSections 178-178.1 Articles 178-178.1\\nCurrent to May 27, 2025\\nLast amended on June 20, 2024\\n182 À jour au 27 mai 2025\\nDernière modification le 20 juin 2024\\ntime and some other basis a wage at a rate not less than\\nthe minimum rate fixed by order under subsection (4).\\nR.S., 1985, c. L-2, s. 178; 1996, c. 32, s. 1; 2021, c. 23, s. 246.\\nsauf disposition contraire de la présente section, de ver-\\nser aux employés concernés un salaire au moins égal à\\ncelui qui est fixé sous le régime de ce paragraphe.\\nL.R. (1985), ch. L-2, art. 178; 1996, ch. 32, art. 1; 2021, ch. 23, art. 246.\\nMinimum wage — rate Taux du salaire minimum\\n178.1 (1) Subject to subsection ( 2), the minimum\\nhourly rate referred to in subsection 178(1) is $15.\"\n        },\n        {\n            \"source\": \"https://www.cfib-fcei.ca/en/tools-resources/minimum-wage-rates-overtime-rules-canada\",\n            \"type\": \"html\",\n            \"title\": \"Minimum wage rates and overtime rules in Canada\",\n            \"page\": \"\",\n            \"content\": \"agree in writing that overtime hours will be banked. Some exceptions may apply. More information on minimum wage and overtime , including exemptions, can be found on the government site. FAQ April 1 falls in the middle of the pay period, can I wait until the next pay period to start paying the new minimum wage? No. The new minimum wage comes into effect on April 1. Any hours worked on that date and after must be paid at the new minimum wage rate. Example: Minimum wage is increasing from $15.75 to $16.00*, and the pay period is March 23 to April 5. The employee works 8 hours a day, Monday to Friday, and is paid at minimum wage. Rate from March 23 to March 31: $15.75 Rate from April 1: $16.00 *rates used for illustrative purposes only Do I have to increase the wages/salaries of my employees who currently earn more than the minimum wage? No. The law requires that you pay at least the minimum wage to all employees; beyond that, wage increases are at your discretion. Minimum wage increases\"\n        },\n        {\n            \"source\": \"https://laws-lois.justice.gc.ca/PDF/L-2.pdf\",\n            \"type\": \"pdf\",\n            \"title\": \"\",\n            \"page\": 202,\n            \"content\": \"Minimum wage — rate Taux du salaire minimum\\n178.1 (1) Subject to subsection ( 2), the minimum\\nhourly rate referred to in subsection 178(1) is $15.\\n178.1 (1) Sous réserve du paragraphe (2), le taux du sa-\\nlaire horaire minimum visé au paragraphe 178(1) est de\\nquinze dollars.\\nAnnual adjustment Rajustement annuel\\n(2) On April 1 of each year after the year in which this\\nsection comes into force, the minimum hourly rate is to\\nbe adjusted to the rate, rounded up to the nearest $ 0.05,\\nthat is equal to the product of\\n(a) as the case may be,\\n(i) in respect of April 1 of the year after the year in\\nwhich this section comes into force, $15, or\\n(ii) in respect of April 1 of each subsequent year,\\nthe rate that is determined in accordance with this\\nsection on April 1 of the preceding year, and\\n(b) the ratio that the Consumer Price Index for the\\npreceding calendar year bears to the Consumer Price\\nIndex for the calendar year before that preceding cal-\\nendar year.\"\n        },\n        {\n            \"source\": \"https://www.cfib-fcei.ca/en/tools-resources/paid-holidays-canada\",\n            \"type\": \"html\",\n            \"title\": \"Paid holidays in Canada\",\n            \"page\": \"\",\n            \"content\": \"Share on Twitter Topics in this Article: Running Your Business My Business – From Startup to Retirement Human Resources Employment Standards Topics and Location: Running Your Business My Business – From Startup to Retirement Human Resources Employment Standards Want More? Become a Member Join thousands of businesses that are set up for success. Join Now Print Article Share Article Related Articles you might like. Frequently Asked Questions on Manitoba Employment Standards Employment standards laws set a basic level of rights for employees, such as hou... Managing Hiring seasonal employees to handle the holiday rush The crush of the holiday rush is soon upon us! Are you hiring seasonal employees... Human Resources Understanding PEI's Employment Standards All businesses with employees must follow Employment Standards. You must first d... Managing Minimum wage rates and overtime rules in Canada Minimum wage is the lowest amount you can pay an employee per hour of work. This... Running\"\n        }\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "Nova Scotia",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"province\": \"Nova Scotia\",\n    \"question\": \"What is our minimum wage?\" \n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/responses",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"responses"
+					]
+				},
+				"description": "The chatbot’s answer to the same question varies based on the province."
+			},
+			"response": [
+				{
+					"name": "minimum wage",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"province\": \"Nova Scotia\",\n    \"question\": \"What is our minimum wage?\" \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/responses",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"responses"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "date",
+							"value": "Mon, 23 Jun 2025 18:09:37 GMT"
+						},
+						{
+							"key": "server",
+							"value": "uvicorn"
+						},
+						{
+							"key": "content-length",
+							"value": "13944"
+						},
+						{
+							"key": "content-type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"response\": \"As of April 1, 2025, the minimum wage in Nova Scotia is $15.70 per hour. It is scheduled to increase to $16.50 per hour on October 1, 2025.\",\n    \"metadata\": [\n        {\n            \"source\": \"https://novascotia.ca/lae/employmentrights/minimumwage.asp\",\n            \"type\": \"html\",\n            \"title\": \"Minimum Wage | novascotia.ca\",\n            \"page\": \"\",\n            \"content\": \"30) each week. If the employer takes $25 off the weekly pay for a uniform, then the employee will have earned $470 that week, or $15.67 per hour (470 ÷ 30). Since $15.67 per hour is below the minimum wage, the employer cannot take that much from the employee's wages for the cost of the uniform. The employer may take from the employee's wages the cost of dry cleaning a uniform that is made of wool or a heavy material. The employer may do this even if the employee's wages then fall below minimum wage. Employees Not Covered by the Rules The minimum wage rules do not apply to the following employees: certain farm employees apprentices employed under the terms of an apprenticeship agreement under the Apprenticeship and Trades Qualifications Act (see NS Apprenticeship Agency) anyone receiving training under government  sponsored and government approved plans anyone employed at a non-profit playground or summer camp real estate and car salespeople commissioned salespeople who work outside\"\n        },\n        {\n            \"source\": \"https://novascotia.ca/lae/employmentrights/docs/LabourStandardsCodeGuide.pdf\",\n            \"type\": \"pdf\",\n            \"title\": \"\",\n            \"page\": 7,\n            \"content\": \"Complaints must be filed within 6 months of a possible violation of the legislation: call toll free in NS 1-888-315-0110 \\nGuide to the Nova Scotia Labour Standards Code (Rev 02/25)  Page | 8 \\n \\nMinimum Wage \\n \\nThere are three minimum wage orders: \\n \\n• Minimum Wage Order (General) \\n• Minimum Wage Order (Construction and Property Maintenance) \\n• Minimum Wage Order (Logging and Forest Operations) \\n \\nThis section deals with the Minimum Wage Order (General). There are separate minimum wage \\norders for employees employed in construction and property maintenance as well as those \\nemployed in logging and forest operations. For information on those minimum wage orders, \\ncontact Labour Standards. \\n \\nMinimum Wage Order (General) \\n \\nThe Minimum Wage Order (General) sets the minimum wage rate, which is the least amount of \\nmoney an employer must pay an employee for each hour of work. It also sets employment \\nstandards for the following: \\n \\n• overtime, for some groups\"\n        },\n        {\n            \"source\": \"https://novascotia.ca/lae/employmentrights/minimumwage.asp\",\n            \"type\": \"html\",\n            \"title\": \"Minimum Wage | novascotia.ca\",\n            \"page\": \"\",\n            \"content\": \"Minimum Wage | novascotia.ca Minimum Wage : NS Labour and Advanced Education, Employment Rights Labour, Skills and Immigration Minimum Wage Changes to the minimum wage The minimum wage is scheduled to increase to the following amounts: October 1, 2023 - $15.00 April 1, 2024 - $15.20 April 1, 2025 - $15.70 October 1, 2025 - $16.50 There are three minimum wage orders: Minimum Wage Order (General) Minimum Wage Order (Construction and Property Maintenance) Minimum Wage Order (Logging and Forest Operations) This section deals with the Minimum Wage Order (General). There are separate minimum wage orders for employees employed in construction and property maintenance as well as those employed in logging and forest operations . For information on those minimum wage orders, contact Labour Standards. Minimum Wage Order (General) The Minimum Wage Order (General) sets the minimum wage rate, which is the least amount of money an employer must pay an employee for each hour of work. It also sets\"\n        },\n        {\n            \"source\": \"https://novascotia.ca/lae/employmentrights/docs/LabourStandardsCodeGuide.pdf\",\n            \"type\": \"pdf\",\n            \"title\": \"\",\n            \"page\": 7,\n            \"content\": \"money an employer must pay an employee for each hour of work. It also sets employment \\nstandards for the following: \\n \\n• overtime, for some groups \\n• being called into work at times other than scheduled working hours \\n• employees waiting for work on the work premises \\n• piecework \\n• deductions for board, lodging, and meals \\n• deductions for uniforms \\n \\nMinimum Wage Rate \\n \\nAs of April 1, 2025, employers must pay employees at least $15.70 per hour. \\n \\nOvertime \\n \\nThe Minimum Wage Order (General) contains overtime requirements for some groups. \\nOvertime is also addressed in the Labour Standards Code and in the Construction and Property \\nMaintenance Minimum Wage Order (see Overtime section of this document). \\n \\nCall In \\n \\nIf an employee is called in to work outside the employee's regular work hours, the employer \\nmust pay the employee for at least three hours of work at the minimum wage rate, that is, at\"\n        },\n        {\n            \"source\": \"https://novascotia.ca/lae/employmentrights/minimumwage.asp\",\n            \"type\": \"html\",\n            \"title\": \"Minimum Wage | novascotia.ca\",\n            \"page\": \"\",\n            \"content\": \"Minimum Wage Order (General) The Minimum Wage Order (General) sets the minimum wage rate, which is the least amount of money an employer must pay an employee for each hour of work. It also sets employment standards for the following: overtime, for some groups being called into work at times other than scheduled working hours employees waiting for work on the work premises piecework deductions for board, lodging, and meals deductions for uniforms Minimum Wage Rate As of April 1, 2025, employers must pay employees at least $15.70 per hour. As of October 1, 2025, the minimum wage will rise to $16.50 per hour. Overtime The Minimum Wage Order (General) contains overtime requirements for some groups. Overtime is also addressed in the Labour Standards Code and in the Construction and Property Maintenance Minimum Wage Order (see also webpage on Overtime ). Call In If an employee is called in to work outside the employee's regular work hours, the employer must pay the employee for at least\"\n        },\n        {\n            \"source\": \"https://novascotia.ca/lae/employmentrights/docs/LabourStandardsCodeGuide-fr.pdf\",\n            \"type\": \"pdf\",\n            \"title\": \"Guide sur le code des normes de travail de la Nouvelle-Écosse\",\n            \"page\": 9,\n            \"content\": \"obtenir des renseignements sur les ordonnances de salaire minimum, s’adresser à la Division \\ndes normes de travail. \\n \\nOrdonnance générale sur le salaire minimum \\n \\nL’ordonnance générale sur le salaire minimum fixe le taux de salaire minimum, soit le montant \\nd’argent le moins élevé qu’un employeur doit verser à un employé pour chaque heure de \\ntravail. Cette ordonnance fixe également les normes de travail dans les cas suivants : \\n \\n• les heures supplémentaires pour certains groupes; \\n• les heures partielles; \\n• les rappels au travail à des heures autres que celles prévues à l’horaire; \\n• les employés en attente de travail sur le lieu de travail; \\n• le travail à la pièce; \\n• les retenues pour le logement et les repas; \\n• les retenues pour les uniformes. \\n \\nTaux de salaire minimum \\n \\nÀ compter du 1\\ner avril 2025, les employeurs doivent verser au moins 15,70 $ l’heure aux \\nemployés.  \\n \\nHeures supplémentaires\"\n        },\n        {\n            \"source\": \"https://novascotia.ca/lae/employmentrights/docs/LabourStandardsCodeGuide.pdf\",\n            \"type\": \"pdf\",\n            \"title\": \"\",\n            \"page\": 9,\n            \"content\": \"cannot take that much from the employee's wages for the cost of the uniform.   \\n     \\nThe employer may take from the employee’s wages the cost of dry cleaning a uniform that is \\nmade of wool or a heavy material. The employer may do this even if the employee’s wages then \\nfall below minimum wage. \\n \\nEmployees Not Covered by the Rules \\n \\nThe minimum wage rules do not apply to the following employees: \\n \\n• certain farm employees \\n• apprentices employed under the terms of an apprenticeship agreement under the \\nApprenticeship and Trades Qualifications Act (see NS Apprenticeship Agency) \\n• anyone receiving training under government sponsored and government approved \\nplans \\n• anyone employed at a non-profit playground or summer camp \\n• real estate and car salespeople \\n• commissioned salespeople who work outside the employer’s premises, but not those on \\nestablished routes \\n• insurance agents licensed under the Insurance Act \\n• employees who work on a fishing boat\"\n        },\n        {\n            \"source\": \"https://novascotia.ca/lae/employmentrights/overtime.asp\",\n            \"type\": \"html\",\n            \"title\": \"| novascotia.ca\",\n            \"page\": \"\",\n            \"content\": \"these wage orders are listed below. Minimum Wage Order (General) The following groups of employees receive overtime at 1 1/2 times the minimum wage after 48 hours worked in a week: oil and gas employees (but not those in retail) managers, supervisors, and employees employed in a confidential capacity. This includes managers and supervisors in the construction industry primary fish and agricultural processors (but not meat) flat-rate auto mechanics/auto body technicians some types of professionals and their trainees information technology (IT) professionals (but not employees who provide basic operational/technical support) shipbuilders and related employees (but not those in retail) transport (this group receives overtime after 96 hours in a 2-week period) Minimum Wage Order\\t(Construction and Property Maintenance) The following groups of employees receive 1½ times their regular wage after 110 hours worked over a two-week period: those constructing, restoring or maintaining roads,\"\n        },\n        {\n            \"source\": \"https://laws-lois.justice.gc.ca/PDF/L-2.pdf\",\n            \"type\": \"pdf\",\n            \"title\": \"\",\n            \"page\": 202,\n            \"content\": \"Labour Code, Canada Code canadien du travail\\nPART III Standard Hours, Wages, Vacations and Holidays PARTIE III Durée normale du travail, salaire, congés et jours fériés\\nDIVISION II Minimum Wage and Age of Employment SECTION II Salaire et âge minimums\\nSections 178-178.1 Articles 178-178.1\\nCurrent to May 27, 2025\\nLast amended on June 20, 2024\\n182 À jour au 27 mai 2025\\nDernière modification le 20 juin 2024\\ntime and some other basis a wage at a rate not less than\\nthe minimum rate fixed by order under subsection (4).\\nR.S., 1985, c. L-2, s. 178; 1996, c. 32, s. 1; 2021, c. 23, s. 246.\\nsauf disposition contraire de la présente section, de ver-\\nser aux employés concernés un salaire au moins égal à\\ncelui qui est fixé sous le régime de ce paragraphe.\\nL.R. (1985), ch. L-2, art. 178; 1996, ch. 32, art. 1; 2021, ch. 23, art. 246.\\nMinimum wage — rate Taux du salaire minimum\\n178.1 (1) Subject to subsection ( 2), the minimum\\nhourly rate referred to in subsection 178(1) is $15.\"\n        },\n        {\n            \"source\": \"https://www.cfib-fcei.ca/en/tools-resources/paid-holidays-canada\",\n            \"type\": \"html\",\n            \"title\": \"Paid holidays in Canada\",\n            \"page\": \"\",\n            \"content\": \"Share on Twitter Topics in this Article: Running Your Business My Business – From Startup to Retirement Human Resources Employment Standards Topics and Location: Running Your Business My Business – From Startup to Retirement Human Resources Employment Standards Want More? Become a Member Join thousands of businesses that are set up for success. Join Now Print Article Share Article Related Articles you might like. Frequently Asked Questions on Manitoba Employment Standards Employment standards laws set a basic level of rights for employees, such as hou... Managing Hiring seasonal employees to handle the holiday rush The crush of the holiday rush is soon upon us! Are you hiring seasonal employees... Human Resources Understanding PEI's Employment Standards All businesses with employees must follow Employment Standards. You must first d... Managing Minimum wage rates and overtime rules in Canada Minimum wage is the lowest amount you can pay an employee per hour of work. This... Running\"\n        },\n        {\n            \"source\": \"https://www.cfib-fcei.ca/en/tools-resources/minimum-wage-rates-overtime-rules-canada\",\n            \"type\": \"html\",\n            \"title\": \"Minimum wage rates and overtime rules in Canada\",\n            \"page\": \"\",\n            \"content\": \"agree in writing that overtime hours will be banked. Some exceptions may apply. More information on minimum wage and overtime , including exemptions, can be found on the government site. FAQ April 1 falls in the middle of the pay period, can I wait until the next pay period to start paying the new minimum wage? No. The new minimum wage comes into effect on April 1. Any hours worked on that date and after must be paid at the new minimum wage rate. Example: Minimum wage is increasing from $15.75 to $16.00*, and the pay period is March 23 to April 5. The employee works 8 hours a day, Monday to Friday, and is paid at minimum wage. Rate from March 23 to March 31: $15.75 Rate from April 1: $16.00 *rates used for illustrative purposes only Do I have to increase the wages/salaries of my employees who currently earn more than the minimum wage? No. The law requires that you pay at least the minimum wage to all employees; beyond that, wage increases are at your discretion. Minimum wage increases\"\n        },\n        {\n            \"source\": \"https://www.cfib-fcei.ca/en/tools-resources/minimum-wage-rates-overtime-rules-canada\",\n            \"type\": \"html\",\n            \"title\": \"Minimum wage rates and overtime rules in Canada\",\n            \"page\": \"\",\n            \"content\": \"exceptions may apply. More information on minimum wage and overtime can be found on the government site. Alberta The minimum wage in Alberta is currently $15.00 per hour . For students under 18, the minimum wage is $13.00 for the first 28 hours they work in a week when school is in session. Beyond 28 hours, the student must be paid $15 per hour. During school holidays – Christmas, summer, etc. - the student rate is $13.00 for all regular hours worked. The minimum overtime rate is one and a half times the employee’s regular rate for all hours worked over 8 in a day or 44 in a week. Under a written agreement, the employer may give the employee time off with pay (banked overtime) at a rate of 1 hour off for every overtime hour worked. Some exceptions may apply. More information on minimum wage and overtime can be found on the government site. British Columbia The minimum wage in British Columbia is currently $17.40 per hour . Minimum wage will increase to $17.85 per hou r on June 1,\"\n        }\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "BC",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"province\": \"British Columbia\",\n    \"question\": \"What is the minimum wage in Nova Scotia?\" \n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/responses",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"responses"
+					]
+				},
+				"description": "If a province is mentioned in the question and it differs from the province field, the chatbot’s answer will be based on the province mentioned in the question."
+			},
+			"response": [
+				{
+					"name": "minimum wage in NS",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"province\": \"British Columbia\",\n    \"question\": \"What is the minimum wage in Nova Scotia?\" \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/responses",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"responses"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "date",
+							"value": "Mon, 23 Jun 2025 18:10:42 GMT"
+						},
+						{
+							"key": "server",
+							"value": "uvicorn"
+						},
+						{
+							"key": "content-length",
+							"value": "14261"
+						},
+						{
+							"key": "content-type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"response\": \"As of April 1, 2025, the minimum wage in Nova Scotia is $15.70 per hour. It is scheduled to increase to $16.50 per hour on October 1, 2025.\",\n    \"metadata\": [\n        {\n            \"source\": \"https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/96113_01\",\n            \"type\": \"html\",\n            \"title\": \"Employment Standards Act\",\n            \"page\": \"\",\n            \"content\": \"year if the adjustment to the minimum wage under this section in that calendar year would result in a decrease in the minimum wage. (6) The minister must publish the minimum wages referred to in section 16.1, as adjusted under this section, on a publicly accessible website. Paydays 17 (1) At least semimonthly and within 8 days after the end of the pay period, an employer must pay to an employee all wages earned by the employee in a pay period. (2) Subsection (1) does not apply to (a) overtime wages credited to an employee's time bank, or (b) vacation pay. If employment is terminated 18 (1) An employer must pay all wages owing to an employee within 48 hours after the employer terminates the employment. (2) An employer must pay all wages owing to an employee within 6 days after the employee terminates the employment. If employee cannot be located 19 (1) In this section, \\\"administrator\\\" has the same meaning as in the Unclaimed Property Act . (1.1) If an employer cannot locate an employee\"\n        },\n        {\n            \"source\": \"https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/00_96113_01\",\n            \"type\": \"html\",\n            \"title\": \"Employment Standards Act\",\n            \"page\": \"\",\n            \"content\": \"year if the adjustment to the minimum wage under this section in that calendar year would result in a decrease in the minimum wage. (6) The minister must publish the minimum wages referred to in section 16.1, as adjusted under this section, on a publicly accessible website. Paydays 17 (1) At least semimonthly and within 8 days after the end of the pay period, an employer must pay to an employee all wages earned by the employee in a pay period. (2) Subsection (1) does not apply to (a) overtime wages credited to an employee's time bank, or (b) vacation pay. If employment is terminated 18 (1) An employer must pay all wages owing to an employee within 48 hours after the employer terminates the employment. (2) An employer must pay all wages owing to an employee within 6 days after the employee terminates the employment. If employee cannot be located 19 (1) In this section, \\\"administrator\\\" has the same meaning as in the Unclaimed Property Act . (1.1) If an employer cannot locate an employee\"\n        },\n        {\n            \"source\": \"https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/00_96113_01\",\n            \"type\": \"html\",\n            \"title\": \"Employment Standards Act\",\n            \"page\": \"\",\n            \"content\": \"collective agreement] ; section 9 [hiring children] ; section 10 [no charge for hiring or providing information] ; section 16 [employers required to pay minimum wage] ; section 16.1 [minimum wage] ; section 16.2 [annual adjustment of minimum wage] ; section 17 [paydays] ; section 18 (1) [payment of wages when employer terminates] ; section 18 (2) [payment of wages when employee terminates] ; section 20 [how wages are paid] ; section 21 [deductions] ; section 22 [assignment of wages] ; section 23 [employer's duty to make assigned payments] ; section 24 [how an assignment is cancelled] ; section 26 [payments by employer to funds, insurers or others] ; section 27 [wage statements] ; section 28 (1) [content of payroll records] ; section 28 (2) [payroll record requirements] ; section 30.3 [gratuities] ; section 30.4 [redistribution of gratuities] ; Part 5 [Statutory Holidays] , as that Part applies to the National Day for Truth and Reconciliation; Part 6 [leaves and jury duty] ; section 64\"\n        },\n        {\n            \"source\": \"https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/96113_01\",\n            \"type\": \"html\",\n            \"title\": \"Employment Standards Act\",\n            \"page\": \"\",\n            \"content\": \"collective agreement] ; section 9 [hiring children] ; section 10 [no charge for hiring or providing information] ; section 16 [employers required to pay minimum wage] ; section 16.1 [minimum wage] ; section 16.2 [annual adjustment of minimum wage] ; section 17 [paydays] ; section 18 (1) [payment of wages when employer terminates] ; section 18 (2) [payment of wages when employee terminates] ; section 20 [how wages are paid] ; section 21 [deductions] ; section 22 [assignment of wages] ; section 23 [employer's duty to make assigned payments] ; section 24 [how an assignment is cancelled] ; section 26 [payments by employer to funds, insurers or others] ; section 27 [wage statements] ; section 28 (1) [content of payroll records] ; section 28 (2) [payroll record requirements] ; section 30.3 [gratuities] ; section 30.4 [redistribution of gratuities] ; Part 5 [Statutory Holidays] , as that Part applies to the National Day for Truth and Reconciliation; Part 6 [leaves and jury duty] ; section 64\"\n        },\n        {\n            \"source\": \"https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/96113_01\",\n            \"type\": \"html\",\n            \"title\": \"Employment Standards Act\",\n            \"page\": \"\",\n            \"content\": \"minimum wage is equidistant from 2 consecutive multiples, to the higher multiple. (4) The following formula applies for the purposes of subsections (2) (a) and (3) (a): adjusted minimum wage = previous minimum wage × Index A Index B where adjusted minimum wage is, subject to subsection (2) (b) or (3) (b), the new minimum wage; previous minimum wage is the minimum wage that applied immediately before the adjustment under this section; Index A is the consumer price index for the immediately preceding calendar year; Index B is the consumer price index for the calendar year immediately preceding the calendar year referred to in the description of Index A. (5) Subsections (2) and (3) do not apply to a minimum wage referred to in section 16.1 (1) or (2), as the case may be, in relation to a calendar year if the adjustment to the minimum wage under this section in that calendar year would result in a decrease in the minimum wage. (6) The minister must publish the minimum wages referred to in\"\n        },\n        {\n            \"source\": \"https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/00_96113_01\",\n            \"type\": \"html\",\n            \"title\": \"Employment Standards Act\",\n            \"page\": \"\",\n            \"content\": \"minimum wage is equidistant from 2 consecutive multiples, to the higher multiple. (4) The following formula applies for the purposes of subsections (2) (a) and (3) (a): adjusted minimum wage = previous minimum wage × Index A Index B where adjusted minimum wage is, subject to subsection (2) (b) or (3) (b), the new minimum wage; previous minimum wage is the minimum wage that applied immediately before the adjustment under this section; Index A is the consumer price index for the immediately preceding calendar year; Index B is the consumer price index for the calendar year immediately preceding the calendar year referred to in the description of Index A. (5) Subsections (2) and (3) do not apply to a minimum wage referred to in section 16.1 (1) or (2), as the case may be, in relation to a calendar year if the adjustment to the minimum wage under this section in that calendar year would result in a decrease in the minimum wage. (6) The minister must publish the minimum wages referred to in\"\n        },\n        {\n            \"source\": \"https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/00_96113_01\",\n            \"type\": \"html\",\n            \"title\": \"Employment Standards Act\",\n            \"page\": \"\",\n            \"content\": \"Employers required to pay minimum wage 16 (1) An employer must pay an employee at least the minimum wage as set out in sections 16.1 and 16.2. (2) An employer must not, directly or indirectly, withhold, deduct or require payment of all or part of an employee's wages in a pay period to comply with subsection (1) in relation to any other pay period. Minimum wage 16.1 (1) Subject to subsection (2) and section 16.2, the minimum wage is $16.75 per hour. (2) Subject to section 16.2, the minimum wage for a prescribed class of employees is the amount specified in, or calculated in accordance with, the regulations. Annual adjustment of minimum wage 16.2 (1) In this section, \\\"consumer price index\\\" means the annual average All-items Consumer Price Index for British Columbia, as published by Statistics Canada under the authority of the Statistics Act (Canada). (2) Subject to this section, every year on June 1, beginning on June 1, 2024, (a) the minimum wage referred to in section 16.1 (1) is\"\n        },\n        {\n            \"source\": \"https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/96113_01\",\n            \"type\": \"html\",\n            \"title\": \"Employment Standards Act\",\n            \"page\": \"\",\n            \"content\": \"Employers required to pay minimum wage 16 (1) An employer must pay an employee at least the minimum wage as set out in sections 16.1 and 16.2. (2) An employer must not, directly or indirectly, withhold, deduct or require payment of all or part of an employee's wages in a pay period to comply with subsection (1) in relation to any other pay period. Minimum wage 16.1 (1) Subject to subsection (2) and section 16.2, the minimum wage is $16.75 per hour. (2) Subject to section 16.2, the minimum wage for a prescribed class of employees is the amount specified in, or calculated in accordance with, the regulations. Annual adjustment of minimum wage 16.2 (1) In this section, \\\"consumer price index\\\" means the annual average All-items Consumer Price Index for British Columbia, as published by Statistics Canada under the authority of the Statistics Act (Canada). (2) Subject to this section, every year on June 1, beginning on June 1, 2024, (a) the minimum wage referred to in section 16.1 (1) is\"\n        },\n        {\n            \"source\": \"https://www.cfib-fcei.ca/en/tools-resources/minimum-wage-rates-overtime-rules-canada\",\n            \"type\": \"html\",\n            \"title\": \"Minimum wage rates and overtime rules in Canada\",\n            \"page\": \"\",\n            \"content\": \"rate is one and a half times the employee’s regular wage for any hours worked over 8 in a day, or over 40 in a week. Overtime can also be banked and taken as paid time off, providing if there is a written agreement between the employer and the employee, and must be used within 3 months. Some exceptions may apply. More information on minimum wage and overtime can be found on the government site. Nova Scotia The minimum wage in Nova Scotia is currently $15.70 per hour . The minimum overtime rate is one and a half times the employee’s regular wage for any hours over 48 worked in a week. Special rules apply to some groups of employees and certain exceptions may apply. More information on minimum wage and overtime can be found on the government site. Nunavut The minimum wage in Nunavut is currently $19.00 per hour . The minimum overtime rate is one and a half times the employee’s regular wage for any hours over 8 in a day or 40 in a week. Some exceptions may apply. More information on\"\n        },\n        {\n            \"source\": \"https://www.cfib-fcei.ca/en/tools-resources/minimum-wage-rates-overtime-rules-canada\",\n            \"type\": \"html\",\n            \"title\": \"Minimum wage rates and overtime rules in Canada\",\n            \"page\": \"\",\n            \"content\": \"for any hours worked over 44 in a week. The banking of overtime hours is not permitted. Some exceptions may apply. More information on minimum wage and overtime can be found on the government site. Newfoundland and Labrador The minimum wage in Newfoundland and Labrador is currently $16.00 per hour . The minimum overtime wage rate is one and a half times the minimum wage for any hours worked over 40 in a week. Overtime can also be banked; an employee may be granted one and a half hours of paid time off for each hour of overtime worked instead of receiving overtime pay. Some exceptions may apply. More information on minimum wage and overtime can be found on the government site. Northwest Territories The minimum wage in the Northwest Territories is currently $16.70 per hour . The minimum overtime rate is one and a half times the employee’s regular wage for any hours worked over 8 in a day, or over 40 in a week. Overtime can also be banked and taken as paid time off, providing if there is\"\n        },\n        {\n            \"source\": \"https://www.cfib-fcei.ca/en/tools-resources/minimum-wage-rates-overtime-rules-canada\",\n            \"type\": \"html\",\n            \"title\": \"Minimum wage rates and overtime rules in Canada\",\n            \"page\": \"\",\n            \"content\": \"information on minimum wage and overtime is available on the government site. Manitoba The minimum wage in Manitoba is currently $15.80 per hour . Minimum wage will increase to $16.00 per hour on October 1, 2025. The minimum overtime rate is one and a half times the employee’s regular rate. Overtime is paid after 8 hours worked in one day, or 40 hours worked in one week. Some exceptions may apply. Employees and their employer may agree in writing to bank overtime hours at a rate of 1.5 hours banked overtime for each overtime hour worked. More information on minimum wage and overtime , including exemptions, is available on the government site. New Brunswick The minimum wage in New Brunswick is currently $15.65 per hour . The minimum overtime wage rate is one and a half times the minimum wage for any hours worked over 44 in a week. The banking of overtime hours is not permitted. Some exceptions may apply. More information on minimum wage and overtime can be found on the government site.\"\n        },\n        {\n            \"source\": \"https://www.cfib-fcei.ca/en/tools-resources/minimum-wage-rates-overtime-rules-canada\",\n            \"type\": \"html\",\n            \"title\": \"Minimum wage rates and overtime rules in Canada\",\n            \"page\": \"\",\n            \"content\": \"overtime worked. Some exceptions may apply. More information on minimum wage and overtime , including exemptions, can be found on the government site. Prince Edward Island The minimum wage in Prince Edward Island is currently $16.00 per hour . The minimum overtime wage rate is one and a half times the employee’s regular wage for hours worked above 48 in a week. An employee may “bank” overtime hours to be taken as paid time off at a later date. The employee must request this in writing. If the employer approves the request, the employee receives 1.5 hours of paid time off for each hour of accumulated overtime. The employee must take this paid time off within three months of the work week for which they earned the overtime. Some exceptions may apply. More information on minimum wage and overtime , including exemptions, can be found on the government site. Quebec The minimum wage in Quebec is currently $15.75 per hour. The minimum wage will increase to $16.10 per hour on May 1, 2025. The\"\n        }\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "General",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"province\": \"General\",\n    \"question\": \"How many paid days do we have?\" \n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/responses",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"responses"
+					]
+				},
+				"description": "When province is set to \"General\", the chatbot retrieves answers from federal documents."
+			},
+			"response": [
+				{
+					"name": "consumer price index",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"province\": \"\",\n    \"question\": \"How many paid days do we have?\" \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/responses",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"responses"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "date",
+							"value": "Mon, 23 Jun 2025 18:12:05 GMT"
+						},
+						{
+							"key": "server",
+							"value": "uvicorn"
+						},
+						{
+							"key": "content-length",
+							"value": "14425"
+						},
+						{
+							"key": "content-type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"response\": \"The number of paid holidays varies by province and territory in Canada. However, there are 5 days in the year that are paid holidays in every jurisdiction:\\n\\n*   New Year’s Day\\n*   Good Friday\\n*   Canada Day\\n*   Labour Day\\n*   Christmas Day\\n\\nEach province and territory may have additional paid holidays.\",\n    \"metadata\": [\n        {\n            \"source\": \"https://www.cfib-fcei.ca/en/tools-resources/manitoba_employment_standards\",\n            \"type\": \"html\",\n            \"title\": \"Frequently Asked Questions on Manitoba Employment Standards | CFIB\",\n            \"page\": \"\",\n            \"content\": \"the regular wage rate. Read the Overtime fact sheet and section 18 of the Employment Standards Code . Vacations and Vacation Pay The rules about vacation consist of both the amount of time away from the workplace and vacation pay. After 1 year of employment - Vacation is at least 2 weeks of leave and vacation pay is 4% of gross wages, excluding overtime. After 5 years of employment - Vacation is least 3 weeks of leave and vacation pay is 6% of gross wages, excluding overtime. Employees are eligible for vacation once they complete 1 year of work. Vacation must be taken within 10 months of it being earned. If the employer and employee cannot agree when the vacation will be taken, the employer can set the vacation date, with at least 15 days’ notice. Employers can have vacations as part of an annual shut down. Employers may put vacation pay on every cheque, or they may choose to pay out at the time of the vacation leave. Read the Vacations and Vacation Pay fact sheet . The rules about\"\n        },\n        {\n            \"source\": \"https://laws-lois.justice.gc.ca/PDF/L-2.pdf\",\n            \"type\": \"pdf\",\n            \"title\": \"\",\n            \"page\": 206,\n            \"content\": \"Labour Code, Canada Code canadien du travail\\nPART III Standard Hours, Wages, Vacations and Holidays PARTIE III Durée normale du travail, salaire, congés et jours fériés\\nDIVISION IV Annual Vacations SECTION IV Congés annuels\\nSections 184-185 Articles 184-185\\nCurrent to May 27, 2025\\nLast amended on June 20, 2024\\n186 À jour au 27 mai 2025\\nDernière modification le 20 juin 2024\\nAnnual vacation with pay Congés annuels payés\\n184 Except as otherwise provided by or under this Divi-\\nsion, in respect of every year of employment by an em-\\nployer, every employee is entitled to and shall be granted\\na vacation with vacation pay of\\n(a) at least two weeks if they have completed at least\\none year of employment;\\n(b) at least three weeks if they have completed at least\\nfive consecutive years of employment with the same\\nemployer; and\\n(c) at least four weeks if they have completed at least\\n10 consecutive years of employment with the same\\nemployer.\\nR.S., 1985, c. L-2, s. 184; 2018, c. 27, s. 454.\"\n        },\n        {\n            \"source\": \"https://www.cfib-fcei.ca/en/tools-resources/employment-standards/understanding-peis-employment-standards\",\n            \"type\": \"html\",\n            \"title\": \"Understanding PEI's Employment Standards | CFIB\",\n            \"page\": \"\",\n            \"content\": \"work on a holiday and are qualified to be paid holiday pay, they are entitled to: receive the amount they would have normally received for that day AND one and a half times their regular rate of wages for the number of hours worked on that holiday, OR they can earn their regular wages for the hours worked on the holiday AND receive another day off with pay before their next vacation. For more details on these regulations and information on workers that are not covered by the rules for holiday pay, visit the fact sheet on paid public holidays . What are the mandatory food and rest breaks for employees? An employee must be given a 30-minute unpaid food or rest break if their shift is longer than five consecutive hours. If an employee does not receive their full half hour of rest, then they must be paid for the half hour. An employee is not required to stay in the workplace during their half hour break. How do I calculate vacation pay? Vacation Pay is calculated as 4% of gross wages. For\"\n        },\n        {\n            \"source\": \"https://www.cfib-fcei.ca/en/tools-resources/manitoba_employment_standards\",\n            \"type\": \"html\",\n            \"title\": \"Frequently Asked Questions on Manitoba Employment Standards | CFIB\",\n            \"page\": \"\",\n            \"content\": \"Holiday pay plus 1.5 times times their wages for the hours worked. However, workers in a gas station, hotel, restaurant, place of amusement, continuously operating business, climate-controlled agricultural business, or a seasonal industry receive regular wages for working a General Holiday if they receive another day off with General Holiday pay in the next 30 days. Read the General Holiday fact sheet . What are the mandatory food and rest breaks? Employees must receive a 30-minute unpaid break after every 5 hours of work. This is the only break required by the Employment Standards Code . Coffee breaks, rest breaks and other meal breaks are provided at the employer's discretion. Read the Hours of Work and Breaks fact sheet . Employees must receive a 30-minute unpaid break after every 5 hours of work. This is the only break required by the Employment Standards Code . Coffee breaks, rest breaks and other meal breaks are provided at the employer's discretion. What can be deducted from\"\n        },\n        {\n            \"source\": \"https://www.cfib-fcei.ca/en/tools-resources/paid-holidays-canada\",\n            \"type\": \"html\",\n            \"title\": \"Paid holidays in Canada\",\n            \"page\": \"\",\n            \"content\": \"further paid holidays, as well as holidays where a business is not legislated to close, but may choose to do so, either with or without payment to employees. There may also be days when a business must close but is not required to pay their employees. Select your province or territory below to learn more about paid public holidays in your jurisdiction: Federally regulated industries Alberta British Columbia Manitoba New Brunswick Newfoundland and Labrador Northwest Territories Nova Scotia Nunavut Ontario Prince Edward Island Quebec Saskatchewan Yukon Federally regulated industries What are the paid general holidays under the Canada Labour Code? New Year’s Day Good Friday Victoria Day Canada Day Labour Day National Day for Truth and Reconciliation (September 30) Thanksgiving Day Remembrance Day Christmas Day Boxing Day Which employees are eligible? If your business is federally-regulated , you are required to pay all full-time, part-time, and casual employees for the 10 statutory\"\n        },\n        {\n            \"source\": \"https://www.cfib-fcei.ca/en/tools-resources/paid-holidays-canada\",\n            \"type\": \"html\",\n            \"title\": \"Paid holidays in Canada\",\n            \"page\": \"\",\n            \"content\": \"by the employer and employee before the employee's next paid vacation When an employee does not work on the paid public holiday, they are entitled to receive a day off with pay on the working day immediately following the general holiday or another day agreed upon by the employee and the employer. If an employee works shifts of varying lengths or if wages change from pay to pay, the employer should average hours or wages over 30 days to calculate what to pay the employee for the holiday. For example, if an employee worked 20 of the 30 calendar days before the holiday for a total of 170 hours, the calculations would be as follows: 170 ÷ 20 = 8.5 average hours worked per shift. When the paid public holiday falls on an employee’s scheduled day off , the employee should be given off either the first working day after the public holiday or an alternate day off agreed to mutually by the employer and employee. This day will be paid day for the employee. For further information please see the\"\n        },\n        {\n            \"source\": \"https://www.cfib-fcei.ca/en/tools-resources/paid-holidays-canada\",\n            \"type\": \"html\",\n            \"title\": \"Paid holidays in Canada\",\n            \"page\": \"\",\n            \"content\": \"Paid holidays in Canada Skip to main content English Français HR Now! Tools & Resources Advocacy Discounts Membership Contact Us Sign In JOIN NOW Sign In Join Now Menu HR Now! Tools & Resources Advocacy Discounts Membership Contact Us FR English Français Paid holidays in Canada Paid holidays in Canada Paid public holidays, also known as statutory holidays or general holidays, are days throughout the year where most businesses are legislated to close but must still pay eligible employees as though it was a regular workday. There are additional rules and payment requirements for employees who work on a statutory holiday. There are 5 days in the year which are a paid holiday in every jurisdiction: New Year’s Day Good Friday Canada Day Labour Day Christmas Day Each province and territory have further paid holidays, as well as holidays where a business is not legislated to close, but may choose to do so, either with or without payment to employees. There may also be days when a business\"\n        },\n        {\n            \"source\": \"https://www.cfib-fcei.ca/en/tools-resources/paid-holidays-canada\",\n            \"type\": \"html\",\n            \"title\": \"Paid holidays in Canada\",\n            \"page\": \"\",\n            \"content\": \"holiday rules. More information is available on the government site . Nunavut What are the general holidays in Nunavut? New Year’s Day Good Friday Victoria Day Canada Day Nunavut Day The first Monday in August Labour Day Thanksgiving Day Remembrance Day Christmas Day Eligibility All employees who have been employed with the employer for at least 30 days within the previous 12 months are eligible for statutory holiday pay. The employee must: Work their scheduled shift before and after the holiday. Work on the holiday if they are scheduled to or are called in. Employees on pregnancy or parental leave are not entitled to statutory holiday pay. Calculating pay An employee who meets the eligibility criteria but does not work on the holiday is eligible to receive an average day’s pay. An employee who meets the eligibility criteria and works on the holiday must receive time and a half for the hours worked, plus a regular day’s pay. Or the employee may receive regular pay for the hours worked\"\n        },\n        {\n            \"source\": \"https://www.cfib-fcei.ca/en/tools-resources/manitoba_employment_standards\",\n            \"type\": \"html\",\n            \"title\": \"Frequently Asked Questions on Manitoba Employment Standards | CFIB\",\n            \"page\": \"\",\n            \"content\": \"the regular wage rate. Read the Overtime fact sheet and section 18 of the Employment Standards Code . Vacations and Vacation Pay The rules about vacation consist of both the amount of time away from the workplace and vacation pay. After 1 year of employment - Vacation is at least 2 weeks of leave and vacation pay is 4% of gross wages, excluding overtime. After 5 years of employment - Vacation is least 3 weeks of leave and vacation pay is 6% of gross wages, excluding overtime. Employees are eligible for vacation once they complete 1 year of work. Vacation must be taken within 10 months of it being earned. If the employer and employee cannot agree when the vacation will be taken, the employer can set the vacation date, with at least 15 days’ notice. Employers can have vacations as part of an annual shut down. Employers may put vacation pay on every cheque, or they may choose to pay out at the time of the vacation leave. Read the Vacations and Vacation Pay fact sheet . The rules about\"\n        },\n        {\n            \"source\": \"https://laws-lois.justice.gc.ca/PDF/L-2.pdf\",\n            \"type\": \"pdf\",\n            \"title\": \"\",\n            \"page\": 206,\n            \"content\": \"Labour Code, Canada Code canadien du travail\\nPART III Standard Hours, Wages, Vacations and Holidays PARTIE III Durée normale du travail, salaire, congés et jours fériés\\nDIVISION IV Annual Vacations SECTION IV Congés annuels\\nSections 184-185 Articles 184-185\\nCurrent to May 27, 2025\\nLast amended on June 20, 2024\\n186 À jour au 27 mai 2025\\nDernière modification le 20 juin 2024\\nAnnual vacation with pay Congés annuels payés\\n184 Except as otherwise provided by or under this Divi-\\nsion, in respect of every year of employment by an em-\\nployer, every employee is entitled to and shall be granted\\na vacation with vacation pay of\\n(a) at least two weeks if they have completed at least\\none year of employment;\\n(b) at least three weeks if they have completed at least\\nfive consecutive years of employment with the same\\nemployer; and\\n(c) at least four weeks if they have completed at least\\n10 consecutive years of employment with the same\\nemployer.\\nR.S., 1985, c. L-2, s. 184; 2018, c. 27, s. 454.\"\n        },\n        {\n            \"source\": \"https://www.cfib-fcei.ca/en/tools-resources/employment-standards/understanding-peis-employment-standards\",\n            \"type\": \"html\",\n            \"title\": \"Understanding PEI's Employment Standards | CFIB\",\n            \"page\": \"\",\n            \"content\": \"work on a holiday and are qualified to be paid holiday pay, they are entitled to: receive the amount they would have normally received for that day AND one and a half times their regular rate of wages for the number of hours worked on that holiday, OR they can earn their regular wages for the hours worked on the holiday AND receive another day off with pay before their next vacation. For more details on these regulations and information on workers that are not covered by the rules for holiday pay, visit the fact sheet on paid public holidays . What are the mandatory food and rest breaks for employees? An employee must be given a 30-minute unpaid food or rest break if their shift is longer than five consecutive hours. If an employee does not receive their full half hour of rest, then they must be paid for the half hour. An employee is not required to stay in the workplace during their half hour break. How do I calculate vacation pay? Vacation Pay is calculated as 4% of gross wages. For\"\n        },\n        {\n            \"source\": \"https://www.cfib-fcei.ca/en/tools-resources/manitoba_employment_standards\",\n            \"type\": \"html\",\n            \"title\": \"Frequently Asked Questions on Manitoba Employment Standards | CFIB\",\n            \"page\": \"\",\n            \"content\": \"Holiday pay plus 1.5 times times their wages for the hours worked. However, workers in a gas station, hotel, restaurant, place of amusement, continuously operating business, climate-controlled agricultural business, or a seasonal industry receive regular wages for working a General Holiday if they receive another day off with General Holiday pay in the next 30 days. Read the General Holiday fact sheet . What are the mandatory food and rest breaks? Employees must receive a 30-minute unpaid break after every 5 hours of work. This is the only break required by the Employment Standards Code . Coffee breaks, rest breaks and other meal breaks are provided at the employer's discretion. Read the Hours of Work and Breaks fact sheet . Employees must receive a 30-minute unpaid break after every 5 hours of work. This is the only break required by the Employment Standards Code . Coffee breaks, rest breaks and other meal breaks are provided at the employer's discretion. What can be deducted from\"\n        }\n    ]\n}"
+				}
+			]
+		}
+	]
+}
