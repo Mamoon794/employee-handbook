@@ -7,7 +7,7 @@ The **Employee Handbook App** is a web-based platform that helps workers underst
 Our partner is **Arshad Merali** from Rivvi, a Toronto-based fintech company focused on improving financial health and workplace transparency.
 
 ## Link of the app
-The app is hosted on [placeholder].
+The app is hosted on https://employee-handbook-app.vercel.app/.
 
 ## Setup (For Developers)
 
