@@ -117,8 +117,6 @@ function ChatSideBar({setMessages, setCurrChatId}: {setMessages: Dispatch<SetSta
 }
 
 
-
-
 function MessageThread({messageList}: {messageList: Message[]}) {
     return (
         <div className="flex flex-col gap-6 py-6">
@@ -150,36 +148,117 @@ function MessageThread({messageList}: {messageList: Message[]}) {
 }
 
 
-function InputMessage({chatId, setMessages}: {chatId: string, setMessages: Dispatch<SetStateAction<Message[]>>}) {
-    const [inputValue, setInputValue] = useState('');
-    return(
-        <div className="relative w-full max-w-3xl mx-auto">
-            <input
-              type="text"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && inputValue.trim() !== '') {
-                    const newMessage: Omit<Message, 'createdAt'> = {
-                        isFromUser: true,
-                        content: inputValue,
-                    };
-                    setMessages((prevMessages) => [...prevMessages, newMessage as Message]);
-                    axiosInstance.put(`/api/chat/${chatId}/add-message`, {
-                        messageData: newMessage
-                    })
-                  
-                  setInputValue('');
+function InputMessage({
+  isPrivate,
+  province,
+  chatId,
+  setMessages,
+  setError,
+}: {
+  isPrivate: boolean;
+  province?: string;
+  chatId: string;
+  setMessages: Dispatch<SetStateAction<Message[]>>;
+  setError: Dispatch<SetStateAction<string>>;
+}) {
+  const [inputValue, setInputValue] = useState('');
+
+  const addMessage = (newMessage: Message) => {
+    setMessages((prevMessages) => [...prevMessages, newMessage]);
+  };
+  
+  const handleSearchPublic = async () => {
+    if (!inputValue.trim() || !province) return;
+
+    try {
+      const res = await fetch('/api/public/message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          province,
+          query: inputValue,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await res.json();
+      if (data.response) {
+        const newMessage = {
+          content: data.response,
+          isFromUser: false,
+          createdAt: new Date(),
+          sources: ,
+        }
+        addMessage(newMessage as Message);
+      } else {
+        setError('Oops, something went wrong.');
+      }
+    } catch (err) {
+      console.error(err);
+      setError('Oops, something went wrong.');
+    }
+  };
+
+  const handleSearchPrivate = async () => {
+    // TODO: call the private user chat endpoint and add message
+  };
+  
+  return(
+      <div className="relative w-full max-w-3xl mx-auto">
+          <input
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && inputValue.trim() !== '') {
+                const newMessage: Omit<Message, 'createdAt'> = {
+                  isFromUser: true,
+                  content: inputValue,
+                };
+                setMessages((prevMessages) => [...prevMessages, newMessage as Message]);
+                
+                // save message to db (private user)
+                if (isPrivate) {
+                  axiosInstance.put(`/api/chat/${chatId}/add-message`, {
+                    messageData: newMessage
+                  });
+                  handleSearchPrivate();
+                } else {
+                  handleSearchPublic();
                 }
-              }}
-              placeholder="Ask anything"
-              className="w-full px-6 py-4 border border-gray-300 rounded-full text-lg text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-14"
-            />
-            <button className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
-              <Search className="w-6 h-6" />
-            </button>
-          </div>
-    )
+                setInputValue('');
+              }
+            }}
+            placeholder="Ask anything"
+            className="w-full px-6 py-4 border border-gray-300 rounded-full text-lg text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-14"
+          />
+          <button className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+          onClick={() => {
+            const newMessage: Omit<Message, 'createdAt'> = {
+              isFromUser: true,
+              content: inputValue,
+            };
+            setMessages((prevMessages) => [...prevMessages, newMessage as Message]);
+            
+            // save message to db (private user)
+            if (isPrivate) {
+              axiosInstance.put(`/api/chat/${chatId}/add-message`, {
+                messageData: newMessage
+              });
+              handleSearchPrivate();
+            } else {
+              handleSearchPublic();
+            }
+            setInputValue('');
+          }}
+          >
+            <Search className="w-6 h-6" />
+          </button>
+        </div>
+  )
 }
 
 

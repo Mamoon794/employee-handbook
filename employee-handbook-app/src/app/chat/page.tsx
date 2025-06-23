@@ -8,6 +8,7 @@ import { Message } from '../../models/schema';
 
 export default function ChatUI() {
   const [messages, setMessages] = useState([] as Message[]);
+  const [error, setError] = useState<string>('')
   const [currChatId, setCurrChatId] = useState<string>('');
   
 
@@ -27,7 +28,7 @@ export default function ChatUI() {
           <MessageThread messageList={messages} />
 
           {/* Input Bar */}
-          <InputMessage setMessages={setMessages} chatId={currChatId}/>
+          <InputMessage isPrivate={true} setMessages={setMessages} chatId={currChatId} setError={setError}/>
           
           <p className="text-center text-sm text-gray-500 mt-4">
             Gail can make mistakes. Your privacy is protected.

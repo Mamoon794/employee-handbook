@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search } from 'lucide-react';
 import { useUser, UserButton } from '@clerk/nextjs';
+import {ChatSideBar, MessageThread, InputMessage, Header} from './global_components';
 
 import Image from "next/image";
 import ProvincePopup from "../../components/province";
@@ -119,42 +120,31 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
-      <header className="flex justify-between items-center px-6 py-4">
-        <h1 className="text-2xl font-bold text-blue-800">Gail</h1>
-        <div className="flex gap-3 items-center">
-          {!isSignedIn ? (
-            <>
-              <button 
-                onClick={handleLogIn}
-                className="px-6 py-2 bg-blue-800 text-white rounded-full font-medium hover:bg-blue-700 transition-colors"
-              >
-                Log In
-              </button>
-              <button 
-                onClick={handleSignUp}
-                className="px-6 py-2 border border-gray-300 text-gray-700 rounded-full font-medium hover:bg-gray-50 transition-colors"
-              >
-                Sign up
-              </button>
-            </>
-          ) : (
-            <div className="flex items-center">
-              <UserButton afterSignOutUrl="/" />
-            </div>
-          )}
-        </div>
-      </header>
+    <div className="min-h-screen flex bg-white">
+      <div className="flex-1 flex flex-col min-h-screen">
+        {/* Header */}
+        <Header/>
+
+        {/* Chat Area */}
+        <main className="flex-1 flex flex-col justify-between px-6 pb-6">
+          { !isSignedIn && !province && (<ProvincePopup onSave={(prov) => setProvince(prov)} />) }
+
+          {/* Message Thread */}
+          <MessageThread messageList={messages} />
+
+          {/* Input Bar */}
+          <InputMessage setMessages={setMessages} chatId={currChatId}/>
+          
+          <p className="text-center text-sm text-gray-500 mt-4">
+            Gail can make mistakes. Your privacy is protected.
+          </p>
+        </main>        
+      </div>
+
       <main className="flex-1 flex flex-col items-center justify-center px-6 max-w-4xl mx-auto w-full">
-        { !isSignedIn && !province && (<ProvincePopup onSave={(prov) => setProvince(prov)} />) }
-        <h2 className="text-4xl font-medium text-gray-900 mb-12 text-center">
-          What can I help you with?
-        </h2>
 
         <div className="min-h-screen bg-white">
-
           <main className="min-h-[calc(100vh-80px)] flex flex-col items-center justify-center px-6 max-w-7xl mx-auto w-full">
-            
             <div
             ref={threadRef}
             className="flex-1 flex flex-col gap-6 py-6 overflow-y-auto"
@@ -208,12 +198,9 @@ export default function Home() {
               </button>
             </div>
 
-            <p className="text-gray-500 text-sm mt-8 text-center">
-              Gail can make mistakes. Your privacy is protected.
-            </p>
           </main>
         </div>
       </main>
-      </div>
+    </div>  
   );
 }

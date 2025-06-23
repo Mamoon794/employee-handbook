@@ -3,7 +3,7 @@
 // JSON body shape from FE
 export interface PublicMessageRequest {
     province: string;
-    question: string;
+    query: string;
 }
 
 // State returned from FastAPI service
@@ -14,6 +14,7 @@ export interface AIResponse {
 
 export interface Document {
     source: string;
+    type: string;
     title: string;
     page: string;
     content: string;
