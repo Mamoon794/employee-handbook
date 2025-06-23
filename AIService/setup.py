@@ -51,7 +51,7 @@ prompt = hub.pull("rlm/rag-prompt", api_url="https://api.smith.langchain.com")
 
 @tool(response_format="content_and_artifact")
 def retrieve(query: str, province: str):
-    """Retrieve employment-related information by searching indexed documents in the given province. 
+    """Retrieve employment-related information by searching indexed documents in the given province. If no province is specified, it defaults to "General". 
     Parameters:
     - query: the user's question.
     - province: province name like "Alberta", "British Columbia", etc."""
@@ -91,7 +91,10 @@ def generate(state: MessagesState):
     # Format into prompt
     docs_content = "\n\n".join(doc.content for doc in tool_messages)
     system_message_content = (
-        "You are an assistant for question-answering tasks. If a retrieval tool is available, use it to get relevant information before answering. Only answer without it if you're absolutely sure."
+        "You are an assistant for question-answering tasks. If a retrieval "
+        "tool is available, use it to get relevant information before answering. "
+        "Answer with some details. If you really can't get the answer from the documents, "
+        "you can say things like I don't have enough information.\n\n"
         "\n\n"
         f"{docs_content}"
     )
@@ -153,7 +156,7 @@ def load_and_split_pdf(url):
 def split_html(doc):
     try:
         web_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200, add_start_index=True)
-        return web_splitter.split_documents(doc)
+        return web_splitter.split_documents([doc])
     except Exception as e:
         print(f"[HTML] Failed to load {doc.metadata.get('title', '')}: {e}")
         return []
@@ -161,18 +164,18 @@ def split_html(doc):
 def split_pdf(doc):
     try:
         pdf_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-        return pdf_splitter.split_documents(doc)
+        return pdf_splitter.split_documents([doc])
     except Exception as e:
         print(f"[PDF] Failed to load {doc.metadata.get('title', '')}: {e}")
         return []
     
 def process_docs(docs):
     splits = []
+    # print("Processing documents...")
+    # print(docs[0])  # Print first 100 characters of the first document
+    # print(f"Type of doc: {type(docs[0])}")
     for doc in docs:
         doc_type = doc.metadata.get("type", "")
-        url = doc.metadata.get("url", "")
-        if not url:
-            continue
         if doc_type == "html":
             splits.extend(split_html(doc))
         elif doc_type == "pdf":
@@ -194,6 +197,7 @@ def index_documents():
     existing_namespaces = stats.get("namespaces", {})
     for namespace, docs in allData.items():
         print("Processing namespace:", namespace)
+        print("Number of documents in namespace:", len(docs))
         if not isinstance(docs, list) or docs == []:
             print("docs == []: ", docs == [])
             print(f"Skipping non-list entry for namespace {namespace}: {docs}")
@@ -201,6 +205,7 @@ def index_documents():
         splits = process_docs(docs)
         if namespace in existing_namespaces:
             index.delete(delete_all=True, namespace=namespace)
+        print("length of splits:", len(splits))
         batch_add_documents(vector_store, splits, namespace=namespace, batch_size=50)
 
 if __name__ == "__main__":

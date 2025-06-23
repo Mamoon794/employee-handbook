@@ -32,7 +32,7 @@ def get_response(userMessage: RAGInput):
     # print("province_mappings[userMessage.province]:", province_mappings[userMessage.province])
     try:
         for step in graph.stream(
-            {"messages": [{"role": "user", "content": f"question: {userMessage.question}. If no province is specified, use {userMessage.province}."}]},
+            {"messages": [{"role": "user", "content": f"question: {userMessage.question}. If no province is specified, assume the province to be {userMessage.province}."}]},
             stream_mode="values",
             config={"configurable": {"thread_id": userMessage.thread_id}},
         ):
@@ -51,7 +51,6 @@ def get_response(userMessage: RAGInput):
                     for doc in last_tool_message.artifact:
                         print("doc:", doc)
                         if not isinstance(doc, Document):
-                            print("Skipping non-Document type:", type(doc))
                             continue
                         if hasattr(doc, "metadata") and hasattr(doc, "page_content"):
                             source = doc.metadata.get("source", "")
