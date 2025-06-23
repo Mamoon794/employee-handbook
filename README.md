@@ -50,6 +50,7 @@ python setup.py           # Uploads data from the pickle file to Pinecone
 * Python 3.x and pip
 
 ## Documentation
+The documentation for the AI service endpoints is located in the `AIService/` folder. You can either import `AIService_postman_collection.json` into Postman, or open `AIService_collection.openapi` using [Swagger Editor](https://editor.swagger.io/).
 
 ## Core Features
 
