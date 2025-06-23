@@ -133,6 +133,20 @@ Students will only reference the work they did in their resume, interviews, etc.
 **Arshad Merali**  
 Email: arshad@rivvi.com
 
+## Git & GitHub Workflow
+
+We follow a collaborative, branch-based development process on GitHub:
+
+- **Branch Naming:** Each feature or bug fix is implemented on a dedicated branch (e.g., `feature/Chat`, `fix/signup`).
+- **Pull Requests:** All changes are submitted via pull requests, using the `pull_request_template.md` to ensure clarity and accountability.
+- **Code Review:**  Every PR is reviewed during our regular team meetings on Zoom/Discord, where all members are present and provide collective feedback before merging into `main`.
+- **Main Branch Stability:** The `main` branch always contains the latest stable, deployable version of the app.
+- **Continuous Integration:** Our app is deployed via Vercel whenever changes are pushed to the `main` branch, ensuring quick feedback and stable releases.
+
+
+
+This workflow ensures that our team collaborates smoothly, avoids merge conflicts, and maintains clean, working code throughout development.
+
 ## License
 
 Proprietary – not open source. Code cannot be published or shared externally.
