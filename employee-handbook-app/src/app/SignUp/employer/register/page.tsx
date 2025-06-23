@@ -38,7 +38,7 @@ export default function EmployerRegistrationForm() {
       createdAt: new Date(),
       updatedAt: new Date()
     };
-    const companyResponse = await axiosInstance.post('/api/company', companyData);
+    const companyResponse = await axiosInstance.post('/api/company', { companyData });
     const companyRef = companyResponse.data; 
     console.log('Company created with ID:', companyRef.id); // debugging
 
@@ -71,8 +71,8 @@ export default function EmployerRegistrationForm() {
     });
     console.log('Metadata updated successfully'); // debugging
 
-    console.log('Redirecting to home page...'); // debugging
-    router.push('/');
+    console.log('Redirecting to dashboard...'); // debugging
+    router.push('/dashboard');
   } catch (err) {
     console.error('Detailed registration error:', err); // debugging
     setError(err instanceof Error ? err.message : 'Registration failed');
