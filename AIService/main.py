@@ -57,7 +57,8 @@ def get_response(userMessage: RAGInput):
                             source = doc.metadata.get("source", "")
                             title = doc.metadata.get("title", "")
                             page = doc.metadata.get("page", "") # only pdf have
-                            docMetadata = {"source": source, "title": title, "page": page, "content": doc.page_content}
+                            type = doc.metadata.get("type", "")
+                            docMetadata = {"source": source, "type": type, "title": title, "page": page, "content": doc.page_content}
                             context.append(docMetadata)
                             # print("Doc content:", doc.page_content)
                     # artifact = last_tool_message.artifact
