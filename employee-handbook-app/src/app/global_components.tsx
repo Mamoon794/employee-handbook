@@ -2,13 +2,14 @@
 
 'use client';
 
-import { useEffect, useState, Dispatch, SetStateAction } from 'react';
+import { useEffect, useState, Dispatch, SetStateAction, useRef } from 'react';
 import { Search, Plus, Menu, Trash2 } from 'lucide-react';
 import axiosInstance from './axios_config';
 import { useRouter } from 'next/navigation';
 import { useUser, UserButton } from '@clerk/nextjs';
 import { Link, Message } from '../models/schema'; 
 import { Citation } from '@/types/ai';
+import { marked } from 'marked';
 
 interface Chat {
     id: string;
@@ -117,36 +118,77 @@ function ChatSideBar({setMessages, setCurrChatId}: {setMessages: Dispatch<SetSta
 }
 
 
-function MessageThread({messageList, error}: {messageList: Message[], error: string}) {
-    return (
-        <div className="flex flex-col gap-6 py-6">
-            {messageList.map((message, index) => (
-                <div key={index} className='flex flex-col'>
-                {message.isFromUser ? (
-                    <div className="self-end bg-[#f1f2f9] text-gray-800 p-4 rounded-2xl max-w-[70%] shadow-sm">
-                        <p>{message.content}</p>
-                        </div>
-                ) : (
+function MessageThread({
+  messageList,
+  error,
+}: {
+  messageList: Message[];
+  error: string;
+}) {
+  const bottomRef = useRef<HTMLDivElement | null>(null);
 
-                        <div className="self-start bg-gray-100 text-gray-800 p-4 rounded-2xl max-w-[70%] shadow-sm">
-                        <p>{message.content}</p>
-                        {message.sources && message.sources.map((link, linkIndex) => (
-                        <a
-                            key={`${index}-${linkIndex}`}
-                            href={link.url}
-                            className="mt-4 inline-block font-bold text-blue-800 underline"
-                        >
-                            {link.title}
-                        </a>
-                        ))}
-                    </div>
-                )}
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messageList]);
+
+  const handleRetry = () => {
+    // TODO
+  }
+
+  return (
+    <div className="flex flex-col gap-6 py-6 px-1">
+      {messageList.map((message, index) => (
+        <div key={index} className="flex flex-col">
+          {message.isFromUser ? (
+            <div className="self-end bg-[#f1f2f9] text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm">
+              <p>{message.content}</p>
+            </div>
+          ) : (
+            <div className="self-start bg-gray-100 text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm">
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: marked(message.content),
+                }}
+              />
+              {message.sources && message.sources.length > 0 && (
+                <div className="mt-2 flex flex-col gap-2">
+                  {message.sources
+                    .filter((link) => link.url)
+                    .map((link, linkIndex) => (
+                      <a
+                        key={`${index}-${linkIndex}`}
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-800 underline font-medium hover:text-blue-600 transition w-fit"
+                      >
+                        {link.title?.trim() || "View PDF source"}
+                      </a>
+                    ))}
                 </div>
-            ))}
+              )}
+            </div>
+          )}
         </div>
-    );
-}
+      ))}
 
+      {error && (
+        <div className="self-start border border-red-500 bg-red-200 text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm">
+          <div>{error}</div>
+          <div className="pt-4">
+            <button
+            onClick={handleRetry}
+            className="border border-gray-300 text-gray-700 font-semibold px-4 py-2 rounded-md bg-white hover:bg-gray-200 transition-colors">
+              Try again
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div ref={bottomRef} />
+    </div>
+  );
+}
 
 function InputMessage({
   isPrivate,
@@ -251,7 +293,7 @@ function InputMessage({
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Ask anything"
-            className="w-full px-6 py-4 border border-gray-300 rounded-full text-lg text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-14"
+            className="w-full px-6 py-4 border border-gray-300 rounded-md text-lg text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-14"
           />
           <button className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
           onClick={submitUserMessage}

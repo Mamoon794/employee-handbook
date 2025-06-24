@@ -13,30 +13,37 @@ export async function handlePublicMessage(
 ): Promise<PublicMessageResponse> {
     const aiResult = await callAiService(province, question);
 
-    const citations: Citation[] = aiResult.metadata.map(doc => {
+    const seen = new Set<string>();
+    const citations: Citation[] = [];
+    
+    for (const doc of aiResult.metadata) {
         const originalUrl = String(doc.source);
+        if (seen.has(originalUrl)) continue;
+        seen.add(originalUrl);
+    
         let fragmentUrl = originalUrl;
-
-        if (doc.page !== "") { // This is a pdf
-            fragmentUrl = `${originalUrl}#page=${doc.page}`
-        } else if (doc.content) {
-            // Use text fragment for HTML
-            const firstWords = doc.content.split(" ").slice(0, 20).join(" ");
-            const fragment = encodeURIComponent(firstWords);
-            fragmentUrl = `${originalUrl}#:~:text=${fragment}`;
+        if (doc.type === "pdf") {
+            fragmentUrl = `${originalUrl}#page=${doc.page}`;
+        } else if (doc.type === "html") {
+        // Use text fragment for HTML -> this is unreliable
+        // const firstWords = doc.content.split(" ").slice(0, 10).join(" ");
+        // const fragment = encodeURIComponent(firstWords);
+        // fragmentUrl = `${originalUrl}#:~:text=${fragment}`;
         }
+    
+        citations.push({
+            originalUrl,
+            fragmentUrl,
+            title: doc.title,
+        });
 
-        return { 
-            originalUrl, 
-            fragmentUrl, 
-            title: doc.title 
+        if (citations.length >= 3) break;
+    }
+
+        console.log(citations);
+
+        return {
+            response: aiResult.response,
+            citations,
         };
-    });
-
-    console.log(citations);
-
-    return {
-        response: aiResult.response,
-        citations,
-    };
-}
+    }
