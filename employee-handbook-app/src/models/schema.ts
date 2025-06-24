@@ -51,7 +51,7 @@ export interface Document {
   isPublic: boolean;
 }
 
-interface Link{
+export interface Link {
   title: string;
   url: string;
 }

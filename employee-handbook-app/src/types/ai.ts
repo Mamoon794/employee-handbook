@@ -3,37 +3,31 @@
 // JSON body shape from FE
 export interface PublicMessageRequest {
     province: string;
-    question: string;
+    query: string;
 }
 
 // State returned from FastAPI service
 export interface AIResponse {
-    response: {
-        question: string;
-        context: Document[];
-        answer: string;
-    };
+    response: string;
+    metadata: Document[];
 }
 
 export interface Document {
-    id: string;
+    source: string;
     type: string;
-    page_content: string;
-    metadata: {
-        source: string;
-        start_index: number;
-        [key: string]: unknown;
-    };
-    [key: string]: unknown;
+    title: string;
+    page: string;
+    content: string;
 }
 
 // Minimal payload needed by FE
 export interface PublicMessageResponse {
-    answer: string;
+    response: string;
     citations: Citation[];
 }
 
 export interface Citation {
     originalUrl: string;
     fragmentUrl: string;
+    title: string;
 }
