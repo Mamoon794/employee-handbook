@@ -49,6 +49,9 @@ Briefly explain how you integrated the previously developed individuals componen
 
  * Keep this very short (1-3 lines).
 
+We prioritized core features and split them into frontend and backend tasks. To work in parallel, we selected independent tasks and assigned them based on interest and skill set during weekly team meetings. Each feature was developed in its own branch, and when branches diverged, we regularly rebased or merged main into feature branches to minimize conflicts and resolve issues early through communication.
+
+
 
 ## Product - Review
 
