@@ -2,13 +2,14 @@
 
 'use client';
 
-import { useEffect, useState, Dispatch, SetStateAction } from 'react';
+import { useEffect, useState, Dispatch, SetStateAction, useRef } from 'react';
 import { Search, Plus, Menu, Trash2 } from 'lucide-react';
 import axiosInstance from './axios_config';
 import { useRouter } from 'next/navigation';
 import { useUser, UserButton } from '@clerk/nextjs';
-import { Message } from '../models/schema'; 
-
+import { Link, Message } from '../models/schema'; 
+import { Citation } from '@/types/ai';
+import { marked } from 'marked';
 
 interface Chat {
     id: string;
@@ -117,82 +118,198 @@ function ChatSideBar({setMessages, setCurrChatId}: {setMessages: Dispatch<SetSta
 }
 
 
+function MessageThread({
+  messageList,
+  error,
+}: {
+  messageList: Message[];
+  error: string;
+}) {
+  const bottomRef = useRef<HTMLDivElement | null>(null);
 
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messageList]);
 
-function MessageThread({messageList}: {messageList: Message[]}) {
-    return (
-        <div className="flex flex-col gap-6 py-6">
-            {messageList.map((message, index) => (
-                <div key={index} className='flex flex-col'>
-                {message.isFromUser ? (
-                    <div className="self-end bg-[#f1f2f9] text-gray-800 p-4 rounded-2xl max-w-[70%] shadow-sm">
-                        <p>{message.content}</p>
-                        </div>
-                ) : (
+  const handleRetry = () => {
+    // TODO
+  }
 
-                        <div className="self-start bg-gray-100 text-gray-800 p-4 rounded-2xl max-w-[70%] shadow-sm">
-                        <p>{message.content}</p>
-                        {message.sources && message.sources.map((link, linkIndex) => (
-                        <a
-                            key={`${index}-${linkIndex}`}
-                            href={link.url}
-                            className="mt-4 inline-block font-bold text-blue-800 underline"
-                        >
-                            {link.title}
-                        </a>
-                        ))}
-                    </div>
-                )}
+  return (
+    <div className="flex flex-col gap-6 py-6 px-1">
+      {messageList.map((message, index) => (
+        <div key={index} className="flex flex-col">
+          {message.isFromUser ? (
+            <div className="self-end bg-[#f1f2f9] text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm">
+              <p>{message.content}</p>
+            </div>
+          ) : (
+            <div className="self-start bg-gray-100 text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm">
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: marked(message.content),
+                }}
+              />
+              {message.sources && message.sources.length > 0 && (
+                <div className="mt-2 flex flex-col gap-2">
+                  {message.sources
+                    .filter((link) => link.url)
+                    .map((link, linkIndex) => (
+                      <a
+                        key={`${index}-${linkIndex}`}
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-800 underline font-medium hover:text-blue-600 transition w-fit"
+                      >
+                        {link.title?.trim() || "View PDF source"}
+                      </a>
+                    ))}
                 </div>
-            ))}
+              )}
+            </div>
+          )}
         </div>
-    );
-}
+      ))}
 
-
-function InputMessage({chatId, setMessages}: {chatId: string, setMessages: Dispatch<SetStateAction<Message[]>>}) {
-    const [inputValue, setInputValue] = useState('');
-    return(
-        <div className="relative w-full max-w-3xl mx-auto">
-            <input
-              type="text"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && inputValue.trim() !== '') {
-                    const newMessage: Omit<Message, 'createdAt'> = {
-                        isFromUser: true,
-                        content: inputValue,
-                    };
-                    setMessages((prevMessages) => [...prevMessages, newMessage as Message]);
-                    axiosInstance.put(`/api/chat/${chatId}/add-message`, {
-                        messageData: newMessage
-                    })
-                  
-                  setInputValue('');
-                }
-              }}
-              placeholder="Ask anything"
-              className="w-full px-6 py-4 border border-gray-300 rounded-full text-lg text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-14"
-            />
-            <button className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
-              <Search className="w-6 h-6" />
+      {error && (
+        <div className="self-start border border-red-500 bg-red-200 text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm">
+          <div>{error}</div>
+          <div className="pt-4">
+            <button
+            onClick={handleRetry}
+            className="border border-gray-300 text-gray-700 font-semibold px-4 py-2 rounded-md bg-white hover:bg-gray-200 transition-colors">
+              Try again
             </button>
           </div>
-    )
+        </div>
+      )}
+
+      <div ref={bottomRef} />
+    </div>
+  );
+}
+
+function InputMessage({
+  inputValue,
+  setInputValue,
+  isPrivate,
+  province,
+  chatId,
+  setMessages,
+  setError,
+}: {
+  inputValue: string;
+  setInputValue: Dispatch<SetStateAction<string>>;
+  isPrivate: boolean;
+  province?: string | null;
+  chatId?: string;
+  setMessages: Dispatch<SetStateAction<Message[]>>;
+  setError: Dispatch<SetStateAction<string>>;
+}) {
+  const errorMessage = 'Oops, something went wrong. Want to try again?'
+
+  const submitUserMessage = async () => {
+    if (!inputValue.trim()) return;
+
+    try {
+      const userMessage: Omit<Message, 'createdAt'> = {
+        isFromUser: true,
+        content: inputValue,
+      };
+      setMessages((prevMessages) => [...prevMessages, userMessage as Message]);
+      setInputValue('');
+      setError('');
+
+      if (isPrivate) {
+        axiosInstance.put(`/api/chat/${chatId}/add-message`, {
+          messageData: userMessage
+        });
+        await handlePrivateChat();
+      } else {
+        await handlePublicChat();
+      }
+    } catch (err) {
+      console.error(errorMessage);
+      setError(errorMessage);
+    }
+  };
+  
+  function mapCitationsToLinks(citations: Citation[]): Link[] {
+    return citations.map(citation => ({
+      title: citation.title,
+      url: citation.fragmentUrl || citation.originalUrl // Use fragmentUrl if available, fallback to originalUrl
+    }));
+  }
+
+  const handlePrivateChat = async () => {
+    // TODO: call the private user chat endpoint (not yet implemented) and add bot message to list of messages
+  };
+
+  const handlePublicChat = async () => {
+    if (!province) return;
+
+    try {
+      const res = await fetch('/api/public/message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          province,
+          query: inputValue,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await res.json();
+      if (data.response) {
+        const botMessage = {
+          content: data.response,
+          isFromUser: false,
+          createdAt: new Date(),
+          sources: mapCitationsToLinks(data.citations),
+        }
+        setMessages((prevMessages) => [...prevMessages, botMessage as Message]);
+      } else {
+        setError(errorMessage);
+      }
+    } catch (err) {
+      console.error(err);
+      setError(errorMessage);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      submitUserMessage();
+    }
+  };
+  
+  return(
+      <div className="relative w-full max-w-3xl mx-auto">
+          <input
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Ask anything"
+            className="w-full px-6 py-4 border border-gray-300 rounded-md text-lg text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-14"
+          />
+          <button className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+          onClick={submitUserMessage}
+          >
+            <Search className="w-6 h-6" />
+          </button>
+        </div>
+  )
 }
 
 
-function Header(){
-  const { isSignedIn, user } = useUser();
+function Header({ province, setProvince }: { province: string; setProvince: (prov: string) => void }) {
+    const { isSignedIn, user } = useUser();
     const router = useRouter();
-    function handleSignup() {
-        router.push('/SignUp');
-    };
-
-    function handleLogin() {
-      router.push('/LogIn/[...rest]');
-    }
 
     useEffect(() => {
         if (isSignedIn && user) {
@@ -216,18 +333,9 @@ function Header(){
           <div className="flex gap-3 items-center">
             {!isSignedIn ? (
               <>
-                <button 
-                  onClick={handleLogin}
-                  className="px-6 py-2 bg-blue-800 text-white rounded-full font-medium hover:bg-blue-700 transition-colors"
-                >
-                  Log In
-                </button>
-                <button 
-                  onClick={handleSignup}
-                  className="px-6 py-2 border border-gray-300 text-gray-700 rounded-full font-medium hover:bg-gray-50 transition-colors"
-                >
-                  Sign up
-                </button>
+                {province !== "" && <span className="px-4"><ProvinceDropdown province={province} setProvince={setProvince} /></span>}
+                <LogIn />
+                <SignUp />
               </>
             ) : (
               <div className="flex items-center">
@@ -237,6 +345,89 @@ function Header(){
           </div>
         </header>
     )
+}
+
+export function LogIn() {
+  const router = useRouter();
+
+  const handleLogin = () => {
+    router.push('/LogIn/[...rest]');
+  };
+
+  return (
+    <button
+      onClick={handleLogin}
+      className="bg-blue-800 text-white font-semibold px-6 py-2 rounded-md hover:bg-blue-600 transition-colors"
+    >
+      Log in
+    </button>
+  );
+}
+
+function SignUp() {
+  const router = useRouter();
+
+  const handleSignUp = () => {
+    router.push('/SignUp');
+  };
+
+  return (
+    <button
+      onClick={handleSignUp}
+      className="border border-gray-300 text-gray-700 font-semibold px-6 py-2 rounded-md hover:bg-gray-200 transition-colors"
+    >
+      Sign up
+    </button>
+  );
+}
+
+function ProvinceDropdown({
+  province,
+  setProvince,
+}: {
+  province: string;
+  setProvince: (prov: string) => void;
+}) {
+  const provinceMap: { [fullName: string]: string } = {
+    "Alberta": "AB",
+    "British Columbia": "BC",
+    "Manitoba": "MB",
+    "New Brunswick": "NB",
+    "Newfoundland and Labrador": "NL",
+    "Northwest Territories": "NT",
+    "Nova Scotia": "NS",
+    "Nunavut": "NU",
+    "Ontario": "ON",
+    "Prince Edward Island": "PE",
+    "Quebec": "QC",
+    "Saskatchewan": "SK",
+    "Yukon": "YT"
+  };
+
+  const reverseProvinceMap: { [abbr: string]: string } = Object.fromEntries(
+    Object.entries(provinceMap).map(([full, abbr]) => [abbr, full])
+  );
+
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const abbr = e.target.value;
+    const full = reverseProvinceMap[abbr];
+    if (full) {
+      setProvince(full);
+    }
+  };
+
+  return (
+    <select
+      value={provinceMap[province]}
+      onChange={handleChange}
+      className="text-gray-700 font-semibold px-4 py-2 rounded-md hover:bg-gray-50 transition-colors w-[80px]"
+    >
+      <option value="" disabled>Select</option>
+      {Object.values(provinceMap).map((abbr) => (
+        <option key={abbr} value={abbr}>{abbr}</option>
+      ))}
+    </select>
+  );
 }
 
 export {ChatSideBar, MessageThread, InputMessage, Header};

@@ -2,6 +2,8 @@
 
 import { Users, User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { LogIn } from '../global_components';
+
 
 export default function SignUp() {
   const router = useRouter(); 
@@ -40,12 +42,7 @@ export default function SignUp() {
         <p className="text-gray-700 text-md mb-3">Already have an account?</p>
         
         {/* Login button with navigation */}
-        <button 
-          onClick={() => router.push('/LogIn/[...rest]')}
-          className="bg-blue-800 text-white font-semibold px-6 py-3 rounded-md hover:bg-blue-700 transition-colors"
-        >
-          Log in
-        </button>
+        <LogIn />
       </main>
     </div>
   );
