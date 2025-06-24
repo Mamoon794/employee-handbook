@@ -30,6 +30,13 @@ List **process-related** (i.e. team organization and how you work) decisions and
  * Give a supporting argument about what makes you think that way.
  * Feel free to refer/link to process artifact(s).
 
+Figma Screens Were Not Fully Finalized Before Development
+- Some of the Figma designs were still being discussed or revised while we began development. As a result, certain UI decisions such as layout fixes, or page flows had to be changed mid-build based on usability concerns or new partner feedback. This made implementation less efficient, as components had to be refactored or restructured after initial work was already done.
+
+Lack of initial consistent code reviews early on
+- In the earlier stages, we did not have a fully consistent code review process. This led to some inconsistencies in the styling, and component reuse across different parts of the frontend code. As the codebase grew, this required additional refactoring to align components and code styles and standards. Earlier enforcement of code review guidelines could have reduced these small inconsistencies.
+
+
 
 #### Q3(a). Planned changes
 
