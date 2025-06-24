@@ -150,10 +150,6 @@ The documentation for the AI service endpoints is located in the `AIService/` fo
 <img src="https://github.com/user-attachments/assets/6c2eacb8-838f-4294-88ca-380eca06c24e" width="700" height="500" />
 
 
-## Development Setup
-
-> Note: As this project is in early development, this section will evolve.
-
 ## Task Management
 
 - GitHub Issues and a shared structured doc for dev tracking
@@ -178,7 +174,6 @@ We follow a collaborative, branch-based development process on GitHub:
 - **Code Review:**  Every PR is reviewed during our regular team meetings on Zoom/Discord, where all members are present and provide collective feedback before merging into `main`.
 - **Main Branch Stability:** The `main` branch always contains the latest stable, deployable version of the app.
 - **Continuous Integration:** Our app is deployed via Vercel whenever changes are pushed to the `main` branch, ensuring quick feedback and stable releases.
-
 
 
 This workflow ensures that our team collaborates smoothly, avoids merge conflicts, and maintains clean, working code throughout development.
