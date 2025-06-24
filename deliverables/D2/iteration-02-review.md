@@ -54,6 +54,9 @@ List **process-related** (i.e. team organization and how you work) decisions and
 2. Lack of initial consistent code reviews early on
 - In the earlier stages, we did not have a fully consistent code review process. This led to some inconsistencies in the styling, and component reuse across different parts of the frontend code. As the codebase grew, this required additional refactoring to align components and code styles and standards. Earlier enforcement of code review guidelines could have reduced these small inconsistencies.
 
+3. Insufficient early communication regarding team roles
+- During the initial development stages, it wasn't clear about the role assignments, and which team member was going to work on which aspect of the app, such as backend or frontend. This sometimes led to misunderstandings about feature priorities, implementation details, and deadlines. As a result, certain features were either delayed or had a lot of code conflicts due to misinterpreted requirements. More structured and regular cross-functional meetings could have helped resolve these issues early on.
+
 #### Q3(a). Planned changes
 
 ##### 1. `develop` Branch
