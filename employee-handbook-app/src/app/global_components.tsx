@@ -191,20 +191,22 @@ function MessageThread({
 }
 
 function InputMessage({
+  inputValue,
+  setInputValue,
   isPrivate,
   province,
   chatId,
   setMessages,
   setError,
 }: {
+  inputValue: string;
+  setInputValue: Dispatch<SetStateAction<string>>;
   isPrivate: boolean;
   province?: string | null;
   chatId?: string;
   setMessages: Dispatch<SetStateAction<Message[]>>;
   setError: Dispatch<SetStateAction<string>>;
 }) {
-  const [inputValue, setInputValue] = useState('');
-
   const errorMessage = 'Oops, something went wrong. Want to try again?'
 
   const submitUserMessage = async () => {
