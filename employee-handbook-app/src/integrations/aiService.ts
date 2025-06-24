@@ -19,6 +19,10 @@ export async function callAiService(
         body: JSON.stringify({ province, question }),
     });
 
+    console.log("AI_SERVICE_URL:", AI_SERVICE_URL);
+    console.log("Full request URL:", `${AI_SERVICE_URL}/responses`);
+    console.log("Response status:", res.status, res.statusText);
+
     if (!res.ok) {
         const text = await res.text();
         throw new Error(`AI service error: ${text}`);
