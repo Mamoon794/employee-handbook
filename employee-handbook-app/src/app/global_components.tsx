@@ -420,7 +420,7 @@ function ProvinceDropdown({
     <select
       value={provinceMap[province]}
       onChange={handleChange}
-      className="text-gray-700 font-semibold px-4 py-2 rounded-md hover:bg-gray-50 transition-colors w-[60px]"
+      className="text-gray-700 font-semibold px-4 py-2 rounded-md hover:bg-gray-50 transition-colors w-[80px]"
     >
       <option value="" disabled>Select</option>
       {Object.values(provinceMap).map((abbr) => (
