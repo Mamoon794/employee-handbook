@@ -50,6 +50,42 @@ python setup.py           # Uploads data from the pickle file to Pinecone
 * Node.js and npm
 * Python 3.x and pip
 
+**Environment variables:**
+
+Create a `.env.local` file and put the following keys:
+
+```
+AI_SERVICE_URL=<your_AI_service_public_url>
+NEXT_PUBLIC_SENTRY_DSN=<your_sentry_dsn>
+NEXT_PUBLIC_FIRESTORE_API_KEY=<your_firestore_api_key>
+NEXT_PUBLIC_FIRESTORE_AUTH_DOMAIN=<your_firestore_auth_domain>
+NEXT_PUBLIC_FIRESTORE_PROJECT_ID=<your_firestore_project_id>
+NEXT_PUBLIC_FIRESTORE_STORAGE_BUCKET=<your_firestore_storage_bucket>
+NEXT_PUBLIC_FIRESTORE_MESSAGING_SENDER_ID=<your_firestore_messaging_sender_id>
+NEXT_PUBLIC_FIRESTORE_APP_ID=<your_firestore_app_id>
+NEXT_PUBLIC_FIRESTORE_MEASUREMENT_ID=<your_firestore_measurement_id>
+GOOGLE_API_KEY=<your_google_api_key>
+PINECONE_API_KEY=<your_pinecone_api_key>
+PINECONE_INDEX_NAME=<your_pinecone_index_name>
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=<your_clerk_publishable_key>
+CLERK_SECRET_KEY=<your_clerk_secret_key>
+CLERK_WEBHOOK_SECRET=<your_clerk_webhook_secret>
+CLERK_MODE=<your_clerk_mode> # e.g., development or production
+
+FIREBASE_TYPE=service_account
+FIREBASE_PROJECT_ID=<your_firebase_project_id>
+FIREBASE_PRIVATE_KEY_ID=<your_firebase_private_key_id>
+FIREBASE_PRIVATE_KEY=<your_firebase_private_key_multiline_escaped>
+FIREBASE_CLIENT_EMAIL=<your_firebase_client_email>
+FIREBASE_CLIENT_ID=<your_firebase_client_id>
+FIREBASE_AUTH_URI=<your_firebase_auth_uri>
+FIREBASE_TOKEN_URI=<your_firebase_token_uri>
+FIREBASE_AUTH_PROVIDER_CERT_URL=<your_firebase_auth_provider_cert_url>
+FIREBASE_CLIENT_CERT_URL=<your_firebase_client_cert_url>
+FIREBASE_UNIVERSE_DOMAIN=<your_firebase_universe_domain>
+
+```
+
 ## Documentation
 The documentation for the AI service endpoints is located in the `AIService/` folder. You can either import `AIService_postman_collection.json` into Postman, or open `AIService_collection.openapi` using [Swagger Editor](https://editor.swagger.io/).
 
