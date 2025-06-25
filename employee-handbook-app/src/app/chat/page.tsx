@@ -1,8 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {ChatSideBar, MessageThread, InputMessage, Header} from '../global_components';
 import { Message } from '../../models/schema'; 
+import { useUser } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
 
 
 
@@ -12,6 +14,15 @@ export default function ChatUI() {
   const [currChatId, setCurrChatId] = useState<string>('');
   const [province, setProvince] = useState<string>('');
   const [inputValue, setInputValue] = useState<string>('');
+  const router = useRouter();
+  const { isSignedIn } = useUser();
+
+  useEffect(() => {
+    if (!isSignedIn && isSignedIn !== undefined) {
+      router.push('/');
+    }
+
+    }, [isSignedIn]);
   
 
   return (
@@ -30,7 +41,7 @@ export default function ChatUI() {
           <MessageThread messageList={messages} error={error} />
 
           {/* Input Bar */}
-          <InputMessage inputValue={inputValue} setInputValue={setInputValue} isPrivate={true} setMessages={setMessages} chatId={currChatId} setError={setError}/>
+          <InputMessage inputValue={inputValue} province={province} setInputValue={setInputValue} isPrivate={true} setMessages={setMessages} chatId={currChatId} setError={setError}/>
           
           <p className="text-center text-sm text-gray-500 mt-4">
             Gail can make mistakes. Your privacy is protected.

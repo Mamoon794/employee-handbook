@@ -136,8 +136,16 @@ function MessageThread({
   }
 
   return (
-    <div className="flex flex-col gap-6 py-6 px-1">
-      {messageList.map((message, index) => (
+    <div className="flex flex-col gap-6 py-6 px-1 overflow-y-auto" style={{ height: 'calc(100vh - 200px)'}}>
+    {messageList.length === 0 ? (
+            <div className="flex flex-col justify-center items-center text-center">
+              <h2 className="text-5xl font-bold text-blue-800 mb-2">Welcome to Gail!</h2>
+              <h3 className="text-xl font-medium text-blue-800">
+                Your workplace rights & regulations chatbot
+              </h3>
+            </div>
+          ):
+      messageList.map((message, index) => (
         <div key={index} className="flex flex-col">
           {message.isFromUser ? (
             <div className="self-end bg-[#f1f2f9] text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm">
@@ -207,6 +215,22 @@ function InputMessage({
   setMessages: Dispatch<SetStateAction<Message[]>>;
   setError: Dispatch<SetStateAction<string>>;
 }) {
+
+  const province_map: { [key: string]: string } = {
+    "ON": "Ontario",
+    "AB": "Alberta",
+    "BC": "British Columbia",
+    "MB": "Manitoba",
+    "NB": "New Brunswick",
+    "NL": "Newfoundland and Labrador",
+    "NS": "Nova Scotia",
+    "PE": "Prince Edward Island",
+    "QC": "Quebec",
+    "SK": "Saskatchewan",
+    "NT": "Northwest Territories",
+    "NU": "Nunavut",
+    "YT": "Yukon"
+  }
   const errorMessage = 'Oops, something went wrong. Want to try again?'
 
   const submitUserMessage = async () => {
@@ -230,7 +254,7 @@ function InputMessage({
         await handlePublicChat();
       }
     } catch (err) {
-      console.error(errorMessage);
+      console.error(err);
       setError(errorMessage);
     }
   };
@@ -243,13 +267,39 @@ function InputMessage({
   }
 
   const handlePrivateChat = async () => {
-    // TODO: call the private user chat endpoint (not yet implemented) and add bot message to list of messages
+    const full_province = province ? province_map[province] : '';
+    console.log("province", province);
+    const res = await axiosInstance.post(`/api/public/message`, {
+      province,
+      query: inputValue
+    });
+    if (res.status !== 200) {
+      setError(errorMessage);
+      return;
+    }
+
+    const data = res.data;
+    if (data.response) {
+      const botMessage = {
+        content: data.response,
+        isFromUser: false,
+        sources: mapCitationsToLinks(data.citations),
+      }
+      setMessages((prevMessages) => [...prevMessages, botMessage as Message]);
+      axiosInstance.put(`/api/chat/${chatId}/add-message`, {
+        messageData: botMessage,
+      });
+    }
+    else {
+      setError(errorMessage);
+    }
   };
 
   const handlePublicChat = async () => {
     if (!province) return;
 
     try {
+      console.log("province", province);
       const res = await fetch('/api/public/message', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -316,6 +366,7 @@ function Header({ province, setProvince }: { province: string; setProvince: (pro
             axiosInstance.get(`/api/users/${user.id}?isClerkID=true`)
             .then(response => {
               localStorage.setItem('userId', response.data[0].id);
+              setProvince(response.data[0].province || '');
             })
             .catch(error => {
               console.error('Error fetching user data:', error);
