@@ -23,7 +23,21 @@ Then, you may select any of the suggested questions, or type in your own questio
 The chatbot will give you an answer and you can take a closer look at any of the sources by clicking on them.
 ![Chat](deliverables/D2/images/chat.png)
 
-You can also choose to log in or sign up using the buttons at the top right.
+You can also choose to log in or sign up using the buttons at the top right. Upon pressing the "Login" button, you will be redirected to the Clerk login page. 
+![Login](deliverables/D2/images/login.png)
+
+
+After logging in, you will be able to create new chats, see your chat history and your messages will be stored.
+![Chat History](deliverables/D2/images/chat_history.png)
+
+If you don't have an account, you can sign up using the "Sign Up" button. You will be asked whether you want to continue as an employee or an employer. 
+![Sign Up](deliverables/D2/images/signup.png)
+
+If you choose to sign up as an employee, you will be taken to the sign up page by Clerk, where you can enter your email and password to create an account.
+![Employee Sign Up](deliverables/D2/images/employee_signup.png)
+
+If you choose to sign up as an employer, you will see the same page but in the backend, you will be stored as an employer, meaning in the future, you will be able to upload your company policies and documents.
+![Employer Sign Up](deliverables/D2/images/employee_signup.png)
 
 ## Setup (For Developers)
 
