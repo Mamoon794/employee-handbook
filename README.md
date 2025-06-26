@@ -11,7 +11,7 @@ The app can be accessed at https://employee-handbook-app.vercel.app/.
 
 (Note: Backend is hosted on Render (free tier), so there may be ~30s cold start delay on first load.)
 
-## How to use
+## Instructions/Features
 Access the link above.
 
 On landing, select your province/territory.
@@ -20,10 +20,13 @@ On landing, select your province/territory.
 Then, you may select any of the suggested questions, or type in your own question related to workplace rights/regulations.
 ![Welcome](deliverables/D2/images/welcome.png)
 
-The chatbot will give you an answer and you can take a closer look at any of the sources by clicking on them.
+The chatbot will give you an answer given your selected province/territory and you can take a closer look at any of the sources by clicking on them.
 ![Chat](deliverables/D2/images/chat.png)
 
-You can also choose to log in or sign up using the buttons at the top right. Upon pressing the "Login" button, you will be redirected to the Clerk login page. 
+The province dropdown allows you to change your province. The chatbot will tailor its answers to this province.
+![ProvinceDropdown](deliverables/D2/images/dropdown.gif)
+
+You can also choose to log in or sign up using the buttons at the top right. Upon pressing the "Log in" button, you will be redirected to the Clerk login page. 
 ![Login](deliverables/D2/images/login.png)
 
 
