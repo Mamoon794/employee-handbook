@@ -1,0 +1,38 @@
+name: Build and Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        working-directory: employee-handbook-app
+        run: npm ci
+
+      - name: Lint
+        working-directory: employee-handbook-app
+        run: npm run lint
+
+      - name: Run tests
+        working-directory: employee-handbook-app
+        run: npm test
+
+      - name: Build
+        working-directory: employee-handbook-app
+        run: npm run build

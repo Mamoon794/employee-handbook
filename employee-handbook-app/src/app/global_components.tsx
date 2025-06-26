@@ -171,7 +171,7 @@ function MessageThread({
             <div className="self-start bg-gray-100 text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm">
               <div
                 dangerouslySetInnerHTML={{
-                  __html: marked(message.content),
+                  __html: marked.parse(message.content),
                 }}
               />
               {message.sources && message.sources.length > 0 && (
