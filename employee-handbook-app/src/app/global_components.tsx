@@ -16,10 +16,26 @@ interface Chat {
     title: string;
 };
 
-function ChatSideBar({setMessages, setCurrChatId}: {setMessages: Dispatch<SetStateAction<Message[]>>, setCurrChatId: (chatId: string) => void}) {
+function ChatSideBar({setMessages, setCurrChatId, currChatId}: {setMessages: Dispatch<SetStateAction<Message[]>>, setCurrChatId: (chatId: string) => void, currChatId: string}) {
     const [chats, setChats] = useState<Chat[]>([]);
     const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
     const [userId, setUserId] = useState<string | null>(null);
+
+    useEffect(() => {
+      const localUserId = localStorage.getItem('userId');
+      if (localUserId) {
+        const allChats = axiosInstance.get(`/api/chat/${localUserId}?isUserID=true`)
+        .then((response) => {
+          const chatData = response.data.map((chat: any) => ({
+            id: chat.id,
+            title: chat.title,
+          }));
+          setChats(chatData);
+          setSelectedChat(chatData.find((chat: Chat) => chat.id === currChatId) || null);
+        });
+      }
+        
+    }, [currChatId]);
 
     useEffect(() => {
       async function fetchChats() {
@@ -54,7 +70,7 @@ function ChatSideBar({setMessages, setCurrChatId}: {setMessages: Dispatch<SetSta
         if (!userId) return;
 
         const newChat = {
-            title: `Chat with ${new Date().toLocaleDateString()}-${chats.length + 1}`,
+            title: `Chat - ${new Date().toLocaleDateString()}-${chats.length + 1}`,
             userId: userId,
             messages: [] as Message[],
         };
@@ -206,6 +222,7 @@ function InputMessage({
   chatId,
   setMessages,
   setError,
+  setCurrChatId
 }: {
   inputValue: string;
   setInputValue: Dispatch<SetStateAction<string>>;
@@ -214,6 +231,7 @@ function InputMessage({
   chatId?: string;
   setMessages: Dispatch<SetStateAction<Message[]>>;
   setError: Dispatch<SetStateAction<string>>;
+  setCurrChatId?: Dispatch<SetStateAction<string>>;
 }) {
 
   const province_map: { [key: string]: string } = {
@@ -246,10 +264,24 @@ function InputMessage({
       setError('');
 
       if (isPrivate) {
-        axiosInstance.put(`/api/chat/${chatId}/add-message`, {
-          messageData: userMessage
-        });
-        await handlePrivateChat();
+        let newChatId = chatId || '';
+        if (chatId === '') {
+            const newChat = await axiosInstance.post('/api/chat', {
+            userId: localStorage.getItem('userId'),
+            title: `Chat - ${new Date().toLocaleDateString()}-1`,
+            messages: [userMessage]
+          });
+          if(setCurrChatId) setCurrChatId(newChat.data.id);
+          newChatId = newChat.data.id;
+
+        }
+
+        else{
+          axiosInstance.put(`/api/chat/${chatId}/add-message`, {
+            messageData: userMessage
+          });
+        }
+        await handlePrivateChat(newChatId);
       } else {
         await handlePublicChat();
       }
@@ -266,7 +298,7 @@ function InputMessage({
     }));
   }
 
-  const handlePrivateChat = async () => {
+  const handlePrivateChat = async (new_chatId: string) => {
     const full_province = province ? province_map[province] : '';
     console.log("province", province);
     const res = await axiosInstance.post(`/api/public/message`, {
@@ -286,7 +318,7 @@ function InputMessage({
         sources: mapCitationsToLinks(data.citations),
       }
       setMessages((prevMessages) => [...prevMessages, botMessage as Message]);
-      axiosInstance.put(`/api/chat/${chatId}/add-message`, {
+      axiosInstance.put(`/api/chat/${new_chatId}/add-message`, {
         messageData: botMessage,
       });
     }

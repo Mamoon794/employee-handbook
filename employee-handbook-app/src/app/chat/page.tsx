@@ -28,7 +28,7 @@ export default function ChatUI() {
   return (
     <div className="min-h-screen flex bg-white">
       {/* Sidebar (History) */}
-      <ChatSideBar setCurrChatId={setCurrChatId} setMessages={setMessages} />
+      <ChatSideBar setCurrChatId={setCurrChatId} currChatId={currChatId} setMessages={setMessages} />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-h-screen">
@@ -41,7 +41,7 @@ export default function ChatUI() {
           <MessageThread messageList={messages} error={error} />
 
           {/* Input Bar */}
-          <InputMessage inputValue={inputValue} province={province} setInputValue={setInputValue} isPrivate={true} setMessages={setMessages} chatId={currChatId} setError={setError}/>
+          <InputMessage inputValue={inputValue} province={province} setInputValue={setInputValue} isPrivate={true} setMessages={setMessages} chatId={currChatId} setCurrChatId={setCurrChatId} setError={setError}/>
           
           <p className="text-center text-sm text-gray-500 mt-4">
             Gail can make mistakes. Your privacy is protected.
