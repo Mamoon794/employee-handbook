@@ -26,17 +26,17 @@ The chatbot will give you an answer given your selected province/territory and y
 The province dropdown allows you to change your province. The chatbot will tailor its answers to this province.
 ![ProvinceDropdown](deliverables/D2/images/dropdown.gif)
 
-You can also choose to log in or sign up using the buttons at the top right. Upon pressing the "Log in" button, you will be redirected to the Clerk login page. 
+You can also choose to log in or sign up using the buttons at the top right. Upon pressing the **Log in** button, you will be redirected to the Clerk login page. 
 ![Login](deliverables/D2/images/login.png)
 
 
 After logging in, you will be able to create new chats, see your chat history and your messages will be stored.
 ![Chat History](deliverables/D2/images/chat_history.png)
 
-If you don't have an account, you can sign up using the **Sign Up** button. You will be asked whether you want to continue as an employee or an employer. As of now, Signup only works when using email. Signup with google needs a bit more work to be done.
+If you don't have an account, you can sign up using the **Sign Up** button. You will be asked whether you want to continue as an employee or an employer. As of now, sign up only works when using email. Sign up with Google needs a bit more work to be done.
 ![Sign Up](deliverables/D2/images/signup.png)
 
-If you choose to sign up as an employee, you will be taken to the sign up page by Clerk, where you can enter your email and password to create an account.As of now, Signup only works when using email. Signup with google needs a bit more work to be done.
+If you choose to sign up as an employee, you will be taken to the sign up page by Clerk, where you can enter your email and password to create an account. As of now, sign up only works when using email. Sign up with Google needs a bit more work to be done.
 ![Employee Sign Up](deliverables/D2/images/employee_signup.png)
 
 If you choose to sign up as an employer, you will see the same page but upon completion, you will be taken to the dashboard which allows you to upload documents, view analytics and more. In the future, you will be able to upload your company policies and documents.
