@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-// The main development branch
+
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
