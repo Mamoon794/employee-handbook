@@ -1,7 +1,6 @@
 ### The routes defined for the API
 1. **POST /api/public/message**
     - Description: Sends a public user's question, province, and thread ID to the AI service. The service returns a contextual response with relevant citations. The API returns citations including the original URL, a URL with a fragment identifier or text fragment, and the title.
-	- Body: The user's province and query.
 	- Example Body:
 	    ```json
 		{
@@ -26,10 +25,10 @@
 
 ---
 2. **GET /api/users/[userID]**
-   - Description: Fetches a user by their ID.
-   - Parameters:
-     - `userID`: The ID of the user to fetch.
-   - Response: Returns the user object.
+    - Description: Fetches a user by their ID.
+    - Parameters:
+        - `userID`: The ID of the user to fetch.
+	- Response: Returns the user object.
 
 3. **POST /api/users**
     - Description: Creates a new user.
