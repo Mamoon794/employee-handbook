@@ -15,7 +15,6 @@ export async function GET(request: Request, { params }: { params: Promise<{ theI
             (chats as ChatWithDate[]).sort((a, b) => {
                 return b.createdAt.toDate().getTime() - a.createdAt.toDate().getTime();
             });
-            console.log("Fetched user chats:", chats);
         }
         else{
             chats = await getChat(theID);
