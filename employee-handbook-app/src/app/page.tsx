@@ -6,6 +6,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useUser } from '@clerk/nextjs';
 import {MessageThread, InputMessage, Header} from './global_components';
+import { useRouter } from 'next/navigation';
 
 import ProvincePopup from "../../components/province";
 import { Message } from '@/models/schema';
@@ -16,6 +17,7 @@ function generateThreadId(): string {
 
 export default function Home() {
   const { isSignedIn } = useUser();
+  const router = useRouter();
 
   const [inputValue, setInputValue] = useState<string>('');
   const [province, setProvince] = useState<string>('');
@@ -34,6 +36,13 @@ export default function Home() {
       sessionStorage.setItem("threadId", newId);
     }
   }, []);
+
+  useEffect(() => {
+    if (isSignedIn){
+      router.push('/chat');
+    }
+      
+    }, [isSignedIn]);
 
   useEffect(() => {
     const prov = sessionStorage.getItem('province');
