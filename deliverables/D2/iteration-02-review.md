@@ -42,20 +42,14 @@ It gave everyone a shared understanding of priorities and ensured the team worke
 
 #### Q2. What did not work well
 
-List **process-related** (i.e. team organization and how you work) decisions and actions that did not work well.
+##### 1. Figma Screens Were Not Fully Finalized Before Development
+Some of the Figma designs were still being discussed or revised while we began development. As a result, certain UI decisions such as layout fixes, or page flows had to be changed mid-build based on usability concerns or new partner feedback. This made implementation less efficient, as components had to be refactored or restructured after initial work was already done.
 
- * 2 - 4 important decisions, processes, actions, or anything else that did not work well for you, ordered from most to least important.
- * Give a supporting argument about what makes you think that way.
- * Feel free to refer/link to process artifact(s).
+##### 2. Lack of Initial Consistent Code Reviews Early On
+In the earlier stages, we did not have a fully consistent code review process. This led to some inconsistencies in the styling, and component reuse across different parts of the frontend code. As the codebase grew, this required additional refactoring to align components and code styles and standards. Earlier enforcement of code review guidelines could have reduced these small inconsistencies.
 
-1. Figma Screens Were Not Fully Finalized Before Development
-- Some of the Figma designs were still being discussed or revised while we began development. As a result, certain UI decisions such as layout fixes, or page flows had to be changed mid-build based on usability concerns or new partner feedback. This made implementation less efficient, as components had to be refactored or restructured after initial work was already done.
-
-2. Lack of initial consistent code reviews early on
-- In the earlier stages, we did not have a fully consistent code review process. This led to some inconsistencies in the styling, and component reuse across different parts of the frontend code. As the codebase grew, this required additional refactoring to align components and code styles and standards. Earlier enforcement of code review guidelines could have reduced these small inconsistencies.
-
-3. Insufficient early communication regarding team roles
-- During the initial development stages, it wasn't clear about the role assignments, and which team member was going to work on which aspect of the app, such as backend or frontend. This sometimes led to misunderstandings about feature priorities, implementation details, and deadlines. As a result, certain features were either delayed or had a lot of code conflicts due to misinterpreted requirements. More structured and regular cross-functional meetings could have helped resolve these issues early on.
+##### 3. Insufficient Early Communication Regarding Team Roles
+During the initial development stages, it wasn't clear about the role assignments, and which team member was going to work on which aspect of the app, such as backend or frontend. This sometimes led to misunderstandings about feature priorities, implementation details, and deadlines. As a result, certain features were either delayed or had a lot of code conflicts due to misinterpreted requirements. More structured and regular cross-functional meetings could have helped resolve these issues early on.
 
 #### Q3(a). Planned changes
 
