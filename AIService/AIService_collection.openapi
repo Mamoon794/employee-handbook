@@ -1,0 +1,307 @@
+openapi: 3.0.0
+info:
+  title: AIService
+  description: >-
+    This AI service powers the chatbot. The app uses only the
+    `http://127.0.0.1:8000/responses` endpoint.
+
+
+    Requests require two fields: province and question. If the response is not
+    expected to be related to a specific province, province should be "General".
+
+
+    The response contains the chatbot’s answer and a metadata list of documents
+    used as context. Each document includes source URL, type (html or pdf),
+    title, page, and content.
+
+
+    The chatbot answers based on data in the vector database, which currently
+    covers General (federal), Alberta (AB), British Columbia (BC), and Nova
+    Scotia (NS).
+  version: 1.0.0
+servers:
+  - url: http://127.0.0.1:8000
+paths:
+  /responses:
+    post:
+      tags:
+        - default
+      summary: General
+      description: >-
+        When province is set to "General", the chatbot retrieves answers from
+        federal documents.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                province: General
+                question: How many paid days do we have?
+      responses:
+        '200':
+          description: OK
+          headers:
+            date:
+              schema:
+                type: string
+                example: Mon, 23 Jun 2025 18:12:05 GMT
+            server:
+              schema:
+                type: string
+                example: uvicorn
+            content-length:
+              schema:
+                type: integer
+                example: '14425'
+            content-type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                response: >-
+                  The number of paid holidays varies by province and territory
+                  in Canada. However, there are 5 days in the year that are paid
+                  holidays in every jurisdiction:
+
+
+                  *   New Year’s Day
+
+                  *   Good Friday
+
+                  *   Canada Day
+
+                  *   Labour Day
+
+                  *   Christmas Day
+
+
+                  Each province and territory may have additional paid holidays.
+                metadata:
+                  - source: >-
+                      https://www.cfib-fcei.ca/en/tools-resources/manitoba_employment_standards
+                    type: html
+                    title: >-
+                      Frequently Asked Questions on Manitoba Employment
+                      Standards | CFIB
+                    page: ''
+                    content: "the regular wage rate. Read the Overtime fact sheet and section 18 of the Employment Standards Code . Vacations and Vacation Pay The rules about vacation consist of both the amount of time away from the workplace and vacation pay. After 1 year of employment - Vacation is at least 2 weeks of leave and vacation pay is 4% of gross wages, excluding overtime. After 5 years of employment - Vacation is least 3 weeks of leave and vacation pay is 6% of gross wages, excluding overtime. Employees are eligible for vacation once they\_complete 1 year of work.\_Vacation must be\_taken within 10 months of it being earned.\_If the employer and employee cannot agree\_when the vacation will be taken, the employer can set the vacation date, with at least\_15 days’ notice. Employers can have vacations as part of an annual shut down. Employers may put vacation pay on every cheque, or they may choose to pay out at the time of the vacation leave. Read the Vacations and Vacation Pay fact sheet . The rules about"
+                  - source: https://laws-lois.justice.gc.ca/PDF/L-2.pdf
+                    type: pdf
+                    title: ''
+                    page: 206
+                    content: "Labour Code, Canada Code canadien du travail\nPART III Standard Hours, Wages, Vacations and Holidays PARTIE III Durée normale du travail, salaire, congés et jours fériés\nDIVISION IV Annual Vacations SECTION IV Congés annuels\nSections 184-185 Articles 184-185\nCurrent to\_May\_27, 2025\nLast amended on June 20, 2024\n186 À jour au\_27\_mai 2025\nDernière modification le 20 juin 2024\nAnnual vacation with pay Congés annuels payés\n184 Except as otherwise provided by or under this Divi-\nsion, in respect of every year of employment by an em-\nployer, every employee is entitled to and shall be granted\na vacation with vacation pay of\n(a) at least two weeks if they have completed at least\none year of employment;\n(b) at least three weeks if they have completed at least\nfive consecutive years of employment with the same\nemployer; and\n(c) at least four weeks if they have completed at least\n10 consecutive years of employment with the same\nemployer.\nR.S., 1985, c. L-2, s. 184; 2018, c. 27, s. 454."
+                  - source: >-
+                      https://www.cfib-fcei.ca/en/tools-resources/employment-standards/understanding-peis-employment-standards
+                    type: html
+                    title: Understanding PEI's Employment Standards | CFIB
+                    page: ''
+                    content: >-
+                      work on a holiday and are qualified to be paid holiday
+                      pay, they are entitled to: receive the amount they would
+                      have normally received for that day AND one and a half
+                      times their regular rate of wages for the number of hours
+                      worked on that holiday, OR they can earn their regular
+                      wages for the hours worked on the holiday AND receive
+                      another day off with pay before their next vacation. For
+                      more details on these regulations and information on
+                      workers that are not covered by the rules for holiday pay,
+                      visit the fact sheet on paid public holidays . What are
+                      the mandatory food and rest breaks for employees? An
+                      employee must be given a 30-minute unpaid food or rest
+                      break if their shift is longer than five consecutive
+                      hours. If an employee does not receive their full half
+                      hour of rest, then they must be paid for the half hour. An
+                      employee is not required to stay in the workplace during
+                      their half hour break. How do I calculate vacation pay?
+                      Vacation Pay is calculated as 4% of gross wages. For
+                  - source: >-
+                      https://www.cfib-fcei.ca/en/tools-resources/manitoba_employment_standards
+                    type: html
+                    title: >-
+                      Frequently Asked Questions on Manitoba Employment
+                      Standards | CFIB
+                    page: ''
+                    content: >-
+                      Holiday pay plus 1.5 times times their wages for the hours
+                      worked. However, workers in a gas station, hotel,
+                      restaurant, place of amusement, continuously operating
+                      business, climate-controlled agricultural business, or a
+                      seasonal industry receive regular wages for working a
+                      General Holiday if they receive another day off with
+                      General Holiday pay in the next 30 days. Read the General
+                      Holiday fact sheet . What are the mandatory food and rest
+                      breaks? Employees must receive a 30-minute unpaid break
+                      after every 5 hours of work. This is the only break
+                      required by the Employment Standards Code . Coffee breaks,
+                      rest breaks and other meal breaks are provided at the
+                      employer's discretion. Read the Hours of Work and Breaks
+                      fact sheet . Employees must receive a 30-minute unpaid
+                      break after every 5 hours of work. This is the only break
+                      required by the Employment Standards Code . Coffee breaks,
+                      rest breaks and other meal breaks are provided at the
+                      employer's discretion. What can be deducted from
+                  - source: >-
+                      https://www.cfib-fcei.ca/en/tools-resources/paid-holidays-canada
+                    type: html
+                    title: Paid holidays in Canada
+                    page: ''
+                    content: >-
+                      further paid holidays, as well as holidays where a
+                      business is not legislated to close, but may choose to do
+                      so, either with or without payment to employees. There may
+                      also be days when a business must close but is not
+                      required to pay their employees. Select your province or
+                      territory below to learn more about paid public holidays
+                      in your jurisdiction: Federally regulated industries
+                      Alberta British Columbia Manitoba New Brunswick
+                      Newfoundland and Labrador Northwest Territories Nova
+                      Scotia Nunavut Ontario Prince Edward Island Quebec
+                      Saskatchewan Yukon Federally regulated industries What are
+                      the paid general holidays under the Canada Labour Code?
+                      New Year’s Day Good Friday Victoria Day Canada Day Labour
+                      Day National Day for Truth and Reconciliation (September
+                      30) Thanksgiving Day Remembrance Day Christmas Day Boxing
+                      Day Which employees are eligible? If your business is
+                      federally-regulated , you are required to pay all
+                      full-time, part-time, and casual employees for the 10
+                      statutory
+                  - source: >-
+                      https://www.cfib-fcei.ca/en/tools-resources/paid-holidays-canada
+                    type: html
+                    title: Paid holidays in Canada
+                    page: ''
+                    content: >-
+                      by the employer and employee before the employee's next
+                      paid vacation When an employee does not work on the paid
+                      public holiday, they are entitled to receive a day off
+                      with pay on the working day immediately following the
+                      general holiday or another day agreed upon by the employee
+                      and the employer. If an employee works shifts of varying
+                      lengths or if wages change from pay to pay, the employer
+                      should average hours or wages over 30 days to calculate
+                      what to pay the employee for the holiday. For example, if
+                      an employee worked 20 of the 30 calendar days before the
+                      holiday for a total of 170 hours, the calculations would
+                      be as follows: 170 ÷ 20 = 8.5 average hours worked per
+                      shift. When the paid public holiday falls on an employee’s
+                      scheduled day off , the employee should be given off
+                      either the first working day after the public holiday or
+                      an alternate day off agreed to mutually by the employer
+                      and employee. This day will be paid day for the employee.
+                      For further information please see the
+                  - source: >-
+                      https://www.cfib-fcei.ca/en/tools-resources/paid-holidays-canada
+                    type: html
+                    title: Paid holidays in Canada
+                    page: ''
+                    content: >-
+                      Paid holidays in Canada Skip to main content English
+                      Français HR Now! Tools & Resources Advocacy Discounts
+                      Membership Contact Us Sign In JOIN NOW Sign In Join Now
+                      Menu HR Now! Tools & Resources Advocacy Discounts
+                      Membership Contact Us FR English Français Paid holidays in
+                      Canada Paid holidays in Canada Paid public holidays, also
+                      known as statutory holidays or general holidays, are days
+                      throughout the year where most businesses are legislated
+                      to close but must still pay eligible employees as though
+                      it was a regular workday. There are additional rules and
+                      payment requirements for employees who work on a statutory
+                      holiday. There are 5 days in the year which are a paid
+                      holiday in every jurisdiction: New Year’s Day Good Friday
+                      Canada Day Labour Day Christmas Day Each province and
+                      territory have further paid holidays, as well as holidays
+                      where a business is not legislated to close, but may
+                      choose to do so, either with or without payment to
+                      employees. There may also be days when a business
+                  - source: >-
+                      https://www.cfib-fcei.ca/en/tools-resources/paid-holidays-canada
+                    type: html
+                    title: Paid holidays in Canada
+                    page: ''
+                    content: >-
+                      holiday rules. More information is available on the
+                      government site . Nunavut What are the general holidays in
+                      Nunavut? New Year’s Day Good Friday Victoria Day Canada
+                      Day Nunavut Day The first Monday in August Labour Day
+                      Thanksgiving Day Remembrance Day Christmas Day Eligibility
+                      All employees who have been employed with the employer for
+                      at least 30 days within the previous 12 months are
+                      eligible for statutory holiday pay. The employee must:
+                      Work their scheduled shift before and after the holiday.
+                      Work on the holiday if they are scheduled to or are called
+                      in. Employees on pregnancy or parental leave are not
+                      entitled to statutory holiday pay. Calculating pay An
+                      employee who meets the eligibility criteria but does not
+                      work on the holiday is eligible to receive an average
+                      day’s pay. An employee who meets the eligibility criteria
+                      and works on the holiday must receive time and a half for
+                      the hours worked, plus a regular day’s pay. Or the
+                      employee may receive regular pay for the hours worked
+                  - source: >-
+                      https://www.cfib-fcei.ca/en/tools-resources/manitoba_employment_standards
+                    type: html
+                    title: >-
+                      Frequently Asked Questions on Manitoba Employment
+                      Standards | CFIB
+                    page: ''
+                    content: "the regular wage rate. Read the Overtime fact sheet and section 18 of the Employment Standards Code . Vacations and Vacation Pay The rules about vacation consist of both the amount of time away from the workplace and vacation pay. After 1 year of employment - Vacation is at least 2 weeks of leave and vacation pay is 4% of gross wages, excluding overtime. After 5 years of employment - Vacation is least 3 weeks of leave and vacation pay is 6% of gross wages, excluding overtime. Employees are eligible for vacation once they\_complete 1 year of work.\_Vacation must be\_taken within 10 months of it being earned.\_If the employer and employee cannot agree\_when the vacation will be taken, the employer can set the vacation date, with at least\_15 days’ notice. Employers can have vacations as part of an annual shut down. Employers may put vacation pay on every cheque, or they may choose to pay out at the time of the vacation leave. Read the Vacations and Vacation Pay fact sheet . The rules about"
+                  - source: https://laws-lois.justice.gc.ca/PDF/L-2.pdf
+                    type: pdf
+                    title: ''
+                    page: 206
+                    content: "Labour Code, Canada Code canadien du travail\nPART III Standard Hours, Wages, Vacations and Holidays PARTIE III Durée normale du travail, salaire, congés et jours fériés\nDIVISION IV Annual Vacations SECTION IV Congés annuels\nSections 184-185 Articles 184-185\nCurrent to\_May\_27, 2025\nLast amended on June 20, 2024\n186 À jour au\_27\_mai 2025\nDernière modification le 20 juin 2024\nAnnual vacation with pay Congés annuels payés\n184 Except as otherwise provided by or under this Divi-\nsion, in respect of every year of employment by an em-\nployer, every employee is entitled to and shall be granted\na vacation with vacation pay of\n(a) at least two weeks if they have completed at least\none year of employment;\n(b) at least three weeks if they have completed at least\nfive consecutive years of employment with the same\nemployer; and\n(c) at least four weeks if they have completed at least\n10 consecutive years of employment with the same\nemployer.\nR.S., 1985, c. L-2, s. 184; 2018, c. 27, s. 454."
+                  - source: >-
+                      https://www.cfib-fcei.ca/en/tools-resources/employment-standards/understanding-peis-employment-standards
+                    type: html
+                    title: Understanding PEI's Employment Standards | CFIB
+                    page: ''
+                    content: >-
+                      work on a holiday and are qualified to be paid holiday
+                      pay, they are entitled to: receive the amount they would
+                      have normally received for that day AND one and a half
+                      times their regular rate of wages for the number of hours
+                      worked on that holiday, OR they can earn their regular
+                      wages for the hours worked on the holiday AND receive
+                      another day off with pay before their next vacation. For
+                      more details on these regulations and information on
+                      workers that are not covered by the rules for holiday pay,
+                      visit the fact sheet on paid public holidays . What are
+                      the mandatory food and rest breaks for employees? An
+                      employee must be given a 30-minute unpaid food or rest
+                      break if their shift is longer than five consecutive
+                      hours. If an employee does not receive their full half
+                      hour of rest, then they must be paid for the half hour. An
+                      employee is not required to stay in the workplace during
+                      their half hour break. How do I calculate vacation pay?
+                      Vacation Pay is calculated as 4% of gross wages. For
+                  - source: >-
+                      https://www.cfib-fcei.ca/en/tools-resources/manitoba_employment_standards
+                    type: html
+                    title: >-
+                      Frequently Asked Questions on Manitoba Employment
+                      Standards | CFIB
+                    page: ''
+                    content: >-
+                      Holiday pay plus 1.5 times times their wages for the hours
+                      worked. However, workers in a gas station, hotel,
+                      restaurant, place of amusement, continuously operating
+                      business, climate-controlled agricultural business, or a
+                      seasonal industry receive regular wages for working a
+                      General Holiday if they receive another day off with
+                      General Holiday pay in the next 30 days. Read the General
+                      Holiday fact sheet . What are the mandatory food and rest
+                      breaks? Employees must receive a 30-minute unpaid break
+                      after every 5 hours of work. This is the only break
+                      required by the Employment Standards Code . Coffee breaks,
+                      rest breaks and other meal breaks are provided at the
+                      employer's discretion. Read the Hours of Work and Breaks
+                      fact sheet . Employees must receive a 30-minute unpaid
+                      break after every 5 hours of work. This is the only break
+                      required by the Employment Standards Code . Coffee breaks,
+                      rest breaks and other meal breaks are provided at the
+                      employer's discretion. What can be deducted from

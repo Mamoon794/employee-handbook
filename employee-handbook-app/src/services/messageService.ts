@@ -1,36 +1,50 @@
+/* eslint-disable */
 import type { AIResponse, PublicMessageResponse, Citation } from "@/types/ai";
 import { callAiService } from "@/integrations/aiService";
 
 /**
  * Core logic for a public user's question.
  * Transforms full AI service payload into minimal frontend needs,
- * generating hyperlinks to exact paragraphs within sources.
+ * generating hyperlinks to exact section within sources.
  */
 export async function handlePublicMessage(
     province: string,
-    question: string
+    question: string,
+    threadId: string
 ): Promise<PublicMessageResponse> {
-    const aiResult = await callAiService(province, question);
-    const { answer, context } = aiResult.response;
+    const aiResult = await callAiService(province, question, threadId);
 
-    const citations: Citation[] = context.map(doc => {
-        const originalUrl = String(doc.metadata.source);
+    const seen = new Set<string>();
+    const citations: Citation[] = [];
+    
+    for (const doc of aiResult.metadata) {
+        const originalUrl = String(doc.source);
+        if (seen.has(originalUrl)) continue;
+        seen.add(originalUrl);
+    
         let fragmentUrl = originalUrl;
-
-        if (originalUrl.endsWith('.pdf')) {
-            // TODO: Use another approach to make PDF hyperlinks
-        } else {
-            // Use text fragment for HTML
-            const firstWords = doc.page_content.split(" ").slice(0, 20).join(" ");
-            const fragment = encodeURIComponent(firstWords);
-            fragmentUrl = `${originalUrl}#:~:text=${fragment}`;
+        if (doc.type === "pdf") {
+            fragmentUrl = `${originalUrl}#page=${doc.page}`;
+        } else if (doc.type === "html") {
+        // Use text fragment for HTML -> this is unreliable
+        // const firstWords = doc.content.split(" ").slice(0, 10).join(" ");
+        // const fragment = encodeURIComponent(firstWords);
+        // fragmentUrl = `${originalUrl}#:~:text=${fragment}`;
         }
+    
+        citations.push({
+            originalUrl,
+            fragmentUrl,
+            title: doc.title,
+        });
 
-        return { originalUrl, fragmentUrl };
-    });
+        if (citations.length >= 3) break;
+    }
+
+    console.log(citations);
 
     return {
-        answer: answer.trim(),
+        response: aiResult.response,
         citations,
     };
 }

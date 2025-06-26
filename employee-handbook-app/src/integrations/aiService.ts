@@ -7,7 +7,8 @@ const AI_SERVICE_URL = process.env.AI_SERVICE_URL;
  */
 export async function callAiService(
     province: string,
-    question: string
+    question: string,
+    threadId: string
 ): Promise<AIResponse> {
     if (!AI_SERVICE_URL) {
         throw new Error("AI_SERVICE_URL not configured");
@@ -16,8 +17,12 @@ export async function callAiService(
     const res = await fetch(`${AI_SERVICE_URL}/responses`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ province, question }),
+        body: JSON.stringify({ province, question, thread_id: threadId }),
     });
+
+    console.log("AI_SERVICE_URL:", AI_SERVICE_URL);
+    console.log("Full request URL:", `${AI_SERVICE_URL}/responses`);
+    console.log("Response status:", res.status, res.statusText);
 
     if (!res.ok) {
         const text = await res.text();

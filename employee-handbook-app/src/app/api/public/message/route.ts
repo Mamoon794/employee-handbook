@@ -1,13 +1,15 @@
+/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { handlePublicMessage } from "@/services/messageService";
-import type { PublicMessageRequest, AIResponse } from "@/types/ai";
+import type { PublicMessageRequest } from "@/types/ai";
 
 /**
  * API route to handle messages from public users.
  *
  * Expects a JSON body with:
  * - province: the user's selected province
- * - question: the user's query
+ * - query: the user's query
+ * - threadId: the user's thread ID enabling continuous conversation 
  *
  * Returns the AI-generated response.
  */
@@ -22,8 +24,8 @@ export async function POST(req: NextRequest) {
         );
     }
 
-    const { province, question } = payload;
-    if (!province || !question.trim()) {
+    const { province, query, threadId } = payload;
+    if (!province || !query.trim()) {
         return NextResponse.json(
             { error: "Missing province or question" },
             { status: 400 }
@@ -31,7 +33,7 @@ export async function POST(req: NextRequest) {
     }
 
     try {
-        const result = await handlePublicMessage(province, question);
+        const result = await handlePublicMessage(province, query, threadId);
         return NextResponse.json(result);
     } catch (e: any) {
         console.error(e);
