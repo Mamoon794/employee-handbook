@@ -233,9 +233,24 @@ function InputMessage({
   setMessages: Dispatch<SetStateAction<Message[]>>;
   setError: Dispatch<SetStateAction<string>>;
   setCurrChatId?: Dispatch<SetStateAction<string>>;
-  threadId: string | null
+  threadId?: string | null
 }) {
   const errorMessage = 'Oops, something went wrong. Want to try again?'
+  const province_map: { [key: string]: string } = {
+    "ON": "Ontario",
+    "AB": "Alberta",
+    "BC": "British Columbia",
+    "MB": "Manitoba",
+    "NB": "New Brunswick",
+    "NL": "Newfoundland and Labrador",
+    "NS": "Nova Scotia",
+    "PE": "Prince Edward Island",
+    "QC": "Quebec",
+    "SK": "Saskatchewan",
+    "NT": "Northwest Territories",
+    "NU": "Nunavut",
+    "YT": "Yukon"
+  }
 
   const submitUserMessage = async () => {
     if (!inputValue.trim()) return;
@@ -289,7 +304,8 @@ function InputMessage({
     console.log("province", province);
     const res = await axiosInstance.post(`/api/public/message`, {
       province,
-      query: inputValue
+      query: inputValue,
+      new_chatId
     });
     if (res.status !== 200) {
       setError(errorMessage);
