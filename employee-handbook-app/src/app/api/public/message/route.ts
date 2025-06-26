@@ -9,6 +9,7 @@ import type { PublicMessageRequest } from "@/types/ai";
  * Expects a JSON body with:
  * - province: the user's selected province
  * - query: the user's query
+ * - threadId: the user's thread ID enabling continuous conversation 
  *
  * Returns the AI-generated response.
  */
@@ -23,7 +24,7 @@ export async function POST(req: NextRequest) {
         );
     }
 
-    const { province, query } = payload;
+    const { province, query, threadId } = payload;
     if (!province || !query.trim()) {
         return NextResponse.json(
             { error: "Missing province or question" },
@@ -32,7 +33,7 @@ export async function POST(req: NextRequest) {
     }
 
     try {
-        const result = await handlePublicMessage(province, query);
+        const result = await handlePublicMessage(province, query, threadId);
         return NextResponse.json(result);
     } catch (e: any) {
         console.error(e);

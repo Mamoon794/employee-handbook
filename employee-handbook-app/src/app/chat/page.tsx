@@ -30,7 +30,7 @@ export default function ChatUI() {
           <MessageThread messageList={messages} error={error} />
 
           {/* Input Bar */}
-          <InputMessage inputValue={inputValue} setInputValue={setInputValue} isPrivate={true} setMessages={setMessages} chatId={currChatId} setError={setError}/>
+          <InputMessage inputValue={inputValue} setInputValue={setInputValue} isPrivate={true} setMessages={setMessages} chatId={currChatId} setError={setError} threadId=""/>
           
           <p className="text-center text-sm text-gray-500 mt-4">
             Gail can make mistakes. Your privacy is protected.
