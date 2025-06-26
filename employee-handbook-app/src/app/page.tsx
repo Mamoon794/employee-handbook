@@ -10,13 +10,30 @@ import {MessageThread, InputMessage, Header} from './global_components';
 import ProvincePopup from "../../components/province";
 import { Message } from '@/models/schema';
 
+function generateThreadId(): string {
+  return Date.now().toString();
+}
+
 export default function Home() {
   const { isSignedIn } = useUser();
 
   const [inputValue, setInputValue] = useState<string>('');
   const [province, setProvince] = useState<string>('');
   const [messages, setMessages] = useState([] as Message[]);
-  const [error, setError] = useState<string>('')
+  const [error, setError] = useState<string>('');
+
+  const threadIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    const storedId = sessionStorage.getItem("threadId");
+    if (storedId) {
+      threadIdRef.current = storedId;
+    } else {
+      const newId = generateThreadId();
+      threadIdRef.current = newId;
+      sessionStorage.setItem("threadId", newId);
+    }
+  }, []);
 
   useEffect(() => {
     const prov = sessionStorage.getItem('province');
@@ -97,6 +114,7 @@ export default function Home() {
           setError={setError}
           setMessages={setMessages}
           province={province}
+          threadId={threadIdRef.current}
         />
   
         <p className="text-center text-sm text-gray-500 mt-2">

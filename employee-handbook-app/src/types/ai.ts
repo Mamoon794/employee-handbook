@@ -4,6 +4,7 @@
 export interface PublicMessageRequest {
     province: string;
     query: string;
+    threadId: string;
 }
 
 // State returned from FastAPI service

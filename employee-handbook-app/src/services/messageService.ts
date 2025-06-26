@@ -9,9 +9,10 @@ import { callAiService } from "@/integrations/aiService";
  */
 export async function handlePublicMessage(
     province: string,
-    question: string
+    question: string,
+    threadId: string
 ): Promise<PublicMessageResponse> {
-    const aiResult = await callAiService(province, question);
+    const aiResult = await callAiService(province, question, threadId);
 
     const seen = new Set<string>();
     const citations: Citation[] = [];
@@ -40,10 +41,10 @@ export async function handlePublicMessage(
         if (citations.length >= 3) break;
     }
 
-        console.log(citations);
+    console.log(citations);
 
-        return {
-            response: aiResult.response,
-            citations,
-        };
-    }
+    return {
+        response: aiResult.response,
+        citations,
+    };
+}

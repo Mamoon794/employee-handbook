@@ -162,7 +162,7 @@ function MessageThread({
                         rel="noopener noreferrer"
                         className="text-blue-800 underline font-medium hover:text-blue-600 transition w-fit"
                       >
-                        {link.title?.trim() || "View PDF source"}
+                        {link.title?.trim() || "View PDF Source"}
                       </a>
                     ))}
                 </div>
@@ -198,6 +198,7 @@ function InputMessage({
   chatId,
   setMessages,
   setError,
+  threadId
 }: {
   inputValue: string;
   setInputValue: Dispatch<SetStateAction<string>>;
@@ -206,6 +207,7 @@ function InputMessage({
   chatId?: string;
   setMessages: Dispatch<SetStateAction<Message[]>>;
   setError: Dispatch<SetStateAction<string>>;
+  threadId: string | null
 }) {
   const errorMessage = 'Oops, something went wrong. Want to try again?'
 
@@ -256,6 +258,7 @@ function InputMessage({
         body: JSON.stringify({
           province,
           query: inputValue,
+          threadId
         }),
       });
 
