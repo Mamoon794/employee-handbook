@@ -21,8 +21,6 @@ export default function ProvincePopup({ onSave }: ProvincePopupProps) {
 
   const handleConfirm = () => {
     if (!selectedProvince) return;
-    //saves the province to localStorage in the browser
-    localStorage.setItem("province", selectedProvince);
     onSave(selectedProvince);
     setOpen(false); //closes the popup
   };

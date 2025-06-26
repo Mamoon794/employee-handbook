@@ -186,7 +186,7 @@ function MessageThread({
                         rel="noopener noreferrer"
                         className="text-blue-800 underline font-medium hover:text-blue-600 transition w-fit"
                       >
-                        {link.title?.trim() || "View PDF source"}
+                        {link.title?.trim() || "View PDF Source"}
                       </a>
                     ))}
                 </div>
@@ -222,7 +222,8 @@ function InputMessage({
   chatId,
   setMessages,
   setError,
-  setCurrChatId
+  setCurrChatId,
+  threadId
 }: {
   inputValue: string;
   setInputValue: Dispatch<SetStateAction<string>>;
@@ -232,23 +233,8 @@ function InputMessage({
   setMessages: Dispatch<SetStateAction<Message[]>>;
   setError: Dispatch<SetStateAction<string>>;
   setCurrChatId?: Dispatch<SetStateAction<string>>;
+  threadId: string | null
 }) {
-
-  const province_map: { [key: string]: string } = {
-    "ON": "Ontario",
-    "AB": "Alberta",
-    "BC": "British Columbia",
-    "MB": "Manitoba",
-    "NB": "New Brunswick",
-    "NL": "Newfoundland and Labrador",
-    "NS": "Nova Scotia",
-    "PE": "Prince Edward Island",
-    "QC": "Quebec",
-    "SK": "Saskatchewan",
-    "NT": "Northwest Territories",
-    "NU": "Nunavut",
-    "YT": "Yukon"
-  }
   const errorMessage = 'Oops, something went wrong. Want to try again?'
 
   const submitUserMessage = async () => {
@@ -338,6 +324,7 @@ function InputMessage({
         body: JSON.stringify({
           province,
           query: inputValue,
+          threadId
         }),
       });
 
