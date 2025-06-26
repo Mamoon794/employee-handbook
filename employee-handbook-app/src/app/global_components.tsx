@@ -24,7 +24,7 @@ function ChatSideBar({setMessages, setCurrChatId, currChatId}: {setMessages: Dis
     useEffect(() => {
       const localUserId = localStorage.getItem('userId');
       if (localUserId) {
-        const allChats = axiosInstance.get(`/api/chat/${localUserId}?isUserID=true`)
+        axiosInstance.get(`/api/chat/${localUserId}?isUserID=true`)
         .then((response) => {
           const chatData = response.data.map((chat: any) => ({
             id: chat.id,
