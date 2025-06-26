@@ -305,7 +305,7 @@ function InputMessage({
     const res = await axiosInstance.post(`/api/public/message`, {
       province,
       query: inputValue,
-      new_chatId
+      threadId: new_chatId
     });
     if (res.status !== 200) {
       setError(errorMessage);
