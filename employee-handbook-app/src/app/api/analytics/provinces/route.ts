@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '../../../../dbConfig/firebaseConfig';
+import { DocumentData } from 'firebase/firestore';
 
 export async function GET() {
   try {
@@ -11,7 +12,7 @@ export async function GET() {
     const provinceCounts: { [key: string]: number } = {};
     let totalEmployees = 0;
     
-    employeeSnapshot.docs.forEach((doc: any) => {
+    employeeSnapshot.docs.forEach((doc: DocumentData) => {
       const userData = doc.data();
       const province = userData.province || 'Unknown'; // maybe "other" can work as well?
       provinceCounts[province] = (provinceCounts[province] || 0) + 1;
@@ -30,9 +31,16 @@ export async function GET() {
     console.log("Total employees:", totalEmployees);
     console.log("Province breakdown:", sortedDistribution);
     
-    return NextResponse.json({ provinceDistribution: sortedDistribution });
+    return NextResponse.json({ 
+      totalEmployees, 
+      provinceDistribution: sortedDistribution, 
+      success: true 
+    });
   } catch (error) {
     console.error("Error fetching province distribution:", error);
-    return NextResponse.json({ provinceDistribution: [] }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Failed to fetch province distribution', 
+      success: false 
+    }, { status: 500 });
   }
 } 

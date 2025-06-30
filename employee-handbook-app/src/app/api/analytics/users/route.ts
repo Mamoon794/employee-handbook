@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '../../../../dbConfig/firebaseConfig';
+import { DocumentData } from 'firebase/firestore';
 
 export async function GET() {
   try {
@@ -16,7 +17,7 @@ export async function GET() {
     
     const allUsersSnapshot = await usersRef.get();
     console.log("Total users in database:", allUsersSnapshot.size);
-    allUsersSnapshot.docs.forEach((doc: any, index: number) => {
+    allUsersSnapshot.docs.forEach((doc: DocumentData, index: number) => {
       const userData = doc.data();
       console.log(`User ${index + 1}:`, {
         id: doc.id,
@@ -35,9 +36,12 @@ export async function GET() {
     
     const totalEmployees = snapshot.size;
     
-    return NextResponse.json({ totalEmployees });
+    return NextResponse.json({ totalEmployees, success: true });
   } catch (error) {
     console.error("Error fetching total employees:", error);
-    return NextResponse.json({ totalEmployees: 0 }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Failed to fetch total employees', 
+      success: false 
+    }, { status: 500 });
   }
 } 

@@ -1,6 +1,7 @@
+import { NextRequest } from 'next/server';
+
 describe('Analytics Routes - Basic Tests', () => {
   it('should validate NextRequest creation', () => {
-    const { NextRequest } = require('next/server');
     const request = new NextRequest('http://localhost:3000/api/analytics/users');
     expect(request).toBeDefined();
     expect(request.url).toBe('http://localhost:3000/api/analytics/users');
