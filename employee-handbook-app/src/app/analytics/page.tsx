@@ -34,7 +34,6 @@ export default function Analytics() {
     fetchAnalyticsData();
   }, []);
 
-  // Dummy data
   const employeeStats = {
     total: totalEmployees,
     active: 231,
