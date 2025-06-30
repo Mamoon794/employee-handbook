@@ -9,9 +9,11 @@
     "start": "next start",
     "lint": "next lint",
     "test:firestore": "tsx src/test-firestore.ts",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "tsc": "tsc",
-    "tsc:test": "tsc -p tsconfig.test.json",
-    "test": "npm run test:firestore"
+    "tsc:test": "tsc -p tsconfig.test.json"
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.32.0",
