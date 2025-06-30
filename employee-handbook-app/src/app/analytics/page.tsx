@@ -12,7 +12,6 @@ export default function Analytics() {
   const [provinceData, setProvinceData] = useState<Array<{ province: string; count: number; percentage: number }>>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch real analytics data
   useEffect(() => {
     const fetchAnalyticsData = async () => {
       try {
