@@ -2,10 +2,13 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 export default function UploadDocument() {
   const [file, setFile] = useState<File | null>(null);
+  const [isUploaded, setIsUploaded] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -15,11 +18,21 @@ export default function UploadDocument() {
 
   const handleCancel = () => {
     setFile(null);
+    setIsUploaded(false);
   };
 
   const handleSave = () => {
-    // Logic to upload or save file
-    alert('File saved!');
+    if (!file) return;
+    setUploading(true);
+    setTimeout(() => {
+      setUploading(false);
+      setIsUploaded(true);
+    }, 1000); // Simulate upload
+  };
+
+  const handleRemove = () => {
+    setFile(null);
+    setIsUploaded(false);
   };
 
   return (
@@ -41,48 +54,92 @@ export default function UploadDocument() {
           Welcome, rivvi!
         </h2>
 
-        <div className="w-full max-w-2xl bg-gray-100 rounded-xl border border-gray-300 p-6 mb-8 text-center">
-          <input
-            type="file"
-            accept=".pdf"
-            onChange={handleFileChange}
-            className="hidden"
-            id="upload"
-          />
-          <label
-            htmlFor="upload"
-            className="cursor-pointer block py-10 px-4 border-2 border-dashed border-gray-400 rounded-lg hover:bg-gray-200 transition"
-          >
-            {file ? (
-              <div className="flex flex-col items-center">
-                <img
-                  src="/pdf-icon.png"
-                  alt="PDF Icon"
-                  className="w-12 h-12 mb-2"
-                />
-                <p className="text-gray-700 font-medium">{file.name}</p>
-              </div>
-            ) : (
-              <p className="text-gray-600">Click to upload HR Handbook (PDF)</p>
-            )}
-          </label>
-        </div>
+        {/* Upload area or uploaded file preview */}
+        {!isUploaded ? (
+          <div className="w-full max-w-2xl bg-gray-100 rounded-xl border border-gray-300 p-6 mb-8 text-center">
+            <input
+              type="file"
+              accept=".pdf"
+              onChange={handleFileChange}
+              className="hidden"
+              id="upload"
+              ref={fileInputRef}
+            />
+            <label
+              htmlFor="upload"
+              className="cursor-pointer block py-10 px-4 border-2 border-dashed border-gray-400 rounded-lg hover:bg-gray-200 transition"
+            >
+              {file ? (
+                <div className="flex flex-col items-center relative">
+                  <img
+                    src="/pdf-icon.png"
+                    alt="PDF Icon"
+                    className="w-12 h-12 mb-2"
+                  />
+                  <p className="text-gray-700 font-medium">{file.name}</p>
+                  <button
+                    type="button"
+                    onClick={handleRemove}
+                    className="absolute top-0 right-0 mt-1 mr-1 text-gray-500 hover:text-red-600"
+                    aria-label="Remove file"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              ) : (
+                <p className="text-gray-600">Click to upload HR Handbook (PDF)</p>
+              )}
+            </label>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center mb-8">
+            <div className="relative flex flex-col items-center">
+              <img
+                src="/pdf-icon.png"
+                alt="PDF Icon"
+                className="w-20 h-20 mb-2"
+              />
+              <p className="text-gray-700 font-medium">{file?.name}</p>
+              <button
+                type="button"
+                onClick={handleRemove}
+                className="absolute top-0 right-0 mt-1 mr-1 text-gray-500 hover:text-red-600"
+                aria-label="Remove file"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <button
+              className="mt-6 bg-blue-800 text-white font-semibold px-8 py-3 rounded-md hover:bg-blue-700"
+              onClick={handleCancel}
+            >
+              Upload Documents
+            </button>
+          </div>
+        )}
 
-        <div className="flex gap-4">
-          <button
-            onClick={handleSave}
-            className="bg-blue-800 text-white font-semibold px-6 py-3 rounded-md hover:bg-blue-700"
-            disabled={!file}
-          >
-            Save
-          </button>
-          <button
-            onClick={handleCancel}
-            className="border border-gray-400 text-black font-semibold px-6 py-3 rounded-md hover:bg-gray-100"
-          >
-            Cancel
-          </button>
-        </div>
+        {/* Action buttons */}
+        {!isUploaded && (
+          <div className="flex gap-4">
+            <button
+              onClick={handleSave}
+              className="bg-blue-800 text-white font-semibold px-6 py-3 rounded-md hover:bg-blue-700"
+              disabled={!file || uploading}
+            >
+              {uploading ? 'Uploading...' : 'Save'}
+            </button>
+            <button
+              onClick={handleCancel}
+              className="border border-gray-400 text-black font-semibold px-6 py-3 rounded-md hover:bg-gray-100"
+            >
+              Cancel
+            </button>
+          </div>
+        )}
       </main>
 
       <footer className="bg-blue-800 h-6 w-full mt-12" />
