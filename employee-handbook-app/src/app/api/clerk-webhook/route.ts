@@ -17,6 +17,7 @@ import type { UserType, User } from '@/models/schema';
 
 const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET || '';
 
+// post requests from clerk webhooks
 export async function POST(req: NextRequest) {
   try {
     if (!WEBHOOK_SECRET) {
@@ -87,6 +88,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
+// handling clerk events
 async function handleUserCreated(clerkUser: any) {
   if (!clerkUser.first_name || !clerkUser.last_name || !clerkUser.email_addresses?.[0]?.email_address) {
     console.warn('User missing required fields, skipping creation');
