@@ -21,8 +21,6 @@ export default function ProvincePopup({ onSave }: ProvincePopupProps) {
 
   const handleConfirm = () => {
     if (!selectedProvince) return;
-    //saves the province to localStorage in the browser
-    localStorage.setItem("province", selectedProvince);
     onSave(selectedProvince);
     setOpen(false); //closes the popup
   };
@@ -30,10 +28,10 @@ export default function ProvincePopup({ onSave }: ProvincePopupProps) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
       <div className="bg-white rounded-lg shadow-md p-8 w-[95%] max-w-md text-center">
         <h2 className="text-2xl font-semibold mb-6 text-gray-800">
-          Select your province
+          Select your province/territory
         </h2>
 
         <div className="mb-6 relative">
@@ -42,7 +40,7 @@ export default function ProvincePopup({ onSave }: ProvincePopupProps) {
             value={selectedProvince}
             onChange={(e) => setSelectedProvince(e.target.value)}
           >
-            <option value="">Choose province</option>
+            <option value="" disabled hidden>Choose province/territory</option>
             {provinces.map((prov) => (
               <option key={prov} value={prov}>
                 {prov}

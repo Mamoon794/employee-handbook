@@ -1,6 +1,6 @@
 import {Chat} from "../../../models/schema";
-
 import {createChat} from "../../../models/dbOperations";
+import { Sentry } from "../../../lib/sentry";
 
 export async function POST(request: Request) {
     try {
@@ -9,6 +9,7 @@ export async function POST(request: Request) {
         return new Response(JSON.stringify({"message": "Chat created successfully", id: chatDoc.id }), { status: 201 });
     } catch (error) {
         console.error("Error creating chat:", error);
+        Sentry.captureException(error);
         return new Response(JSON.stringify({ "error": "Failed to create chat" }), { status: 500 });
     }
 }
