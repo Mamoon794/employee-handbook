@@ -10,8 +10,21 @@ import {
   query,
   where,
   getDocs,
-  collectionGroup
+  collectionGroup,
+  writeBatch
 } from "firebase/firestore";
+
+export {
+  db,
+  collection,
+  doc,
+  query,
+  where,
+  getDocs,
+  updateDoc,
+  writeBatch
+};
+
 import {
   User,
   UserType,
