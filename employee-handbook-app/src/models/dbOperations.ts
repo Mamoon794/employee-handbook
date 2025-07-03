@@ -1,32 +1,7 @@
 /* eslint-disable */
-
 import { db } from "../dbConfig/firebaseConfig";
-import {
-  collection,
-  doc,
-  addDoc,
-  getDoc,
-  setDoc,
-  updateDoc,
-  query,
-  where,
-  getDocs,
-  collectionGroup,
-  writeBatch
-} from "firebase/firestore";
-
-export {
-  db,
-  collection,
-  doc,
-  query,
-  where,
-  getDocs,
-  updateDoc,
-  writeBatch
-};
 import { Timestamp } from "firebase-admin/firestore";
-import {firestore} from 'firebase-admin';
+import { firestore } from 'firebase-admin';
 import {
   User,
   Company,
