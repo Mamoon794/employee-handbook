@@ -303,7 +303,7 @@ function InputMessage({
     const full_province = province ? province_map[province] : '';
     console.log("province", province);
     const res = await axiosInstance.post(`/api/public/message`, {
-      province,
+      province: full_province,
       query: inputValue,
       threadId: new_chatId
     });
