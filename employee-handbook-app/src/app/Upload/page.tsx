@@ -2,7 +2,7 @@
 
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 export default function UploadDocument() {
   const [files, setFiles] = useState<File[]>([]);
@@ -19,19 +19,27 @@ export default function UploadDocument() {
   const handleCancel = () => {
     setFiles([]);
     setIsUploaded(false);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  const handleSave = () => {
+  // Placeholder for future backend upload:
+  async function uploadFilesToBackend(files: File[]) {
+    // API call to your backend that uploads to S3
+
+    return new Promise((resolve) => setTimeout(resolve, 1000)); 
+  }
+
+  const handleSave = async () => {
     if (files.length === 0) return;
     setUploading(true);
-    setTimeout(() => {
-      setUploading(false);
-      setIsUploaded(true);
-    }, 1000); // Simulate upload
+    await uploadFilesToBackend(files);
+    setUploading(false);
+    setIsUploaded(true);
   };
 
   const handleRemove = (index: number) => {
     setFiles((prev) => prev.filter((_, i) => i !== index));
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   return (
@@ -74,10 +82,16 @@ export default function UploadDocument() {
                   {files.map((file, idx) => (
                     <div
                       key={idx}
-                      className="flex items-center justify-between w-full max-w-md bg-gray-50 border border-gray-200 rounded-full shadow-sm px-4 py-2 mb-2"
+                      className="flex items-center justify-between w-full max-w-xs bg-white border border-gray-200 rounded-xl shadow px-4 py-3 mb-2 hover:shadow-md transition-all"
                       style={{ minWidth: '220px' }}
                     >
-                      <span className="truncate text-gray-800 font-medium" title={file.name}>{file.name}</span>
+                      <div className="flex items-center gap-3">
+                        <FilePreview file={file} />
+                        <div className="flex flex-col">
+                          <span className="truncate max-w-[120px] text-gray-900 font-semibold text-base" title={file.name}>{file.name}</span>
+                          <span className="text-xs text-gray-500 uppercase mt-1">{file.type === 'application/pdf' ? 'PDF' : (file.type.split('/')[1] || 'file')}</span>
+                        </div>
+                      </div>
                       <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); handleRemove(idx); }}
@@ -92,7 +106,7 @@ export default function UploadDocument() {
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-600">Click to upload HR Handbook (PDF)</p>
+                <p className="text-gray-600">Click or drag to upload HR Handbook (PDF or image)</p>
               )}
             </label>
           </div>
@@ -102,10 +116,16 @@ export default function UploadDocument() {
               {files.map((file, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center justify-between w-full max-w-md bg-gray-50 border border-gray-200 rounded-full shadow-sm px-4 py-2 mb-2"
+                  className="flex items-center justify-between w-full max-w-xs bg-white border border-gray-200 rounded-xl shadow px-4 py-3 mb-2 hover:shadow-md transition-all"
                   style={{ minWidth: '220px' }}
                 >
-                  <span className="truncate text-gray-800 font-medium" title={file.name}>{file.name}</span>
+                  <div className="flex items-center gap-3">
+                    <FilePreview file={file} />
+                    <div className="flex flex-col">
+                      <span className="truncate max-w-[120px] text-gray-900 font-semibold text-base" title={file.name}>{file.name}</span>
+                      <span className="text-xs text-gray-500 uppercase mt-1">{file.type === 'application/pdf' ? 'PDF' : (file.type.split('/')[1] || 'file')}</span>
+                    </div>
+                  </div>
                   <button
                     type="button"
                     onClick={() => handleRemove(idx)}
@@ -150,5 +170,28 @@ export default function UploadDocument() {
 
       <footer className="bg-blue-800 h-6 w-full mt-12" />
     </div>
+  );
+}
+
+function FilePreview({ file }: { file: File }) {
+  if (file.type.startsWith('image/')) {
+    return <img src={URL.createObjectURL(file)} alt="Preview" className="w-12 h-12 object-contain rounded shadow" />;
+  }
+  if (file.type === 'application/pdf') {
+    return (
+      <span className="w-12 h-12 flex items-center justify-center bg-blue-800/10 rounded text-blue-800">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6 2.25A2.25 2.25 0 0 0 3.75 4.5v15A2.25 2.25 0 0 0 6 21.75h12a2.25 2.25 0 0 0 2.25-2.25v-9.379a2.25 2.25 0 0 0-.659-1.591l-4.621-4.621A2.25 2.25 0 0 0 14.129 3.75H6z" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-3-3v6" />
+        </svg>
+      </span>
+    );
+  }
+  return (
+    <span className="w-12 h-12 flex items-center justify-center bg-gray-200 rounded text-gray-500">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+      </svg>
+    </span>
   );
 }
