@@ -474,43 +474,37 @@ function ProvinceDropdown({
   province: string;
   setProvince: (prov: string) => void;
 }) {
-  const provinceMap: { [fullName: string]: string } = {
-    "Alberta": "AB",
-    "British Columbia": "BC",
-    "Manitoba": "MB",
-    "New Brunswick": "NB",
-    "Newfoundland and Labrador": "NL",
-    "Northwest Territories": "NT",
-    "Nova Scotia": "NS",
-    "Nunavut": "NU",
-    "Ontario": "ON",
-    "Prince Edward Island": "PE",
-    "Quebec": "QC",
-    "Saskatchewan": "SK",
-    "Yukon": "YT"
-  };
-
-  const reverseProvinceMap: { [abbr: string]: string } = Object.fromEntries(
-    Object.entries(provinceMap).map(([full, abbr]) => [abbr, full])
-  );
+  const provinces = [
+    "Alberta",
+    "British Columbia",
+    "Manitoba",
+    "New Brunswick",
+    "Newfoundland and Labrador",
+    "Northwest Territories",
+    "Nova Scotia",
+    "Nunavut",
+    "Ontario",
+    "Prince Edward Island",
+    "Quebec",
+    "Saskatchewan",
+    "Yukon",
+  ] as const;  
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const abbr = e.target.value;
-    const full = reverseProvinceMap[abbr];
-    if (full) {
-      setProvince(full);
+    const province = e.target.value;
+    if (province) {
+      setProvince(province);
     }
   };
 
   return (
     <select
-      value={provinceMap[province]}
+      value="Change your province/territory"
       onChange={handleChange}
       className="text-gray-700 font-semibold px-4 py-2 rounded-md hover:bg-gray-50 transition-colors w-[80px]"
     >
-      <option value="" disabled>Select</option>
-      {Object.values(provinceMap).map((abbr) => (
-        <option key={abbr} value={abbr}>{abbr}</option>
+      {provinces.map((name) => (
+        <option key={name} value={name}>{name}</option>
       ))}
     </select>
   );
