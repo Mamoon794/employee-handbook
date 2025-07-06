@@ -499,13 +499,17 @@ function ProvinceDropdown({
 
   return (
     <select
-      value="Change your province/territory"
+      value=""
       onChange={handleChange}
-      className="text-gray-700 font-semibold px-4 py-2 rounded-md hover:bg-gray-50 transition-colors w-[80px]"
+      className="text-gray-700 font-semibold px-4 py-2 rounded-md hover:bg-gray-100 transition-colors w-[270px]"
     >
-      {provinces.map((name) => (
-        <option key={name} value={name}>{name}</option>
-      ))}
+      <option value="" disabled hidden>Change your province/territory</option>
+      <option disabled>Current: {province}</option>
+      {provinces
+        .filter((name) => name !== province)
+        .map((name) => (
+          <option key={name} value={name}>{name}</option>
+        ))}
     </select>
   );
 }
