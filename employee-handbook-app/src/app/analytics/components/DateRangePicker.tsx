@@ -90,7 +90,7 @@ export default function DateRangePicker({ startDate, endDate, onDateChange }: Da
                   type="date"
                   value={startDate}
                   onChange={(e) => handleCustomDateChange('start', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black"
                 />
               </div>
               <div>
@@ -99,7 +99,7 @@ export default function DateRangePicker({ startDate, endDate, onDateChange }: Da
                   type="date"
                   value={endDate}
                   onChange={(e) => handleCustomDateChange('end', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black"
                 />
               </div>
             </div>
