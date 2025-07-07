@@ -77,6 +77,44 @@ describe('Analytics Data Validation', () => {
     
     expect(fallbackProvince).toBe('Unknown');
   });
+
+  it('should filter total employees by date range', () => {
+    const employees = [
+      { createdAt: new Date('2024-01-01') },
+      { createdAt: new Date('2024-02-01') },
+      { createdAt: new Date('2024-03-01') },
+    ];
+    const start = new Date('2024-02-01');
+    const end = new Date('2024-03-01');
+    end.setHours(23, 59, 59, 999);
+    const filtered = employees.filter(e => e.createdAt >= start && e.createdAt <= end);
+    expect(filtered.length).toBe(2);
+  });
+
+  it('should count questions asked by employees with date filtering', () => {
+    const messages = [
+      { isFromUser: true, createdAt: new Date('2024-01-01') },
+      { isFromUser: false, createdAt: new Date('2024-01-01') },
+      { isFromUser: true, createdAt: new Date('2024-02-01') },
+      { isFromUser: true, createdAt: new Date('2024-03-01') },
+    ];
+    const start = new Date('2024-02-01');
+    const end = new Date('2024-03-01');
+    end.setHours(23, 59, 59, 999);
+    const count = messages.filter(m => m.isFromUser && m.createdAt >= start && m.createdAt <= end).length;
+    expect(count).toBe(2);
+  });
+
+  it('should count all questions asked by employees if no date filter', () => {
+    const messages = [
+      { isFromUser: true },
+      { isFromUser: false },
+      { isFromUser: true },
+      { isFromUser: true },
+    ];
+    const count = messages.filter(m => m.isFromUser).length;
+    expect(count).toBe(3);
+  });
 });
 
 describe('Analytics Error Handling', () => {
