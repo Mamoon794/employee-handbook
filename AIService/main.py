@@ -89,7 +89,7 @@ def generate_title(titleInput: TitleInput):
     If the LLM call fails, return 'New Chat' as title.
     """
     try:
-        prompt = f"Generate a short, descriptive chat title for the following message: '{titleInput.message}'"
+        prompt = f"Generate a short, concise chat title (2-4 words) for this message: '{titleInput.message}'. Return only the title, nothing else."
 
         # call Gemini using LangChain llm.invoke() method
         # input is a list of messages 
