@@ -1,6 +1,10 @@
-export const getTotalEmployees = async (): Promise<number> => {
+export const getTotalEmployees = async (startDate?: string, endDate?: string): Promise<number> => {
   try {
-    const response = await fetch('/api/analytics/users');
+    const params = new URLSearchParams();
+    if (startDate) params.append('startDate', startDate);
+    if (endDate) params.append('endDate', endDate);
+    
+    const response = await fetch(`/api/analytics/users?${params.toString()}`);
     if (!response.ok) {
       throw new Error('Failed to fetch total employees');
     }
@@ -12,9 +16,13 @@ export const getTotalEmployees = async (): Promise<number> => {
   }
 };
 
-export const getProvinceDistribution = async (): Promise<Array<{ province: string; count: number; percentage: number }>> => {
+export const getProvinceDistribution = async (startDate?: string, endDate?: string): Promise<Array<{ province: string; count: number; percentage: number }>> => {
   try {
-    const response = await fetch('/api/analytics/provinces');
+    const params = new URLSearchParams();
+    if (startDate) params.append('startDate', startDate);
+    if (endDate) params.append('endDate', endDate);
+    
+    const response = await fetch(`/api/analytics/provinces?${params.toString()}`);
     if (!response.ok) {
       throw new Error('Failed to fetch province distribution');
     }

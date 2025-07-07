@@ -4,20 +4,34 @@ import { useState, useEffect } from 'react';
 import { ArrowLeft, Users, MapPin, TrendingUp, FileText, MessageSquare } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { getTotalEmployees, getProvinceDistribution } from './utils/analytics.utility';
+import DateRangePicker from './components/DateRangePicker';
 
 export default function Analytics() {
   const router = useRouter();
-  const [timeRange, setTimeRange] = useState('30d');
+  const [startDate, setStartDate] = useState(() => {
+    const date = new Date();
+    date.setDate(date.getDate() - 30);
+    return date.toISOString().split('T')[0];
+  });
+  const [endDate, setEndDate] = useState(() => {
+    return new Date().toISOString().split('T')[0];
+  });
   const [totalEmployees, setTotalEmployees] = useState(0);
   const [provinceData, setProvinceData] = useState<Array<{ province: string; count: number; percentage: number }>>([]);
   const [loading, setLoading] = useState(true);
 
+  const handleDateChange = (newStartDate: string, newEndDate: string) => {
+    setStartDate(newStartDate);
+    setEndDate(newEndDate);
+  };
+
   useEffect(() => {
     const fetchAnalyticsData = async () => {
+      setLoading(true);
       try {
         const [employeeCount, provinceDistribution] = await Promise.all([
-          getTotalEmployees(),
-          getProvinceDistribution()
+          getTotalEmployees(startDate, endDate),
+          getProvinceDistribution(startDate, endDate)
         ]);
         
         setTotalEmployees(employeeCount);
@@ -32,7 +46,7 @@ export default function Analytics() {
     };
 
     fetchAnalyticsData();
-  }, []);
+  }, [startDate, endDate]);
 
   const employeeStats = {
     total: totalEmployees,
@@ -77,16 +91,11 @@ export default function Analytics() {
             </div>
           </div>
           
-          <select 
-            value={timeRange} 
-            onChange={(e) => setTimeRange(e.target.value)}
-            className="px-4 py-2 bg-white border-2 border-blue-600 text-blue-800 font-semibold rounded-lg shadow-sm hover:border-blue-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-          >
-            <option value="7d">Last 7 days</option>
-            <option value="30d">Last 30 days</option>
-            <option value="90d">Last 90 days</option>
-            <option value="1y">Last year</option>
-          </select>
+          <DateRangePicker
+            startDate={startDate}
+            endDate={endDate}
+            onDateChange={handleDateChange}
+          />
         </div>
       </header>
 
@@ -158,48 +167,62 @@ export default function Analytics() {
               </h3>
             </div>
             <div className="p-6">
-              <div className="space-y-4">
-                {provinceData.map((item, index) => (
-                  <div key={item.province} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className={`w-3 h-3 rounded-full bg-gradient-to-r ${
-                        index === 0 ? 'from-blue-400 to-blue-600' :
-                        index === 1 ? 'from-green-400 to-green-600' :
-                        index === 2 ? 'from-purple-400 to-purple-600' :
-                        index === 3 ? 'from-orange-400 to-orange-600' :
-                        index === 4 ? 'from-pink-400 to-pink-600' :
-                        'from-gray-400 to-gray-600'
-                      }`} />
-                      <span className="font-medium text-gray-900">{item.province}</span>
-                    </div>
-                    <div className="flex items-center space-x-4">
-                      <span className="text-sm text-gray-600">{item.count} employees</span>
-                      <span className="text-sm font-medium text-gray-900">{item.percentage}%</span>
-                    </div>
+              {loading ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                  <p className="text-gray-500 mt-2">Loading province data...</p>
+                </div>
+              ) : provinceData.length > 0 ? (
+                <>
+                  <div className="space-y-4">
+                    {provinceData.map((item, index) => (
+                      <div key={item.province} className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <div className={`w-3 h-3 rounded-full bg-gradient-to-r ${
+                            index === 0 ? 'from-blue-400 to-blue-600' :
+                            index === 1 ? 'from-green-400 to-green-600' :
+                            index === 2 ? 'from-purple-400 to-purple-600' :
+                            index === 3 ? 'from-orange-400 to-orange-600' :
+                            index === 4 ? 'from-pink-400 to-pink-600' :
+                            'from-gray-400 to-gray-600'
+                          }`} />
+                          <span className="font-medium text-gray-900">{item.province}</span>
+                        </div>
+                        <div className="flex items-center space-x-4">
+                          <span className="text-sm text-gray-600">{item.count} employees</span>
+                          <span className="text-sm font-medium text-gray-900">{item.percentage}%</span>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-              
-              <div className="mt-6 space-y-2">
-                {provinceData.map((item, index) => (
-                  <div key={item.province} className="flex items-center space-x-3">
-                    <div className="w-16 text-xs text-gray-600 truncate">{item.province}</div>
-                    <div className="flex-1 bg-gray-200 rounded-full h-2">
-                      <div 
-                        className={`h-2 rounded-full bg-gradient-to-r ${
-                          index === 0 ? 'from-blue-400 to-blue-600' :
-                          index === 1 ? 'from-green-400 to-green-600' :
-                          index === 2 ? 'from-purple-400 to-purple-600' :
-                          index === 3 ? 'from-orange-400 to-orange-600' :
-                          index === 4 ? 'from-pink-400 to-pink-600' :
-                          'from-gray-400 to-gray-600'
-                        }`}
-                        style={{ width: `${item.percentage}%` }}
-                      />
-                    </div>
+                  
+                  <div className="mt-6 space-y-2">
+                    {provinceData.map((item, index) => (
+                      <div key={item.province} className="flex items-center space-x-3">
+                        <div className="w-16 text-xs text-gray-600 truncate">{item.province}</div>
+                        <div className="flex-1 bg-gray-200 rounded-full h-2">
+                          <div 
+                            className={`h-2 rounded-full bg-gradient-to-r ${
+                              index === 0 ? 'from-blue-400 to-blue-600' :
+                              index === 1 ? 'from-green-400 to-green-600' :
+                              index === 2 ? 'from-purple-400 to-purple-600' :
+                              index === 3 ? 'from-orange-400 to-orange-600' :
+                              index === 4 ? 'from-pink-400 to-pink-600' :
+                              'from-gray-400 to-gray-600'
+                            }`}
+                            style={{ width: `${item.percentage}%` }}
+                          />
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                </>
+              ) : (
+                <div className="text-center py-8">
+                  <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-500">No province data available for selected date range</p>
+                </div>
+              )}
             </div>
           </div>
 

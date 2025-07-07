@@ -2,12 +2,47 @@ import { NextResponse } from 'next/server';
 import { db } from '../../../../dbConfig/firebaseConfig';
 import { DocumentData } from 'firebase/firestore';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const usersRef = db.collection("users");
+    const { searchParams } = new URL(request.url);
+    const startDate = searchParams.get('startDate');
+    const endDate = searchParams.get('endDate');
     
-    const employeeQuery = usersRef.where("userType", "==", "Employee");
-    const employeeSnapshot = await employeeQuery.get();
+    const usersRef = db.collection("users");
+    let employeeSnapshot;
+    
+    if (!startDate || !endDate) {
+      employeeSnapshot = await usersRef.where("userType", "==", "Employee").get();
+    } else {
+      try {
+        const startTimestamp = new Date(startDate);
+        const endTimestamp = new Date(endDate);
+        endTimestamp.setHours(23, 59, 59, 999); 
+        
+        employeeSnapshot = await usersRef.where("userType", "==", "Employee")
+                                       .where("createdAt", ">=", startTimestamp)
+                                       .where("createdAt", "<=", endTimestamp)
+                                       .get();
+      } catch {
+        console.log("Composite index not available, falling back to client-side filtering");
+        const allEmployeesSnapshot = await usersRef.where("userType", "==", "Employee").get();
+        
+        const startTimestamp = new Date(startDate);
+        const endTimestamp = new Date(endDate);
+        endTimestamp.setHours(23, 59, 59, 999);
+        
+        const filteredDocs = allEmployeesSnapshot.docs.filter((doc: DocumentData) => {
+          const userData = doc.data();
+          const createdAt = userData.createdAt?.toDate?.() || new Date(userData.createdAt);
+          return createdAt >= startTimestamp && createdAt <= endTimestamp;
+        });
+        
+        employeeSnapshot = {
+          docs: filteredDocs,
+          size: filteredDocs.length
+        };
+      }
+    }
     
     const provinceCounts: { [key: string]: number } = {};
     let totalEmployees = 0;
