@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { ArrowLeft, Users, MapPin, TrendingUp, FileText, MessageSquare } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { getTotalEmployees, getProvinceDistribution } from './utils/analytics.utility';
+import { getTotalEmployees, getProvinceDistribution, getTotalQuestionsAsked } from './utils/analytics.utility';
 import DateRangePicker from './components/DateRangePicker';
 
 export default function Analytics() {
@@ -19,6 +19,7 @@ export default function Analytics() {
   const [totalEmployees, setTotalEmployees] = useState(0);
   const [provinceData, setProvinceData] = useState<Array<{ province: string; count: number; percentage: number }>>([]);
   const [loading, setLoading] = useState(true);
+  const [totalQuestionsAsked, setTotalQuestionsAsked] = useState(0);
 
   const handleDateChange = (newStartDate: string, newEndDate: string) => {
     setStartDate(newStartDate);
@@ -29,17 +30,20 @@ export default function Analytics() {
     const fetchAnalyticsData = async () => {
       setLoading(true);
       try {
-        const [employeeCount, provinceDistribution] = await Promise.all([
+        const [employeeCount, provinceDistribution, questionsAsked] = await Promise.all([
           getTotalEmployees(startDate, endDate),
-          getProvinceDistribution(startDate, endDate)
+          getProvinceDistribution(startDate, endDate),
+          getTotalQuestionsAsked(startDate, endDate)
         ]);
         
         setTotalEmployees(employeeCount);
         setProvinceData(provinceDistribution);
+        setTotalQuestionsAsked(questionsAsked);
       } catch (error) {
         console.error('Error fetching analytics data:', error);
         setTotalEmployees(0);
         setProvinceData([]);
+        setTotalQuestionsAsked(0);
       } finally {
         setLoading(false);
       }
@@ -134,7 +138,7 @@ export default function Analytics() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Questions Asked</p>
-                <p className="text-3xl font-bold text-gray-900">267</p>
+                <p className="text-3xl font-bold text-gray-900">{loading ? '...' : totalQuestionsAsked}</p>
                 <p className="text-sm text-orange-600 mt-1">+14% this month</p>
               </div>
               <div className="p-3 bg-orange-100 rounded-full">
