@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from setup import graph
+from setup import graph, llm
 
 from langchain_core.messages import ToolMessage
 from langchain_core.documents import Document
@@ -74,6 +74,36 @@ def get_response(userMessage: RAGInput):
         print(f"An error occurred: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# Define the request model for the /generate-title endpoint
+class TitleInput(BaseModel):
+    message: str  # The first message sent by the user
+
+class TitleResponse(BaseModel):
+    title: str  # The generated chat title
+
+# new POST endpoint to generate a chat title
+@app.post("/generate-title", response_model=TitleResponse)
+def generate_title(titleInput: TitleInput):
+    """
+    Generate a short, descriptive chat title using Gemini based on the first user message.
+    If the LLM call fails, return 'New Chat' as title.
+    """
+    try:
+        prompt = f"Generate a short, descriptive chat title for the following message: '{titleInput.message}'"
+
+        # call Gemini using LangChain llm.invoke() method
+        # input is a list of messages 
+        response = llm.invoke([{"role": "user", "content": prompt}])
+
+        if hasattr(response, "content"):
+            title = response.content.strip()
+        else:
+            title = str(response).strip()
+
+        return {"title": title}
+    except Exception as e:
+        # if anything goes wrong, return a default title
+        return {"title": "New Chat"}
 
 # step = {
 #     "messages": [
