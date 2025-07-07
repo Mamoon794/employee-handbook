@@ -16,7 +16,12 @@ export default function Dashboard() {
         <h1 className="text-2xl font-extrabold italic text-blue-800">Gail</h1>
         <div className="flex gap-4 items-center">
           <button className="px-7 py-3 bg-[#242267] text-white rounded-xl font-bold text-base hover:bg-blue-900 transition-colors shadow-sm" onClick={()=>{router.push('/chat');}}>Ask a Question</button>
-          <button className="px-7 py-3 bg-blue-800 text-white rounded-xl font-bold text-base hover:bg-blue-900 transition-colors shadow-sm">View Finances</button>
+          <button 
+            className="px-7 py-3 bg-blue-800 text-white rounded-xl font-bold text-base hover:bg-blue-900 transition-colors shadow-sm"
+            onClick={() => router.push('/finances')}
+          >
+            View Finances
+          </button>
           <button 
             onClick={() => router.push('/analytics')}
             className="px-7 py-3 bg-[#242267] text-white rounded-xl font-bold text-base hover:bg-blue-900 transition-colors shadow-sm"
