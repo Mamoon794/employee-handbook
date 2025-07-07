@@ -2,8 +2,8 @@ from dotenv import load_dotenv
 import os
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from setup import graph, process_docs
-from scrapeAllData import crawl, get_domain, remove_fragment, is_relevant, clean_text
+from setupProvinces import graph, process_docs
+from scrapeAllProvinceData import crawl, get_domain, remove_fragment, is_relevant, clean_text
 
 from pinecone import Pinecone
 from langchain.chat_models import init_chat_model
