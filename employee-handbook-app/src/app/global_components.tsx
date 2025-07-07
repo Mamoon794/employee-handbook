@@ -10,6 +10,9 @@ import { useUser, UserButton } from '@clerk/nextjs';
 import { Link, Message } from '../models/schema'; 
 import { Citation } from '@/types/ai';
 import { marked } from 'marked';
+import { Fragment } from "react";
+import { Listbox, Label, ListboxButton, ListboxOption, ListboxOptions } from "@headlessui/react";
+import { ChevronDown, Check } from "lucide-react";
 
 interface Chat {
     id: string;
@@ -490,28 +493,67 @@ function ProvinceDropdown({
     "Yukon",
   ] as const;  
 
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const province = e.target.value;
-    if (province) {
-      setProvince(province);
-    }
-  };
-
   return (
-    <select
-      value=""
-      onChange={handleChange}
-      className="text-gray-700 font-semibold px-4 py-2 rounded-md hover:bg-gray-100 transition-colors w-[270px]"
-    >
-      <option value="" disabled hidden>Change your province/territory</option>
-      <option disabled>Current: {province}</option>
-      {provinces
-        .filter((name) => name !== province)
-        .map((name) => (
-          <option key={name} value={name}>{name}</option>
-        ))}
-    </select>
+    <Listbox value={province} onChange={setProvince}>
+      {({ open }) => (
+        <div className="relative inline-block">
+          <Label className="sr-only">
+            Change province or territory
+          </Label>
+
+          <ListboxButton
+            className="w-[290px] px-4 py-2 flex items-center rounded-md bg-white font-semibold border border-gray-300 text-gray-700 hover:bg-gray-200 transition-colors"
+          >
+            Change your province/territory
+            <ChevronDown className="ml-auto h-4 w-4 shrink-0" />
+          </ListboxButton>
+
+          <ListboxOptions
+            className="absolute z-10 mt-1 max-h-60 w-[270px] overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black/10"
+          >
+            {provinces.map((p) => (
+              <ListboxOption key={p} value={p} as={Fragment}>
+                {({ active, selected }) => (
+                  <li
+                    className={
+                      `flex cursor-pointer select-none items-center gap-2 px-4 py-2 text-sm ` +
+                      (active ? "bg-blue-100 text-blue-900" : "text-gray-900")
+                    }
+                  >
+                    <span className="flex-1">{p}</span>
+                    {selected && <Check className="h-4 w-4" />}
+                  </li>
+                )}
+              </ListboxOption>
+            ))}
+          </ListboxOptions>
+        </div>
+      )}
+    </Listbox>
   );
+
+  // const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  //   const province = e.target.value;
+  //   if (province) {
+  //     setProvince(province);
+  //   }
+  // };
+
+  // return (
+  //   <select
+  //     value=""
+  //     onChange={handleChange}
+  //     className="text-gray-700 font-semibold px-4 py-2 rounded-md hover:bg-gray-100 transition-colors w-[270px]"
+  //   >
+  //     <option value="" disabled hidden>Change your province/territory</option>
+  //     <option disabled>Current: {province}</option>
+  //     {provinces
+  //       .filter((name) => name !== province)
+  //       .map((name) => (
+  //         <option key={name} value={name}>{name}</option>
+  //       ))}
+  //   </select>
+  // );
 }
 
 export {ChatSideBar, MessageThread, InputMessage, Header};
