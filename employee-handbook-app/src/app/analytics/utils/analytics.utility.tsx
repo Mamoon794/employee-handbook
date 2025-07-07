@@ -33,3 +33,20 @@ export const getProvinceDistribution = async (startDate?: string, endDate?: stri
     return [];
   }
 };
+
+export const getTotalQuestionsAsked = async (startDate?: string, endDate?: string): Promise<number> => {
+  try {
+    const params = new URLSearchParams();
+    if (startDate) params.append('startDate', startDate);
+    if (endDate) params.append('endDate', endDate);
+    const response = await fetch(`/api/analytics/questions?${params.toString()}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch total questions asked');
+    }
+    const data = await response.json();
+    return data.totalQuestionsAsked;
+  } catch (error) {
+    console.error("Error fetching total questions asked:", error);
+    return 0;
+  }
+};
