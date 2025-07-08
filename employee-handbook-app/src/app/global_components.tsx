@@ -10,6 +10,7 @@ import { useUser, UserButton } from '@clerk/nextjs';
 import { Link, Message } from '../models/schema'; 
 import { Citation } from '@/types/ai';
 import { marked } from 'marked';
+import { updateChatTitle } from '../models/dbOperations';
 
 interface Chat {
     id: string;
@@ -260,24 +261,51 @@ function InputMessage({
         isFromUser: true,
         content: inputValue,
       };
+
+      // tracking if brand new chat
+      const isNewChat = chatId === '';
+
       setMessages((prevMessages) => [...prevMessages, userMessage as Message]);
       setInputValue('');
       setError('');
 
       if (isPrivate) {
         let newChatId = chatId || '';
-        if (chatId === '') {
-            const newChat = await axiosInstance.post('/api/chat', {
+
+        if (isNewChat) {
+          const newChat = await axiosInstance.post('/api/chat', {
             userId: localStorage.getItem('userId'),
-            title: `Chat - ${new Date().toLocaleDateString()}-1`,
+            // title: `Chat - ${new Date().toLocaleDateString()}-1`,
+            title: 'New Chat',
             messages: [userMessage]
           });
-          if(setCurrChatId) setCurrChatId(newChat.data.id);
+
           newChatId = newChat.data.id;
+          if(setCurrChatId) setCurrChatId(newChatId);
 
+          // ai-generated title
+          try {
+            const titleRes = await fetch('/api/generate-title', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                message:inputValue,
+                chatId: newChatId
+              }),
+            });
+
+            if (!titleRes.ok) throw new Error('Title generation failed');
+
+            const { title } = await titleRes.json();
+            if (title && title !== "New Chat") {
+              // handled by API route
+            }
+
+          } catch (err) {
+            console.error('title generation failed', err);
+          }
         }
-
-        else{
+        else {
           axiosInstance.put(`/api/chat/${chatId}/add-message`, {
             messageData: userMessage
           });
