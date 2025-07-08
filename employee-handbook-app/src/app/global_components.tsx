@@ -3,13 +3,14 @@
 'use client';
 
 import { useEffect, useState, Dispatch, SetStateAction, useRef } from 'react';
-import { Search, Plus, Menu, Trash2 } from 'lucide-react';
+import { Search, Plus, Menu, Trash2, Mic } from 'lucide-react';
 import axiosInstance from './axios_config';
 import { useRouter } from 'next/navigation';
 import { useUser, UserButton } from '@clerk/nextjs';
 import { Link, Message } from '../models/schema'; 
 import { Citation } from '@/types/ai';
 import { marked } from 'marked';
+import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
 
 interface Chat {
     id: string;
@@ -145,7 +146,7 @@ function MessageThread({
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messageList]);
+  }, [messageList, error]);
 
   const handleRetry = () => {
     // TODO
@@ -209,7 +210,7 @@ function MessageThread({
         </div>
       )}
 
-      <div ref={bottomRef} />
+      <div ref={bottomRef} className="py-10"/>
     </div>
   );
 }
@@ -251,6 +252,28 @@ function InputMessage({
     "NU": "Nunavut",
     "YT": "Yukon"
   }
+
+  const {
+    transcript,
+    resetTranscript,
+    listening,
+  } = useSpeechRecognition();
+
+  useEffect(() => {
+    if (listening) setInputValue(transcript);
+  }, [transcript, listening]);
+
+  const toggleMic = () => {
+    if (listening) {
+      SpeechRecognition.stopListening();
+      resetTranscript();
+    } else {
+      SpeechRecognition.startListening({
+        continuous: false,
+        language: "en-CA",
+      });
+    }
+  };
 
   const submitUserMessage = async () => {
     if (!inputValue.trim()) return;
@@ -367,26 +390,80 @@ function InputMessage({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
       submitUserMessage();
     }
   };
-  
+
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const [atMaxHeight, setAtMaxHeight] = useState(false);
+
+  const lineHeight = 28; // 28px is the line height for text-lg
+  const maxLines = 8;
+  const maxHeight = maxLines * lineHeight;
+
+  const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInputValue(e.target.value);
+
+    const textarea = textareaRef.current as HTMLTextAreaElement | null;
+    if (textarea) {
+      textarea.style.height = "auto";
+      textarea.style.height = Math.min(textarea.scrollHeight, maxHeight) + "px";
+      setAtMaxHeight(textarea.scrollHeight > maxHeight - 1);
+
+      if (textarea.scrollHeight > maxHeight) {
+        textarea.scrollTop = textarea.scrollHeight;
+      }
+    }
+  };
+
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = "auto";
+      textarea.style.height = Math.min(textarea.scrollHeight, maxHeight) + "px";
+      setAtMaxHeight(textarea.scrollHeight > maxHeight - 1);
+
+      if (textarea.scrollHeight > maxHeight) {
+        textarea.scrollTop = textarea.scrollHeight;
+      }
+    }
+  }, [inputValue]);
+
   return(
-      <div className="relative w-full max-w-3xl mx-auto">
-          <input
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Ask anything"
-            className="w-full px-6 py-4 border border-gray-300 rounded-md text-lg text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-14"
-          />
-          <button className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-          onClick={submitUserMessage}
-          >
-            <Search className="w-6 h-6" />
-          </button>
+    <div className="relative w-full max-w-4xl mx-auto">
+      <textarea
+        ref={textareaRef}
+        rows={1}
+        value={inputValue}
+        onChange={handleInput}
+        onKeyDown={handleKeyDown}
+        placeholder="Ask anything"
+        className={`resize-none w-full px-13 py-4 border border-gray-300 rounded-md 
+                  text-lg text-black placeholder-gray-400 overflow-y-auto ${ atMaxHeight ? 'overflow-y-auto' : 'overflow-y-hidden'}`}
+        style={{ minHeight: lineHeight, maxHeight: maxHeight }}
+      />
+
+      <button
+        type="button"
+        onClick={toggleMic}
+        className={`absolute left-4 top-1/2 -translate-y-1/2
+                    ${listening ? "text-red-600 animate-pulse" : "text-gray-400"}
+                    hover:text-gray-600 transition-colors`}
+        title={listening ? "Stop recording" : "Speak your question"}
+      >
+        <Mic className="w-6 h-6" />
+      </button>
+
+    <button
+      type="button"
+      onClick={submitUserMessage}
+      className="absolute right-4 top-1/2 -translate-y-1/2
+                 text-gray-400 hover:text-gray-600 transition-colors"
+    >
+      <Search className="w-6 h-6" />
+    </button>
         </div>
   )
 }
