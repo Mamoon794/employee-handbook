@@ -17,7 +17,7 @@ interface Chat {
     title: string;
 };
 
-function ChatSideBar({setMessages, setCurrChatId, currChatId}: {setMessages: Dispatch<SetStateAction<Message[]>>, setCurrChatId: (chatId: string) => void, currChatId: string}) {
+function ChatSideBar({setMessages, setCurrChatId, currChatId, titleLoading}: {setMessages: Dispatch<SetStateAction<Message[]>>, setCurrChatId: (chatId: string) => void, currChatId: string,  titleLoading: boolean}) {
     const [chats, setChats] = useState<Chat[]>([]);
     const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
     const [userId, setUserId] = useState<string | null>(null);
@@ -105,7 +105,9 @@ function ChatSideBar({setMessages, setCurrChatId, currChatId}: {setMessages: Dis
             }}
           >
             <div className="flex items-center justify-between">
-              <span className="font-medium">{chat.title}</span>
+              <span className="font-medium">
+                {titleLoading && selectedChat?.id === chat.id ? "Generating..." : chat.title}
+              </span>
               {selectedChat?.id === chat.id && (
                 <Trash2 className="text-gray-400" onClick={()=>{
                   axiosInstance.delete(`/api/chat/${chat.id}`)
@@ -224,7 +226,8 @@ function InputMessage({
   setMessages,
   setError,
   setCurrChatId,
-  threadId
+  threadId,
+  setTitleLoading
 }: {
   inputValue: string;
   setInputValue: Dispatch<SetStateAction<string>>;
@@ -234,7 +237,8 @@ function InputMessage({
   setMessages: Dispatch<SetStateAction<Message[]>>;
   setError: Dispatch<SetStateAction<string>>;
   setCurrChatId?: Dispatch<SetStateAction<string>>;
-  threadId?: string | null
+  threadId?: string | null;
+  setTitleLoading?: Dispatch<SetStateAction<boolean>>;
 }) {
   const errorMessage = 'Oops, something went wrong. Want to try again?'
   const province_map: { [key: string]: string } = {
@@ -284,6 +288,7 @@ function InputMessage({
           if(setCurrChatId) setCurrChatId(newChatId);
 
           // ai-generated title
+          if (setTitleLoading) setTitleLoading(true);
           try {
             const titleRes = await fetch('/api/generate-title', {
               method: 'POST',
@@ -303,6 +308,8 @@ function InputMessage({
 
           } catch (err) {
             console.error('title generation failed', err);
+          } finally { 
+            if (setTitleLoading) setTitleLoading(false);
           }
         }
         else {

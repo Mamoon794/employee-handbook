@@ -16,6 +16,10 @@ export default function ChatUI() {
   const [inputValue, setInputValue] = useState<string>('');
   const router = useRouter();
   const { isSignedIn } = useUser();
+  const [titleLoading, setTitleLoading] = useState(false); 
+
+
+  
 
   useEffect(() => {
     if (!isSignedIn && isSignedIn !== undefined) {
@@ -28,7 +32,7 @@ export default function ChatUI() {
   return (
     <div className="min-h-screen flex bg-white">
       {/* Sidebar (History) */}
-      <ChatSideBar setCurrChatId={setCurrChatId} currChatId={currChatId} setMessages={setMessages} />
+      <ChatSideBar setCurrChatId={setCurrChatId} currChatId={currChatId} setMessages={setMessages} titleLoading={titleLoading} />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-h-screen">
@@ -41,7 +45,7 @@ export default function ChatUI() {
           <MessageThread messageList={messages} error={error} />
 
           {/* Input Bar */}
-          <InputMessage inputValue={inputValue} province={province} setInputValue={setInputValue} isPrivate={true} setMessages={setMessages} chatId={currChatId} setCurrChatId={setCurrChatId} setError={setError}/>
+          <InputMessage inputValue={inputValue} province={province} setInputValue={setInputValue} isPrivate={true} setMessages={setMessages} chatId={currChatId} setCurrChatId={setCurrChatId} setError={setError} setTitleLoading={setTitleLoading}/>
           
           <p className="text-center text-sm text-gray-500 mt-4">
             Gail can make mistakes. Your privacy is protected.
