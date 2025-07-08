@@ -77,9 +77,13 @@ def get_response(userMessage: RAGInput):
 # Define the request model for the /generate-title endpoint
 class TitleInput(BaseModel):
     message: str  # The first message sent by the user
+    chatId: str   # Chat ID for Firebase storage
+    userId: str   # User ID for Firebase storage
 
 class TitleResponse(BaseModel):
-    title: str  # The generated chat title
+    title: str    # The generated chat title
+    chatId: str   # Chat ID for reference
+    saved: bool   # Whether title was saved to Firebase
 
 # new POST endpoint to generate a chat title
 @app.post("/generate-title", response_model=TitleResponse)
@@ -100,10 +104,12 @@ def generate_title(titleInput: TitleInput):
         else:
             title = str(response).strip()
 
-        return {"title": title}
+        # TODO: Add Firebase integration here
+        # For now, return without Firebase storage
+        return {"title": title, "chatId": titleInput.chatId, "saved": False}
     except Exception as e:
         # if anything goes wrong, return a default title
-        return {"title": "New Chat"}
+        return {"title": "New Chat", "chatId": titleInput.chatId, "saved": False}
 
 # step = {
 #     "messages": [
