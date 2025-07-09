@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand, GetObjectCommand, CreateBucketCommand } from "@aws-sdk/client-s3"
+import { S3Client, PutObjectCommand, GetObjectCommand, CreateBucketCommand, S3ServiceException, HeadBucketCommand } from "@aws-sdk/client-s3"
 import { Upload } from "@aws-sdk/lib-storage"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import fs from "fs"
@@ -20,7 +20,32 @@ class S3Operations {
             }
         })
         this.bucketName = bucketName;
+        const checkBucket = this.doesBucketExist(bucketName);
+        if (!checkBucket) {
+            console.log("❌ Bucket does not exist. Creating a new bucket...");
+            this.createBucket(bucketName);
+        }
     }
+
+    async doesBucketExist(bucketName: string) {
+        try {
+            await this.s3Client.send(new HeadBucketCommand({ Bucket: bucketName }));
+            return true;
+        } catch (err) {
+            if (err instanceof S3ServiceException) {
+                if (err.name === 'NotFound') {
+                return false;
+                } else if (err.name === 'Forbidden') {
+                console.log("🚫 Bucket exists but access is denied.");
+                } else {
+                console.log("⚠️ Error checking bucket:", err);
+                }
+            }
+            return false;
+        }
+        }
+
+
     async createBucket(newBucketName?: string) {
         try{
             if (!newBucketName) {

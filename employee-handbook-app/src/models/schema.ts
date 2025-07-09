@@ -20,6 +20,7 @@ export interface Company {
   id?: string;
   name: string;
   ownerId: string; // references user
+  s3BucketName: string; 
   createdAt: Date;
   updatedAt: Date;
 }
