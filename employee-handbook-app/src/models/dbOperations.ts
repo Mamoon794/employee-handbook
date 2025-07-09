@@ -8,7 +8,8 @@ import {
   Company,
   Chat,
   Message,
-  Document
+  Document,
+  Invitation
 } from "./schema";
 
 // collections - users
@@ -127,4 +128,74 @@ export const getCompanyDocuments = async (companyId: string) => {
   const theQuery = documentsRef.where("companyId", "==", companyId);
   const querySnapshot = await theQuery.get();
   return querySnapshot.docs.map((doc: firestore.QueryDocumentSnapshot<firestore.DocumentData>) => ({ id: doc.id, ...doc.data() } as Document));
+};
+
+
+
+
+// for invitations
+
+const invitationsRef = db.collection("invitations");
+
+export const createInvitation = async (invitationData: Omit<Invitation, "id" | "status" | "createdAt" | "updatedAt">) => {
+  const dataToAdd: Invitation = {
+    ...invitationData,
+    status: "pending",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+  const docRef = await invitationsRef.add(dataToAdd);
+  return { id: docRef.id, ...dataToAdd };
+};
+
+export const getInvitation = async (invitationId: string) => {
+  const docRef = invitationsRef.doc(invitationId);
+  const docSnap = await docRef.get();
+  return docSnap.exists ? ({ id: docSnap.id, ...docSnap.data() } as Invitation) : null;
+};
+
+export const updateInvitationStatus = async (invitationId: string, status: "accepted" | "rejected") => {
+  await invitationsRef.doc(invitationId).update({
+    status,
+    updatedAt: new Date(),
+  });
+};
+
+export const getPendingInvitationsByCompany = async (companyId: string) => {
+  const query = invitationsRef
+    .where("companyId", "==", companyId)
+    .where("status", "==", "pending");
+  const snapshot = await query.get();
+  return snapshot.docs.map((doc: firestore.QueryDocumentSnapshot<firestore.DocumentData>) => 
+    ({ id: doc.id, ...doc.data() } as Invitation));
+};
+
+export const getInvitationByEmailAndCompany = async (email: string, companyId: string) => {
+  const query = invitationsRef
+    .where("inviteeEmail", "==", email)
+    .where("companyId", "==", companyId);
+  const snapshot = await query.get();
+  return snapshot.docs.map((doc: firestore.QueryDocumentSnapshot<firestore.DocumentData>) => 
+    ({ id: doc.id, ...doc.data() } as Invitation))[0] || null;
+};
+
+// ===== USER OPERATIONS =====
+export const getUserByEmail = async (email: string) => {
+  const query = usersRef.where("email", "==", email);
+  const snapshot = await query.get();
+  return snapshot.docs.map((doc: firestore.QueryDocumentSnapshot<firestore.DocumentData>) => 
+    ({ id: doc.id, ...doc.data() } as User))[0] || null;
+};
+
+export const updateUser = async (userId: string, updateData: Partial<User>) => {
+  await usersRef.doc(userId).update({
+    ...updateData,
+    updatedAt: new Date(),
+  });
+};
+
+export const getCompany = async (companyId: string) => {
+  const docRef = companiesRef.doc(companyId);
+  const docSnap = await docRef.get();
+  return docSnap.exists ? ({ id: docSnap.id, ...docSnap.data() } as Company) : null;
 };
