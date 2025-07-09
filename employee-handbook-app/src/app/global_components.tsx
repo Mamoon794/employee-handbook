@@ -16,10 +16,26 @@ interface Chat {
     title: string;
 };
 
-function ChatSideBar({setMessages, setCurrChatId}: {setMessages: Dispatch<SetStateAction<Message[]>>, setCurrChatId: (chatId: string) => void}) {
+function ChatSideBar({setMessages, setCurrChatId, currChatId}: {setMessages: Dispatch<SetStateAction<Message[]>>, setCurrChatId: (chatId: string) => void, currChatId: string}) {
     const [chats, setChats] = useState<Chat[]>([]);
     const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
     const [userId, setUserId] = useState<string | null>(null);
+
+    useEffect(() => {
+      const localUserId = localStorage.getItem('userId');
+      if (localUserId) {
+        axiosInstance.get(`/api/chat/${localUserId}?isUserID=true`)
+        .then((response) => {
+          const chatData = response.data.map((chat: any) => ({
+            id: chat.id,
+            title: chat.title,
+          }));
+          setChats(chatData);
+          setSelectedChat(chatData.find((chat: Chat) => chat.id === currChatId) || null);
+        });
+      }
+        
+    }, [currChatId]);
 
     useEffect(() => {
       async function fetchChats() {
@@ -54,7 +70,7 @@ function ChatSideBar({setMessages, setCurrChatId}: {setMessages: Dispatch<SetSta
         if (!userId) return;
 
         const newChat = {
-            title: `Chat with ${new Date().toLocaleDateString()}-${chats.length + 1}`,
+            title: `Chat - ${new Date().toLocaleDateString()}-${chats.length + 1}`,
             userId: userId,
             messages: [] as Message[],
         };
@@ -136,8 +152,16 @@ function MessageThread({
   }
 
   return (
-    <div className="flex flex-col gap-6 py-6 px-1">
-      {messageList.map((message, index) => (
+    <div className="flex flex-col gap-6 py-6 px-1 overflow-y-auto" style={{ height: 'calc(100vh - 200px)'}}>
+    {messageList.length === 0 ? (
+            <div className="flex flex-col justify-center items-center text-center">
+              <h2 className="text-5xl font-bold text-blue-800 mb-2">Welcome to Gail!</h2>
+              <h3 className="text-xl font-medium text-blue-800">
+                Your workplace rights & regulations chatbot
+              </h3>
+            </div>
+          ):
+      messageList.map((message, index) => (
         <div key={index} className="flex flex-col">
           {message.isFromUser ? (
             <div className="self-end bg-[#f1f2f9] text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm">
@@ -147,7 +171,7 @@ function MessageThread({
             <div className="self-start bg-gray-100 text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm">
               <div
                 dangerouslySetInnerHTML={{
-                  __html: marked(message.content),
+                  __html: marked.parse(message.content),
                 }}
               />
               {message.sources && message.sources.length > 0 && (
@@ -198,6 +222,7 @@ function InputMessage({
   chatId,
   setMessages,
   setError,
+  setCurrChatId,
   threadId
 }: {
   inputValue: string;
@@ -207,9 +232,25 @@ function InputMessage({
   chatId?: string;
   setMessages: Dispatch<SetStateAction<Message[]>>;
   setError: Dispatch<SetStateAction<string>>;
-  threadId: string | null
+  setCurrChatId?: Dispatch<SetStateAction<string>>;
+  threadId?: string | null
 }) {
   const errorMessage = 'Oops, something went wrong. Want to try again?'
+  const province_map: { [key: string]: string } = {
+    "ON": "Ontario",
+    "AB": "Alberta",
+    "BC": "British Columbia",
+    "MB": "Manitoba",
+    "NB": "New Brunswick",
+    "NL": "Newfoundland and Labrador",
+    "NS": "Nova Scotia",
+    "PE": "Prince Edward Island",
+    "QC": "Quebec",
+    "SK": "Saskatchewan",
+    "NT": "Northwest Territories",
+    "NU": "Nunavut",
+    "YT": "Yukon"
+  }
 
   const submitUserMessage = async () => {
     if (!inputValue.trim()) return;
@@ -224,15 +265,29 @@ function InputMessage({
       setError('');
 
       if (isPrivate) {
-        axiosInstance.put(`/api/chat/${chatId}/add-message`, {
-          messageData: userMessage
-        });
-        await handlePrivateChat();
+        let newChatId = chatId || '';
+        if (chatId === '') {
+            const newChat = await axiosInstance.post('/api/chat', {
+            userId: localStorage.getItem('userId'),
+            title: `Chat - ${new Date().toLocaleDateString()}-1`,
+            messages: [userMessage]
+          });
+          if(setCurrChatId) setCurrChatId(newChat.data.id);
+          newChatId = newChat.data.id;
+
+        }
+
+        else{
+          axiosInstance.put(`/api/chat/${chatId}/add-message`, {
+            messageData: userMessage
+          });
+        }
+        await handlePrivateChat(newChatId);
       } else {
         await handlePublicChat();
       }
     } catch (err) {
-      console.error(errorMessage);
+      console.error(err);
       setError(errorMessage);
     }
   };
@@ -244,14 +299,41 @@ function InputMessage({
     }));
   }
 
-  const handlePrivateChat = async () => {
-    // TODO: call the private user chat endpoint (not yet implemented) and add bot message to list of messages
+  const handlePrivateChat = async (new_chatId: string) => {
+    const full_province = province ? province_map[province] : '';
+    console.log("province", province);
+    const res = await axiosInstance.post(`/api/public/message`, {
+      province,
+      query: inputValue,
+      threadId: new_chatId
+    });
+    if (res.status !== 200) {
+      setError(errorMessage);
+      return;
+    }
+
+    const data = res.data;
+    if (data.response) {
+      const botMessage = {
+        content: data.response,
+        isFromUser: false,
+        sources: mapCitationsToLinks(data.citations),
+      }
+      setMessages((prevMessages) => [...prevMessages, botMessage as Message]);
+      axiosInstance.put(`/api/chat/${new_chatId}/add-message`, {
+        messageData: botMessage,
+      });
+    }
+    else {
+      setError(errorMessage);
+    }
   };
 
   const handlePublicChat = async () => {
     if (!province) return;
 
     try {
+      console.log("province", province);
       const res = await fetch('/api/public/message', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -319,6 +401,7 @@ function Header({ province, setProvince }: { province: string; setProvince: (pro
             axiosInstance.get(`/api/users/${user.id}?isClerkID=true`)
             .then(response => {
               localStorage.setItem('userId', response.data[0].id);
+              setProvince(response.data[0].province || '');
             })
             .catch(error => {
               console.error('Error fetching user data:', error);

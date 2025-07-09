@@ -11,7 +11,7 @@ The app can be accessed at https://employee-handbook-app.vercel.app/.
 
 (Note: Backend is hosted on Render (free tier), so there may be ~30s cold start delay on first load.)
 
-## How to use
+## Instructions/Features
 Access the link above.
 
 On landing, select your province/territory.
@@ -20,24 +20,37 @@ On landing, select your province/territory.
 Then, you may select any of the suggested questions, or type in your own question related to workplace rights/regulations.
 ![Welcome](deliverables/D2/images/welcome.png)
 
-The chatbot will give you an answer and you can take a closer look at any of the sources by clicking on them.
+The chatbot will give you an answer given your selected province/territory and you can take a closer look at any of the sources by clicking on them.
 ![Chat](deliverables/D2/images/chat.png)
 
-You can also choose to log in or sign up using the buttons at the top right. Upon pressing the "Login" button, you will be redirected to the Clerk login page. 
+The province dropdown allows you to change your province. The chatbot will tailor its answers to this province.
+![ProvinceDropdown](deliverables/D2/images/dropdown.gif)
+
+You can also choose to log in or sign up using the buttons at the top right. Upon pressing the **Log in** button, you will be redirected to the Clerk login page. 
 ![Login](deliverables/D2/images/login.png)
 
 
 After logging in, you will be able to create new chats, see your chat history and your messages will be stored.
 ![Chat History](deliverables/D2/images/chat_history.png)
 
-If you don't have an account, you can sign up using the "Sign Up" button. You will be asked whether you want to continue as an employee or an employer. 
+If you don't have an account, you can sign up using the **Sign Up** button. You will be asked whether you want to continue as an employee or an employer. As of now, sign up only works when using email. Sign up with Google needs a bit more work to be done.
 ![Sign Up](deliverables/D2/images/signup.png)
 
-If you choose to sign up as an employee, you will be taken to the sign up page by Clerk, where you can enter your email and password to create an account.
+If you choose to sign up as an employee, you will be taken to the sign up page by Clerk, where you can enter your email and password to create an account. As of now, sign up only works when using email. Sign up with Google needs a bit more work to be done.
 ![Employee Sign Up](deliverables/D2/images/employee_signup.png)
 
-If you choose to sign up as an employer, you will see the same page but in the backend, you will be stored as an employer, meaning in the future, you will be able to upload your company policies and documents.
+If you choose to sign up as an employer, you will see the same page but upon completion, you will be taken to the dashboard which allows you to upload documents, view analytics and more. In the future, you will be able to upload your company policies and documents.
 ![Employer Sign Up](deliverables/D2/images/employee_signup.png)
+
+As an employer, you can upload your company policies and documents, add employees, view finances, view analytics and access the chatbot. Some functionality will be implemented in the future, but you can already upload documents.
+![Employer Dashboard](deliverables/D2/images/employer_dashboard.png)
+
+The analytics page will show you the number of employees, total questions asked and more.
+![Analytics](deliverables/D2/images/analytics.png)
+
+Right now there's no restrictions on who can access the employer dashboard. This will be implemented in the future.
+
+
 
 ## Setup (For Developers)
 

@@ -1,5 +1,8 @@
 import { getUserChats, getChat, deleteChat } from "../../../../models/dbOperations";
 import { Sentry } from "../../../../lib/sentry";
+import { Chat } from "../../../../models/schema";
+import { Timestamp } from "firebase-admin/firestore";
+type ChatWithDate = Omit<Chat, "createdAt"> & { createdAt: Timestamp };
 
 export async function GET(request: Request, { params }: { params: Promise<{ theID: string }> }) {
     const url = new URL(request.url);
@@ -9,6 +12,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ theI
         let chats;
         if (isUserID && isUserID === "true") {
             chats = await getUserChats(theID);
+            (chats as ChatWithDate[]).sort((a, b) => {
+                return b.createdAt.toDate().getTime() - a.createdAt.toDate().getTime();
+            });
         }
         else{
             chats = await getChat(theID);
