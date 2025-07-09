@@ -10,7 +10,9 @@ import { useUser, UserButton } from '@clerk/nextjs';
 import { Link, Message } from '../models/schema'; 
 import { Citation } from '@/types/ai';
 import { marked } from 'marked';
-import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
+import { useAudioRecorder } from "react-use-audio-recorder";
+
+const AI_SERVICE_URL = process.env.AI_SERVICE_URL;
 
 interface Chat {
     id: string;
@@ -254,24 +256,42 @@ function InputMessage({
   }
 
   const {
-    transcript,
-    resetTranscript,
-    listening,
-  } = useSpeechRecognition();
+    recordingStatus, // "inactive" | "recording" | "paused" | "stopped"
+    recordingTime,   // in seconds
+    startRecording,
+    stopRecording,
+    pauseRecording,
+    resumeRecording,
+    getBlob,
+    saveRecording
+  } = useAudioRecorder();
 
-  useEffect(() => {
-    if (listening) setInputValue(transcript);
-  }, [transcript, listening]);
+  const [listening, setListening] = useState(false);
 
   const toggleMic = () => {
     if (listening) {
-      SpeechRecognition.stopListening();
-      resetTranscript();
-    } else {
-      SpeechRecognition.startListening({
-        continuous: false,
-        language: "en-CA",
+      setListening(false);
+      stopRecording(async (blob) => {
+        if (blob) {
+          setListening(false);
+          const audioFile = new File([blob], `recording-${new Date().toISOString()}.wav`, {type: blob.type});
+          const formData = new FormData();
+          formData.append('file', audioFile);
+          try{
+            const response = await axiosInstance.post(`http://127.0.0.1:8000/transcribe`,formData);
+            console.log("Transcription response:", response);
+            setInputValue(response.data.transcript);
+          } catch (error) {
+            console.error("Error during transcription:", error);
+            setError(errorMessage);
+          }
+
+        }
       });
+      console.log("Recording stopped, blob:");
+    } else {
+      setListening(true);
+      startRecording();
     }
   };
 

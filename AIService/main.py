@@ -3,6 +3,7 @@ import uuid
 from dotenv import load_dotenv
 import os
 from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 from faster_whisper import WhisperModel
 from pydantic import BaseModel
 from setupProvinces import graph, process_docs
@@ -20,6 +21,16 @@ from langchain_core.documents import Document
 app = FastAPI()
 
 model = WhisperModel("small", device="cpu", compute_type="int8", download_root="/tmp/whisper")
+
+
+# Will have to change this for production
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def root():
