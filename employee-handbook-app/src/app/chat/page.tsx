@@ -37,7 +37,7 @@ export default function ChatUI() {
   return (
     <div className="min-h-screen flex bg-white">
       {/* Sidebar (History) */}
-      <ChatSideBar setCurrChatId={setCurrChatId} currChatId={currChatId} setMessages={setMessages} titleLoading={titleLoading} chats={chats} setChats={setChats} />
+      <ChatSideBar setCurrChatId={setCurrChatId} currChatId={currChatId} setMessages={setMessages} titleLoading={titleLoading} chats={chats} setChats={setChats} setTitleLoading={setTitleLoading} />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-h-screen">
