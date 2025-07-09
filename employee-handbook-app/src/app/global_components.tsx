@@ -296,19 +296,23 @@ function InputMessage({
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 message:inputValue,
-                chatId: newChatId
+                chatId: newChatId,
+                userId: localStorage.getItem('userId')
               }),
             });
 
             if (!titleRes.ok) throw new Error('Title generation failed');
 
             const { title } = await titleRes.json();
+            console.log('AI generated title:', title); // DEBUG LOG
             if (title && title !== "New Chat" && setChats) {
-              setChats(prevChats =>
-                prevChats.map(chat =>
+              setChats(prevChats => {
+                const updated = prevChats.map(chat =>
                   chat.id === newChatId ? { ...chat, title } : chat
-                )
-              );
+                );
+                console.log('Updated chats state:', updated); // DEBUG LOG
+                return updated;
+              });
             }
 
           } catch (err) {

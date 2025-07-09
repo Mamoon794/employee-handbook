@@ -2,13 +2,13 @@ import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
   try {
-    const { message, chatId } = await req.json();
+    const { message, chatId, userId } = await req.json();
 
     // calling fastAPI endpoint
     const fastApiResponse = await fetch('http://localhost:8000/generate-title', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message, chatId }),
+      body: JSON.stringify({ message, chatId, userId }),
     });
 
     if (!fastApiResponse.ok) throw new Error('Failed to generate title');
