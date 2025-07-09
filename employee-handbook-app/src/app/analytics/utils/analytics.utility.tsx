@@ -50,21 +50,3 @@ export const getTotalQuestionsAsked = async (startDate?: string, endDate?: strin
     return 0;
   }
 };
-
-export const getMonthlyData = async (startDate: string, endDate: string): Promise<Array<{ month: string; employees: number; questions: number; documents: number }>> => {
-  try {
-    const params = new URLSearchParams();
-    params.append('startDate', startDate);
-    params.append('endDate', endDate);
-    
-    const response = await fetch(`/api/analytics/monthly?${params.toString()}`);
-    if (!response.ok) {
-      throw new Error('Failed to fetch monthly data');
-    }
-    const data = await response.json();
-    return data.monthlyData;
-  } catch (error) {
-    console.error("Error fetching monthly data:", error);
-    return [];
-  }
-};
