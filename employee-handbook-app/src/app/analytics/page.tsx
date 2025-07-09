@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { ArrowLeft, Users, MapPin, TrendingUp, FileText, MessageSquare } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { getTotalEmployees, getProvinceDistribution, getTotalQuestionsAsked } from './utils/analytics.utility';
+import { getTotalEmployees, getProvinceDistribution, getTotalQuestionsAsked, getMonthlyData } from './utils/analytics.utility';
 import DateRangePicker from './components/DateRangePicker';
 
 export default function Analytics() {
@@ -20,6 +20,7 @@ export default function Analytics() {
   const [provinceData, setProvinceData] = useState<Array<{ province: string; count: number; percentage: number }>>([]);
   const [loading, setLoading] = useState(true);
   const [totalQuestionsAsked, setTotalQuestionsAsked] = useState(0);
+  const [monthlyChartData, setMonthlyChartData] = useState<Array<{ month: string; employees: number; questions: number; documents: number }>>([]);
 
   const handleDateChange = (newStartDate: string, newEndDate: string) => {
     setStartDate(newStartDate);
@@ -30,20 +31,23 @@ export default function Analytics() {
     const fetchAnalyticsData = async () => {
       setLoading(true);
       try {
-        const [employeeCount, provinceDistribution, questionsAsked] = await Promise.all([
+        const [employeeCount, provinceDistribution, questionsAsked, monthlyAnalytics] = await Promise.all([
           getTotalEmployees(startDate, endDate),
           getProvinceDistribution(startDate, endDate),
-          getTotalQuestionsAsked(startDate, endDate)
+          getTotalQuestionsAsked(startDate, endDate),
+          getMonthlyData(startDate, endDate)
         ]);
         
         setTotalEmployees(employeeCount);
         setProvinceData(provinceDistribution);
         setTotalQuestionsAsked(questionsAsked);
+        setMonthlyChartData(monthlyAnalytics);
       } catch (error) {
         console.error('Error fetching analytics data:', error);
         setTotalEmployees(0);
         setProvinceData([]);
         setTotalQuestionsAsked(0);
+        setMonthlyChartData([]);
       } finally {
         setLoading(false);
       }
@@ -58,15 +62,6 @@ export default function Analytics() {
     newThisMonth: 18,
     retentionRate: 94.2
   };
-
-  const monthlyData = [
-    { month: 'Jan', employees: 198, questions: 145, documents: 23 },
-    { month: 'Feb', employees: 205, questions: 162, documents: 18 },
-    { month: 'Mar', employees: 218, questions: 189, documents: 31 },
-    { month: 'Apr', employees: 225, questions: 201, documents: 27 },
-    { month: 'May', employees: 238, questions: 234, documents: 42 },
-    { month: 'Jun', employees: 247, questions: 267, documents: 38 }
-  ];
 
   const topQuestions = [
     { question: "What are my vacation entitlements?", count: 34 },
@@ -235,47 +230,105 @@ export default function Analytics() {
             <div className="p-6 border-b">
               <h3 className="text-lg font-semibold text-gray-900 flex items-center">
                 <TrendingUp className="w-5 h-5 mr-2 text-green-600" />
-                Growth Trends (6 Months)
+                Analytics Overview
               </h3>
             </div>
             <div className="p-6">
-              <div className="space-y-6">
-                <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-medium text-gray-700">Employee Count</span>
-                    <span className="text-sm text-green-600">+24.7% growth</span>
-                  </div>
-                  <div className="flex items-end space-x-2 h-32">
-                    {monthlyData.map((data) => (
-                      <div key={data.month} className="flex-1 flex flex-col items-center">
-                        <div 
-                          className="w-full bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-sm mb-1"
-                          style={{ height: `${(data.employees / 250) * 100}%` }}
-                        />
-                        <span className="text-xs text-gray-600">{data.month}</span>
-                      </div>
-                    ))}
-                  </div>
+              {loading ? (
+                <div className="text-center py-12">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                  <p className="text-gray-500 mt-2">Loading analytics data...</p>
                 </div>
+              ) : monthlyChartData.length > 0 ? (
+                <div className="space-y-8">
+                  {/* Employee Registrations Chart */}
+                  <div>
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="text-sm font-medium text-gray-700">
+                        {monthlyChartData.some(data => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].includes(data.month)) 
+                          ? 'Daily Employee Registrations' 
+                          : 'Monthly Employee Registrations'}
+                      </span>
+                      <span className="text-sm text-blue-600">
+                        Total: {monthlyChartData.reduce((sum, data) => sum + data.employees, 0)}
+                      </span>
+                    </div>
+                    <div className="relative h-40 bg-gray-50 rounded-lg p-4">
+                      <div className="flex items-end justify-between h-full space-x-2">
+                        {monthlyChartData.map((data, index) => {
+                          const maxEmployees = Math.max(...monthlyChartData.map(d => d.employees));
+                          const heightPercentage = maxEmployees > 0 ? (data.employees / maxEmployees) * 100 : 0;
+                          
+                          return (
+                            <div key={index} className="flex-1 flex flex-col items-center h-full justify-end">
+                              <div className="relative w-full flex flex-col items-center justify-end h-full">
+                                {data.employees > 0 && (
+                                  <span className="text-xs text-gray-600 mb-1">{data.employees}</span>
+                                )}
+                                {data.employees > 0 ? (
+                                  <div 
+                                    className="w-full bg-gradient-to-t from-blue-600 to-blue-400 rounded-t-sm transition-all duration-300 hover:from-blue-700 hover:to-blue-500"
+                                    style={{ height: `${heightPercentage}%` }}
+                                  />
+                                ) : (
+                                  <div className="w-full h-1 bg-gray-300 rounded-sm opacity-50" />
+                                )}
+                              </div>
+                              <span className="text-xs text-gray-600 mt-2 text-center">{data.month}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
 
-                <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-medium text-gray-700">Questions Asked</span>
-                    <span className="text-sm text-orange-600">+84.1% growth</span>
-                  </div>
-                  <div className="flex items-end space-x-2 h-24">
-                    {monthlyData.map((data) => (
-                      <div key={data.month} className="flex-1 flex flex-col items-center">
-                        <div 
-                          className="w-full bg-gradient-to-t from-orange-500 to-orange-300 rounded-t-sm mb-1"
-                          style={{ height: `${(data.questions / 300) * 100}%` }}
-                        />
-                        <span className="text-xs text-gray-600">{data.month}</span>
+                  {/* Questions Asked Chart */}
+                  <div>
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="text-sm font-medium text-gray-700">
+                        {monthlyChartData.some(data => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].includes(data.month)) 
+                          ? 'Daily Questions Asked' 
+                          : 'Monthly Questions Asked'}
+                      </span>
+                      <span className="text-sm text-orange-600">
+                        Total: {monthlyChartData.reduce((sum, data) => sum + data.questions, 0)}
+                      </span>
+                    </div>
+                    <div className="relative h-40 bg-gray-50 rounded-lg p-4">
+                      <div className="flex items-end justify-between h-full space-x-2">
+                        {monthlyChartData.map((data, index) => {
+                          const maxQuestions = Math.max(...monthlyChartData.map(d => d.questions));
+                          const heightPercentage = maxQuestions > 0 ? (data.questions / maxQuestions) * 100 : 0;
+                          
+                          return (
+                            <div key={index} className="flex-1 flex flex-col items-center h-full justify-end">
+                              <div className="relative w-full flex flex-col items-center justify-end h-full">
+                                {data.questions > 0 && (
+                                  <span className="text-xs text-gray-600 mb-1">{data.questions}</span>
+                                )}
+                                {data.questions > 0 ? (
+                                  <div 
+                                    className="w-full bg-gradient-to-t from-orange-600 to-orange-400 rounded-t-sm transition-all duration-300 hover:from-orange-700 hover:to-orange-500"
+                                    style={{ height: `${heightPercentage}%` }}
+                                  />
+                                ) : (
+                                  <div className="w-full h-1 bg-gray-300 rounded-sm opacity-50" />
+                                )}
+                              </div>
+                              <span className="text-xs text-gray-600 mt-2 text-center">{data.month}</span>
+                            </div>
+                          );
+                        })}
                       </div>
-                    ))}
+                    </div>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <div className="text-center py-12">
+                  <TrendingUp className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-500">No data available for selected date range</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
