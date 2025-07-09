@@ -167,12 +167,13 @@ function MessageThread({
       messageList.map((message, index) => (
         <div key={index} className="flex flex-col">
           {message.isFromUser ? (
-            <div className="self-end bg-[#f1f2f9] text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm">
+            <div className="self-end bg-blue-100 text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm text-lg">
               <p>{message.content}</p>
             </div>
           ) : (
             <div className="self-start bg-gray-100 text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm">
               <div
+                className="text-lg"
                 dangerouslySetInnerHTML={{
                   __html: marked.parse(message.content),
                 }}
@@ -200,7 +201,7 @@ function MessageThread({
       ))}
 
       {error && (
-        <div className="self-start border border-red-500 bg-red-200 text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm">
+        <div className="self-start border border-red-500 bg-red-200 text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm text-lg">
           <div>{error}</div>
           <div className="pt-4">
             <button
@@ -495,7 +496,7 @@ function ProvinceDropdown({
 
   return (
     <Listbox value={province} onChange={setProvince}>
-      {({ open }) => (
+      {({ }) => (
         <div className="relative inline-block">
           <Label className="sr-only">
             Change province or territory
@@ -513,7 +514,7 @@ function ProvinceDropdown({
           >
             {provinces.map((p) => (
               <ListboxOption key={p} value={p} as={Fragment}>
-                {({ active, selected }) => (
+                {({ active, selected }: { active: boolean; selected: boolean }) => (
                   <li
                     className={
                       `flex cursor-pointer select-none items-center gap-2 px-4 py-2 text-sm ` +
@@ -531,29 +532,6 @@ function ProvinceDropdown({
       )}
     </Listbox>
   );
-
-  // const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-  //   const province = e.target.value;
-  //   if (province) {
-  //     setProvince(province);
-  //   }
-  // };
-
-  // return (
-  //   <select
-  //     value=""
-  //     onChange={handleChange}
-  //     className="text-gray-700 font-semibold px-4 py-2 rounded-md hover:bg-gray-100 transition-colors w-[270px]"
-  //   >
-  //     <option value="" disabled hidden>Change your province/territory</option>
-  //     <option disabled>Current: {province}</option>
-  //     {provinces
-  //       .filter((name) => name !== province)
-  //       .map((name) => (
-  //         <option key={name} value={name}>{name}</option>
-  //       ))}
-  //   </select>
-  // );
 }
 
 export {ChatSideBar, MessageThread, InputMessage, Header};
