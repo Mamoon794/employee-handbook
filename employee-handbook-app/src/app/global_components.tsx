@@ -17,8 +17,7 @@ interface Chat {
     title: string;
 };
 
-function ChatSideBar({setMessages, setCurrChatId, currChatId, titleLoading}: {setMessages: Dispatch<SetStateAction<Message[]>>, setCurrChatId: (chatId: string) => void, currChatId: string,  titleLoading: boolean}) {
-    const [chats, setChats] = useState<Chat[]>([]);
+function ChatSideBar({setMessages, setCurrChatId, currChatId, titleLoading, chats, setChats}: {setMessages: Dispatch<SetStateAction<Message[]>>, setCurrChatId: (chatId: string) => void, currChatId: string,  titleLoading: boolean, chats: Chat[], setChats: Dispatch<SetStateAction<Chat[]>>}) {
     const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
     const [userId, setUserId] = useState<string | null>(null);
 
@@ -227,7 +226,8 @@ function InputMessage({
   setError,
   setCurrChatId,
   threadId,
-  setTitleLoading
+  setTitleLoading,
+  setChats
 }: {
   inputValue: string;
   setInputValue: Dispatch<SetStateAction<string>>;
@@ -239,6 +239,7 @@ function InputMessage({
   setCurrChatId?: Dispatch<SetStateAction<string>>;
   threadId?: string | null;
   setTitleLoading?: Dispatch<SetStateAction<boolean>>;
+  setChats?: Dispatch<SetStateAction<Chat[]>>;
 }) {
   const errorMessage = 'Oops, something went wrong. Want to try again?'
   const province_map: { [key: string]: string } = {
@@ -302,8 +303,12 @@ function InputMessage({
             if (!titleRes.ok) throw new Error('Title generation failed');
 
             const { title } = await titleRes.json();
-            if (title && title !== "New Chat") {
-              // handled by API route
+            if (title && title !== "New Chat" && setChats) {
+              setChats(prevChats =>
+                prevChats.map(chat =>
+                  chat.id === newChatId ? { ...chat, title } : chat
+                )
+              );
             }
 
           } catch (err) {
