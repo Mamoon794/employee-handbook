@@ -64,30 +64,6 @@ export const getTotalQuestionsAsked = async (
   }
 }
 
-export async function getAIExplanationForEmployeeDistribution(
-  provinceData: Array<{ province: string; count: number; percentage: number }>
-): Promise<string> {
-  try {
-    const response = await fetch(`/api/ai-summary/employee-distribution`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        provinceData: provinceData,
-      }),
-    })
-    const data = await response.json()
-    return data.response
-  } catch (error) {
-    console.error(
-      "Error fetching AI explanation for employee distribution:",
-      error
-    )
-    return "No explanation available."
-  }
-}
-
 export const getMonthlyData = async (
   startDate: string,
   endDate: string
@@ -113,5 +89,92 @@ export const getMonthlyData = async (
   } catch (error) {
     console.error("Error fetching monthly data:", error)
     return []
+  }
+}
+
+export async function getAIExplanationForEmployeeDistribution(
+  provinceData: Array<{ province: string; count: number; percentage: number }>
+): Promise<string> {
+  try {
+    const response = await fetch(`/api/ai-summary/employee-distribution`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        provinceData: provinceData,
+      }),
+    })
+    const data = await response.json()
+    return data.response
+  } catch (error) {
+    console.error(
+      "Error fetching AI explanation for employee distribution:",
+      error
+    )
+    return "No explanation available."
+  }
+}
+
+export async function getAIExplanationForEmployeeRegistration(
+  monthlyChartData: Array<{
+    month: string
+    employees: number
+    questions: number
+    documents: number
+  }>
+): Promise<string> {
+  try {
+    const employeeRegistrationData = monthlyChartData.map((data: any) => ({
+      time: data.month,
+      employees: data.employees,
+    }))
+    const response = await fetch(`/api/ai-summary/employee-registration`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        employeeRegistrationData: employeeRegistrationData,
+      }),
+    })
+    const data = await response.json()
+    return data.response
+  } catch (error) {
+    console.error(
+      "Error fetching AI explanation for employee registration:",
+      error
+    )
+    return "No explanation available."
+  }
+}
+
+export async function getAIExplanationForQuestionsAsked(
+  monthlyChartData: Array<{
+    month: string
+    employees: number
+    questions: number
+    documents: number
+  }>
+): Promise<string> {
+  try {
+    const questionsAskedData = monthlyChartData.map((data: any) => ({
+      time: data.month,
+      questions: data.questions,
+    }))
+    const response = await fetch(`/api/ai-summary/questions-asked`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        questionsAskedData: questionsAskedData,
+      }),
+    })
+    const data = await response.json()
+    return data.response
+  } catch (error) {
+    console.error("Error fetching AI explanation for questions asked:", error)
+    return "No explanation available."
   }
 }

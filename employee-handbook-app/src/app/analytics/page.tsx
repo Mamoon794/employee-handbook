@@ -16,6 +16,8 @@ import {
   getTotalQuestionsAsked,
   getMonthlyData,
   getAIExplanationForEmployeeDistribution,
+  getAIExplanationForEmployeeRegistration,
+  getAIExplanationForQuestionsAsked,
 } from "./utils/analytics.utility"
 import DateRangePicker from "./components/DateRangePicker"
 
@@ -35,7 +37,6 @@ export default function Analytics() {
   >([])
   const [loading, setLoading] = useState(true)
   const [totalQuestionsAsked, setTotalQuestionsAsked] = useState(0)
-  const [aiExplanation, setAIExplanation] = useState("")
   const [monthlyChartData, setMonthlyChartData] = useState<
     Array<{
       month: string
@@ -44,6 +45,16 @@ export default function Analytics() {
       documents: number
     }>
   >([])
+  const [
+    aiExplanationForEmployeeDistribution,
+    setAIExplanationForEmployeeDistribution,
+  ] = useState("")
+  const [
+    aiExplanationForEmployeeRegistration,
+    setAIExplanationForEmployeeRegistration,
+  ] = useState("")
+  const [aiExplanationForQuestionsAsked, setAIExplanationForQuestionsAsked] =
+    useState("")
 
   const handleDateChange = (newStartDate: string, newEndDate: string) => {
     setStartDate(newStartDate)
@@ -85,18 +96,37 @@ export default function Analytics() {
   }, [startDate, endDate])
 
   useEffect(() => {
-    console.log("provinceData: ", provinceData)
-    const fetchAIExplanation = async () => {
+    const fetchAIExplanationForEmployeeDistribution = async () => {
       const explanation = await getAIExplanationForEmployeeDistribution(
         provinceData
       )
-      setAIExplanation(explanation)
+      setAIExplanationForEmployeeDistribution(explanation)
     }
 
     if (provinceData.length > 0) {
-      fetchAIExplanation()
+      fetchAIExplanationForEmployeeDistribution()
     }
   }, [provinceData])
+
+  useEffect(() => {
+    const fetchAIExplanationForMonthlyChart = async () => {
+      const explanationForEmployeeRegistration =
+        await getAIExplanationForEmployeeRegistration(monthlyChartData)
+
+      setAIExplanationForEmployeeRegistration(
+        explanationForEmployeeRegistration
+      )
+
+      const explanationForQuestionsAsked =
+        await getAIExplanationForQuestionsAsked(monthlyChartData)
+
+      setAIExplanationForQuestionsAsked(explanationForQuestionsAsked)
+    }
+
+    if (monthlyChartData.length > 0) {
+      fetchAIExplanationForMonthlyChart()
+    }
+  }, [monthlyChartData])
 
   const employeeStats = {
     total: totalEmployees,
@@ -238,7 +268,9 @@ export default function Analytics() {
               ) : provinceData.length > 0 ? (
                 <>
                   <div className="sr-only" aria-live="polite">
-                    {aiExplanation || "No AI explanation available."}
+                    Analytics for employee distribution by province:
+                    {aiExplanationForEmployeeDistribution ||
+                      "No explanation available."}
                   </div>
 
                   <div className="space-y-4">
@@ -341,6 +373,11 @@ export default function Analytics() {
                 <div className="space-y-8">
                   {/* Employee Registrations Chart */}
                   <div>
+                    <div className="sr-only" aria-live="polite">
+                      Analytics for employee registrations:
+                      {aiExplanationForEmployeeRegistration ||
+                        "No explanation available."}
+                    </div>
                     <div className="flex justify-between items-center mb-4">
                       <span className="text-sm font-medium text-gray-700">
                         {monthlyChartData.some((data) =>
@@ -408,6 +445,11 @@ export default function Analytics() {
 
                   {/* Questions Asked Chart */}
                   <div>
+                    <div className="sr-only" aria-live="polite">
+                      Analytics for questions asked:
+                      {aiExplanationForQuestionsAsked ||
+                        "No explanation available."}
+                    </div>
                     <div className="flex justify-between items-center mb-4">
                       <span className="text-sm font-medium text-gray-700">
                         {monthlyChartData.some((data) =>
