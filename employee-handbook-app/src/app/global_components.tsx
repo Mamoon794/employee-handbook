@@ -15,7 +15,8 @@ import { updateChatTitle } from '../models/dbOperations';
 interface Chat {
     id: string;
     title: string;
-};
+    needsTitleUpdate?: boolean;
+}
 
 function ChatSideBar({setMessages, setCurrChatId, currChatId, titleLoading, chats, setChats, setTitleLoading}: {setMessages: Dispatch<SetStateAction<Message[]>>, setCurrChatId: (chatId: string) => void, currChatId: string,  titleLoading: boolean, chats: Chat[], setChats: Dispatch<SetStateAction<Chat[]>>, setTitleLoading: Dispatch<SetStateAction<boolean>>}) {
     const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
@@ -29,6 +30,7 @@ function ChatSideBar({setMessages, setCurrChatId, currChatId, titleLoading, chat
           const chatData = response.data.map((chat: any) => ({
             id: chat.id,
             title: chat.title,
+            needsTitleUpdate: chat.title && chat.title.startsWith('Chat - ')
           }));
           setChats(chatData);
           setSelectedChat(chatData.find((chat: Chat) => chat.id === currChatId) || null);
@@ -45,6 +47,7 @@ function ChatSideBar({setMessages, setCurrChatId, currChatId, titleLoading, chat
         const chatData = allChats.data.map((chat: any) => ({
           id: chat.id,
           title: chat.title,
+          needsTitleUpdate: chat.title && chat.title.startsWith('Chat - ')
         }));
         setChats(chatData);
         if (chatData.length > 0) {
@@ -70,53 +73,21 @@ function ChatSideBar({setMessages, setCurrChatId, currChatId, titleLoading, chat
         if (!userId) return;
 
         const newChat = {
-            title: 'New Chat',
+            title: `Chat - ${new Date().toLocaleDateString()}-${chats.length + 1}`,
             userId: userId,
             messages: [] as Message[],
+            needsTitleUpdate: true, // <-- add this flag
         };
 
         try {
             const response = await axiosInstance.post('/api/chat', newChat);
             const createdChat = response.data
             console.log('New chat created:', createdChat);
-            setChats([{ id: createdChat.id, title: 'New Chat' }, ...chats]);
-            setSelectedChat({ id: createdChat.id, title: 'New Chat' });
-            setMessages([]);
+            setChats([{ id: createdChat.id, title: newChat.title, needsTitleUpdate: true }, ...chats]);
+            setSelectedChat({ id: createdChat.id, title: newChat.title, needsTitleUpdate: true });
+            setMessages(newChat.messages || []);
             setCurrChatId(createdChat.id);
-            if (createdChat.id && createdChat.id !== '') {
-                // AI-generated title
-                if (setTitleLoading) setTitleLoading(true);
-
-                try {
-                    const titleRes = await fetch('/api/generate-title', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            message: '',
-                            chatId: createdChat.id,
-                            userId: userId,
-                        }),
-                    });
-
-                    if (!titleRes.ok) throw new Error('Title generation failed');
-
-                    const { title } = await titleRes.json();
-                    console.log('AI generated title:', title); // DEBUG LOG
-                    if (title && title !== 'New Chat') {
-                        setChats((prevChats) =>
-                            prevChats.map((chat) =>
-                                chat.id === createdChat.id ? { ...chat, title } : chat
-                            )
-
-                        );
-                    }
-
-                } catch (err) {
-                    console.error('title generation failed', err);
-                } finally { 
-                    if (setTitleLoading) setTitleLoading(false);
-                }
-            }
+            // Removed AI title generation here; will be handled after first message in InputMessage
         } catch (error) {
             console.error('Error creating new chat:', error);
         }
@@ -261,7 +232,8 @@ function InputMessage({
   setCurrChatId,
   threadId,
   setTitleLoading,
-  setChats
+  setChats,
+  chats
 }: {
   inputValue: string;
   setInputValue: Dispatch<SetStateAction<string>>;
@@ -274,6 +246,7 @@ function InputMessage({
   threadId?: string | null;
   setTitleLoading?: Dispatch<SetStateAction<boolean>>;
   setChats?: Dispatch<SetStateAction<Chat[]>>;
+  chats?: Chat[];
 }) {
   const errorMessage = 'Oops, something went wrong. Want to try again?'
   const province_map: { [key: string]: string } = {
@@ -303,33 +276,46 @@ function InputMessage({
 
       // tracking if brand new chat
       const isNewChat = chatId === '';
+      // Find the chat object for this chatId
+      let chatObj: Chat | undefined = undefined;
+      if (chats && chatId) {
+        chatObj = chats.find((c: Chat) => c.id === chatId);
+      }
 
       setMessages((prevMessages) => [...prevMessages, userMessage as Message]);
       setInputValue('');
       setError('');
 
+      let newChatId = chatId || '';
       if (isPrivate) {
-        let newChatId = chatId || '';
-
         if (isNewChat) {
           const newChat = await axiosInstance.post('/api/chat', {
             userId: localStorage.getItem('userId'),
-            // title: `Chat - ${new Date().toLocaleDateString()}-1`,
             title: 'New Chat',
-            messages: [userMessage]
+            messages: [userMessage],
+            needsTitleUpdate: true // propagate flag
           });
-
           newChatId = newChat.data.id;
           if(setCurrChatId) setCurrChatId(newChatId);
+          await handlePrivateChat(newChatId);
+        } else {
+          await axiosInstance.put(`/api/chat/${chatId}/add-message`, {
+            messageData: userMessage
+          });
+          await handlePrivateChat(chatId || '');
+        }
 
-          // ai-generated title
+        // Always trigger AI title generation after the first message in a chat
+        // Only do this if the chat has exactly one message (i.e., just created)
+        // or if needsTitleUpdate is true
+        if (setChats && (isNewChat || (chatObj && chatObj.needsTitleUpdate))) {
           if (setTitleLoading) setTitleLoading(true);
           try {
             const titleRes = await fetch('/api/generate-title', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
-                message:inputValue,
+                message: inputValue,
                 chatId: newChatId,
                 userId: localStorage.getItem('userId')
               }),
@@ -338,29 +324,21 @@ function InputMessage({
             if (!titleRes.ok) throw new Error('Title generation failed');
 
             const { title } = await titleRes.json();
-            console.log('AI generated title:', title); // DEBUG LOG
             if (title && title !== "New Chat" && setChats) {
               setChats(prevChats => {
-                const updated = prevChats.map(chat =>
-                  chat.id === newChatId ? { ...chat, title } : chat
+                return prevChats.map(chat =>
+                  chat.id === newChatId
+                    ? { ...chat, title, needsTitleUpdate: false }
+                    : chat
                 );
-                console.log('Updated chats state:', updated); // DEBUG LOG
-                return updated;
               });
             }
-
           } catch (err) {
             console.error('title generation failed', err);
-          } finally { 
+          } finally {
             if (setTitleLoading) setTitleLoading(false);
           }
         }
-        else {
-          axiosInstance.put(`/api/chat/${chatId}/add-message`, {
-            messageData: userMessage
-          });
-        }
-        await handlePrivateChat(newChatId);
       } else {
         await handlePublicChat();
       }
