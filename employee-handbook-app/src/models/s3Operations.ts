@@ -20,11 +20,6 @@ class S3Operations {
             }
         })
         this.bucketName = bucketName;
-        const checkBucket = this.doesBucketExist(bucketName);
-        if (!checkBucket) {
-            console.log("❌ Bucket does not exist. Creating a new bucket...");
-            this.createBucket(bucketName);
-        }
     }
 
     async doesBucketExist(bucketName: string) {
@@ -81,6 +76,7 @@ class S3Operations {
 
     async uploadBytesToS3(buffer: Buffer, s3Key?: string, contentType?: string) {
         try {
+            await this.checkAndCreateBucket();
             if (!s3Key) {
                 s3Key = this.createKey();
             }
@@ -128,6 +124,14 @@ class S3Operations {
         const command = new GetObjectCommand({ Bucket: this.bucketName, Key: s3Key });
         const url = await getSignedUrl(this.s3Client, command, { expiresIn: 3600 });
         return url.split("?")[0]; 
+    }
+
+    async checkAndCreateBucket() {
+        const checkBucket = await this.doesBucketExist(this.bucketName);
+        if (!checkBucket) {
+            console.log("Bucket does not exist. Creating a new bucket...");
+            this.createBucket(this.bucketName);
+        }
     }
 
 

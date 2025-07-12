@@ -50,6 +50,15 @@ export const createCompany = async (companyData: Omit<Company, "id">) => {
   return docRef;
 };
 
+export const getCompany = async (companyId: string) => {
+  const docRef = companiesRef.doc(companyId);
+  const docSnap = await docRef.get();
+  const docData = docSnap.data();
+  if (docData.createdAt instanceof Timestamp) docData.createdAt = docData.createdAt.toDate();
+  if (docData.updatedAt instanceof Timestamp) docData.updatedAt = docData.updatedAt.toDate();
+  return docSnap.exists ? ({ id: docSnap.id, ...docData } as Company) : null;
+};
+
 // // collection - chats
 const chatsRef = db.collection("chats");
 

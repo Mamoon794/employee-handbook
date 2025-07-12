@@ -3,9 +3,11 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import axiosInstance from '../axios_config';
 
 export default function UploadDocument() {
   const [files, setFiles] = useState<File[]>([]);
+  const [urls, setUrls] = useState<string[]>([]);
   const [isUploaded, setIsUploaded] = useState(false);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -23,9 +25,18 @@ export default function UploadDocument() {
   };
 
   async function uploadFilesToBackend(files: File[]) {
-    // Placeholder: connect to backend here to upload files to S3
-    // For now, this does nothing and resolves immediately.
-    return; 
+    for (let i = 0; i < files.length; i++) {
+      const formData = new FormData();
+      formData.append('file', files[i]);
+      formData.append('bucketName', 'employee-handbook-app');
+      const s3Response = await axiosInstance.post('/api/s3/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      let url = s3Response.data.fileUrl;
+      
+    }
   }
 
   const handleSave = async () => {

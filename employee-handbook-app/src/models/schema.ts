@@ -23,6 +23,7 @@ export interface Company {
   s3BucketName: string; 
   createdAt: Date;
   updatedAt: Date;
+  documents: Document[]; 
 }
 
 export interface Chat {
