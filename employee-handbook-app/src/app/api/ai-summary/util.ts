@@ -1,8 +1,8 @@
-import getAISummaryFromGemini from "./models/gemini"
+import callGemini from "./models/gemini"
 
-export default async function getAISummary(contents: string) {
+export default async function callAI(contents: string) {
   try {
-    const response = await getAISummaryFromGemini(contents)
+    const response = await callGemini(contents)
     return response
   } catch (error) {
     console.error("Error getting AI summary:", error)

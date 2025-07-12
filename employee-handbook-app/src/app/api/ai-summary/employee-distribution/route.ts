@@ -1,13 +1,16 @@
 import { NextResponse } from "next/server"
-import getAISummary from "../util"
+import callAI from "../util"
 
 export async function POST(request: Request) {
   try {
     const provinceData = await request.json()
-    const response = await getAISummary(
-      `Use the following data to explain the employee distribution across provinces: ${JSON.stringify(
+    const response = await callAI(
+      `Generate a concise explanation suitable for screen reader users about the 
+      employee distribution across provinces using the following data: ${JSON.stringify(
         provinceData
-      )}. Don't say anything else but the explanation. Do not be wordy. Also, start with the explanation directly without saying things like based on the provided data.`
+      )}. Only output the explanation—no introductions or extra text.
+      Use full province names (e.g., "Ontario" instead of "ON").
+      Be clear but not wordy. Start the explanation directly.`
     )
     console.log("AI response for employee distribution:", response)
     return NextResponse.json({ response: response })

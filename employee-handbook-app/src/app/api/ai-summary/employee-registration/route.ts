@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server"
-import getAISummary from "../util"
+import callAI from "../util"
 
 export async function POST(request: Request) {
   try {
     const employeeRegistrationData = await request.json()
-    const response = await getAISummary(
-      `Analyze the following employee registration data across months/days: ${JSON.stringify(
+    const response = await callAI(
+      `Generate a concise explanation suitable for screen reader users. 
+      Analyze the following employee registration data across months or days: ${JSON.stringify(
         employeeRegistrationData
       )}. Each entry has a "time" field (month or day) and an "employees" field
       (number of employees registered at that time). Identify trends or patterns or comparisons. 
