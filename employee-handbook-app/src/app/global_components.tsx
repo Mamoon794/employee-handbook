@@ -401,6 +401,7 @@ function Header({ province, setProvince }: { province: string; setProvince: (pro
             axiosInstance.get(`/api/users/${user.id}?isClerkID=true`)
             .then(response => {
               localStorage.setItem('userId', response.data[0].id);
+              localStorage.setItem('companyId', response.data[0].companyId || '');
               setProvince(response.data[0].province || '');
             })
             .catch(error => {

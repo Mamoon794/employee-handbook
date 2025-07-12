@@ -117,7 +117,7 @@ class S3Operations {
 
     createKey(){
         const random = Math.random().toString(36).substring(2, 15);
-        return new Date().toISOString() + "-" + random;
+        return Date.now() + "-" + random;
     }
 
     async createS3Url(s3Key: string) {

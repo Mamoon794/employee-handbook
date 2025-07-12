@@ -46,9 +46,8 @@ export interface Message {
 
 export interface Document {
   id?: string;
-  companyId: string; // references the company
   fileUrl: string;
-  description?: string;
+  fileName?: string;
   uploadDate: Date;
   isPublic: boolean;
 }
