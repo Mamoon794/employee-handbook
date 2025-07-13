@@ -21,7 +21,7 @@ export default function ConfirmationPage() {
 
         <div className="w-full max-w-xl bg-[#f5f7fb] p-6 rounded-2xl space-y-6">
           <div className="text-left">
-            <p className="text-sm font-semibold text-gray-700 mb-2">Added Employees:</p>
+            <p className="text-sm font-semibold text-gray-700 mb-2">Added employees:</p>
             <div className="flex justify-between items-center bg-white px-4 py-3 rounded-xl shadow-sm">
               <span className="font-medium">John Smith</span>
               <span className="text-gray-500">johnsmith@rivvi.ca</span>

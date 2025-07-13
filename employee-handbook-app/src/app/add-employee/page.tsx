@@ -39,7 +39,7 @@ export default function AddEmployeePage() {
         <form onSubmit={handleSubmit} className="w-full max-w-2xl bg-[#f5f7fb] p-8 rounded-2xl shadow-sm space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-semibold mb-1">First Name:</label>
+              <label className="block text-sm font-semibold mb-1">First name:</label>
               <input
                 name="firstName"
                 value={formData.firstName}
