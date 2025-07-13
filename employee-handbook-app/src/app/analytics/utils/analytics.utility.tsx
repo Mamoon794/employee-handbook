@@ -125,7 +125,7 @@ export async function getAIExplanationForEmployeeRegistration(
   }>
 ): Promise<string> {
   try {
-    const employeeRegistrationData = monthlyChartData.map((data: any) => ({
+    const employeeRegistrationData = monthlyChartData.map((data: { month: string; employees: number; questions: number; documents: number }) => ({
       time: data.month,
       employees: data.employees,
     }))
@@ -158,7 +158,7 @@ export async function getAIExplanationForQuestionsAsked(
   }>
 ): Promise<string> {
   try {
-    const questionsAskedData = monthlyChartData.map((data: any) => ({
+    const questionsAskedData = monthlyChartData.map((data: { month: string; employees: number; questions: number; documents: number }) => ({
       time: data.month,
       questions: data.questions,
     }))
@@ -176,5 +176,24 @@ export async function getAIExplanationForQuestionsAsked(
   } catch (error) {
     console.error("Error fetching AI explanation for questions asked:", error)
     return "No explanation available."
+  }
+}
+
+export async function getBulletPointSummary(summary: string): Promise<string> {
+  try {
+    const response = await fetch(`/api/ai-summary/bullet-points`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        summary: summary,
+      }),
+    })
+    const data = await response.json()
+    return data.response
+  } catch (error) {
+    console.error("Error fetching bullet point summary:", error)
+    return "No summary available."
   }
 }

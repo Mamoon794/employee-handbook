@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, use } from "react"
+import { useState, useEffect } from "react"
 import {
   ArrowLeft,
   Users,
@@ -18,8 +18,10 @@ import {
   getAIExplanationForEmployeeDistribution,
   getAIExplanationForEmployeeRegistration,
   getAIExplanationForQuestionsAsked,
+  getBulletPointSummary,
 } from "./utils/analytics.utility"
 import DateRangePicker from "./components/DateRangePicker"
+import TypewriterEffect from "./components/TypewriterEffect"
 
 export default function Analytics() {
   const router = useRouter()
@@ -55,6 +57,9 @@ export default function Analytics() {
   ] = useState("")
   const [aiExplanationForQuestionsAsked, setAIExplanationForQuestionsAsked] =
     useState("")
+  const [bulletPointsEmployeeDistribution, setBulletPointsEmployeeDistribution] = useState("")
+  const [bulletPointsEmployeeRegistration, setBulletPointsEmployeeRegistration] = useState("")
+  const [bulletPointsQuestionsAsked, setBulletPointsQuestionsAsked] = useState("")
 
   const handleDateChange = (newStartDate: string, newEndDate: string) => {
     setStartDate(newStartDate)
@@ -127,6 +132,36 @@ export default function Analytics() {
       fetchAIExplanationForMonthlyChart()
     }
   }, [monthlyChartData])
+
+  useEffect(() => {
+    const fetchBulletPoints = async () => {
+      if (aiExplanationForEmployeeDistribution) {
+        const bulletPoints = await getBulletPointSummary(aiExplanationForEmployeeDistribution)
+        setBulletPointsEmployeeDistribution(bulletPoints)
+      }
+    }
+    fetchBulletPoints()
+  }, [aiExplanationForEmployeeDistribution])
+
+  useEffect(() => {
+    const fetchBulletPoints = async () => {
+      if (aiExplanationForEmployeeRegistration) {
+        const bulletPoints = await getBulletPointSummary(aiExplanationForEmployeeRegistration)
+        setBulletPointsEmployeeRegistration(bulletPoints)
+      }
+    }
+    fetchBulletPoints()
+  }, [aiExplanationForEmployeeRegistration])
+
+  useEffect(() => {
+    const fetchBulletPoints = async () => {
+      if (aiExplanationForQuestionsAsked) {
+        const bulletPoints = await getBulletPointSummary(aiExplanationForQuestionsAsked)
+        setBulletPointsQuestionsAsked(bulletPoints)
+      }
+    }
+    fetchBulletPoints()
+  }, [aiExplanationForQuestionsAsked])
 
   const employeeStats = {
     total: totalEmployees,
@@ -341,6 +376,20 @@ export default function Analytics() {
                       </div>
                     ))}
                   </div>
+
+                  {bulletPointsEmployeeDistribution && (
+                    <div className="mt-6 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-400">
+                      <h4 className="text-sm font-semibold text-blue-800 mb-2 flex items-center">
+                        <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                        AI Insights
+                      </h4>
+                      <TypewriterEffect 
+                        text={bulletPointsEmployeeDistribution}
+                        speed={30}
+                        className="text-sm"
+                      />
+                    </div>
+                  )}
                 </>
               ) : (
                 <div className="text-center py-8">
@@ -441,6 +490,20 @@ export default function Analytics() {
                         })}
                       </div>
                     </div>
+
+                    {bulletPointsEmployeeRegistration && (
+                      <div className="mt-4 p-3 bg-blue-50 rounded-lg border-l-4 border-blue-400">
+                        <h5 className="text-xs font-semibold text-blue-800 mb-2 flex items-center">
+                          <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                          Registration Insights
+                        </h5>
+                        <TypewriterEffect 
+                          text={bulletPointsEmployeeRegistration}
+                          speed={25}
+                          className="text-xs"
+                        />
+                      </div>
+                    )}
                   </div>
 
                   {/* Questions Asked Chart */}
@@ -513,6 +576,20 @@ export default function Analytics() {
                         })}
                       </div>
                     </div>
+
+                    {bulletPointsQuestionsAsked && (
+                      <div className="mt-4 p-3 bg-orange-50 rounded-lg border-l-4 border-orange-400">
+                        <h5 className="text-xs font-semibold text-orange-800 mb-2 flex items-center">
+                          <span className="w-2 h-2 bg-orange-500 rounded-full mr-2"></span>
+                          Questions Insights
+                        </h5>
+                        <TypewriterEffect 
+                          text={bulletPointsQuestionsAsked}
+                          speed={25}
+                          className="text-xs"
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
               ) : (
