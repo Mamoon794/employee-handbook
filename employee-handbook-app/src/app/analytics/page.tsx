@@ -1,29 +1,63 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowLeft, Users, MapPin, TrendingUp, FileText, MessageSquare } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { getTotalEmployees, getProvinceDistribution, getTotalQuestionsAsked } from './utils/analytics.utility';
+import DateRangePicker from './components/DateRangePicker';
 
 export default function Analytics() {
   const router = useRouter();
-  const [timeRange, setTimeRange] = useState('30d');
+  const [startDate, setStartDate] = useState(() => {
+    const date = new Date();
+    date.setDate(date.getDate() - 30);
+    return date.toISOString().split('T')[0];
+  });
+  const [endDate, setEndDate] = useState(() => {
+    return new Date().toISOString().split('T')[0];
+  });
+  const [totalEmployees, setTotalEmployees] = useState(0);
+  const [provinceData, setProvinceData] = useState<Array<{ province: string; count: number; percentage: number }>>([]);
+  const [loading, setLoading] = useState(true);
+  const [totalQuestionsAsked, setTotalQuestionsAsked] = useState(0);
 
-  // Dummy data
+  const handleDateChange = (newStartDate: string, newEndDate: string) => {
+    setStartDate(newStartDate);
+    setEndDate(newEndDate);
+  };
+
+  useEffect(() => {
+    const fetchAnalyticsData = async () => {
+      setLoading(true);
+      try {
+        const [employeeCount, provinceDistribution, questionsAsked] = await Promise.all([
+          getTotalEmployees(startDate, endDate),
+          getProvinceDistribution(startDate, endDate),
+          getTotalQuestionsAsked(startDate, endDate)
+        ]);
+        
+        setTotalEmployees(employeeCount);
+        setProvinceData(provinceDistribution);
+        setTotalQuestionsAsked(questionsAsked);
+      } catch (error) {
+        console.error('Error fetching analytics data:', error);
+        setTotalEmployees(0);
+        setProvinceData([]);
+        setTotalQuestionsAsked(0);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAnalyticsData();
+  }, [startDate, endDate]);
+
   const employeeStats = {
-    total: 247,
+    total: totalEmployees,
     active: 231,
     newThisMonth: 18,
     retentionRate: 94.2
   };
-
-  const provinceData = [
-    { province: 'Ontario', count: 89, percentage: 36.0 },
-    { province: 'British Columbia', count: 67, percentage: 27.1 },
-    { province: 'Alberta', count: 43, percentage: 17.4 },
-    { province: 'Quebec', count: 28, percentage: 11.3 },
-    { province: 'Manitoba', count: 12, percentage: 4.9 },
-    { province: 'Others', count: 8, percentage: 3.2 }
-  ];
 
   const monthlyData = [
     { month: 'Jan', employees: 198, questions: 145, documents: 23 },
@@ -61,16 +95,11 @@ export default function Analytics() {
             </div>
           </div>
           
-          <select 
-            value={timeRange} 
-            onChange={(e) => setTimeRange(e.target.value)}
-            className="px-4 py-2 bg-white border-2 border-blue-600 text-blue-800 font-semibold rounded-lg shadow-sm hover:border-blue-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-          >
-            <option value="7d">Last 7 days</option>
-            <option value="30d">Last 30 days</option>
-            <option value="90d">Last 90 days</option>
-            <option value="1y">Last year</option>
-          </select>
+          <DateRangePicker
+            startDate={startDate}
+            endDate={endDate}
+            onDateChange={handleDateChange}
+          />
         </div>
       </header>
 
@@ -81,7 +110,9 @@ export default function Analytics() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Total Employees</p>
-                <p className="text-3xl font-bold text-gray-900">{employeeStats.total}</p>
+                <p className="text-3xl font-bold text-gray-900">
+                  {loading ? '...' : employeeStats.total}
+                </p>
                 <p className="text-sm text-green-600 mt-1">+{employeeStats.newThisMonth} this month</p>
               </div>
               <div className="p-3 bg-blue-100 rounded-full">
@@ -107,7 +138,7 @@ export default function Analytics() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Questions Asked</p>
-                <p className="text-3xl font-bold text-gray-900">267</p>
+                <p className="text-3xl font-bold text-gray-900">{loading ? '...' : totalQuestionsAsked}</p>
                 <p className="text-sm text-orange-600 mt-1">+14% this month</p>
               </div>
               <div className="p-3 bg-orange-100 rounded-full">
@@ -140,48 +171,62 @@ export default function Analytics() {
               </h3>
             </div>
             <div className="p-6">
-              <div className="space-y-4">
-                {provinceData.map((item, index) => (
-                  <div key={item.province} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className={`w-3 h-3 rounded-full bg-gradient-to-r ${
-                        index === 0 ? 'from-blue-400 to-blue-600' :
-                        index === 1 ? 'from-green-400 to-green-600' :
-                        index === 2 ? 'from-purple-400 to-purple-600' :
-                        index === 3 ? 'from-orange-400 to-orange-600' :
-                        index === 4 ? 'from-pink-400 to-pink-600' :
-                        'from-gray-400 to-gray-600'
-                      }`} />
-                      <span className="font-medium text-gray-900">{item.province}</span>
-                    </div>
-                    <div className="flex items-center space-x-4">
-                      <span className="text-sm text-gray-600">{item.count} employees</span>
-                      <span className="text-sm font-medium text-gray-900">{item.percentage}%</span>
-                    </div>
+              {loading ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                  <p className="text-gray-500 mt-2">Loading province data...</p>
+                </div>
+              ) : provinceData.length > 0 ? (
+                <>
+                  <div className="space-y-4">
+                    {provinceData.map((item, index) => (
+                      <div key={item.province} className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <div className={`w-3 h-3 rounded-full bg-gradient-to-r ${
+                            index === 0 ? 'from-blue-400 to-blue-600' :
+                            index === 1 ? 'from-green-400 to-green-600' :
+                            index === 2 ? 'from-purple-400 to-purple-600' :
+                            index === 3 ? 'from-orange-400 to-orange-600' :
+                            index === 4 ? 'from-pink-400 to-pink-600' :
+                            'from-gray-400 to-gray-600'
+                          }`} />
+                          <span className="font-medium text-gray-900">{item.province}</span>
+                        </div>
+                        <div className="flex items-center space-x-4">
+                          <span className="text-sm text-gray-600">{item.count} employees</span>
+                          <span className="text-sm font-medium text-gray-900">{item.percentage}%</span>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-              
-              <div className="mt-6 space-y-2">
-                {provinceData.map((item, index) => (
-                  <div key={item.province} className="flex items-center space-x-3">
-                    <div className="w-16 text-xs text-gray-600 truncate">{item.province}</div>
-                    <div className="flex-1 bg-gray-200 rounded-full h-2">
-                      <div 
-                        className={`h-2 rounded-full bg-gradient-to-r ${
-                          index === 0 ? 'from-blue-400 to-blue-600' :
-                          index === 1 ? 'from-green-400 to-green-600' :
-                          index === 2 ? 'from-purple-400 to-purple-600' :
-                          index === 3 ? 'from-orange-400 to-orange-600' :
-                          index === 4 ? 'from-pink-400 to-pink-600' :
-                          'from-gray-400 to-gray-600'
-                        }`}
-                        style={{ width: `${item.percentage}%` }}
-                      />
-                    </div>
+                  
+                  <div className="mt-6 space-y-2">
+                    {provinceData.map((item, index) => (
+                      <div key={item.province} className="flex items-center space-x-3">
+                        <div className="w-16 text-xs text-gray-600 truncate">{item.province}</div>
+                        <div className="flex-1 bg-gray-200 rounded-full h-2">
+                          <div 
+                            className={`h-2 rounded-full bg-gradient-to-r ${
+                              index === 0 ? 'from-blue-400 to-blue-600' :
+                              index === 1 ? 'from-green-400 to-green-600' :
+                              index === 2 ? 'from-purple-400 to-purple-600' :
+                              index === 3 ? 'from-orange-400 to-orange-600' :
+                              index === 4 ? 'from-pink-400 to-pink-600' :
+                              'from-gray-400 to-gray-600'
+                            }`}
+                            style={{ width: `${item.percentage}%` }}
+                          />
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                </>
+              ) : (
+                <div className="text-center py-8">
+                  <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-500">No province data available for selected date range</p>
+                </div>
+              )}
             </div>
           </div>
 
@@ -201,15 +246,15 @@ export default function Analytics() {
                     <span className="text-sm text-green-600">+24.7% growth</span>
                   </div>
                   <div className="flex items-end space-x-2 h-32">
-                                         {monthlyData.map((data) => (
-                       <div key={data.month} className="flex-1 flex flex-col items-center">
-                         <div 
-                           className="w-full bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-sm mb-1"
-                           style={{ height: `${(data.employees / 250) * 100}%` }}
-                         />
-                         <span className="text-xs text-gray-600">{data.month}</span>
-                       </div>
-                     ))}
+                    {monthlyData.map((data) => (
+                      <div key={data.month} className="flex-1 flex flex-col items-center">
+                        <div 
+                          className="w-full bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-sm mb-1"
+                          style={{ height: `${(data.employees / 250) * 100}%` }}
+                        />
+                        <span className="text-xs text-gray-600">{data.month}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
@@ -219,15 +264,15 @@ export default function Analytics() {
                     <span className="text-sm text-orange-600">+84.1% growth</span>
                   </div>
                   <div className="flex items-end space-x-2 h-24">
-                                         {monthlyData.map((data) => (
-                       <div key={data.month} className="flex-1 flex flex-col items-center">
-                         <div 
-                           className="w-full bg-gradient-to-t from-orange-500 to-orange-300 rounded-t-sm mb-1"
-                           style={{ height: `${(data.questions / 300) * 100}%` }}
-                         />
-                         <span className="text-xs text-gray-600">{data.month}</span>
-                       </div>
-                     ))}
+                    {monthlyData.map((data) => (
+                      <div key={data.month} className="flex-1 flex flex-col items-center">
+                        <div 
+                          className="w-full bg-gradient-to-t from-orange-500 to-orange-300 rounded-t-sm mb-1"
+                          style={{ height: `${(data.questions / 300) * 100}%` }}
+                        />
+                        <span className="text-xs text-gray-600">{data.month}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -263,8 +308,6 @@ export default function Analytics() {
             </div>
           </div>
         </div>
-
-        
       </main>
     </div>
   );

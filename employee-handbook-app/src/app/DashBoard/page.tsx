@@ -16,7 +16,12 @@ export default function Dashboard() {
         <h1 className="text-2xl font-extrabold italic text-blue-800">Gail</h1>
         <div className="flex gap-4 items-center">
           <button className="px-7 py-3 bg-[#242267] text-white rounded-xl font-bold text-base hover:bg-blue-900 transition-colors shadow-sm" onClick={()=>{router.push('/chat');}}>Ask a Question</button>
-          <button className="px-7 py-3 bg-blue-800 text-white rounded-xl font-bold text-base hover:bg-blue-900 transition-colors shadow-sm">View Finances</button>
+          <button 
+            className="px-7 py-3 bg-blue-800 text-white rounded-xl font-bold text-base hover:bg-blue-900 transition-colors shadow-sm"
+            onClick={() => router.push('/finances')}
+          >
+            View Finances
+          </button>
           <button 
             onClick={() => router.push('/analytics')}
             className="px-7 py-3 bg-[#242267] text-white rounded-xl font-bold text-base hover:bg-blue-900 transition-colors shadow-sm"
@@ -44,7 +49,12 @@ export default function Dashboard() {
         <div className="w-full max-w-sm bg-[#f5f7fb] rounded-xl shadow-lg flex flex-col items-center py-12 px-8">
           <div className="text-xl font-bold text-black mb-10 text-center">Employee Management</div>
           <button className="w-full bg-[#e3e8f0] text-black font-extrabold py-4 rounded-xl mb-5 text-base hover:bg-[#d1d5db] transition-colors shadow-sm">Add employees</button>
-          <button className="w-full bg-[#e3e8f0] text-black font-extrabold py-4 rounded-xl text-base hover:bg-[#d1d5db] transition-colors shadow-sm">Manage Employees</button>
+          <button 
+            className="w-full bg-[#e3e8f0] text-black font-extrabold py-4 rounded-xl text-base hover:bg-[#d1d5db] transition-colors shadow-sm"
+            onClick={() => router.push("/manage-employees")}
+          >
+            Manage Employees
+          </button>
         </div>
       </main>
 
