@@ -149,7 +149,9 @@ We've enhanced web accessibility for visually impaired users by adding AI-genera
 
 ### How to Test the AI Feature
 
-There are two ways to check whether this AI feature is wokring:
+After the app is started, go to analytics page: http://localhost:3000/analytics
+
+There are two ways to check whether this AI feature is working:
 
 1. Activate the screen reader (on Mac, it's Command + F5. To learn more, check [VoiceOver guide](https://support.apple.com/en-ca/guide/voiceover/vo4be8816d70/10/mac/15.0).) Use Control + Option + Left/Right Arrow keys to navigate to the graph section. After it reads out the title, press Control + Option + Right Arrow again to hear the AI summary. If it says “No AI summary available,” it means the request-per-minute limit has been reached. Wait a minute, then refresh the page.
 
