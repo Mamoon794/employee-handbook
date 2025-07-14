@@ -54,4 +54,5 @@ export interface Document {
 export interface Link {
   title: string;
   url: string;
+  page?: number
 }
