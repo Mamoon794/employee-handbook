@@ -219,8 +219,7 @@ export function MessageInput({
         type="button"
         onClick={toggleMic}
         className={`absolute left-4 top-1/2 -translate-y-1/2
-                    ${listening ? "text-red-600 animate-pulse" : "text-gray-400"}
-                    hover:text-gray-600 transition-colors`}
+                    ${listening ? "text-red-600 animate-pulse" : "text-gray-400 hover:text-gray-600 transition-colors"}`}
         title={listening ? "Stop recording" : "Speak your question"}
       >
         <Mic className="w-6 h-6" />

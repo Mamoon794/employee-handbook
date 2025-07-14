@@ -12,12 +12,9 @@ import { marked } from 'marked';
 import dynamic from "next/dynamic";
 
 
-const InputMessage = dynamic(() => import('./inputMessage').then(mod => mod.MessageInput), {
+const InputMessage = dynamic(() => import('./MessageInput').then(mod => mod.MessageInput), {
   ssr: false,
 });
-
-
-
 
 interface Chat {
     id: string;
