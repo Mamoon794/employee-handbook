@@ -3,16 +3,21 @@
 'use client';
 
 import { useEffect, useState, Dispatch, SetStateAction, useRef } from 'react';
-import { Search, Plus, Menu, Trash2, Mic } from 'lucide-react';
+import { Plus, Menu, Trash2 } from 'lucide-react';
 import axiosInstance from './axios_config';
 import { useRouter } from 'next/navigation';
 import { useUser, UserButton } from '@clerk/nextjs';
-import { Link, Message } from '../models/schema'; 
-import { Citation } from '@/types/ai';
+import { Message } from '../models/schema'; 
 import { marked } from 'marked';
-import { useAudioRecorder } from "react-use-audio-recorder";
+import dynamic from "next/dynamic";
 
-const AI_SERVICE_URL = process.env.AI_SERVICE_URL;
+
+const InputMessage = dynamic(() => import('./inputMessage').then(mod => mod.MessageInput), {
+  ssr: false,
+});
+
+
+
 
 interface Chat {
     id: string;
@@ -217,240 +222,6 @@ function MessageThread({
   );
 }
 
-function InputMessage({
-  inputValue,
-  setInputValue,
-  isPrivate,
-  province,
-  chatId,
-  setMessages,
-  setError,
-  setCurrChatId,
-  threadId
-}: {
-  inputValue: string;
-  setInputValue: Dispatch<SetStateAction<string>>;
-  isPrivate: boolean;
-  province?: string | null;
-  chatId?: string;
-  setMessages: Dispatch<SetStateAction<Message[]>>;
-  setError: Dispatch<SetStateAction<string>>;
-  setCurrChatId?: Dispatch<SetStateAction<string>>;
-  threadId?: string | null
-}) {
-  const errorMessage = 'Oops, something went wrong. Want to try again?'
-  const province_map: { [key: string]: string } = {
-    "ON": "Ontario",
-    "AB": "Alberta",
-    "BC": "British Columbia",
-    "MB": "Manitoba",
-    "NB": "New Brunswick",
-    "NL": "Newfoundland and Labrador",
-    "NS": "Nova Scotia",
-    "PE": "Prince Edward Island",
-    "QC": "Quebec",
-    "SK": "Saskatchewan",
-    "NT": "Northwest Territories",
-    "NU": "Nunavut",
-    "YT": "Yukon"
-  }
-
-  const {
-    recordingStatus, // "inactive" | "recording" | "paused" | "stopped"
-    recordingTime,   // in seconds
-    startRecording,
-    stopRecording,
-    pauseRecording,
-    resumeRecording,
-    getBlob,
-    saveRecording
-  } = useAudioRecorder();
-
-  const [listening, setListening] = useState(false);
-
-  const toggleMic = () => {
-    if (listening) {
-      setListening(false);
-      stopRecording(async (blob) => {
-        if (blob) {
-          setListening(false);
-          const audioFile = new File([blob], `recording-${new Date().toISOString()}.wav`, {type: blob.type});
-          const formData = new FormData();
-          formData.append('file', audioFile);
-          try{
-            const response = await axiosInstance.post(`http://127.0.0.1:8000/transcribe`,formData);
-            console.log("Transcription response:", response);
-            setInputValue(response.data.transcript);
-          } catch (error) {
-            console.error("Error during transcription:", error);
-            setError(errorMessage);
-          }
-
-        }
-      });
-      console.log("Recording stopped, blob:");
-    } else {
-      setListening(true);
-      startRecording();
-    }
-  };
-
-  const submitUserMessage = async () => {
-    if (!inputValue.trim()) return;
-
-    try {
-      const userMessage: Omit<Message, 'createdAt'> = {
-        isFromUser: true,
-        content: inputValue,
-      };
-      setMessages((prevMessages) => [...prevMessages, userMessage as Message]);
-      setInputValue('');
-      setError('');
-
-      if (isPrivate) {
-        let newChatId = chatId || '';
-        if (chatId === '') {
-            const newChat = await axiosInstance.post('/api/chat', {
-            userId: localStorage.getItem('userId'),
-            title: `Chat - ${new Date().toLocaleDateString()}-1`,
-            messages: [userMessage]
-          });
-          if(setCurrChatId) setCurrChatId(newChat.data.id);
-          newChatId = newChat.data.id;
-
-        }
-
-        else{
-          axiosInstance.put(`/api/chat/${chatId}/add-message`, {
-            messageData: userMessage
-          });
-        }
-        await handlePrivateChat(newChatId);
-      } else {
-        await handlePublicChat();
-      }
-    } catch (err) {
-      console.error(err);
-      setError(errorMessage);
-    }
-  };
-  
-  function mapCitationsToLinks(citations: Citation[]): Link[] {
-    return citations.map(citation => ({
-      title: citation.title,
-      url: citation.fragmentUrl || citation.originalUrl // Use fragmentUrl if available, fallback to originalUrl
-    }));
-  }
-
-  const handlePrivateChat = async (new_chatId: string) => {
-    const full_province = province ? province_map[province] : '';
-    console.log("province", province);
-    const res = await axiosInstance.post(`/api/public/message`, {
-      province,
-      query: inputValue,
-      threadId: new_chatId
-    });
-    if (res.status !== 200) {
-      setError(errorMessage);
-      return;
-    }
-
-    const data = res.data;
-    if (data.response) {
-      const botMessage = {
-        content: data.response,
-        isFromUser: false,
-        sources: mapCitationsToLinks(data.citations),
-      }
-      setMessages((prevMessages) => [...prevMessages, botMessage as Message]);
-      axiosInstance.put(`/api/chat/${new_chatId}/add-message`, {
-        messageData: botMessage,
-      });
-    }
-    else {
-      setError(errorMessage);
-    }
-  };
-
-  const handlePublicChat = async () => {
-    if (!province) return;
-
-    try {
-      console.log("province", province);
-      const res = await fetch('/api/public/message', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          province,
-          query: inputValue,
-          threadId
-        }),
-      });
-
-      if (!res.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-      const data = await res.json();
-      if (data.response) {
-        const botMessage = {
-          content: data.response,
-          isFromUser: false,
-          createdAt: new Date(),
-          sources: mapCitationsToLinks(data.citations),
-        }
-        setMessages((prevMessages) => [...prevMessages, botMessage as Message]);
-      } else {
-        setError(errorMessage);
-      }
-    } catch (err) {
-      console.error(err);
-      setError(errorMessage);
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      submitUserMessage();
-    }
-  };
-
-  return(
-    <div className="relative w-full max-w-4xl mx-auto">
-      <input
-        type="text"
-        value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
-        onKeyDown={handleKeyDown}
-        placeholder="Ask anything"
-        className="w-full px-13 py-4 border border-gray-300 rounded-md 
-                  text-lg text-black placeholder-gray-400"
-      />
-
-      <button
-        type="button"
-        onClick={toggleMic}
-        className={`absolute left-4 top-1/2 -translate-y-1/2
-                    ${listening ? "text-red-600 animate-pulse" : "text-gray-400"}
-                    hover:text-gray-600 transition-colors`}
-        title={listening ? "Stop recording" : "Speak your question"}
-      >
-        <Mic className="w-6 h-6" />
-      </button>
-
-      <button
-        type="button"
-        onClick={submitUserMessage}
-        className="absolute right-4 top-1/2 -translate-y-1/2
-                  text-gray-400 hover:text-gray-600 transition-colors"
-      >
-        <Search className="w-6 h-6" />
-      </button>
-    </div>
-  )
-}
-
 
 function Header({ province, setProvince }: { province: string; setProvince: (prov: string) => void }) {
     const { isSignedIn, user } = useUser();
@@ -575,5 +346,6 @@ function ProvinceDropdown({
     </select>
   );
 }
+
 
 export {ChatSideBar, MessageThread, InputMessage, Header};
