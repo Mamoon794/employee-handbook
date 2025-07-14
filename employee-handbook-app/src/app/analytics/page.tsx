@@ -60,6 +60,9 @@ export default function Analytics() {
   const [bulletPointsEmployeeDistribution, setBulletPointsEmployeeDistribution] = useState("")
   const [bulletPointsEmployeeRegistration, setBulletPointsEmployeeRegistration] = useState("")
   const [bulletPointsQuestionsAsked, setBulletPointsQuestionsAsked] = useState("")
+  const [loadingBulletPointsDistribution, setLoadingBulletPointsDistribution] = useState(false)
+  const [loadingBulletPointsRegistration, setLoadingBulletPointsRegistration] = useState(false)
+  const [loadingBulletPointsQuestions, setLoadingBulletPointsQuestions] = useState(false)
 
   const handleDateChange = (newStartDate: string, newEndDate: string) => {
     setStartDate(newStartDate)
@@ -69,6 +72,15 @@ export default function Analytics() {
   useEffect(() => {
     const fetchAnalyticsData = async () => {
       setLoading(true)
+      // Set loading states for AI insights when timeline changes
+      setLoadingBulletPointsDistribution(true)
+      setLoadingBulletPointsRegistration(true)
+      setLoadingBulletPointsQuestions(true)
+      // Clear existing AI insights
+      setBulletPointsEmployeeDistribution("")
+      setBulletPointsEmployeeRegistration("")
+      setBulletPointsQuestionsAsked("")
+      
       try {
         const [
           employeeCount,
@@ -92,6 +104,10 @@ export default function Analytics() {
         setProvinceData([])
         setTotalQuestionsAsked(0)
         setMonthlyChartData([])
+        // Stop loading states on error
+        setLoadingBulletPointsDistribution(false)
+        setLoadingBulletPointsRegistration(false)
+        setLoadingBulletPointsQuestions(false)
       } finally {
         setLoading(false)
       }
@@ -133,35 +149,53 @@ export default function Analytics() {
     }
   }, [monthlyChartData])
 
+  // Single effect to handle all bullet points with rate limiting
   useEffect(() => {
-    const fetchBulletPoints = async () => {
-      if (aiExplanationForEmployeeDistribution) {
-        const bulletPoints = await getBulletPointSummary(aiExplanationForEmployeeDistribution)
-        setBulletPointsEmployeeDistribution(bulletPoints)
+    const fetchAllBulletPoints = async () => {
+      // Wait for all AI explanations to be ready
+      if (aiExplanationForEmployeeDistribution && aiExplanationForEmployeeRegistration && aiExplanationForQuestionsAsked) {
+        // Set all loading states
+        setLoadingBulletPointsDistribution(true)
+        setLoadingBulletPointsRegistration(true)
+        setLoadingBulletPointsQuestions(true)
+        
+        // Clear existing bullet points
+        setBulletPointsEmployeeDistribution("")
+        setBulletPointsEmployeeRegistration("")
+        setBulletPointsQuestionsAsked("")
+        
+        try {
+          // Add delay between calls to respect rate limits
+          const bulletPointsDistribution = await getBulletPointSummary(aiExplanationForEmployeeDistribution)
+          setBulletPointsEmployeeDistribution(bulletPointsDistribution)
+          setLoadingBulletPointsDistribution(false)
+          
+          // Wait 2 seconds between calls
+          await new Promise(resolve => setTimeout(resolve, 2000))
+          
+          const bulletPointsRegistration = await getBulletPointSummary(aiExplanationForEmployeeRegistration)
+          setBulletPointsEmployeeRegistration(bulletPointsRegistration)
+          setLoadingBulletPointsRegistration(false)
+          
+          // Wait 2 seconds between calls
+          await new Promise(resolve => setTimeout(resolve, 2000))
+          
+          const bulletPointsQuestions = await getBulletPointSummary(aiExplanationForQuestionsAsked)
+          setBulletPointsQuestionsAsked(bulletPointsQuestions)
+          setLoadingBulletPointsQuestions(false)
+          
+        } catch (error) {
+          console.error('Error fetching bullet points:', error)
+          // Stop all loading states on error
+          setLoadingBulletPointsDistribution(false)
+          setLoadingBulletPointsRegistration(false)
+          setLoadingBulletPointsQuestions(false)
+        }
       }
     }
-    fetchBulletPoints()
-  }, [aiExplanationForEmployeeDistribution])
 
-  useEffect(() => {
-    const fetchBulletPoints = async () => {
-      if (aiExplanationForEmployeeRegistration) {
-        const bulletPoints = await getBulletPointSummary(aiExplanationForEmployeeRegistration)
-        setBulletPointsEmployeeRegistration(bulletPoints)
-      }
-    }
-    fetchBulletPoints()
-  }, [aiExplanationForEmployeeRegistration])
-
-  useEffect(() => {
-    const fetchBulletPoints = async () => {
-      if (aiExplanationForQuestionsAsked) {
-        const bulletPoints = await getBulletPointSummary(aiExplanationForQuestionsAsked)
-        setBulletPointsQuestionsAsked(bulletPoints)
-      }
-    }
-    fetchBulletPoints()
-  }, [aiExplanationForQuestionsAsked])
+    fetchAllBulletPoints()
+  }, [aiExplanationForEmployeeDistribution, aiExplanationForEmployeeRegistration, aiExplanationForQuestionsAsked])
 
   const employeeStats = {
     total: totalEmployees,
@@ -377,19 +411,27 @@ export default function Analytics() {
                     ))}
                   </div>
 
-                  {bulletPointsEmployeeDistribution && (
-                    <div className="mt-6 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-400">
-                      <h4 className="text-sm font-semibold text-blue-800 mb-2 flex items-center">
-                        <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                        AI Insights
-                      </h4>
+                  {/* AI Insights Caption - Always Visible */}
+                  <div className="mt-6 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-400">
+                    <h4 className="text-sm font-semibold text-blue-800 mb-2 flex items-center">
+                      <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                      Province Distribution Insights
+                    </h4>
+                    {loadingBulletPointsDistribution ? (
+                      <div className="flex items-center space-x-2 text-sm text-gray-600">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                        <span>Generating AI insights...</span>
+                      </div>
+                    ) : bulletPointsEmployeeDistribution ? (
                       <TypewriterEffect 
                         text={bulletPointsEmployeeDistribution}
                         speed={30}
                         className="text-sm"
                       />
-                    </div>
-                  )}
+                    ) : (
+                      <p className="text-sm text-gray-500">No insights available</p>
+                    )}
+                  </div>
                 </>
               ) : (
                 <div className="text-center py-8">
@@ -491,19 +533,27 @@ export default function Analytics() {
                       </div>
                     </div>
 
-                    {bulletPointsEmployeeRegistration && (
-                      <div className="mt-4 p-3 bg-blue-50 rounded-lg border-l-4 border-blue-400">
-                        <h5 className="text-xs font-semibold text-blue-800 mb-2 flex items-center">
-                          <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                          Registration Insights
-                        </h5>
+                    {/* Registration Insights - Always Visible */}
+                    <div className="mt-4 p-3 bg-blue-50 rounded-lg border-l-4 border-blue-400">
+                      <h5 className="text-xs font-semibold text-blue-800 mb-2 flex items-center">
+                        <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                        Registration Insights
+                      </h5>
+                      {loadingBulletPointsRegistration ? (
+                        <div className="flex items-center space-x-2 text-xs text-gray-600">
+                          <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-blue-600"></div>
+                          <span>Generating insights...</span>
+                        </div>
+                      ) : bulletPointsEmployeeRegistration ? (
                         <TypewriterEffect 
                           text={bulletPointsEmployeeRegistration}
                           speed={25}
                           className="text-xs"
                         />
-                      </div>
-                    )}
+                      ) : (
+                        <p className="text-xs text-gray-500">No insights available</p>
+                      )}
+                    </div>
                   </div>
 
                   {/* Questions Asked Chart */}
@@ -577,19 +627,27 @@ export default function Analytics() {
                       </div>
                     </div>
 
-                    {bulletPointsQuestionsAsked && (
-                      <div className="mt-4 p-3 bg-orange-50 rounded-lg border-l-4 border-orange-400">
-                        <h5 className="text-xs font-semibold text-orange-800 mb-2 flex items-center">
-                          <span className="w-2 h-2 bg-orange-500 rounded-full mr-2"></span>
-                          Questions Insights
-                        </h5>
+                    {/* Questions Insights - Always Visible */}
+                    <div className="mt-4 p-3 bg-orange-50 rounded-lg border-l-4 border-orange-400">
+                      <h5 className="text-xs font-semibold text-orange-800 mb-2 flex items-center">
+                        <span className="w-2 h-2 bg-orange-500 rounded-full mr-2"></span>
+                        Questions Insights
+                      </h5>
+                      {loadingBulletPointsQuestions ? (
+                        <div className="flex items-center space-x-2 text-xs text-gray-600">
+                          <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-orange-600"></div>
+                          <span>Generating insights...</span>
+                        </div>
+                      ) : bulletPointsQuestionsAsked ? (
                         <TypewriterEffect 
                           text={bulletPointsQuestionsAsked}
                           speed={25}
                           className="text-xs"
                         />
-                      </div>
-                    )}
+                      ) : (
+                        <p className="text-xs text-gray-500">No insights available</p>
+                      )}
+                    </div>
                   </div>
                 </div>
               ) : (

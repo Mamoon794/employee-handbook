@@ -6,7 +6,7 @@ export const getTotalEmployees = async (
     const params = new URLSearchParams()
     if (startDate) params.append("startDate", startDate)
     if (endDate) params.append("endDate", endDate)
-
+    
     const response = await fetch(`/api/analytics/users?${params.toString()}`)
     if (!response.ok) {
       throw new Error("Failed to fetch total employees")
@@ -27,7 +27,7 @@ export const getProvinceDistribution = async (
     const params = new URLSearchParams()
     if (startDate) params.append("startDate", startDate)
     if (endDate) params.append("endDate", endDate)
-
+    
     const response = await fetch(
       `/api/analytics/provinces?${params.toString()}`
     )

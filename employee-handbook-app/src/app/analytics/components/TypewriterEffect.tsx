@@ -16,11 +16,9 @@ export default function TypewriterEffect({
   onComplete 
 }: TypewriterEffectProps) {
   const [displayedText, setDisplayedText] = useState("");
-  const [isComplete, setIsComplete] = useState(false);
 
   useEffect(() => {
     setDisplayedText("");
-    setIsComplete(false);
     
     if (!text) return;
 
@@ -30,7 +28,6 @@ export default function TypewriterEffect({
         setDisplayedText(text.slice(0, index + 1));
         index++;
       } else {
-        setIsComplete(true);
         clearInterval(timer);
         onComplete?.();
       }
@@ -62,9 +59,6 @@ export default function TypewriterEffect({
             </p>
           );
         })}
-        {!isComplete && (
-          <span className="inline-block w-2 h-4 bg-blue-500 animate-pulse ml-1" />
-        )}
       </div>
     );
   };
