@@ -416,53 +416,16 @@ function InputMessage({
     }
   };
 
-  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-  const [atMaxHeight, setAtMaxHeight] = useState(false);
-
-  const lineHeight = 28; // 28px is the line height for text-lg
-  const maxLines = 8;
-  const maxHeight = maxLines * lineHeight;
-
-  const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInputValue(e.target.value);
-
-    const textarea = textareaRef.current as HTMLTextAreaElement | null;
-    if (textarea) {
-      textarea.style.height = "auto";
-      textarea.style.height = Math.min(textarea.scrollHeight, maxHeight) + "px";
-      setAtMaxHeight(textarea.scrollHeight > maxHeight - 1);
-
-      if (textarea.scrollHeight > maxHeight) {
-        textarea.scrollTop = textarea.scrollHeight;
-      }
-    }
-  };
-
-  useEffect(() => {
-    const textarea = textareaRef.current;
-    if (textarea) {
-      textarea.style.height = "auto";
-      textarea.style.height = Math.min(textarea.scrollHeight, maxHeight) + "px";
-      setAtMaxHeight(textarea.scrollHeight > maxHeight - 1);
-
-      if (textarea.scrollHeight > maxHeight) {
-        textarea.scrollTop = textarea.scrollHeight;
-      }
-    }
-  }, [inputValue]);
-
   return(
     <div className="relative w-full max-w-4xl mx-auto">
-      <textarea
-        ref={textareaRef}
-        rows={1}
+      <input
+        type="text"
         value={inputValue}
-        onChange={handleInput}
+        onChange={(e) => setInputValue(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder="Ask anything"
-        className={`resize-none w-full px-13 py-4 border border-gray-300 rounded-md 
-                  text-lg text-black placeholder-gray-400 overflow-y-auto ${ atMaxHeight ? 'overflow-y-auto' : 'overflow-y-hidden'}`}
-        style={{ minHeight: lineHeight, maxHeight: maxHeight }}
+        className="w-full px-13 py-4 border border-gray-300 rounded-md 
+                  text-lg text-black placeholder-gray-400"
       />
 
       <button
@@ -476,15 +439,15 @@ function InputMessage({
         <Mic className="w-6 h-6" />
       </button>
 
-    <button
-      type="button"
-      onClick={submitUserMessage}
-      className="absolute right-4 top-1/2 -translate-y-1/2
-                 text-gray-400 hover:text-gray-600 transition-colors"
-    >
-      <Search className="w-6 h-6" />
-    </button>
-        </div>
+      <button
+        type="button"
+        onClick={submitUserMessage}
+        className="absolute right-4 top-1/2 -translate-y-1/2
+                  text-gray-400 hover:text-gray-600 transition-colors"
+      >
+        <Search className="w-6 h-6" />
+      </button>
+    </div>
   )
 }
 
