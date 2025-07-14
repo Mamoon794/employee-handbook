@@ -1,7 +1,7 @@
 /* eslint-disable */
 
-import { useEffect, useState, Dispatch, SetStateAction} from 'react';
-import { Search, Mic } from 'lucide-react';
+import { useEffect, useState, Dispatch, SetStateAction, useRef} from 'react';
+import { Search, Mic, Loader2 } from 'lucide-react';
 import axiosInstance from './axios_config';
 import { Link, Message } from '../models/schema'; 
 import { Citation } from '@/types/ai';
@@ -54,25 +54,28 @@ export function MessageInput({
   } = useAudioRecorder();
 
   const [listening, setListening] = useState(false);
+  const [transcribing, setTranscribing] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const toggleMic = () => {
     if (listening) {
       setListening(false);
       stopRecording(async (blob) => {
         if (blob) {
-          setListening(false);
+          setTranscribing(true);
           const audioFile = new File([blob], `recording-${new Date().toISOString()}.wav`, {type: blob.type});
           const formData = new FormData();
           formData.append('file', audioFile);
-          try{
+          try {
             const response = await axiosInstance.post("/api/messages/transcribe", formData);
             console.log("Transcription response:", response);
-            setInputValue(response.data.transcription);
+            setInputValue(inputValue + " " + response.data.transcription);
           } catch (error) {
             console.error("Error during transcription:", error);
             setError(errorMessage);
+          } finally {
+            setTranscribing(false);
           }
-
         }
       });
       console.log("Recording stopped, blob:");
@@ -203,33 +206,48 @@ export function MessageInput({
     }
   };
 
+  // put focus back on the text input so Enter will submit
+  useEffect(() => {
+    if (!transcribing) {
+      inputRef.current?.focus();
+    }
+  }, [transcribing]);
+
   return(
     <div className="relative w-full max-w-4xl mx-auto">
       <input
+        ref={inputRef}
         type="text"
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
         onKeyDown={handleKeyDown}
+        disabled={transcribing}
         placeholder="Ask anything"
         className="w-full px-13 py-4 border border-gray-300 rounded-md 
                   text-lg text-black placeholder-gray-400"
       />
 
-      <button
-        type="button"
-        onClick={toggleMic}
-        className={`absolute left-4 top-1/2 -translate-y-1/2
-                    ${listening ? "text-red-600 animate-pulse" : "text-gray-400 hover:text-gray-600 transition-colors"}`}
-        title={listening ? "Stop recording" : "Speak your question"}
-      >
-        <Mic className="w-6 h-6" />
-      </button>
+      {transcribing ? (
+        <Loader2 className="absolute left-4 top-1/2 -translate-y-1/2 animate-spin text-gray-500" />
+      ) :
+        <button
+          type="button"
+          onClick={toggleMic}
+          className={`absolute left-4 top-1/2 -translate-y-1/2
+                      ${listening ? "text-red-600 animate-pulse" : "text-gray-400 hover:text-gray-600 transition-colors"}`}
+          title={listening ? "Stop recording" : "Speak your question"}
+        >
+          <Mic className="w-6 h-6" />
+        </button>
+      }
 
       <button
         type="button"
+        disabled={transcribing || listening}
         onClick={submitUserMessage}
-        className="absolute right-4 top-1/2 -translate-y-1/2
-                  text-gray-400 hover:text-gray-600 transition-colors"
+        className={`absolute right-4 top-1/2 -translate-y-1/2 text-gray-400
+                  ${transcribing || listening ? "cursor-not-allowed opacity-50" : 
+                  "hover:text-gray-600 transition-colors"}`}
       >
         <Search className="w-6 h-6" />
       </button>
