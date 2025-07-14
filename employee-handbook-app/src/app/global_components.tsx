@@ -439,15 +439,15 @@ function InputMessage({
         <Mic className="w-6 h-6" />
       </button>
 
-    <button
-      type="button"
-      onClick={submitUserMessage}
-      className="absolute right-4 top-1/2 -translate-y-1/2
-                 text-gray-400 hover:text-gray-600 transition-colors"
-    >
-      <Search className="w-6 h-6" />
-    </button>
-        </div>
+      <button
+        type="button"
+        onClick={submitUserMessage}
+        className="absolute right-4 top-1/2 -translate-y-1/2
+                  text-gray-400 hover:text-gray-600 transition-colors"
+      >
+        <Search className="w-6 h-6" />
+      </button>
+    </div>
   )
 }
 
