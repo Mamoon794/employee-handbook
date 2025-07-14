@@ -8,7 +8,8 @@ export async function POST(request: Request) {
       `Summarize the following text into clear, concise bullet points.
         Start each point with a dash and a space, like this: - Point text here.
         Avoid unnecessary wording. Focus only on the key ideas.
-        
+        Avoid any intro.
+
         ${summaryData.summary}`
     )
     console.log("AI generated bullet points:", response)

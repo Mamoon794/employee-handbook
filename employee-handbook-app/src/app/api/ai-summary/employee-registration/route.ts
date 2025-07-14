@@ -5,12 +5,23 @@ export async function POST(request: Request) {
   try {
     const employeeRegistrationData = await request.json()
     const response = await callAI(
-      `Generate a concise explanation suitable for screen reader users. 
-      Analyze the following employee registration data across months or days: ${JSON.stringify(
-        employeeRegistrationData
-      )}. Each entry has a "time" field (month or day) and an "employees" field
-      (number of employees registered at that time). Identify trends or patterns or comparisons. 
-      Do not be wordy. Do not say things like "based on the data." Start directly with the analysis.`
+      `You are assisting screen reader users by summarizing key data insights in plain language.
+      Your response will be read aloud, so do not include any introductions like “based on the data.”
+      Start immediately with insights.
+
+      Analyze the following dataset:
+      ${JSON.stringify(employeeRegistrationData)}
+
+      Each entry includes:
+
+      "time": a label (month or day)
+
+      "employees": number of employees registered at that time
+
+      Briefly mention the time span covered by the data, then describe trends, 
+      patterns, or comparisons in employee registration activity.
+      Include relevant statistics such as average, median, or any informative measure.
+      Keep the explanation concise, clear, and easy to follow by voice.`
     )
     console.log("AI response for employee registration:", response)
     return NextResponse.json({ response: response })
