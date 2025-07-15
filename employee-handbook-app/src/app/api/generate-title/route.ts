@@ -5,18 +5,21 @@ export async function POST(req: Request) {
     const { message, chatId, userId } = await req.json();
 
     // calling fastAPI endpoint
-    const fastApiResponse = await fetch('http://127.0.0.1:8000/generate-title', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message, chatId, userId }),
-    });
+    const fastApiResponse = await fetch(
+      `${process.env.FASTAPI_URL}/generate-title`, 
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message, chatId, userId }),
+      }
+    );
 
     if (!fastApiResponse.ok) throw new Error('Failed to generate title');
     
     const { title } = await fastApiResponse.json();
 
     // updating title
-    const updateResponse = await fetch('http://localhost:3000/api/update-title', {
+    const updateResponse = await fetch('/api/update-title', { 
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ chatId, title }),
