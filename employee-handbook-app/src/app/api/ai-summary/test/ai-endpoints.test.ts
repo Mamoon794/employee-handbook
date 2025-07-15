@@ -50,7 +50,6 @@ describe('AI Summary Endpoints', () => {
       });
 
       const response = await bulletPointsHandler(request);
-      const data = await response.json();
 
       expect(response.status).toBe(200);
       expect(mockCallAI).toHaveBeenCalledWith(
@@ -68,7 +67,6 @@ describe('AI Summary Endpoints', () => {
       });
 
       const response = await bulletPointsHandler(request);
-      const data = await response.json();
 
       expect(response.status).toBe(200);
       expect(mockCallAI).toHaveBeenCalledWith(
@@ -106,7 +104,6 @@ describe('AI Summary Endpoints', () => {
       });
 
       const response = await employeeDistributionHandler(request);
-      const data = await response.json();
 
       expect(response.status).toBe(200);
       expect(mockCallAI).toHaveBeenCalledWith(
@@ -172,7 +169,6 @@ describe('AI Summary Endpoints', () => {
       });
 
       const response = await employeeRegistrationHandler(request);
-      const data = await response.json();
 
       expect(response.status).toBe(200);
       expect(mockCallAI).toHaveBeenCalledWith(
@@ -259,7 +255,6 @@ describe('AI Summary Endpoints', () => {
       });
 
       const response = await questionsAskedHandler(request);
-      const data = await response.json();
 
       expect(response.status).toBe(200);
       expect(mockCallAI).toHaveBeenCalledWith(

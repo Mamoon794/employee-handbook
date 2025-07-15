@@ -27,6 +27,7 @@ export async function POST(req: Request) {
     
     return NextResponse.json({ title });
   } catch (error) {
+    console.error('Error generating title:', error);
     return NextResponse.json(
       { title: "New Chat", error: 'Failed to save title' }, 
       { status: 200 }
