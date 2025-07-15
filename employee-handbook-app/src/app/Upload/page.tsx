@@ -2,13 +2,42 @@
 
 'use client';
 
+// New commit
+
 import { useState, useRef, useEffect } from 'react';
 
+import axiosInstance from '../axios_config';
+
 export default function UploadDocument() {
+  type pdfFile = {
+    name: string;
+    type: string;
+    url: string;
+  }
   const [files, setFiles] = useState<File[]>([]);
+  const [savedFiles, setSavedFiles] = useState<pdfFile[]>([]);
   const [isUploaded, setIsUploaded] = useState(false);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    async function fetchCompanyDocs() {
+      const companyId = localStorage.getItem('companyId');
+      const companyDocs = await axiosInstance.get(`/api/company/docs/${companyId}`);
+      let get_files : pdfFile[]  = []
+      for (const doc of companyDocs.data.companyDocs) {
+        get_files.push({
+          name: doc.fileName,
+          type: 'application/pdf',
+          url: doc.fileUrl,
+        });
+      }
+      setSavedFiles(get_files);
+    }
+    if (localStorage.getItem('companyId')) {
+      fetchCompanyDocs();
+    }
+  }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -23,9 +52,28 @@ export default function UploadDocument() {
   };
 
   async function uploadFilesToBackend(files: File[]) {
-    // Placeholder: connect to backend here to upload files to S3
-    // For now, this does nothing and resolves immediately.
-    return; 
+    for (let i = 0; i < files.length; i++) {
+      const formData = new FormData();
+      formData.append('file', files[i]);
+      formData.append('bucketName', 'employee-handbook-app');
+      const s3Response = await axiosInstance.post('/api/s3/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      let url = s3Response.data.fileUrl;
+      const documentData = {
+        fileUrl: url,
+        fileName: files[i].name,
+        uploadDate: new Date(),
+        isPublic: false,
+      };
+      await axiosInstance.put('/api/company/docs',{
+        companyId: localStorage.getItem('companyId'),
+        documents: [documentData],
+      });
+      
+    }
   }
 
   const handleSave = async () => {

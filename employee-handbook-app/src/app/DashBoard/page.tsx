@@ -3,11 +3,27 @@
 
 import { useRouter } from 'next/navigation';
 import { useUser, UserButton } from "@clerk/nextjs"; 
+import axiosInstance from '../axios_config';
 
 export default function Dashboard() {
   const router = useRouter();
   const { user } = useUser();
   const firstName = user?.firstName || "there"; 
+
+  async function uploadDocuments(event: React.ChangeEvent<HTMLInputElement>) {
+    const files = event.target.files || [];
+    for (let i = 0; i < files.length; i++) {
+      const formData = new FormData();
+      formData.append('file', files[i]);
+      formData.append('bucketName', 'employee-handbook-app');
+
+      await axiosInstance.post('/api/s3/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+    }
+  }
 
   return (
     <div className="min-h-screen bg-white flex flex-col font-[family-name:var(--font-geist-sans)]">
@@ -43,7 +59,17 @@ export default function Dashboard() {
         <div className="flex-1 flex flex-col items-center justify-center">
           <h2 className="text-4xl font-extrabold text-blue-800 mb-8 text-center">Welcome, {firstName}!</h2>
           <p className="text-lg text-black font-bold mb-12 text-center">It seems there are currently no files uploaded.</p>
-          <button className="bg-[#294494] text-white font-extrabold px-12 py-5 rounded-xl text-xl hover:bg-blue-900 transition-colors shadow-md">Upload Documents</button>
+          <label className="bg-[#294494] text-white font-extrabold px-12 py-5 rounded-xl text-xl hover:bg-blue-900 transition-colors shadow-md cursor-pointer">
+            Upload Documents
+            <input
+              type="file"
+              name="file"
+              accept=".pdf"
+              multiple
+              onChange={uploadDocuments}
+              className="hidden"
+            />
+          </label>
         </div>
         {/* Employee Management Card */}
         <div className="w-full max-w-sm bg-[#f5f7fb] rounded-xl shadow-lg flex flex-col items-center py-12 px-8">
