@@ -95,7 +95,7 @@ python setup.py           # Uploads data from the pickle file to Pinecone
 
 **Environment variables:**
 
-Create a `.env.local` file and put the following keys:
+Create a `.env` file and put the following keys:
 
 ```
 AI_SERVICE_URL=<your_AI_service_public_url>
@@ -138,6 +138,7 @@ The documentation for the AI service endpoints is located in the `AIService/` fo
 - Public access to general employment laws
 - Private, secure login for company-specific policy access
 - Document linking and source transparency
+- Document uploads, and access to org-specific financial info and analytics
 - Accessible on web, mobile, and tablet devices
 
 ## AI Feature: Chat Title Generation
