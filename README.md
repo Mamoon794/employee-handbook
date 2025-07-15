@@ -230,38 +230,6 @@ There are two ways to check whether this AI feature is working:
 
 Overall, the AI did a good job identifying important trends from the graph and generating the AI summary based on them. The explanation is concise without missing any key information. The bullet points also summarize the explanation very clearly.
 
-## AI Feature: Chat Title Generation
-
-### Overview of the Improvement
-
-We added a new AI-powered feature that automatically generates short, descriptive titles for each new chat based on the user’s first message. Previously, chat logs were named generically (e.g., "Chat - 07/10/2025"), making it hard for users to find specific past conversations. With this improvement, titles are generated automatically, improving navigation and usability.
-
-### How to Test the AI Feature
-
-1. Log in to the app and create a new chat.
-2. Enter your first message (e.g., “What are the rules for overtime in Ontario?”).
-3. The app will send this message to the AI service.
-4. Within a few seconds, the chat title in the sidebar will update from a generic name to a meaningful one.
-5. A "Generating..." message is briefly displayed while the title is being processed.
-
-> If the AI fails to generate a title (e.g., due to a vague or empty message), the fallback title will be "New Chat".
-
-### Dependencies
-
-This feature builds on existing components already listed in the Tech Stack:
-
-- **LangChain + LLM API (e.g., Gemini or GPT)** – Used to generate chat titles from the first message.
-- **FastAPI** – Hosts the AI service and exposes the `/generate-title` endpoint.
-- **Firebase** – Used to persist the generated title in the chat document.
-- **Next.js (Frontend)** – Sends the user message to the backend and updates the UI with the new title.
-
-### Performance Results
-
-- **Title Accuracy:** Works well for clear questions  
-  The AI generates helpful titles when the first message is clear (e.g., “how long a break can be?” → “Break Length Query”). For vague inputs like “Hi”, it still returns a title (e.g., “Simple Hello”), but it's less useful. The feature is reliable and always returns something.
-
-
-
 ## Target Users
 
 - **Public Users:** Employees across Canada seeking clarification on general work rights
