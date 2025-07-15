@@ -104,8 +104,6 @@ def generate_title(titleInput: TitleInput):
         else:
             title = str(response).strip()
 
-        # TODO: Add Firebase integration here
-        # For now, return without Firebase storage
         return {"title": title, "chatId": titleInput.chatId, "saved": False}
     except Exception as e:
         # if anything goes wrong, return a default title
