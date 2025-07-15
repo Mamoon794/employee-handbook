@@ -7,6 +7,12 @@ import { Link, Message } from '../models/schema';
 import { Citation } from '@/types/ai';
 import { useAudioRecorder } from "react-use-audio-recorder";
 
+interface Chat {
+    id: string;
+    title: string;
+    needsTitleUpdate?: boolean;
+}
+
 
 export function MessageInput({
   inputValue,
@@ -17,7 +23,10 @@ export function MessageInput({
   setMessages,
   setError,
   setCurrChatId,
-  threadId
+  threadId,
+  setTitleLoading,
+  setChats,
+  chats
 }: {
   inputValue: string;
   setInputValue: Dispatch<SetStateAction<string>>;
@@ -27,7 +36,10 @@ export function MessageInput({
   setMessages: Dispatch<SetStateAction<Message[]>>;
   setError: Dispatch<SetStateAction<string>>;
   setCurrChatId?: Dispatch<SetStateAction<string>>;
-  threadId?: string | null
+  threadId?: string | null;
+  setTitleLoading?: Dispatch<SetStateAction<boolean>>;
+  setChats?: Dispatch<SetStateAction<Chat[]>>;
+  chats?: Chat[];
 }) {
   const errorMessage = 'Oops, something went wrong. Want to try again?'
   const province_map: { [key: string]: string } = {
@@ -93,29 +105,72 @@ export function MessageInput({
         isFromUser: true,
         content: inputValue,
       };
+
+      // tracking if brand new chat
+      const isNewChat = chatId === '';
+      // Find the chat object for this chatId
+      let chatObj: Chat | undefined = undefined;
+      if (chats && chatId) {
+        chatObj = chats.find((c: Chat) => c.id === chatId);
+      }
+
       setMessages((prevMessages) => [...prevMessages, userMessage as Message]);
       setInputValue('');
       setError('');
 
+      let newChatId = chatId || '';
       if (isPrivate) {
-        let newChatId = chatId || '';
-        if (chatId === '') {
-            const newChat = await axiosInstance.post('/api/chat', {
+        if (isNewChat) {
+          const newChat = await axiosInstance.post('/api/chat', {
             userId: localStorage.getItem('userId'),
-            title: `Chat - ${new Date().toLocaleDateString()}-1`,
-            messages: [userMessage]
+            title: 'New Chat',
+            messages: [userMessage],
+            needsTitleUpdate: true // propagate flag
           });
-          if(setCurrChatId) setCurrChatId(newChat.data.id);
           newChatId = newChat.data.id;
-
-        }
-
-        else{
-          axiosInstance.put(`/api/chat/${chatId}/add-message`, {
+          if(setCurrChatId) setCurrChatId(newChatId);
+          await handlePrivateChat(newChatId);
+        } else {
+          await axiosInstance.put(`/api/chat/${chatId}/add-message`, {
             messageData: userMessage
           });
+          await handlePrivateChat(chatId || '');
         }
-        await handlePrivateChat(newChatId);
+
+        // Always trigger AI title generation after the first message in a chat
+        // Only do this if the chat has exactly one message (i.e., just created)
+        // or if needsTitleUpdate is true
+        if (setChats && (isNewChat || (chatObj && chatObj.needsTitleUpdate))) {
+          if (setTitleLoading) setTitleLoading(true);
+          try {
+            const titleRes = await fetch('/api/generate-title', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                message: inputValue,
+                chatId: newChatId,
+                userId: localStorage.getItem('userId')
+              }),
+            });
+
+            if (!titleRes.ok) throw new Error('Title generation failed');
+
+            const { title } = await titleRes.json();
+            if (title && title !== "New Chat" && setChats) {
+              setChats(prevChats => {
+                return prevChats.map(chat =>
+                  chat.id === newChatId
+                    ? { ...chat, title, needsTitleUpdate: false }
+                    : chat
+                );
+              });
+            }
+          } catch (err) {
+            console.error('title generation failed', err);
+          } finally {
+            if (setTitleLoading) setTitleLoading(false);
+          }
+        }
       } else {
         await handlePublicChat();
       }

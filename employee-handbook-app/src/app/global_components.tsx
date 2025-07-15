@@ -19,10 +19,10 @@ const InputMessage = dynamic(() => import('./MessageInput').then(mod => mod.Mess
 interface Chat {
     id: string;
     title: string;
-};
+    needsTitleUpdate?: boolean;
+}
 
-function ChatSideBar({setMessages, setCurrChatId, currChatId}: {setMessages: Dispatch<SetStateAction<Message[]>>, setCurrChatId: (chatId: string) => void, currChatId: string}) {
-    const [chats, setChats] = useState<Chat[]>([]);
+function ChatSideBar({setMessages, setCurrChatId, currChatId, titleLoading, chats, setChats, setTitleLoading}: {setMessages: Dispatch<SetStateAction<Message[]>>, setCurrChatId: (chatId: string) => void, currChatId: string,  titleLoading: boolean, chats: Chat[], setChats: Dispatch<SetStateAction<Chat[]>>, setTitleLoading: Dispatch<SetStateAction<boolean>>}) {
     const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
     const [userId, setUserId] = useState<string | null>(null);
 
@@ -34,6 +34,7 @@ function ChatSideBar({setMessages, setCurrChatId, currChatId}: {setMessages: Dis
           const chatData = response.data.map((chat: any) => ({
             id: chat.id,
             title: chat.title,
+            needsTitleUpdate: chat.title && chat.title.startsWith('Chat - ')
           }));
           setChats(chatData);
           setSelectedChat(chatData.find((chat: Chat) => chat.id === currChatId) || null);
@@ -50,6 +51,7 @@ function ChatSideBar({setMessages, setCurrChatId, currChatId}: {setMessages: Dis
         const chatData = allChats.data.map((chat: any) => ({
           id: chat.id,
           title: chat.title,
+          needsTitleUpdate: chat.title && chat.title.startsWith('Chat - ')
         }));
         setChats(chatData);
         if (chatData.length > 0) {
@@ -78,16 +80,18 @@ function ChatSideBar({setMessages, setCurrChatId, currChatId}: {setMessages: Dis
             title: `Chat - ${new Date().toLocaleDateString()}-${chats.length + 1}`,
             userId: userId,
             messages: [] as Message[],
+            needsTitleUpdate: true, // <-- add this flag
         };
 
         try {
             const response = await axiosInstance.post('/api/chat', newChat);
             const createdChat = response.data
             console.log('New chat created:', createdChat);
-            setChats([{ id: createdChat.id, title: newChat.title }, ...chats]);
-            setSelectedChat({ id: createdChat.id, title: newChat.title });
+            setChats([{ id: createdChat.id, title: newChat.title, needsTitleUpdate: true }, ...chats]);
+            setSelectedChat({ id: createdChat.id, title: newChat.title, needsTitleUpdate: true });
             setMessages(newChat.messages || []);
             setCurrChatId(createdChat.id);
+            // Removed AI title generation here; will be handled after first message in InputMessage
         } catch (error) {
             console.error('Error creating new chat:', error);
         }
@@ -109,7 +113,9 @@ function ChatSideBar({setMessages, setCurrChatId, currChatId}: {setMessages: Dis
             }}
           >
             <div className="flex items-center justify-between">
-              <span className="font-medium">{chat.title}</span>
+              <span className="font-medium">
+                {titleLoading && selectedChat?.id === chat.id ? "Generating..." : chat.title}
+              </span>
               {selectedChat?.id === chat.id && (
                 <Trash2 className="text-gray-400" onClick={()=>{
                   axiosInstance.delete(`/api/chat/${chat.id}`)
@@ -229,6 +235,7 @@ function Header({ province, setProvince }: { province: string; setProvince: (pro
             axiosInstance.get(`/api/users/${user.id}?isClerkID=true`)
             .then(response => {
               localStorage.setItem('userId', response.data[0].id);
+              localStorage.setItem('companyId', response.data[0].companyId || '');
               setProvince(response.data[0].province || '');
             })
             .catch(error => {

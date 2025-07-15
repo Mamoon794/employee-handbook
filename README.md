@@ -7,11 +7,13 @@ The **Employee Handbook App** is a web-based platform that helps workers underst
 Our partner is **Arshad Merali** from Rivvi, a Toronto-based fintech company focused on improving financial health and workplace transparency.
 
 ## Link of the app
+
 The app can be accessed at https://employee-handbook-app.vercel.app/.
 
 (Note: Backend is hosted on Render (free tier), so there may be ~30s cold start delay on first load.)
 
 ## Instructions/Features
+
 Access the link above.
 
 On landing, select your province/territory.
@@ -26,9 +28,8 @@ The chatbot will give you an answer given your selected province/territory and y
 The province dropdown allows you to change your province. The chatbot will tailor its answers to this province.
 ![ProvinceDropdown](deliverables/D2/images/dropdown.gif)
 
-You can also choose to log in or sign up using the buttons at the top right. Upon pressing the **Log in** button, you will be redirected to the Clerk login page. 
+You can also choose to log in or sign up using the buttons at the top right. Upon pressing the **Log in** button, you will be redirected to the Clerk login page.
 ![Login](deliverables/D2/images/login.png)
-
 
 After logging in, you will be able to create new chats, see your chat history and your messages will be stored.
 ![Chat History](deliverables/D2/images/chat_history.png)
@@ -50,14 +51,12 @@ The analytics page will show you the number of employees, total questions asked 
 
 Right now there's no restrictions on who can access the employer dashboard. This will be implemented in the future.
 
-
-
 ## Setup (For Developers)
 
 This project consists of two parts:
 
-* **Next.js App** — handles most endpoints and the user interface
-* **AI Service** — powers the AI chatbot through a separate Python backend
+- **Next.js App** — handles most endpoints and the user interface
+- **AI Service** — powers the AI chatbot through a separate Python backend
 
 ### 1. Next.js App
 
@@ -86,12 +85,13 @@ cd AIService
 python scrapeAllData.py   # Scrapes links from providedDocSample.json and saves data to a pickle file
 python setup.py           # Uploads data from the pickle file to Pinecone
 ```
+
 **Note:** These commands should only be run if `providedDocSample.json` has been updated, as they can take a long time to complete.
 
 **Requirements:**
 
-* Node.js and npm
-* Python 3.x and pip
+- Node.js and npm
+- Python 3.x and pip
 
 **Environment variables:**
 
@@ -130,6 +130,7 @@ FIREBASE_UNIVERSE_DOMAIN=<your_firebase_universe_domain>
 ```
 
 ## Documentation
+
 The documentation for the AI service endpoints is located in the `AIService/` folder. You can either import `AIService_postman_collection.json` into Postman, or open `AIService_collection.openapi` using [Swagger Editor](https://editor.swagger.io/).
 
 ## Core Features
@@ -140,6 +141,36 @@ The documentation for the AI service endpoints is located in the `AIService/` fo
 - Document linking and source transparency
 - Document uploads, and access to org-specific financial info and analytics
 - Accessible on web, mobile, and tablet devices
+
+## AI Feature: Chat Title Generation
+
+### Overview of the Improvement
+
+We added a new AI-powered feature that automatically generates short, descriptive titles for each new chat based on the user’s first message. Previously, chat logs were named generically (e.g., "Chat - 07/10/2025"), making it hard for users to find specific past conversations. With this improvement, titles are generated automatically, improving navigation and usability.
+
+### How to Test the AI Feature
+
+1. Log in to the app and create a new chat.
+2. Enter your first message (e.g., “What are the rules for overtime in Ontario?”).
+3. The app will send this message to the AI service.
+4. Within a few seconds, the chat title in the sidebar will update from a generic name to a meaningful one.
+5. A "Generating..." message is briefly displayed while the title is being processed.
+
+> If the AI fails to generate a title (e.g., due to a vague or empty message), the fallback title will be "New Chat".
+
+### Dependencies
+
+This feature builds on existing components already listed in the Tech Stack:
+
+- **LangChain + LLM API (e.g., Gemini or GPT)** – Used to generate chat titles from the first message.
+- **FastAPI** – Hosts the AI service and exposes the `/generate-title` endpoint.
+- **Firebase** – Used to persist the generated title in the chat document.
+- **Next.js (Frontend)** – Sends the user message to the backend and updates the UI with the new title.
+
+### Performance Results
+
+- **Title Accuracy:** Works well for clear questions  
+  The AI generates helpful titles when the first message is clear (e.g., “how long a break can be?” → “Break Length Query”). For vague inputs like “Hi”, it still returns a title (e.g., “Simple Hello”), but it's less useful. The feature is reliable and always returns something.
 
 ## AI Feature: Voice-to-Text Input
 
@@ -247,10 +278,9 @@ Overall, the AI did a good job identifying important trends from the graph and g
 - **Analytics:** Google Analytics
 - **Payment Gateway:** Stripe (if needed)
 
-## Tech Architecture 
+## Tech Architecture
 
 <img src="https://github.com/user-attachments/assets/6c2eacb8-838f-4294-88ca-380eca06c24e" width="700" height="500" />
-
 
 ## Task Management
 
@@ -273,10 +303,9 @@ We follow a collaborative, branch-based development process on GitHub:
 
 - **Branch Naming:** Each feature or bug fix is implemented on a dedicated branch (e.g., `feature/Chat`, `fix/signup`).
 - **Pull Requests:** All changes are submitted via pull requests, using the `pull_request_template.md` to ensure clarity and accountability.
-- **Code Review:**  Every PR is reviewed during our regular team meetings on Zoom/Discord, where all members are present and provide collective feedback before merging into `main`.
+- **Code Review:** Every PR is reviewed during our regular team meetings on Zoom/Discord, where all members are present and provide collective feedback before merging into `main`.
 - **Main Branch Stability:** The `main` branch always contains the latest stable, deployable version of the app.
 - **Continuous Integration:** Our app is deployed via Vercel whenever changes are pushed to the `main` branch, ensuring quick feedback and stable releases.
-
 
 This workflow ensures that our team collaborates smoothly, avoids merge conflicts, and maintains clean, working code throughout development.
 
