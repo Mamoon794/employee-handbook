@@ -172,6 +172,32 @@ This feature builds on existing components already listed in the Tech Stack:
 - **Title Accuracy:** Works well for clear questions  
   The AI generates helpful titles when the first message is clear (e.g., “how long a break can be?” → “Break Length Query”). For vague inputs like “Hi”, it still returns a title (e.g., “Simple Hello”), but it's less useful. The feature is reliable and always returns something.
 
+## AI Feature: Voice-to-Text Input
+
+### Overview of the Improvement
+This feature introduces a voice-to-text input option for the chatbot, allowing users to speak their questions instead of typing. It enhances accessibility, especially for users with visual impairments or limited mobility, and offers a faster, more natural way to interact with the app. The feature leverages AI-powered speech recognition to transcribe spoken language into text.
+
+### How to Test the AI Feature
+
+1. Go to the application at the link above.
+2. Once you've provided your location, click the mic icon to the left of the input bar to begin recording.
+3. Speak your question.
+4. Click the mic icon again to stop recording.
+5. Wait for your transcription to appear in the input box.
+6. You may edit your question, or repeat steps 2–5 to add more text. Once you are satisfied with the text in the box, submit your question by pressing Enter or clicking the search icon to the right of the input bar.
+
+### Dependencies
+
+This feature builds on existing components, as well as incorporates the faster-whisper library, an open-source implementation of OpenAI's Whisper model.
+
+- **faster-whisper** – Used to transcribe audio recordings with the small Whisper model.
+- **FastAPI** – Hosts the AI service and exposes the `/transcribe` endpoint.
+- **Next.js (Frontend & Backend)** – Frontend sends the audio clip to the backend, which then sends it to the AI service endpoint for transcription.
+
+### Performance Results
+- **Transcription Accuracy** - The small faster-whisper model achieves high accuracy on clear, conversational speech with good handling of various accents.
+- **Response Time** - Transcription typically completes within 5 seconds for short audio clips (under 30 seconds).
+- **Resource Usage** - Running the small faster-whisper model uses minimal system resources, allowing for efficient backend performance.
 
 ## AI Feature: Dynamic Graph Explanations for Accessibility
 
@@ -188,6 +214,22 @@ There are two ways to check whether this AI feature is working:
 1. Activate the screen reader (on Mac, it's Command + F5. To learn more, check [VoiceOver guide](https://support.apple.com/en-ca/guide/voiceover/vo4be8816d70/10/mac/15.0).) Use Control + Option + Left/Right Arrow keys to navigate to the graph section. After it reads out the title, press Control + Option + Right Arrow again to hear the AI summary. If it says “No AI summary available,” it means the request-per-minute limit has been reached. Wait a minute, then refresh the page.
 
 2. A more straightforward way is to look at the Insights section under the graphs. If the AI fails to generate summaries, you will see “No AI summary available” in that section. Wait a minute, then refresh the page. If everything is working correctly, a few bullet points should appear to represent the insights.
+
+## AI Feature: Chat Title Generation
+
+### Overview of the Improvement
+
+We added a new AI-powered feature that automatically generates short, descriptive titles for each new chat based on the user’s first message. Previously, chat logs were named generically (e.g., "Chat - 07/10/2025"), making it hard for users to find specific past conversations. With this improvement, titles are generated automatically, improving navigation and usability.
+
+### How to Test the AI Feature
+
+1. Log in to the app and create a new chat.
+2. Enter your first message (e.g., “What are the rules for overtime in Ontario?”).
+3. The app will send this message to the AI service.
+4. Within a few seconds, the chat title in the sidebar will update from a generic name to a meaningful one.
+5. A "Generating..." message is briefly displayed while the title is being processed.
+
+> If the AI fails to generate a title (e.g., due to a vague or empty message), the fallback title will be "New Chat".
 
 ### Dependencies
 
