@@ -179,7 +179,7 @@ This feature introduces a voice-to-text input option for the chatbot, allowing u
 
 ### How to Test the AI Feature
 
-1. Go to the application at the link above.
+1. Go to the deployed application at the [link](https://github.com/csc301-2025-y/project-16-rivvi?tab=readme-ov-file#link-of-the-app) above or run it locally using the [setup instructions](https://github.com/csc301-2025-y/project-16-rivvi?tab=readme-ov-file#setup-for-developers) above.
 2. Once you've provided your location, click the mic icon to the left of the input bar to begin recording.
 3. Speak your question.
 4. Click the mic icon again to stop recording.
