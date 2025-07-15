@@ -185,6 +185,22 @@ There are two ways to check whether this AI feature is working:
 
 2. A more straightforward way is to look at the Insights section under the graphs. If the AI fails to generate summaries, you will see “No AI summary available” in that section. Wait a minute, then refresh the page. If everything is working correctly, a few bullet points should appear to represent the insights.
 
+## AI Feature: Chat Title Generation
+
+### Overview of the Improvement
+
+We added a new AI-powered feature that automatically generates short, descriptive titles for each new chat based on the user’s first message. Previously, chat logs were named generically (e.g., "Chat - 07/10/2025"), making it hard for users to find specific past conversations. With this improvement, titles are generated automatically, improving navigation and usability.
+
+### How to Test the AI Feature
+
+1. Log in to the app and create a new chat.
+2. Enter your first message (e.g., “What are the rules for overtime in Ontario?”).
+3. The app will send this message to the AI service.
+4. Within a few seconds, the chat title in the sidebar will update from a generic name to a meaningful one.
+5. A "Generating..." message is briefly displayed while the title is being processed.
+
+> If the AI fails to generate a title (e.g., due to a vague or empty message), the fallback title will be "New Chat".
+
 ### Dependencies
 
 - **Google Gemini API (JavaScript version)** – Used to generate AI summaries and bullet points.
