@@ -1,12 +1,14 @@
 import { NextResponse } from 'next/server';
 
+
+
 export async function POST(req: Request) {
   try {
     const { message, chatId, userId } = await req.json();
 
     // calling fastAPI endpoint
     const fastApiResponse = await fetch(
-      `${process.env.FASTAPI_URL}/generate-title`, 
+      `${process.env.AI_SERVICE_URL}/generate-title`, 
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
