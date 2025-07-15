@@ -168,6 +168,37 @@ This feature builds on existing components, as well as incorporates the faster-w
 - **Response Time** - Transcription typically completes within 5 seconds for short audio clips (under 30 seconds).
 - **Resource Usage** - Running the small faster-whisper model uses minimal system resources, allowing for efficient backend performance.
 
+## AI Feature: Dynamic Graph Explanations for Accessibility
+
+### Overview of the Improvment
+
+We've enhanced web accessibility for visually impaired users by adding AI-generated natural language summaries and bullet-point captions to graphs on the analytics page. As a result, users can understand the information in the graphs without needing to see them.
+
+### How to Test the AI Feature
+
+After the app is started, go to analytics page: http://localhost:3000/analytics
+
+There are two ways to check whether this AI feature is working:
+
+1. Activate the screen reader (on Mac, it's Command + F5. To learn more, check [VoiceOver guide](https://support.apple.com/en-ca/guide/voiceover/vo4be8816d70/10/mac/15.0).) Use Control + Option + Left/Right Arrow keys to navigate to the graph section. After it reads out the title, press Control + Option + Right Arrow again to hear the AI summary. If it says “No AI summary available,” it means the request-per-minute limit has been reached. Wait a minute, then refresh the page.
+
+2. A more straightforward way is to look at the Insights section under the graphs. If the AI fails to generate summaries, you will see “No AI summary available” in that section. Wait a minute, then refresh the page. If everything is working correctly, a few bullet points should appear to represent the insights.
+
+### Dependencies
+
+- **Google Gemini API (JavaScript version)** – Used to generate AI summaries and bullet points.
+- **Firebase** – Retrieves information from the database to construct the graph; this data is also included in the prompt sent to the API.
+- **Next.js API endpoints** – Exposes the following routes:
+  - `/api/ai-summary/bullet-points`
+  - `/api/ai-summary/employee-distribution`
+  - `/api/ai-summary/employee-registration`
+  - `/api/ai-summary/questions-asked`
+- **Next.js frontend** – Updates the UI based on the API response.
+
+### Performance Results
+
+Overall, the AI did a good job identifying important trends from the graph and generating the AI summary based on them. The explanation is concise without missing any key information. The bullet points also summarize the explanation very clearly.
+
 ## Target Users
 
 - **Public Users:** Employees across Canada seeking clarification on general work rights
