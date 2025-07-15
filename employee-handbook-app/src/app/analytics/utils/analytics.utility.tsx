@@ -35,6 +35,9 @@ export const getProvinceDistribution = async (
       throw new Error("Failed to fetch province distribution")
     }
     const data = await response.json()
+    if (!data) {
+      throw new Error("No data received from province distribution API")
+    }
     return data.provinceDistribution
   } catch (error) {
     console.error("Error fetching province distribution:", error)
