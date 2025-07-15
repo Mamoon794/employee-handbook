@@ -27,9 +27,9 @@ model = WhisperModel("small", device="cpu", compute_type="int8", download_root="
 # Will have to change this for production
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  
+    allow_origins=["https://employee-handbook-app.vercel.app/"],  
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
 
