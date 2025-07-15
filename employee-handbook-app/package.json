@@ -32,6 +32,8 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.58.0",
+    "react-speech-recognition": "^4.0.1",
+    "react-use-audio-recorder": "^0.4.2",
     "svix": "^1.67.0",
     "tls": "^0.0.1"
   },
@@ -45,6 +47,7 @@
     "@types/node": "^20.17.58",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/react-speech-recognition": "^3.9.6",
     "dotenv": "^16.5.0",
     "eslint": "^9.29.0",
     "eslint-config-next": "15.3.3",
