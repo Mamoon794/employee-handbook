@@ -17,6 +17,13 @@ export async function GET(request: Request) {
     
     const startTimestamp = new Date(startDate);
     const endTimestamp = new Date(endDate);
+    
+    if (isNaN(startTimestamp.getTime()) || isNaN(endTimestamp.getTime())) {
+      return NextResponse.json({ 
+        error: 'Invalid date format. Please provide valid dates', 
+        success: false 
+      }, { status: 400 });
+    }
     endTimestamp.setHours(23, 59, 59, 999);
     
     const daysDiff = Math.ceil((endTimestamp.getTime() - startTimestamp.getTime()) / (1000 * 60 * 60 * 24));
