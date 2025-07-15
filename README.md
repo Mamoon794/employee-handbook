@@ -141,6 +141,33 @@ The documentation for the AI service endpoints is located in the `AIService/` fo
 - Document uploads, and access to org-specific financial info and analytics
 - Accessible on web, mobile, and tablet devices
 
+## AI Feature: Voice-to-Text Input
+
+### Overview of the Improvement
+This feature introduces a voice-to-text input option for the chatbot, allowing users to speak their questions instead of typing. It enhances accessibility, especially for users with visual impairments or limited mobility, and offers a faster, more natural way to interact with the app. The feature leverages AI-powered speech recognition to transcribe spoken language into text.
+
+### How to Test the AI Feature
+
+1. Go to the application at the link above.
+2. Once you've provided your location, click the mic icon to the left of the input bar to begin recording.
+3. Speak your question.
+4. Click the mic icon again to stop recording.
+5. Wait for your transcription to appear in the input box.
+6. You may edit your question, or repeat steps 2–5 to add more text. Once you are satisfied with the text in the box, submit your question by pressing Enter or clicking the search icon to the right of the input bar.
+
+### Dependencies
+
+This feature builds on existing components, as well as incorporates the faster-whisper library, an open-source implementation of OpenAI's Whisper model.
+
+- **faster-whisper** – Used to transcribe audio recordings with the small Whisper model.
+- **FastAPI** – Hosts the AI service and exposes the `/transcribe` endpoint.
+- **Next.js (Frontend & Backend)** – Frontend sends the audio clip to the backend, which then sends it to the AI service endpoint for transcription.
+
+### Performance Results
+- **Transcription Accuracy** - The small faster-whisper model achieves high accuracy on clear, conversational speech with good handling of various accents.
+- **Response Time** - Transcription typically completes within 5 seconds for short audio clips (under 30 seconds).
+- **Resource Usage** - Running the small faster-whisper model uses minimal system resources, allowing for efficient backend performance.
+
 ## Target Users
 
 - **Public Users:** Employees across Canada seeking clarification on general work rights
