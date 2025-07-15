@@ -3,21 +3,26 @@
 'use client';
 
 import { useEffect, useState, Dispatch, SetStateAction, useRef } from 'react';
-import { Search, Plus, Menu, Trash2 } from 'lucide-react';
+import { Plus, Menu, Trash2 } from 'lucide-react';
 import axiosInstance from './axios_config';
 import { useRouter } from 'next/navigation';
 import { useUser, UserButton } from '@clerk/nextjs';
-import { Link, Message } from '../models/schema'; 
-import { Citation } from '@/types/ai';
+import { Message } from '../models/schema'; 
 import { marked } from 'marked';
+import dynamic from "next/dynamic";
+
+
+const InputMessage = dynamic(() => import('./MessageInput').then(mod => mod.MessageInput), {
+  ssr: false,
+});
 
 interface Chat {
     id: string;
     title: string;
-};
+    needsTitleUpdate?: boolean;
+}
 
-function ChatSideBar({setMessages, setCurrChatId, currChatId}: {setMessages: Dispatch<SetStateAction<Message[]>>, setCurrChatId: (chatId: string) => void, currChatId: string}) {
-    const [chats, setChats] = useState<Chat[]>([]);
+function ChatSideBar({setMessages, setCurrChatId, currChatId, titleLoading, chats, setChats, setTitleLoading}: {setMessages: Dispatch<SetStateAction<Message[]>>, setCurrChatId: (chatId: string) => void, currChatId: string,  titleLoading: boolean, chats: Chat[], setChats: Dispatch<SetStateAction<Chat[]>>, setTitleLoading: Dispatch<SetStateAction<boolean>>}) {
     const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
     const [userId, setUserId] = useState<string | null>(null);
 
@@ -29,6 +34,7 @@ function ChatSideBar({setMessages, setCurrChatId, currChatId}: {setMessages: Dis
           const chatData = response.data.map((chat: any) => ({
             id: chat.id,
             title: chat.title,
+            needsTitleUpdate: chat.title && chat.title.startsWith('Chat - ')
           }));
           setChats(chatData);
           setSelectedChat(chatData.find((chat: Chat) => chat.id === currChatId) || null);
@@ -45,6 +51,7 @@ function ChatSideBar({setMessages, setCurrChatId, currChatId}: {setMessages: Dis
         const chatData = allChats.data.map((chat: any) => ({
           id: chat.id,
           title: chat.title,
+          needsTitleUpdate: chat.title && chat.title.startsWith('Chat - ')
         }));
         setChats(chatData);
         if (chatData.length > 0) {
@@ -73,16 +80,18 @@ function ChatSideBar({setMessages, setCurrChatId, currChatId}: {setMessages: Dis
             title: `Chat - ${new Date().toLocaleDateString()}-${chats.length + 1}`,
             userId: userId,
             messages: [] as Message[],
+            needsTitleUpdate: true, // <-- add this flag
         };
 
         try {
             const response = await axiosInstance.post('/api/chat', newChat);
             const createdChat = response.data
             console.log('New chat created:', createdChat);
-            setChats([{ id: createdChat.id, title: newChat.title }, ...chats]);
-            setSelectedChat({ id: createdChat.id, title: newChat.title });
+            setChats([{ id: createdChat.id, title: newChat.title, needsTitleUpdate: true }, ...chats]);
+            setSelectedChat({ id: createdChat.id, title: newChat.title, needsTitleUpdate: true });
             setMessages(newChat.messages || []);
             setCurrChatId(createdChat.id);
+            // Removed AI title generation here; will be handled after first message in InputMessage
         } catch (error) {
             console.error('Error creating new chat:', error);
         }
@@ -104,7 +113,9 @@ function ChatSideBar({setMessages, setCurrChatId, currChatId}: {setMessages: Dis
             }}
           >
             <div className="flex items-center justify-between">
-              <span className="font-medium">{chat.title}</span>
+              <span className="font-medium">
+                {titleLoading && selectedChat?.id === chat.id ? "Generating..." : chat.title}
+              </span>
               {selectedChat?.id === chat.id && (
                 <Trash2 className="text-gray-400" onClick={()=>{
                   axiosInstance.delete(`/api/chat/${chat.id}`)
@@ -145,7 +156,7 @@ function MessageThread({
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messageList]);
+  }, [messageList, error]);
 
   const handleRetry = () => {
     // TODO
@@ -209,186 +220,9 @@ function MessageThread({
         </div>
       )}
 
-      <div ref={bottomRef} />
+      <div ref={bottomRef} className="py-10"/>
     </div>
   );
-}
-
-function InputMessage({
-  inputValue,
-  setInputValue,
-  isPrivate,
-  province,
-  chatId,
-  setMessages,
-  setError,
-  setCurrChatId,
-  threadId
-}: {
-  inputValue: string;
-  setInputValue: Dispatch<SetStateAction<string>>;
-  isPrivate: boolean;
-  province?: string | null;
-  chatId?: string;
-  setMessages: Dispatch<SetStateAction<Message[]>>;
-  setError: Dispatch<SetStateAction<string>>;
-  setCurrChatId?: Dispatch<SetStateAction<string>>;
-  threadId?: string | null
-}) {
-  const errorMessage = 'Oops, something went wrong. Want to try again?'
-  const province_map: { [key: string]: string } = {
-    "ON": "Ontario",
-    "AB": "Alberta",
-    "BC": "British Columbia",
-    "MB": "Manitoba",
-    "NB": "New Brunswick",
-    "NL": "Newfoundland and Labrador",
-    "NS": "Nova Scotia",
-    "PE": "Prince Edward Island",
-    "QC": "Quebec",
-    "SK": "Saskatchewan",
-    "NT": "Northwest Territories",
-    "NU": "Nunavut",
-    "YT": "Yukon"
-  }
-
-  const submitUserMessage = async () => {
-    if (!inputValue.trim()) return;
-
-    try {
-      const userMessage: Omit<Message, 'createdAt'> = {
-        isFromUser: true,
-        content: inputValue,
-      };
-      setMessages((prevMessages) => [...prevMessages, userMessage as Message]);
-      setInputValue('');
-      setError('');
-
-      if (isPrivate) {
-        let newChatId = chatId || '';
-        if (chatId === '') {
-            const newChat = await axiosInstance.post('/api/chat', {
-            userId: localStorage.getItem('userId'),
-            title: `Chat - ${new Date().toLocaleDateString()}-1`,
-            messages: [userMessage]
-          });
-          if(setCurrChatId) setCurrChatId(newChat.data.id);
-          newChatId = newChat.data.id;
-
-        }
-
-        else{
-          axiosInstance.put(`/api/chat/${chatId}/add-message`, {
-            messageData: userMessage
-          });
-        }
-        await handlePrivateChat(newChatId);
-      } else {
-        await handlePublicChat();
-      }
-    } catch (err) {
-      console.error(err);
-      setError(errorMessage);
-    }
-  };
-  
-  function mapCitationsToLinks(citations: Citation[]): Link[] {
-    return citations.map(citation => ({
-      title: citation.title,
-      url: citation.fragmentUrl || citation.originalUrl // Use fragmentUrl if available, fallback to originalUrl
-    }));
-  }
-
-  const handlePrivateChat = async (new_chatId: string) => {
-    const full_province = province ? province_map[province] : '';
-    console.log("province", province);
-    const res = await axiosInstance.post(`/api/public/message`, {
-      province: full_province,
-      query: inputValue,
-      threadId: new_chatId
-    });
-    if (res.status !== 200) {
-      setError(errorMessage);
-      return;
-    }
-
-    const data = res.data;
-    if (data.response) {
-      const botMessage = {
-        content: data.response,
-        isFromUser: false,
-        sources: mapCitationsToLinks(data.citations),
-      }
-      setMessages((prevMessages) => [...prevMessages, botMessage as Message]);
-      axiosInstance.put(`/api/chat/${new_chatId}/add-message`, {
-        messageData: botMessage,
-      });
-    }
-    else {
-      setError(errorMessage);
-    }
-  };
-
-  const handlePublicChat = async () => {
-    if (!province) return;
-
-    try {
-      console.log("province", province);
-      const res = await fetch('/api/public/message', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          province,
-          query: inputValue,
-          threadId
-        }),
-      });
-
-      if (!res.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-      const data = await res.json();
-      if (data.response) {
-        const botMessage = {
-          content: data.response,
-          isFromUser: false,
-          createdAt: new Date(),
-          sources: mapCitationsToLinks(data.citations),
-        }
-        setMessages((prevMessages) => [...prevMessages, botMessage as Message]);
-      } else {
-        setError(errorMessage);
-      }
-    } catch (err) {
-      console.error(err);
-      setError(errorMessage);
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      submitUserMessage();
-    }
-  };
-  
-  return(
-      <div className="relative w-full max-w-3xl mx-auto">
-          <input
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Ask anything"
-            className="w-full px-6 py-4 border border-gray-300 rounded-md text-lg text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-14"
-          />
-          <button className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-          onClick={submitUserMessage}
-          >
-            <Search className="w-6 h-6" />
-          </button>
-        </div>
-  )
 }
 
 
@@ -516,5 +350,6 @@ function ProvinceDropdown({
     </select>
   );
 }
+
 
 export {ChatSideBar, MessageThread, InputMessage, Header};

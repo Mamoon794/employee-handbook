@@ -96,6 +96,19 @@ export const getChat = async (chatId: string) => {
   return docSnap.exists ? ({ id: docSnap.id, ...docData } as Chat) : null;
 };
 
+// updating chat titles
+export const updateChatTitle = async (chatId: string, title: string): Promise<void> => {
+  await chatsRef.doc(chatId).update({ 
+    title,
+    updatedAt: new Date() 
+  });
+};
+
+export const getFirstMessageContent = async (chatId: string): Promise<string | null> => {
+  const chat = await getChat(chatId);
+  return chat?.messages?.[0]?.content || null; 
+};
+
 // // subcollections - messages (under each chat)
 export const addMessageToChat = async (
   chatId: string,
