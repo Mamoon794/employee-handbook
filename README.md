@@ -10,8 +10,6 @@ Our partner is **Arshad Merali** from Rivvi, a Toronto-based fintech company foc
 
 The app can be accessed at https://employee-handbook-app.vercel.app/.
 
-(Note: Backend is hosted on Render (free tier), so there may be ~30s cold start delay on first load.)
-
 ## Instructions/Features
 
 Access the link above.
@@ -273,7 +271,7 @@ Overall, the AI did a good job identifying important trends from the graph and g
 - **Database:** Firebase
 - **Vector DB:** Pinecone
 - **Authentication:** Clerk
-- **Hosting:** Vercel, Render
+- **Hosting:** Vercel, Railway
 - **Monitoring:** Sentry
 - **Analytics:** Google Analytics
 - **Payment Gateway:** Stripe (if needed)
