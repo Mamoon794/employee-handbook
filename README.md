@@ -185,6 +185,21 @@ There are two ways to check whether this AI feature is working:
 
 2. A more straightforward way is to look at the Insights section under the graphs. If the AI fails to generate summaries, you will see “No AI summary available” in that section. Wait a minute, then refresh the page. If everything is working correctly, a few bullet points should appear to represent the insights.
 
+### Dependencies
+
+- **Google Gemini API (JavaScript version)** – Used to generate AI summaries and bullet points.
+- **Firebase** – Retrieves information from the database to construct the graph; this data is also included in the prompt sent to the API.
+- **Next.js API endpoints** – Exposes the following routes:
+  - `/api/ai-summary/bullet-points`
+  - `/api/ai-summary/employee-distribution`
+  - `/api/ai-summary/employee-registration`
+  - `/api/ai-summary/questions-asked`
+- **Next.js frontend** – Updates the UI based on the API response.
+
+### Performance Results
+
+Overall, the AI did a good job identifying important trends from the graph and generating the AI summary based on them. The explanation is concise without missing any key information. The bullet points also summarize the explanation very clearly.
+
 ## AI Feature: Chat Title Generation
 
 ### Overview of the Improvement
@@ -203,18 +218,18 @@ We added a new AI-powered feature that automatically generates short, descriptiv
 
 ### Dependencies
 
-- **Google Gemini API (JavaScript version)** – Used to generate AI summaries and bullet points.
-- **Firebase** – Retrieves information from the database to construct the graph; this data is also included in the prompt sent to the API.
-- **Next.js API endpoints** – Exposes the following routes:
-  - `/api/ai-summary/bullet-points`
-  - `/api/ai-summary/employee-distribution`
-  - `/api/ai-summary/employee-registration`
-  - `/api/ai-summary/questions-asked`
-- **Next.js frontend** – Updates the UI based on the API response.
+This feature builds on existing components already listed in the Tech Stack:
+
+- **LangChain + LLM API (e.g., Gemini or GPT)** – Used to generate chat titles from the first message.
+- **FastAPI** – Hosts the AI service and exposes the `/generate-title` endpoint.
+- **Firebase** – Used to persist the generated title in the chat document.
+- **Next.js (Frontend)** – Sends the user message to the backend and updates the UI with the new title.
 
 ### Performance Results
 
-Overall, the AI did a good job identifying important trends from the graph and generating the AI summary based on them. The explanation is concise without missing any key information. The bullet points also summarize the explanation very clearly.
+- **Title Accuracy:** Works well for clear questions  
+  The AI generates helpful titles when the first message is clear (e.g., “how long a break can be?” → “Break Length Query”). For vague inputs like “Hi”, it still returns a title (e.g., “Simple Hello”), but it's less useful. The feature is reliable and always returns something.
+
 
 ## Target Users
 
