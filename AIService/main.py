@@ -6,9 +6,9 @@ from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from faster_whisper import WhisperModel
 from pydantic import BaseModel
-from setupProvinces import graph, llm
-from setupProvinces import process_docs
-from scrapeAllProvinceData import crawl, get_domain, remove_fragment, is_relevant, clean_text
+from setupProvinces import graph, llm, process_docs, index_company_documents
+from processCompanyDocs import crawl_company_docs
+import traceback
 
 from pinecone import Pinecone
 from langchain.chat_models import init_chat_model
@@ -43,6 +43,7 @@ class RAGInput(BaseModel):
     province: str
     question: str
     thread_id: str = "1"  # default thread_id, can be overridden
+    company: str = ""
 
 @app.post("/responses")
 def get_response(userMessage: RAGInput):
@@ -56,8 +57,12 @@ def get_response(userMessage: RAGInput):
     #                "Quebec": "QC", "Saskatchewan": "SK", "Yukon": "YT"}
     # print("province_mappings[userMessage.province]:", province_mappings[userMessage.province])
     try:
+        if userMessage.company == "":
+            prompt = f"question: {userMessage.question}. If no province in this question is specified, assume the province to be {userMessage.province}."
+        else:
+            prompt = f"question: {userMessage.question}. If no province in this question is specified, assume the province to be {userMessage.province}. The company name is {userMessage.company}, this information will be used to filter documents."
         for step in graph.stream(
-            {"messages": [{"role": "user", "content": f"question: {userMessage.question}. If no province is specified, assume the province to be {userMessage.province}."}]},
+            {"messages": [{"role": "user", "content": prompt}]},
             stream_mode="values",
             config={"configurable": {"thread_id": userMessage.thread_id}},
         ):
@@ -74,7 +79,10 @@ def get_response(userMessage: RAGInput):
                 # print("Last ToolMessage content:", last_tool_message.content)
                 if hasattr(last_tool_message, "artifact"):
                     for doc in last_tool_message.artifact:
-                        print("doc:", doc)
+                        # print("doc:", doc)
+                        # print("has metadata:", hasattr(doc, "metadata"))
+                        # print("doc.metadata.get company:", doc.metadata.get("company", ""))
+                        # print("has page_content:", hasattr(doc, "page_content"))
                         if not isinstance(doc, Document):
                             continue
                         if hasattr(doc, "metadata") and hasattr(doc, "page_content"):
@@ -96,7 +104,9 @@ def get_response(userMessage: RAGInput):
 
         return {"response": finalResponse, "metadata": context}
     except Exception as e:
+        traceback_str = traceback.format_exc()
         print(f"An error occurred: {e}")
+        print(traceback_str)
         raise HTTPException(status_code=500, detail=str(e))
 
 # Define the request model for the /generate-title endpoint
@@ -143,68 +153,70 @@ def generate_title(titleInput: TitleInput):
 #     ]
 # }
 
-# Load environment variables
-load_dotenv()
+# # Load environment variables
+# load_dotenv()
 
-# Ensure required environment variables are set
-if not os.environ.get("GOOGLE_API_KEY"):
-    print("Please set the GOOGLE_API_KEY environment variable.")
+# # Ensure required environment variables are set
+# if not os.environ.get("GOOGLE_API_KEY"):
+#     print("Please set the GOOGLE_API_KEY environment variable.")
 
-if not os.environ.get("PINECONE_API_KEY"):
-    print("Please set the GOOGLE_API_KEY environment variable.")
-pc_api_key = os.environ.get("PINECONE_API_KEY")
+# if not os.environ.get("PINECONE_API_KEY"):
+#     print("Please set the GOOGLE_API_KEY environment variable.")
+# pc_api_key = os.environ.get("PINECONE_API_KEY")
 
-if not os.environ.get("PINECONE_INDEX_NAME"):
-    print("Please set the PINECONE_INDEX_NAME environment variable.")
-index_name = os.environ.get("PINECONE_INDEX_NAME")
+# if not os.environ.get("PINECONE_INDEX_NAME"):
+#     print("Please set the PINECONE_INDEX_NAME environment variable.")
+# index_name = os.environ.get("PINECONE_INDEX_NAME")
 
-# Initialize llm models and vector store
-llm = init_chat_model("gemini-2.0-flash", model_provider="google_genai")
-embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+# # Initialize llm models and vector store
+# llm = init_chat_model("gemini-2.0-flash", model_provider="google_genai")
+# embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
 
-# Initialize Pinecone vector store
-pc = Pinecone(api_key=pc_api_key)
-index = pc.Index(index_name)
-vector_store = PineconeVectorStore(embedding=embeddings, index=index)
+# # Initialize Pinecone vector store
+# pc = Pinecone(api_key=pc_api_key)
+# index = pc.Index(index_name)
+# vector_store = PineconeVectorStore(embedding=embeddings, index=index)
+
+
+# # Convert the Document objects to emmbeddings and upload to Pinecone vector store
+# def batch_add_documents(vector_store, documents, company, region, access_level, batch_size=100):
+#     for i in range(0, len(documents), batch_size):
+#         batch = documents[i:i + batch_size]
+#         for doc in batch:
+#             doc.metadata.update({
+#                 "access_level": access_level,
+#                 "company": company,
+#                 "region": region
+#             })
+#         try:
+#             vector_store.add_documents(batch, namespace=company)
+#         except Exception as e:
+#             print(f"Failed to upload batch {i // batch_size + 1}: {e}")
+
 
 class DocInput(BaseModel):
     """
     Input model for document upload.
     """
     url: str  # URL of the document
-    type: str = "pdf"  # Type of the document, e.g., pdf, docx, etc.
-    page: int = 1  # Page number if applicable, default is 1
     company: str = "General"  # Company name
-    region: str = "General"  # Region name
-    access_level: int = 0  # Access level, default is 0 (public)
 
-# Convert the Document objects to emmbeddings and upload to Pinecone vector store
-def batch_add_documents(vector_store, documents, company, region, access_level, batch_size=100):
-    for i in range(0, len(documents), batch_size):
-        batch = documents[i:i + batch_size]
-        for doc in batch:
-            doc.metadata.update({
-                "access_level": access_level,
-                "company": company,
-                "region": region
-            })
-        try:
-            vector_store.add_documents(batch, namespace=company)
-        except Exception as e:
-            print(f"Failed to upload batch {i // batch_size + 1}: {e}")
-
-@app.post("/document")
+@app.post("/company-document")
 def upload_document(input: DocInput):
     """
-    Upload a document for processing.
+    Upload a company document for storing and processing.
     """
-    domain = get_domain(input.url)
-    docs = crawl(input.url, namespace=input.company, domain=domain)
-    if not isinstance(docs, list) or docs == []:
-        print("docs == []: ", docs == [])
-        print(f"Skipping non-list entry for company {input.company}: {docs}")
-    splits = process_docs(docs)
-    batch_add_documents(vector_store, splits, namespace=input.company, batch_size=50)
+    try:
+        company_docs = crawl_company_docs(input.url, input.company, namespace=input.company)
+        if not isinstance(company_docs, list) or company_docs == []:
+            print("company_docs == []: ", company_docs == [])
+            print(f"Skipping non-list entry for company {input.company}: {company_docs}")
+        splits = process_docs(company_docs)
+        index_company_documents(splits, input.company)
+        return {"url": input.url, "company": input.company, "status": "success"}
+    except Exception as e:
+        print(f"Failed to process document {input.url} for company {input.company}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/transcribe")
 async def transcribe_audio(file: UploadFile = File(...)):

@@ -50,15 +50,21 @@ vector_store = PineconeVectorStore(embedding=embeddings, index=index)
 prompt = hub.pull("rlm/rag-prompt", api_url="https://api.smith.langchain.com")
 
 @tool(response_format="content_and_artifact")
-def retrieve(query: str, province: str):
-    """Retrieve employment-related information by searching indexed documents in the given province. If no province is specified, it defaults to "General". 
+def retrieve(query: str, province: str, company: str = ""):
+    """
+    Retrieve employment-related information by searching indexed documents 
+    in the given province. If no province is specified, it defaults to "General". 
+    If a company name is provided, it is used to filter documents.
     Parameters:
     - query: the user's question.
-    - province: province name like "Alberta", "British Columbia", etc."""
+    - province: province name like "Alberta", "British Columbia", etc.
+    - company: company name to filter documents (optional).
+    """
     print("province:", province)
-    province_docs = vector_store.similarity_search(query, k=8, namespace=province)
+    province_docs = vector_store.similarity_search(query, k=4, namespace=province)
     general_docs = vector_store.similarity_search(query, k=4, namespace="General")
-    retrieved_docs = province_docs + general_docs
+    company_docs = vector_store.similarity_search(query, k=4, namespace=company)
+    retrieved_docs = province_docs + general_docs + company_docs
     serialized = "\n\n".join(
         (f"DocMetadata: {doc.metadata}\n" f"DocContent: {doc.page_content}")
         for doc in retrieved_docs
@@ -88,15 +94,31 @@ def generate(state: MessagesState):
             break
     tool_messages = recent_tool_messages[::-1]
 
-    # Format into prompt
-    docs_content = "\n\n".join(doc.content for doc in tool_messages)
+    print("tool_messages:", tool_messages)
+    print("length", len(tool_messages))
+    docs = tool_messages[-1].artifact 
+    # Separate docs based on whether metadata has a "company" field
+    company_docs = [doc for doc in docs if "company" in doc.metadata]
+    non_company_docs = [doc for doc in docs if "company" not in doc.metadata]
+
+    # Format the doc content for each group
+    print("company_docs:", company_docs)
+    company_docs_content = "\n\n".join(f"DocMetadata: {doc.metadata}\n" f"DocContent: {doc.page_content}" for doc in company_docs)
+    non_company_docs_content = "\n\n".join(f"DocMetadata: {doc.metadata}\n" f"DocContent: {doc.page_content}" for doc in non_company_docs)
+
+    # Construct system prompt
     system_message_content = (
-        "You are an assistant for question-answering tasks. If a retrieval "
-        "tool is available, use it to get relevant information before answering. "
-        "Answer with some details. If you really can't get the answer from the documents, "
-        "you can say things like I don't have enough information.\n\n"
-        "\n\n"
-        f"{docs_content}"
+        "You are an assistant for question-answering tasks. Use the retrieved documents "
+        "to answer the user's question. Separate your answers into two parts:\n\n"
+        "1. **non-company-doc**: Answer using only the documents that do NOT have a company name in the metadata.\n"
+        "2. **company-doc**: Answer using only the documents that DO have a company name in the metadata.\n\n"
+        "If you cannot find an answer in a section, say so explicitly in that section.\n\n"
+        "---\n"
+        "non-company-doc documents:\n"
+        f"{non_company_docs_content}\n\n"
+        "---\n"
+        "company-doc documents:\n"
+        f"{company_docs_content}"
     )
     conversation_messages = [
         message
@@ -219,6 +241,22 @@ def index_documents():
             index.delete(delete_all=True, namespace=namespace)
         # print("length of splits:", len(splits))
         batch_add_documents(vector_store, splits, namespace=namespace, batch_size=50)
+
+# Convert the Document objects to emmbeddings and upload to Pinecone vector store
+def batch_add_company_documents(vector_store, documents, company=None, batch_size=100):
+    for i in range(0, len(documents), batch_size):
+        batch = documents[i:i + batch_size]
+        for doc in batch:
+            doc.metadata.update({
+                "company": company,
+            })
+        try:
+            vector_store.add_documents(batch, namespace=company)
+        except Exception as e:
+            print(f"Failed to upload batch {i // batch_size + 1}: {e}")
+
+def index_company_documents(splits, company):
+    batch_add_company_documents(vector_store, splits, company=company, batch_size=50)
 
 if __name__ == "__main__":
     # Load your JSON file
