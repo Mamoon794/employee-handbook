@@ -35,6 +35,8 @@ export default function EmployerRegistrationForm() {
     const companyData: Omit<Company, "id"> = {
       name: formData.companyName,
       ownerId: clerkUser.id,
+      s3BucketName: '',
+      documents: [],
       createdAt: new Date(),
       updatedAt: new Date()
     };
