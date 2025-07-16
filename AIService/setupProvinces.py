@@ -102,7 +102,7 @@ def generate(state: MessagesState):
     non_company_docs = [doc for doc in docs if "company" not in doc.metadata]
 
     # Format the doc content for each group
-    print("company_docs:", company_docs)
+    # print("company_docs:", company_docs)
     company_docs_content = "\n\n".join(f"DocMetadata: {doc.metadata}\n" f"DocContent: {doc.page_content}" for doc in company_docs)
     non_company_docs_content = "\n\n".join(f"DocMetadata: {doc.metadata}\n" f"DocContent: {doc.page_content}" for doc in non_company_docs)
 
