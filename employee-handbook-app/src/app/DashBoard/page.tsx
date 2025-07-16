@@ -31,19 +31,9 @@ export default function Dashboard() {
       <header className="flex justify-between items-center px-8 py-6 bg-white shadow-sm">
         <h1 className="text-2xl font-extrabold italic text-blue-800">Gail</h1>
         <div className="flex gap-4 items-center">
-          <button className="px-7 py-3 bg-[#242267] text-white rounded-xl font-bold text-base hover:bg-blue-900 transition-colors shadow-sm" onClick={()=>{router.push('/chat');}}>Ask a Question</button>
-          <button 
-            className="px-7 py-3 bg-blue-800 text-white rounded-xl font-bold text-base hover:bg-blue-900 transition-colors shadow-sm"
-            onClick={() => router.push('/finances')}
-          >
-            View Finances
-          </button>
-          <button 
-            onClick={() => router.push('/analytics')}
-            className="px-7 py-3 bg-[#242267] text-white rounded-xl font-bold text-base hover:bg-blue-900 transition-colors shadow-sm"
-          >
-            Analytics
-          </button>
+          <button className="px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm" onClick={()=>{router.push('/chat');}}>Ask a Question</button>
+          <button className="px-5 py-2 bg-blue-800 text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm" onClick={() => router.push('/finances')}>View Finances</button>
+          <button onClick={() => router.push('/analytics')} className="px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm">Analytics</button>
           <UserButton 
             appearance={{
               elements: {
