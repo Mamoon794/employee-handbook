@@ -135,17 +135,18 @@ export const getCompanyDocuments = async (companyId: string) => {
 
 // for invitations
 
+// collections - invitations
 const invitationsRef = db.collection("invitations");
 
-export const createInvitation = async (invitationData: Omit<Invitation, "id" | "status" | "createdAt" | "updatedAt">) => {
-  const dataToAdd: Invitation = {
+export const createInvitation = async (invitationData: Omit<Invitation, "id" | "status">) => {
+  const dataToAdd = {
     ...invitationData,
     status: "pending",
     createdAt: new Date(),
     updatedAt: new Date(),
   };
   const docRef = await invitationsRef.add(dataToAdd);
-  return { id: docRef.id, ...dataToAdd };
+  return docRef;
 };
 
 export const getInvitation = async (invitationId: string) => {
@@ -161,41 +162,32 @@ export const updateInvitationStatus = async (invitationId: string, status: "acce
   });
 };
 
-export const getPendingInvitationsByCompany = async (companyId: string) => {
-  const query = invitationsRef
+export const getPendingInvitationsByCompany = async (companyId: string): Promise<Invitation[]> => {
+  const theQuery = invitationsRef
     .where("companyId", "==", companyId)
     .where("status", "==", "pending");
-  const snapshot = await query.get();
-  return snapshot.docs.map((doc: firestore.QueryDocumentSnapshot<firestore.DocumentData>) => 
-    ({ id: doc.id, ...doc.data() } as Invitation));
+  const querySnapshot = await theQuery.get();
+  return querySnapshot.docs.map((doc: firestore.QueryDocumentSnapshot<Invitation>) => ({ 
+    id: doc.id, 
+    ...doc.data() 
+  }));
 };
 
-export const getInvitationByEmailAndCompany = async (email: string, companyId: string) => {
-  const query = invitationsRef
-    .where("inviteeEmail", "==", email)
-    .where("companyId", "==", companyId);
-  const snapshot = await query.get();
-  return snapshot.docs.map((doc: firestore.QueryDocumentSnapshot<firestore.DocumentData>) => 
-    ({ id: doc.id, ...doc.data() } as Invitation))[0] || null;
-};
-
-// ===== USER OPERATIONS =====
-export const getUserByEmail = async (email: string) => {
-  const query = usersRef.where("email", "==", email);
-  const snapshot = await query.get();
-  return snapshot.docs.map((doc: firestore.QueryDocumentSnapshot<firestore.DocumentData>) => 
-    ({ id: doc.id, ...doc.data() } as User))[0] || null;
-};
-
-export const updateUser = async (userId: string, updateData: Partial<User>) => {
-  await usersRef.doc(userId).update({
-    ...updateData,
-    updatedAt: new Date(),
-  });
-};
-
-export const getCompany = async (companyId: string) => {
-  const docRef = companiesRef.doc(companyId);
-  const docSnap = await docRef.get();
-  return docSnap.exists ? ({ id: docSnap.id, ...docSnap.data() } as Company) : null;
+export const getUserByEmail = async (email: string): Promise<User | null> => {
+  try {
+    console.log(`Looking up user by email: ${email}`); // debugging
+    const theQuery = usersRef.where("email", "==", email);
+    const querySnapshot = await theQuery.get();
+    
+    const users = querySnapshot.docs.map((doc: firestore.QueryDocumentSnapshot<User>) => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    
+    console.log(`Found ${users.length} users with this email`); // debugging
+    return users[0] || null;
+  } catch (error) {
+    console.error('Error in getUserByEmail:', error);
+    throw error;
+  }
 };

@@ -1,84 +1,52 @@
 import { NextResponse } from 'next/server';
-import { getInvitation, updateInvitationStatus, getUser, updateUser } from '../../../models/dbOperations';
-import { auth } from '@clerk/nextjs/server';
-import { Sentry } from '../../../lib/sentry';
-import { Invitation } from '../../../models/schema';
+import { getInvitation, updateInvitationStatus, getClerkUser } from '@/models/dbOperations';
+import { db } from '@/dbConfig/firebaseConfig';
+import { getAuth } from '@clerk/nextjs/server';
 
-export async function POST(request: Request) {
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const invitationId = searchParams.get('invitationId');
+  
+  if (!invitationId) {
+    return NextResponse.redirect(new URL('/invalid-invitation', request.url));
+  }
+
   try {
-    const { userId } = auth();
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
-    }
-
-    const { token: invitationId }: { token: string } = await request.json();
-    if (!invitationId) {
-      return NextResponse.json(
-        { error: 'Invitation token is required' },
-        { status: 400 }
-      );
-    }
-
     const invitation = await getInvitation(invitationId);
-    if (!invitation) {
-      return NextResponse.json(
-        { error: 'Invitation not found' },
-        { status: 404 }
-      );
+    if (!invitation || invitation.status !== 'pending') {
+      return NextResponse.redirect(new URL('/invalid-invitation', request.url));
     }
 
-    if (invitation.status !== 'pending') {
-      return NextResponse.json(
-        { 
-          error: 'Invitation already processed',
-          status: invitation.status
-        },
-        { status: 409 }
-      );
+    const { userId } = getAuth(request as any);
+    
+    // redirect to sign in if user is not logged in
+    if (!userId) {
+      const signInUrl = new URL('/LogIn', request.url);
+      signInUrl.searchParams.set('redirect_url', `/api/accept-invitation?invitationId=${invitationId}`);
+      return NextResponse.redirect(signInUrl);
     }
 
-    const dbUser = await getUser(userId);
-    if (!dbUser) {
-      return NextResponse.json(
-        { error: 'User account not found' },
-        { status: 404 }
-      );
+    const user = (await getClerkUser(userId))[0];
+    if (!user) {
+      return NextResponse.redirect(new URL('/invalid-invitation', request.url));
     }
 
-    if (dbUser.email.toLowerCase() !== invitation.inviteeEmail.toLowerCase()) {
-      return NextResponse.json(
-        { error: 'Email does not match invitation' },
-        { status: 403 }
-      );
+    if (user.email !== invitation.email) {
+      return NextResponse.redirect(new URL('/invalid-invitation', request.url));
     }
 
-    await Promise.all([
-      updateUser(dbUser.id, {
-        companyId: invitation.companyId,
-        userType: 'Employee',
-        updatedAt: new Date(),
-      }),
-      updateInvitationStatus(invitationId, 'accepted')
-    ]);
+    await db.collection("users").doc(user.id).update({
+      companyId: invitation.companyId,
+      companyName: invitation.companyName,
+      userType: 'Employee',
+      updatedAt: new Date(),
+    });
 
-    return NextResponse.json(
-      { 
-        success: true,
-        companyId: invitation.companyId,
-        message: 'Successfully joined company' 
-      },
-      { status: 200 }
-    );
+    await updateInvitationStatus(invitationId, 'accepted');
 
+    return NextResponse.redirect(new URL('/chat', request.url));
   } catch (error) {
-    console.error('Accept invitation error:', error);
-    Sentry.captureException(error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    console.error('Error accepting invitation:', error);
+    return NextResponse.redirect(new URL('/error', request.url));
   }
 }
