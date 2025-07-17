@@ -1,8 +1,13 @@
+import shutil
+import uuid
 from dotenv import load_dotenv
 import os
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
+from faster_whisper import WhisperModel
 from pydantic import BaseModel
-from setupProvinces import graph, process_docs
+from setupProvinces import graph, llm
+from setupProvinces import process_docs
 from scrapeAllProvinceData import crawl, get_domain, remove_fragment, is_relevant, clean_text
 
 from pinecone import Pinecone
@@ -15,6 +20,18 @@ from langchain_core.documents import Document
 
 # Initialize FastAPI application
 app = FastAPI()
+
+model = WhisperModel("small", device="cpu", compute_type="int8", download_root="/tmp/whisper")
+
+
+# Will have to change this for production
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://employee-handbook-app.vercel.app/"],  
+    allow_credentials=True,
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def root():
@@ -82,6 +99,40 @@ def get_response(userMessage: RAGInput):
         print(f"An error occurred: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# Define the request model for the /generate-title endpoint
+class TitleInput(BaseModel):
+    message: str  # The first message sent by the user
+    chatId: str   # Chat ID for Firebase storage
+    userId: str   # User ID for Firebase storage
+
+class TitleResponse(BaseModel):
+    title: str    # The generated chat title
+    chatId: str   # Chat ID for reference
+    saved: bool   # Whether title was saved to Firebase
+
+# new POST endpoint to generate a chat title
+@app.post("/generate-title", response_model=TitleResponse)
+def generate_title(titleInput: TitleInput):
+    """
+    Generate a short, descriptive chat title using Gemini based on the first user message.
+    If the LLM call fails, return 'New Chat' as title.
+    """
+    try:
+        prompt = f"Generate a short, concise chat title (2-4 words) for this message: '{titleInput.message}'. Return only the title, nothing else."
+
+        # call Gemini using LangChain llm.invoke() method
+        # input is a list of messages 
+        response = llm.invoke([{"role": "user", "content": prompt}])
+
+        if hasattr(response, "content"):
+            title = response.content.strip()
+        else:
+            title = str(response).strip()
+
+        return {"title": title, "chatId": titleInput.chatId, "saved": False}
+    except Exception as e:
+        # if anything goes wrong, return a default title
+        return {"title": "New Chat", "chatId": titleInput.chatId, "saved": False}
 
 # step = {
 #     "messages": [
@@ -154,3 +205,28 @@ def upload_document(input: DocInput):
         print(f"Skipping non-list entry for company {input.company}: {docs}")
     splits = process_docs(docs)
     batch_add_documents(vector_store, splits, namespace=input.company, batch_size=50)
+
+@app.post("/transcribe")
+async def transcribe_audio(file: UploadFile = File(...)):
+    """
+    Transcribe an audio file of a user's spoken prompt.
+    """
+    if file.content_type not in ["audio/mpeg", "audio/wav", "audio/x-m4a", "audio/mp4"]:
+        raise HTTPException(status_code=400, detail="Unsupported file type")
+    
+    filename = f"/tmp/{uuid.uuid4()}.{file.filename.split('.')[-1]}"
+    with open(filename, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    try:
+        segments, info = model.transcribe(filename, beam_size=5)
+        transcript = "".join([segment.text for segment in segments]).strip()
+        return {
+            "language": info.language,
+            "confidence": info.language_probability,
+            "transcript": transcript,
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Transcription failed: {str(e)}")
+    finally:
+        os.remove(filename)  # clean up temp file
