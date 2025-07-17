@@ -1,4 +1,6 @@
 /* eslint-disable */
+
+/* eslint-disable */
 'use client';
 
 import { useRouter } from 'next/navigation';
@@ -9,16 +11,16 @@ export default function Dashboard() {
   const { user } = useUser();
   const firstName = user?.firstName || "there"; 
 
-const getCompanyInfo = async () => {
-  try {
-    const response = await fetch('/api/getCompanyInfo');
-    if (!response.ok) throw new Error('Failed to fetch company info');
-    return await response.json();
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-};
+  const getCompanyInfo = async () => {
+    try {
+      const response = await fetch('/api/getCompanyInfo');
+      if (!response.ok) throw new Error('Failed to fetch company info');
+      return await response.json();
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  };
 
   const handleAddEmployee = async () => {
     const companyInfo = await getCompanyInfo();
@@ -41,7 +43,10 @@ const getCompanyInfo = async () => {
           >
             Ask a Question
           </button>
-          <button className="px-7 py-3 bg-blue-800 text-white rounded-xl font-bold text-base hover:bg-blue-900 transition-colors shadow-sm">
+          <button 
+            className="px-7 py-3 bg-blue-800 text-white rounded-xl font-bold text-base hover:bg-blue-900 transition-colors shadow-sm"
+            onClick={() => router.push('/finances')}
+          >
             View Finances
           </button>
           <button 
@@ -78,7 +83,10 @@ const getCompanyInfo = async () => {
           >
             Add employees
           </button>
-          <button className="w-full bg-[#e3e8f0] text-black font-extrabold py-4 rounded-xl text-base hover:bg-[#d1d5db] transition-colors shadow-sm">
+          <button 
+            className="w-full bg-[#e3e8f0] text-black font-extrabold py-4 rounded-xl text-base hover:bg-[#d1d5db] transition-colors shadow-sm"
+            onClick={() => router.push("/manage-employees")}
+          >
             Manage Employees
           </button>
         </div>
@@ -89,3 +97,110 @@ const getCompanyInfo = async () => {
     </div>
   );
 }
+
+// 'use client';
+
+// import { useRouter } from 'next/navigation';
+// import { useUser, UserButton } from "@clerk/nextjs";
+
+// export default function Dashboard() {
+//   const router = useRouter();
+//   const { user } = useUser();
+//   const firstName = user?.firstName || "there"; 
+
+// const getCompanyInfo = async () => {
+//   try {
+//     const response = await fetch('/api/getCompanyInfo');
+//     if (!response.ok) throw new Error('Failed to fetch company info');
+//     return await response.json();
+//   } catch (error) {
+//     console.error(error);
+//     return null;
+//   }
+// };
+
+//   const handleAddEmployee = async () => {
+//     const companyInfo = await getCompanyInfo();
+//     if (!companyInfo) {
+//       alert("You need to be associated with a company to add employees");
+//       return;
+//     }
+//     router.push(`/add-employee?companyId=${companyInfo.companyId}&companyName=${encodeURIComponent(companyInfo.companyName)}`);
+//   };
+
+//   return (
+//     <div className="min-h-screen bg-white flex flex-col font-[family-name:var(--font-geist-sans)]">
+//       {/* Header */}
+//       <header className="flex justify-between items-center px-8 py-6 bg-white shadow-sm">
+//         <h1 className="text-2xl font-extrabold italic text-blue-800">Gail</h1>
+//         <div className="flex gap-4 items-center">
+// <<<<<<< HEAD
+//           <button 
+//             className="px-7 py-3 bg-[#242267] text-white rounded-xl font-bold text-base hover:bg-blue-900 transition-colors shadow-sm" 
+//             onClick={() => router.push('/chat')}
+//           >
+//             Ask a Question
+//           </button>
+//           <button className="px-7 py-3 bg-blue-800 text-white rounded-xl font-bold text-base hover:bg-blue-900 transition-colors shadow-sm">
+// =======
+//           <button className="px-7 py-3 bg-[#242267] text-white rounded-xl font-bold text-base hover:bg-blue-900 transition-colors shadow-sm" onClick={()=>{router.push('/chat');}}>Ask a Question</button>
+//           <button 
+//             className="px-7 py-3 bg-blue-800 text-white rounded-xl font-bold text-base hover:bg-blue-900 transition-colors shadow-sm"
+//             onClick={() => router.push('/finances')}
+//           >
+// >>>>>>> 733b1ffd595f63a3ff8e8efdc52f18c4e14e9255
+//             View Finances
+//           </button>
+//           <button 
+//             onClick={() => router.push('/analytics')}
+//             className="px-7 py-3 bg-[#242267] text-white rounded-xl font-bold text-base hover:bg-blue-900 transition-colors shadow-sm"
+//           >
+//             Analytics
+//           </button>
+//           <UserButton 
+//             appearance={{
+//               elements: {
+//                 avatarBox: "w-15 h-15"
+//               }
+//             }}
+//           />
+//         </div>
+//       </header>
+
+//       {/* Main Content */}
+//       <main className="flex-1 flex flex-col md:flex-row items-center justify-center gap-24 px-8 py-16 w-full max-w-7xl mx-auto">
+//         <div className="flex-1 flex flex-col items-center justify-center">
+//           <h2 className="text-4xl font-extrabold text-blue-800 mb-8 text-center">Welcome, {firstName}!</h2>
+//           <p className="text-lg text-black font-bold mb-12 text-center">It seems there are currently no files uploaded.</p>
+//           <button className="bg-[#294494] text-white font-extrabold px-12 py-5 rounded-xl text-xl hover:bg-blue-900 transition-colors shadow-md">
+//             Upload Documents
+//           </button>
+//         </div>
+//         {/* Employee Management Card */}
+//         <div className="w-full max-w-sm bg-[#f5f7fb] rounded-xl shadow-lg flex flex-col items-center py-12 px-8">
+//           <div className="text-xl font-bold text-black mb-10 text-center">Employee Management</div>
+// <<<<<<< HEAD
+//           <button 
+//             onClick={handleAddEmployee}
+//             className="w-full bg-[#e3e8f0] text-black font-extrabold py-4 rounded-xl mb-5 text-base hover:bg-[#d1d5db] transition-colors shadow-sm"
+//           >
+//             Add employees
+//           </button>
+//           <button className="w-full bg-[#e3e8f0] text-black font-extrabold py-4 rounded-xl text-base hover:bg-[#d1d5db] transition-colors shadow-sm">
+// =======
+//           <button className="w-full bg-[#e3e8f0] text-black font-extrabold py-4 rounded-xl mb-5 text-base hover:bg-[#d1d5db] transition-colors shadow-sm">Add employees</button>
+//           <button 
+//             className="w-full bg-[#e3e8f0] text-black font-extrabold py-4 rounded-xl text-base hover:bg-[#d1d5db] transition-colors shadow-sm"
+//             onClick={() => router.push("/manage-employees")}
+//           >
+// >>>>>>> 733b1ffd595f63a3ff8e8efdc52f18c4e14e9255
+//             Manage Employees
+//           </button>
+//         </div>
+//       </main>
+
+//       {/* Footer bar */}
+//       <footer className="w-full h-24 bg-[#294494] mt-auto" />
+//     </div>
+//   );
+// }
