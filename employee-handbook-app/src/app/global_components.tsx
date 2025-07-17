@@ -25,6 +25,7 @@ interface Chat {
 function ChatSideBar({setMessages, setCurrChatId, currChatId, titleLoading, chats, setChats, setTitleLoading}: {setMessages: Dispatch<SetStateAction<Message[]>>, setCurrChatId: (chatId: string) => void, currChatId: string,  titleLoading: boolean, chats: Chat[], setChats: Dispatch<SetStateAction<Chat[]>>, setTitleLoading: Dispatch<SetStateAction<boolean>>}) {
     const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
     const [userId, setUserId] = useState<string | null>(null);
+    const [isCollapsed, setIsCollapsed] = useState(false);
 
     useEffect(() => {
       const localUserId = localStorage.getItem('userId');
@@ -97,50 +98,52 @@ function ChatSideBar({setMessages, setCurrChatId, currChatId, titleLoading, chat
         }
     }
 
-
     return(
-        <aside className="w-64 bg-[#1F2251] text-white flex flex-col min-h-screen relative">
-        <div className="flex justify-between items-center p-4">
-          <Menu className="text-gray-400" />
-        </div>
-        <div className="px-4 text-sm text-gray-300 mb-2">Today</div>
-        {chats.map((chat, index) => (
-          <button
-            key={`${chat.id}-${index}`}
-            className="bg-[#343769] text-white text-left px-4 py-2 mx-4 rounded-lg hover:bg-[#45488f]"
-            onClick={() => {
-              handleChatChange(chat);
-            }}
-          >
-            <div className="flex items-center justify-between">
-              <span className="font-medium">
-                {titleLoading && selectedChat?.id === chat.id ? "Generating..." : chat.title}
-              </span>
-              {selectedChat?.id === chat.id && (
-                <Trash2 className="text-gray-400" onClick={()=>{
-                  axiosInstance.delete(`/api/chat/${chat.id}`)
-                    .then(() => {
-                      setChats(chats.filter(c => c.id !== chat.id));
-                      if (selectedChat?.id === chat.id) {
-                        setSelectedChat(null);
-                        setMessages([]);
-                        setCurrChatId('');
-                      }
-                    })
-                    .catch(error => {
-                      console.error('Error deleting chat:', error);
-                    });
-                }} />
-              )}
-            </div>
-          </button>
-        ))}
+        <aside className={`${isCollapsed ? 'w-16' : 'w-64'} bg-[#1F2251] text-white flex flex-col min-h-screen relative transition-all duration-300`}>
+          <div className="flex justify-between items-center p-4">
+            <button onClick={() => setIsCollapsed(!isCollapsed)} aria-label="Toggle sidebar">
+              <Menu className="text-gray-400" />
+            </button>
+          </div>
+          {!isCollapsed && <div className="px-4 text-sm text-gray-300 mb-2">Today</div>}
+          {!isCollapsed && chats.map((chat, index) => (
+            <button
+              key={`${chat.id}-${index}`}
+              className={`bg-[#343769] text-white text-left px-4 py-2 mx-4 rounded-lg hover:bg-[#45488f] flex items-center`}
+              onClick={() => {
+                handleChatChange(chat);
+              }}
+            >
+              <div className="flex items-center justify-between w-full">
+                <span className="font-medium">
+                  {titleLoading && selectedChat?.id === chat.id ? "Generating..." : chat.title}
+                </span>
+                {selectedChat?.id === chat.id && (
+                  <Trash2 className="text-gray-400" onClick={e=>{
+                    e.stopPropagation();
+                    axiosInstance.delete(`/api/chat/${chat.id}`)
+                      .then(() => {
+                        setChats(chats.filter(c => c.id !== chat.id));
+                        if (selectedChat?.id === chat.id) {
+                          setSelectedChat(null);
+                          setMessages([]);
+                          setCurrChatId('');
+                        }
+                      })
+                      .catch(error => {
+                        console.error('Error deleting chat:', error);
+                      });
+                  }} />
+                )}
+              </div>
+            </button>
+          ))}
 
-        {/* New Chat Button */}
-        <button className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-300 rounded-full p-2 hover:bg-gray-400">
-          <Plus className="text-[#1F2251]" onClick={handleNewChat} />
-        </button>
-      </aside>
+          {/* New Chat Button */}
+          <button className={`absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-300 rounded-full p-2 hover:bg-gray-400 ${isCollapsed ? 'left-1/2' : ''}`}>
+            <Plus className="text-[#1F2251]" onClick={handleNewChat} />
+          </button>
+        </aside>
     )
 }
 
