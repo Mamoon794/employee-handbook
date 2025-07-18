@@ -1,6 +1,5 @@
 // webhook to sync with firestore db
 
-
 import { Webhook } from 'svix';
 import { headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
@@ -9,6 +8,28 @@ import type { UserType, User } from '@/models/schema';
 import type { DocumentData, QueryDocumentSnapshot } from 'firebase-admin/firestore';
 
 const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET || '';
+
+// Define Clerk event types at the top level of the file
+interface ClerkWebhookEvent {
+  type: string;
+  data: ClerkUserData;
+}
+
+interface ClerkUserData {
+  id: string;
+  first_name?: string;
+  last_name?: string;
+  email_addresses?: Array<{ email_address: string }>;
+  unsafe_metadata?: {
+    userType?: UserType;
+    isSubscribed?: boolean;
+    province?: string;
+    companyId?: string;
+    companyName?: string;
+  };
+  two_factor_enabled?: boolean;
+  created_at: number;
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -33,13 +54,13 @@ export async function POST(req: NextRequest) {
 
     const wh = new Webhook(WEBHOOK_SECRET);
 
-    let evt: any;
+    let evt: ClerkWebhookEvent;
     try {
       evt = wh.verify(body, {
         'svix-id': svix_id,
         'svix-timestamp': svix_timestamp,
         'svix-signature': svix_signature,
-      }) as any;
+      }) as ClerkWebhookEvent;
     } catch (err) {
       console.error('Error verifying webhook:', err);
       return NextResponse.json(
@@ -77,7 +98,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-async function handleUserCreated(clerkUser: any) {
+async function handleUserCreated(clerkUser: ClerkUserData) {
   if (!clerkUser.first_name || !clerkUser.last_name || !clerkUser.email_addresses?.[0]?.email_address) {
     console.warn('User missing required fields, skipping creation');
     return;
@@ -88,11 +109,11 @@ async function handleUserCreated(clerkUser: any) {
     firstName: clerkUser.first_name,
     lastName: clerkUser.last_name,
     email: clerkUser.email_addresses[0].email_address,
-    userType: clerkUser.unsafe_metadata?.userType as UserType || 'Employee',
+    userType: clerkUser.unsafe_metadata?.userType || 'Employee',
     isSubscribed: clerkUser.unsafe_metadata?.isSubscribed ?? false,
     province: clerkUser.unsafe_metadata?.province || 'ON',
-    companyId: clerkUser.unsafe_metadata?.companyId || null,
-    companyName: clerkUser.unsafe_metadata?.companyName || null,
+    companyId: clerkUser.unsafe_metadata?.companyId || undefined,
+    companyName: clerkUser.unsafe_metadata?.companyName || undefined,
     twoFactorEnabled: clerkUser.two_factor_enabled || false,
     createdAt: new Date(clerkUser.created_at),
     updatedAt: new Date(),
@@ -102,7 +123,7 @@ async function handleUserCreated(clerkUser: any) {
   console.log(`Created user ${clerkUser.id} in database`);
 }
 
-async function handleUserUpdated(clerkUser: any) {
+async function handleUserUpdated(clerkUser: ClerkUserData) {
   const snapshot = await db.collection('users')
     .where('clerkUserId', '==', clerkUser.id)
     .get();
@@ -119,11 +140,11 @@ async function handleUserUpdated(clerkUser: any) {
     firstName: clerkUser.first_name || userData.firstName,
     lastName: clerkUser.last_name || userData.lastName,
     email: clerkUser.email_addresses?.[0]?.email_address || userData.email,
-    userType: clerkUser.unsafe_metadata?.userType as UserType || userData.userType,
+    userType: clerkUser.unsafe_metadata?.userType || userData.userType,
     isSubscribed: clerkUser.unsafe_metadata?.isSubscribed ?? userData.isSubscribed,
     province: clerkUser.unsafe_metadata?.province || userData.province,
-    companyId: clerkUser.unsafe_metadata?.companyId || userData.companyId || null,
-    companyName: clerkUser.unsafe_metadata?.companyName || userData.companyName || null,
+    companyId: clerkUser.unsafe_metadata?.companyId || userData.companyId || undefined,
+    companyName: clerkUser.unsafe_metadata?.companyName || userData.companyName || undefined,
     twoFactorEnabled: clerkUser.two_factor_enabled ?? userData.twoFactorEnabled,
     updatedAt: new Date(),
   };
@@ -132,7 +153,7 @@ async function handleUserUpdated(clerkUser: any) {
   console.log(`Updated user ${clerkUser.id} in database`);
 }
 
-async function handleUserDeleted(clerkUser: any) {
+async function handleUserDeleted(clerkUser: ClerkUserData) {
   const snapshot = await db.collection('users')
     .where('clerkUserId', '==', clerkUser.id)
     .get();
@@ -144,7 +165,6 @@ async function handleUserDeleted(clerkUser: any) {
   await batch.commit();
   console.log(`Deleted user ${clerkUser.id} from database`);
 }
-
 
 
 

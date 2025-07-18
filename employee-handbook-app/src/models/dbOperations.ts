@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { db } from "../dbConfig/firebaseConfig";
 import { Timestamp } from "firebase-admin/firestore";
 import { firestore } from 'firebase-admin';
