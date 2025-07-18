@@ -31,8 +31,8 @@ export default function ConfirmationPage() {
           </h2>
           <p className="mb-8 text-gray-700 text-lg">
             An invitation has been sent to{' '}
-            <span className="font-bold text-blue-800">{email}</span>. They'll need
-            to accept it before they can join your company.
+            <span className="font-bold text-blue-800">{email}</span>. They&apos;ll need to accept it 
+            before they can join your company.
           </p>
           <button
             onClick={() => router.push('/DashBoard')}

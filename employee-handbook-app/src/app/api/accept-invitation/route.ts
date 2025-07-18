@@ -1,9 +1,9 @@
-import { NextResponse } from 'next/server';
 import { getInvitation, updateInvitationStatus, getClerkUser } from '@/models/dbOperations';
 import { db } from '@/dbConfig/firebaseConfig';
 import { getAuth } from '@clerk/nextjs/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const invitationId = searchParams.get('invitationId');
   
@@ -17,7 +17,7 @@ export async function GET(request: Request) {
       return NextResponse.redirect(new URL('/invalid-invitation', request.url));
     }
 
-    const { userId } = getAuth(request as any);
+    const { userId } = getAuth(request);
     
     // redirect to sign in if user is not logged in
     if (!userId) {

@@ -1,9 +1,9 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getUserByEmail } from '@/models/dbOperations';
 import { getAuth } from '@clerk/nextjs/server';
 
-export async function GET(request: Request) {
-  const { userId } = getAuth(request as any);
+export async function GET(request: NextRequest) {
+  const { userId } = getAuth(request);
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

@@ -1,9 +1,9 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getInvitation, updateInvitationStatus } from '@/models/dbOperations';
 import { getAuth } from '@clerk/nextjs/server';
 
-export async function GET(request: Request, { params }: { params: { invitationId: string } }) {
-  const { userId } = getAuth(request as any);
+export async function GET(request: NextRequest, { params }: { params: { invitationId: string } }) {
+  const { userId } = getAuth(request);
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -20,8 +20,8 @@ export async function GET(request: Request, { params }: { params: { invitationId
   }
 }
 
-export async function PATCH(request: Request, { params }: { params: { invitationId: string } }) {
-  const { userId } = getAuth(request as any);
+export async function PATCH(request: NextRequest, { params }: { params: { invitationId: string } }) {
+  const { userId } = getAuth(request);
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

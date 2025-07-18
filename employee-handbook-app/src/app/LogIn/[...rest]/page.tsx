@@ -1,6 +1,5 @@
 // // log in page for app
 
-
 'use client';
 import { SignIn } from '@clerk/nextjs';
 import { useSearchParams } from 'next/navigation';
@@ -29,7 +28,7 @@ export default function EmployeeLogin() {
                 <>
                   <li className="flex items-center">
                     <span className="text-green-500 mr-2">✔️</span>
-                    Join your company's employee portal
+                    Join your company&apos;s employee portal
                   </li>
                   <li className="flex items-center">
                     <span className="text-green-500 mr-2">✔️</span>

@@ -1,10 +1,10 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { createInvitation, getUserByEmail } from '@/models/dbOperations';
 import { sendInvitationEmail } from '@/lib/email';
 import { getAuth } from '@clerk/nextjs/server';
 
-export async function POST(request: Request) {
-  const { userId } = getAuth(request as any);
+export async function POST(request: NextRequest) {
+  const { userId } = getAuth(request);
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
