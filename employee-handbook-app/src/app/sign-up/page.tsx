@@ -2,8 +2,6 @@
 
 import { Users, User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { LogIn } from '../global_components';
-
 
 export default function SignUp() {
   const router = useRouter(); 
@@ -22,7 +20,7 @@ export default function SignUp() {
         <div className="flex flex-col sm:flex-row gap-6 mb-6">
           {/* Employee */}
           <button 
-            onClick={() => router.push('/SignUp/employee/[...rest]')} 
+            onClick={() => router.push('/sign-up/employee/[...rest]')} 
             className="w-64 h-36 border rounded-2xl flex flex-col items-center justify-center hover:bg-gray-50 transition-colors"
           >
             <Users size={48} className="mb-2 text-black" />
@@ -31,7 +29,7 @@ export default function SignUp() {
 
           {/* Employer */}
           <button 
-            onClick={() => router.push('/SignUp/employer/[...rest]')}
+            onClick={() => router.push('/sign-up/employer/[...rest]')}
             className="w-64 h-36 border rounded-2xl flex flex-col items-center justify-center hover:bg-gray-50 transition-colors"
           >
             <User size={48} className="mb-2 text-black" />
@@ -42,7 +40,12 @@ export default function SignUp() {
         <p className="text-gray-700 text-md mb-3">Already have an account?</p>
         
         {/* Login button with navigation */}
-        <LogIn />
+        <button 
+          onClick={() => router.push('/log-in/[...rest]')}
+          className="bg-blue-800 text-white font-semibold px-6 py-3 rounded-md hover:bg-blue-700 transition-colors"
+        >
+          Log in
+        </button>
       </main>
     </div>
   );

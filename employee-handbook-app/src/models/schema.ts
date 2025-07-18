@@ -50,6 +50,8 @@ export interface Document {
   fileName?: string;
   uploadDate: Date;
   isPublic: boolean;
+  province: string;
+
 }
 
 export interface Link {

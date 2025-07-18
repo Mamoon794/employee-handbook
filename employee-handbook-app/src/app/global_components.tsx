@@ -272,7 +272,7 @@ export function LogIn() {
   const router = useRouter();
 
   const handleLogin = () => {
-    router.push('/LogIn/[...rest]');
+    router.push('/log-in/[...rest]');
   };
 
   return (
@@ -289,7 +289,7 @@ function SignUp() {
   const router = useRouter();
 
   const handleSignUp = () => {
-    router.push('/SignUp');
+    router.push('/sign-up');
   };
 
   return (
