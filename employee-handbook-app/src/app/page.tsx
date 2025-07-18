@@ -1,12 +1,13 @@
 /* eslint-disable */
 
-// The main development branch
+
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
 import { useUser } from '@clerk/nextjs';
 import {MessageThread, InputMessage, Header} from './global_components';
 import { useRouter } from 'next/navigation';
+import axiosInstance from './axios_config';
 
 import ProvincePopup from "../../components/province";
 import { Message } from '@/models/schema';
@@ -16,7 +17,7 @@ function generateThreadId(): string {
 }
 
 export default function Home() {
-  const { isSignedIn } = useUser();
+  const { isSignedIn, user } = useUser();
   const router = useRouter();
 
   const [inputValue, setInputValue] = useState<string>('');
@@ -38,11 +39,27 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (isSignedIn){
-      router.push('/chat');
+    if (isSignedIn && user) {
+      axiosInstance.get(`/api/users/${user.id}?isClerkID=true`)
+        .then(response => {
+          const userData = response.data[0];
+          if (userData) {
+            if (userData.userType === 'Employee') {
+              router.push('/chat');
+            } else if (userData.userType === 'Owner') {
+              router.push('/dashboard');
+              console.log('Redirecting to dashboard');
+            } else {
+              router.push('/chat');
+            }
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching user data for redirect:', error);
+          router.push('/chat');
+        });
     }
-      
-    }, [isSignedIn]);
+  }, [isSignedIn, user, router]);
 
 
   useEffect(() => {

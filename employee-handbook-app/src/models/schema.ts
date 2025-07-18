@@ -20,8 +20,10 @@ export interface Company {
   id?: string;
   name: string;
   ownerId: string; // references user
+  s3BucketName: string; 
   createdAt: Date;
   updatedAt: Date;
+  documents: Document[]; 
 }
 
 export interface Chat {
@@ -44,9 +46,8 @@ export interface Message {
 
 export interface Document {
   id?: string;
-  companyId: string; // references the company
   fileUrl: string;
-  description?: string;
+  fileName?: string;
   uploadDate: Date;
   isPublic: boolean;
   province: string;
