@@ -1,9 +1,9 @@
 import { getClerkUser } from '@/models/dbOperations';
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server'; 
 import { getAuth } from '@clerk/nextjs/server';
 
-export async function GET(request: Request) {
-  const { userId } = getAuth(request as any);
+export async function GET(request: NextRequest) { 
+  const { userId } = getAuth(request); 
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -19,6 +19,7 @@ export async function GET(request: Request) {
       companyName: userRecord.companyName || 'Your Company'
     });
   } catch (error) {
+    console.error(error); 
     return NextResponse.json(
       { error: 'Failed to fetch company info' },
       { status: 500 }
