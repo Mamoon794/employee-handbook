@@ -2,8 +2,6 @@
 
 import { Users, User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { LogIn } from '../global_components';
-
 
 export default function SignUp() {
   const router = useRouter(); 
