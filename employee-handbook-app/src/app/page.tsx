@@ -5,7 +5,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useUser } from '@clerk/nextjs';
-import {MessageThread, InputMessage, Header, PublicChatSideBar, PublicChat} from './global_components';
+import {MessageThread, InputMessage, Header, PublicChatSideBar } from './global_components';
 import { useRouter } from 'next/navigation';
 import axiosInstance from './axios_config';
 
@@ -27,7 +27,7 @@ export default function Home() {
   const [messages, setMessages] = useState([] as Message[]);
   const [error, setError] = useState<string>('');
   const [currChatId, setCurrChatId] = useState<string>('');
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  // const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const threadIdRef = useRef<string | null>(null);
 
