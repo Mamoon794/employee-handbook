@@ -1,16 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import {ChatSideBar, MessageThread, InputMessage, Header} from '../global_components';
+import {PrivateChatSideBar, MessageThread, InputMessage, Header, Chat} from '../global_components';
 import { Message } from '../../models/schema'; 
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
-
-interface Chat {
-  id: string;
-  title: string;
-}
-
 
 export default function ChatUI() {
   const [messages, setMessages] = useState([] as Message[]);
@@ -23,9 +17,6 @@ export default function ChatUI() {
   const { isSignedIn } = useUser();
   const [titleLoading, setTitleLoading] = useState(false); 
 
-
-  
-
   useEffect(() => {
     if (!isSignedIn && isSignedIn !== undefined) {
       router.push('/');
@@ -35,9 +26,9 @@ export default function ChatUI() {
   
 
   return (
-    <div className="min-h-screen flex bg-white">
+    <div className="min-h-screen flex bg-white flex-row">
       {/* Sidebar (History) */}
-      <ChatSideBar setCurrChatId={setCurrChatId} currChatId={currChatId} setMessages={setMessages} titleLoading={titleLoading} chats={chats} setChats={setChats} setTitleLoading={setTitleLoading} />
+      <PrivateChatSideBar setCurrChatId={setCurrChatId} currChatId={currChatId} setMessages={setMessages} titleLoading={titleLoading} chats={chats} setChats={setChats} setTitleLoading={setTitleLoading} />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-h-screen">
