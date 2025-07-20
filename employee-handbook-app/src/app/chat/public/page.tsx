@@ -23,7 +23,7 @@ export default function PublicChatUI() {
       <div className="flex-1 flex flex-col min-h-screen">
         {/* Header */}
         <header className="flex justify-between items-center px-6 py-4">
-          <h1 className="text-2xl font-bold text-blue-800">Gail</h1>
+          <h1 className="text-2xl font-extrabold italic text-blue-800">Gail</h1>
           <button className="px-4 py-2 text-sm border rounded-full text-gray-700 hover:bg-gray-50">Log Out</button>
         </header>
 

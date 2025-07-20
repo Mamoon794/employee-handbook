@@ -414,7 +414,7 @@ function Header({ province, setProvince }: { province: string; setProvince: (pro
     
     return(
         <header className="flex justify-between items-center px-6 py-4">
-          <h1 className="text-2xl font-bold text-blue-800">Gail</h1>
+          <h1 className="text-2xl font-extrabold italic text-blue-800">Gail</h1>
           <div className="flex gap-3 items-center">
             {!isSignedIn ? (
               <>

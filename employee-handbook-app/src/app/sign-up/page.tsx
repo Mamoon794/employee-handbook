@@ -9,7 +9,7 @@ export default function SignUp() {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <header className="flex justify-between items-center px-6 py-4">
-        <h1 className="text-2xl font-bold text-blue-800">Gail</h1>
+        <h1 className="text-2xl font-extrabold italic text-blue-800">Gail</h1>
       </header>
 
       <main className="flex-1 flex flex-col items-center justify-center px-6">
