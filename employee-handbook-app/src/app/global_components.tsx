@@ -89,7 +89,8 @@ function PublicChatSideBar({
   chats: PublicChat[]
   setChats: Dispatch<SetStateAction<PublicChat[]>>
 }) {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  // Add collapsed state
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   useEffect(() => {
     const storedChats = localStorage.getItem("publicChats");
@@ -150,37 +151,43 @@ function PublicChatSideBar({
   };
 
   return (
-    <aside className="w-64 h-screen bg-[#1F2251] text-white flex flex-col min-h-screen relative">
+    <aside className={`${isCollapsed ? 'w-16' : 'w-64'} h-screen bg-[#1F2251] text-white flex flex-col min-h-screen relative transition-all duration-300`}>
       <div className="flex justify-between items-center p-4">
-        <Menu className="text-gray-400"/>
+        <button onClick={() => setIsCollapsed(!isCollapsed)} aria-label="Toggle sidebar">
+          <Menu className="text-gray-400"/>
+        </button>
       </div>
-      <div className="px-4 text-sm text-gray-300 mb-2">Today</div>
-        {chats.map((chat, index) => (
-          <button
-            key={`${chat.id}-${index}`}
-            className={`bg-[#343769] text-white text-left px-4 py-2 mx-4 rounded-lg hover:bg-[#45488f] ${
-              currChatId === chat.id ? "border border-blue-300" : ""
-            }`}
-            onClick={() => selectChat(chat)}
-          >
-            <div className="flex items-center justify-between">
-              <span className="font-medium">{chat.title}</span>
-              {currChatId === chat.id && (
-                <Trash2
-                  className="text-gray-400"
-                  onClick={e => {
-                    e.stopPropagation();
-                    handleDelete(chat.id);
-                  }}
-                />
-              )}
-            </div>
-          </button>
-        ))}
+      {!isCollapsed && (
+        <>
+          <div className="px-4 text-sm text-gray-300 mb-2">Today</div>
+          {chats.map((chat, index) => (
+            <button
+              key={`${chat.id}-${index}`}
+              className={`bg-[#343769] text-white text-left px-4 py-2 mx-4 rounded-lg hover:bg-[#45488f] ${
+                currChatId === chat.id ? "border border-blue-300" : ""
+              }`}
+              onClick={() => selectChat(chat)}
+            >
+              <div className="flex items-center justify-between">
+                <span className="font-medium">{chat.title}</span>
+                {currChatId === chat.id && (
+                  <Trash2
+                    className="text-gray-400"
+                    onClick={e => {
+                      e.stopPropagation();
+                      handleDelete(chat.id);
+                    }}
+                  />
+                )}
+              </div>
+            </button>
+          ))}
 
-      <button className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-300 rounded-full p-2 hover:bg-gray-400">
-        <Plus className="text-[#1F2251]" onClick={handleNewChat} />
-      </button>
+          <button className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-300 rounded-full p-2 hover:bg-gray-400">
+            <Plus className="text-[#1F2251]" onClick={handleNewChat} />
+          </button>
+        </>
+      )}
     </aside>
   )
 }
