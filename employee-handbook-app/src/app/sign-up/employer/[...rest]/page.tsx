@@ -39,9 +39,9 @@ export default function EmployerSignupStart() {
           <div className="md:w-1/2 w-full">
             <SignUp 
               routing="path"
-              path="/SignUp/employer/[...rest]"
-              afterSignUpUrl="/SignUp/employer/register"
-              signInUrl="/LogIn/[...rest]"
+              path="/sign-up/employer/[...rest]"
+              afterSignUpUrl="/sign-up/employer/register"
+              signInUrl="/log-in/[...rest]"
               appearance={{
                 elements: {
                   rootBox: 'w-full',

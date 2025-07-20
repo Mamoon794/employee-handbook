@@ -9,21 +9,184 @@ import { useRouter } from 'next/navigation';
 import { useUser, UserButton } from '@clerk/nextjs';
 import { Message } from '../models/schema'; 
 import { marked } from 'marked';
+import { Fragment } from "react";
+import { Listbox, Label, ListboxButton, ListboxOption, ListboxOptions } from "@headlessui/react";
+import { ChevronDown, Check } from "lucide-react";
 import dynamic from "next/dynamic";
-
 
 const InputMessage = dynamic(() => import('./MessageInput').then(mod => mod.MessageInput), {
   ssr: false,
 });
 
-interface Chat {
-    id: string;
-    title: string;
-    needsTitleUpdate?: boolean;
+export interface Chat {
+  id: string;
+  title: string;
 }
 
-function ChatSideBar({setMessages, setCurrChatId, currChatId, titleLoading, chats, setChats, setTitleLoading}: {setMessages: Dispatch<SetStateAction<Message[]>>, setCurrChatId: (chatId: string) => void, currChatId: string,  titleLoading: boolean, chats: Chat[], setChats: Dispatch<SetStateAction<Chat[]>>, setTitleLoading: Dispatch<SetStateAction<boolean>>}) {
-    const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
+interface PrivateChat {
+  id: string;
+  title: string;
+  needsTitleUpdate?: boolean;
+}
+
+export interface PublicChat {
+  id: string;
+  title: string;
+  messages?: Message[];
+}
+
+function getRowClass(i: number, total: number) {
+  if (total >= 3) {
+    return i % 2 === 0 ? "bg-white" : "bg-gray-200";
+  }
+  return "bg-white border border-gray-200";
+}
+
+export function markdownListToTable(md: string): string {
+  const renderer = new marked.Renderer();
+
+  renderer.list = function(token: any) {
+    const listItems = token.items.map((item: any) => {
+      return marked.parser(item.tokens);
+    });
+
+    const rows = listItems
+      .map(
+        (item: string, i: number) =>
+          `<tr class="${getRowClass(i, listItems.length)}"><td class="px-4 py-2">${item}</td></tr>`
+      )
+      .join("");
+
+    return `
+    <div class="w-full border border-gray-200 rounded-lg overflow-hidden my-4">
+      <table class="w-full">
+        <tbody>
+          ${rows}
+        </tbody>
+      </table>
+    </div>
+    `;
+  };
+
+  const result = marked.parse(md, { renderer });
+  if (typeof result === "string") {
+    return result;
+  }
+
+  throw new Error("marked.parse returned a Promise, but a string was expected.");
+}
+
+function PublicChatSideBar({
+  setMessages, 
+  setCurrChatId, 
+  currChatId, 
+  chats, 
+  setChats
+}: {
+  setMessages: Dispatch<SetStateAction<Message[]>>, 
+  setCurrChatId: (chatId: string) => void, 
+  currChatId: string,
+  chats: PublicChat[]
+  setChats: Dispatch<SetStateAction<PublicChat[]>>
+}) {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  useEffect(() => {
+    const storedChats = localStorage.getItem("publicChats");
+    if (storedChats) {
+      try {
+        setChats(JSON.parse(storedChats));
+      } catch {
+        setChats([]);
+      }
+    }
+
+    const storedChatId = localStorage.getItem("currPublicChatId");
+    if (storedChatId) setCurrChatId(storedChatId);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("publicChats", JSON.stringify(chats));
+  }, [chats]);
+
+  useEffect(() => {
+    if (currChatId) localStorage.setItem("currPublicChatId", currChatId);
+  }, [currChatId]);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("publicChats");
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      const chat = parsed.find((c: any) => c.id === currChatId);
+      if (chat) setMessages(chat.messages || []);
+    }
+  }, [currChatId]);
+
+  const selectChat = (chat: PublicChat) => {
+    setCurrChatId(chat.id);
+    setMessages(chat.messages || []);
+    localStorage.setItem("currPublicChatId", chat.id);
+  };
+
+  const handleNewChat = () => {
+    const newChat: PublicChat = {
+      id: Date.now().toString(),
+      title: `Chat - ${new Date().toLocaleDateString()}-${chats.length + 1}`,
+      messages: [],
+    };
+    const updatedChats = [newChat, ...chats];
+    setChats(updatedChats);
+    setCurrChatId(newChat.id);
+    setMessages([]);
+  };
+
+  const handleDelete = (id: string) => {
+    const updatedChats = chats.filter((c) => c.id !== id);
+    setChats(updatedChats);
+    if (currChatId === id) {
+      setCurrChatId("");
+      setMessages([]);
+    }
+  };
+
+  return (
+    <aside className="w-64 h-screen bg-[#1F2251] text-white flex flex-col min-h-screen relative">
+      <div className="flex justify-between items-center p-4">
+        <Menu className="text-gray-400"/>
+      </div>
+      <div className="px-4 text-sm text-gray-300 mb-2">Today</div>
+        {chats.map((chat, index) => (
+          <button
+            key={`${chat.id}-${index}`}
+            className={`bg-[#343769] text-white text-left px-4 py-2 mx-4 rounded-lg hover:bg-[#45488f] ${
+              currChatId === chat.id ? "border border-blue-300" : ""
+            }`}
+            onClick={() => selectChat(chat)}
+          >
+            <div className="flex items-center justify-between">
+              <span className="font-medium">{chat.title}</span>
+              {currChatId === chat.id && (
+                <Trash2
+                  className="text-gray-400"
+                  onClick={e => {
+                    e.stopPropagation();
+                    handleDelete(chat.id);
+                  }}
+                />
+              )}
+            </div>
+          </button>
+        ))}
+
+      <button className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-300 rounded-full p-2 hover:bg-gray-400">
+        <Plus className="text-[#1F2251]" onClick={handleNewChat} />
+      </button>
+    </aside>
+  )
+}
+
+function PrivateChatSideBar({setMessages, setCurrChatId, currChatId, titleLoading, chats, setChats, setTitleLoading}: {setMessages: Dispatch<SetStateAction<Message[]>>, setCurrChatId: (chatId: string) => void, currChatId: string,  titleLoading: boolean, chats: PrivateChat[], setChats: Dispatch<SetStateAction<PrivateChat[]>>, setTitleLoading: Dispatch<SetStateAction<boolean>>}) {
+    const [selectedChat, setSelectedChat] = useState<PrivateChat | null>(null);
     const [userId, setUserId] = useState<string | null>(null);
     const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -38,7 +201,7 @@ function ChatSideBar({setMessages, setCurrChatId, currChatId, titleLoading, chat
             needsTitleUpdate: chat.title && chat.title.startsWith('Chat - ')
           }));
           setChats(chatData);
-          setSelectedChat(chatData.find((chat: Chat) => chat.id === currChatId) || null);
+          setSelectedChat(chatData.find((chat: PrivateChat) => chat.id === currChatId) || null);
         });
       }
         
@@ -67,7 +230,7 @@ function ChatSideBar({setMessages, setCurrChatId, currChatId, titleLoading, chat
       fetchChats();
     }, []);
 
-    async function handleChatChange(currChat: Chat){
+    async function handleChatChange(currChat: PrivateChat){
         setSelectedChat(currChat);
         const currMessages = await axiosInstance.get(`/api/chat/${currChat.id}`)
         setMessages(currMessages.data.messages);
@@ -102,7 +265,7 @@ function ChatSideBar({setMessages, setCurrChatId, currChatId, titleLoading, chat
         <aside className={`${isCollapsed ? 'w-16' : 'w-64'} bg-[#1F2251] text-white flex flex-col min-h-screen relative transition-all duration-300`}>
           <div className="flex justify-between items-center p-4">
             <button onClick={() => setIsCollapsed(!isCollapsed)} aria-label="Toggle sidebar">
-              <Menu className="text-gray-400" />
+              <Menu className="text-gray-400"/>
             </button>
           </div>
           {!isCollapsed && <div className="px-4 text-sm text-gray-300 mb-2">Today</div>}
@@ -167,25 +330,26 @@ function MessageThread({
 
   return (
     <div className="flex flex-col gap-6 py-6 px-1 overflow-y-auto" style={{ height: 'calc(100vh - 200px)'}}>
-    {messageList.length === 0 ? (
-            <div className="flex flex-col justify-center items-center text-center">
-              <h2 className="text-5xl font-bold text-blue-800 mb-2">Welcome to Gail!</h2>
-              <h3 className="text-xl font-medium text-blue-800">
-                Your workplace rights & regulations chatbot
-              </h3>
-            </div>
-          ):
+      {messageList.length === 0 ? (
+        <div className="flex flex-col justify-center items-center text-center pt-70">
+          <h2 className="text-5xl font-bold text-blue-800 mb-2">Welcome to Gail!</h2>
+          <h3 className="text-xl font-medium text-blue-800">
+            Your workplace rights & regulations chatbot
+          </h3>
+        </div>
+      ):
       messageList.map((message, index) => (
         <div key={index} className="flex flex-col">
           {message.isFromUser ? (
-            <div className="self-end bg-[#f1f2f9] text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm">
+            <div className="self-end bg-blue-100 text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm text-lg">
               <p>{message.content}</p>
             </div>
           ) : (
             <div className="self-start bg-gray-100 text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm">
               <div
+                className="text-lg"
                 dangerouslySetInnerHTML={{
-                  __html: marked.parse(message.content),
+                  __html: markdownListToTable(message.content),
                 }}
               />
               {message.sources && message.sources.length > 0 && (
@@ -211,7 +375,7 @@ function MessageThread({
       ))}
 
       {error && (
-        <div className="self-start border border-red-500 bg-red-200 text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm">
+        <div className="self-start border border-red-500 bg-red-200 text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm text-lg">
           <div>{error}</div>
           <div className="pt-4">
             <button
@@ -257,7 +421,7 @@ function Header({ province, setProvince }: { province: string; setProvince: (pro
           <div className="flex gap-3 items-center">
             {!isSignedIn ? (
               <>
-                {province !== "" && <span className="px-4"><ProvinceDropdown province={province} setProvince={setProvince} /></span>}
+                <span className="px-4"><ProvinceDropdown province={province} setProvince={setProvince} /></span>
                 <LogIn />
                 <SignUp />
               </>
@@ -275,7 +439,7 @@ export function LogIn() {
   const router = useRouter();
 
   const handleLogin = () => {
-    router.push('/LogIn/[...rest]');
+    router.push('/log-in/[...rest]');
   };
 
   return (
@@ -292,7 +456,7 @@ function SignUp() {
   const router = useRouter();
 
   const handleSignUp = () => {
-    router.push('/SignUp');
+    router.push('/sign-up');
   };
 
   return (
@@ -312,47 +476,59 @@ function ProvinceDropdown({
   province: string;
   setProvince: (prov: string) => void;
 }) {
-  const provinceMap: { [fullName: string]: string } = {
-    "Alberta": "AB",
-    "British Columbia": "BC",
-    "Manitoba": "MB",
-    "New Brunswick": "NB",
-    "Newfoundland and Labrador": "NL",
-    "Northwest Territories": "NT",
-    "Nova Scotia": "NS",
-    "Nunavut": "NU",
-    "Ontario": "ON",
-    "Prince Edward Island": "PE",
-    "Quebec": "QC",
-    "Saskatchewan": "SK",
-    "Yukon": "YT"
-  };
-
-  const reverseProvinceMap: { [abbr: string]: string } = Object.fromEntries(
-    Object.entries(provinceMap).map(([full, abbr]) => [abbr, full])
-  );
-
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const abbr = e.target.value;
-    const full = reverseProvinceMap[abbr];
-    if (full) {
-      setProvince(full);
-    }
-  };
+  const provinces = [
+    "Alberta",
+    "British Columbia",
+    "Manitoba",
+    "New Brunswick",
+    "Newfoundland and Labrador",
+    "Northwest Territories",
+    "Nova Scotia",
+    "Nunavut",
+    "Ontario",
+    "Prince Edward Island",
+    "Quebec",
+    "Saskatchewan",
+    "Yukon",
+  ] as const;  
 
   return (
-    <select
-      value={provinceMap[province]}
-      onChange={handleChange}
-      className="text-gray-700 font-semibold px-4 py-2 rounded-md hover:bg-gray-50 transition-colors w-[80px]"
-    >
-      <option value="" disabled>Select</option>
-      {Object.values(provinceMap).map((abbr) => (
-        <option key={abbr} value={abbr}>{abbr}</option>
-      ))}
-    </select>
+    <Listbox value={province} onChange={setProvince}>
+      <div className="relative inline-block">
+        <Label className="sr-only">
+          Change province or territory
+        </Label>
+
+        <ListboxButton
+          className="w-[290px] px-4 py-2 flex items-center rounded-md bg-white font-semibold border border-gray-300 text-gray-700 hover:bg-gray-200 transition-colors"
+        >
+          Change your province/territory
+          <ChevronDown className="ml-auto h-4 w-4 shrink-0" />
+        </ListboxButton>
+
+        <ListboxOptions
+          className="absolute z-10 mt-1 max-h-60 w-[270px] overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black/10"
+        >
+          {provinces.map((p) => (
+            <ListboxOption key={p} value={p} as={Fragment}>
+              {({ active, selected }: { active: boolean; selected: boolean }) => (
+                <li
+                  className={
+                    `flex cursor-pointer select-none items-center gap-2 px-4 py-2 text-sm ` +
+                    (active ? "bg-blue-100 text-blue-900" : "text-gray-900")
+                  }
+                >
+                  <span className="flex-1">{p}</span>
+                  {selected && <Check className="h-4 w-4" />}
+                </li>
+              )}
+            </ListboxOption>
+          ))}
+        </ListboxOptions>
+      </div>
+    </Listbox>
   );
 }
 
 
-export {ChatSideBar, MessageThread, InputMessage, Header};
+export {PrivateChatSideBar, PublicChatSideBar, MessageThread, InputMessage, Header};
