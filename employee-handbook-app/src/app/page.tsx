@@ -1,6 +1,3 @@
-/* eslint-disable */
-
-
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -64,6 +61,7 @@ export default function Home() {
         });
     }
   }, [isSignedIn, user, router]);
+
 
   useEffect(() => {
     const prov = localStorage.getItem('province');
