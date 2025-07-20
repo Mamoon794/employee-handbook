@@ -18,16 +18,21 @@ const InputMessage = dynamic(() => import('./MessageInput').then(mod => mod.Mess
   ssr: false,
 });
 
-interface PrivateChat {
-    id: string;
-    title: string;
-    needsTitleUpdate?: boolean;
-}
-
-interface PublicChat {
+export interface Chat {
   id: string;
   title: string;
-  messages: Message[];
+}
+
+interface PrivateChat {
+  id: string;
+  title: string;
+  needsTitleUpdate?: boolean;
+}
+
+export interface PublicChat {
+  id: string;
+  title: string;
+  messages?: Message[];
 }
 
 function getRowClass(i: number, total: number) {
@@ -71,23 +76,51 @@ export function markdownListToTable(md: string): string {
   throw new Error("marked.parse returned a Promise, but a string was expected.");
 }
 
-function PublicChatSideBar({setMessages, setCurrChatId, currChatId}: {setMessages: Dispatch<SetStateAction<Message[]>>, setCurrChatId: (chatId: string) => void, currChatId: string}) {
-  const [chats, setChats] = useState<PublicChat[]>([]);
+function PublicChatSideBar({
+  setMessages, 
+  setCurrChatId, 
+  currChatId, 
+  chats, 
+  setChats
+}: {
+  setMessages: Dispatch<SetStateAction<Message[]>>, 
+  setCurrChatId: (chatId: string) => void, 
+  currChatId: string,
+  chats: PublicChat[]
+  setChats: Dispatch<SetStateAction<PublicChat[]>>
+}) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   useEffect(() => {
-    const stored = localStorage.getItem("publicChats");
-    if (stored) {
+    const storedChats = localStorage.getItem("publicChats");
+    if (storedChats) {
       try {
-        setChats(JSON.parse(stored));
+        setChats(JSON.parse(storedChats));
       } catch {
         setChats([]);
       }
     }
 
-    const sel = localStorage.getItem("currPublicChatId");
-    if (sel) setCurrChatId(sel);
-  }, [setCurrChatId]);
+    const storedChatId = localStorage.getItem("currPublicChatId");
+    if (storedChatId) setCurrChatId(storedChatId);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("publicChats", JSON.stringify(chats));
+  }, [chats]);
+
+  useEffect(() => {
+    if (currChatId) localStorage.setItem("currPublicChatId", currChatId);
+  }, [currChatId]);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("publicChats");
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      const chat = parsed.find((c: any) => c.id === currChatId);
+      if (chat) setMessages(chat.messages || []);
+    }
+  }, [currChatId]);
 
   const selectChat = (chat: PublicChat) => {
     setCurrChatId(chat.id);
@@ -105,8 +138,6 @@ function PublicChatSideBar({setMessages, setCurrChatId, currChatId}: {setMessage
     setChats(updatedChats);
     setCurrChatId(newChat.id);
     setMessages([]);
-    localStorage.setItem("publicChats", JSON.stringify(updatedChats));
-    localStorage.setItem("currPublicChatId", newChat.id);
   };
 
   const handleDelete = (id: string) => {
@@ -115,39 +146,37 @@ function PublicChatSideBar({setMessages, setCurrChatId, currChatId}: {setMessage
     if (currChatId === id) {
       setCurrChatId("");
       setMessages([]);
-      localStorage.removeItem("currPublicChatId");
     }
-    localStorage.setItem("publicChats", JSON.stringify(updatedChats));
   };
 
   return (
-    <aside className="w-64 bg-[#1F2251] text-white flex flex-col min-h-screen relative">
+    <aside className="w-64 h-screen bg-[#1F2251] text-white flex flex-col min-h-screen relative">
       <div className="flex justify-between items-center p-4">
-        <Menu className="text-gray-400" onClick={() => {}}/>
+        <Menu className="text-gray-400"/>
       </div>
       <div className="px-4 text-sm text-gray-300 mb-2">Today</div>
-      {chats.map((chat, index) => (
-        <button
-          key={`${chat.id}-${index}`}
-          className={`bg-[#343769] text-white text-left px-4 py-2 mx-4 rounded-lg hover:bg-[#45488f] ${
-            currChatId === chat.id ? "border border-blue-300" : ""
-          }`}
-          onClick={() => selectChat(chat)}
-        >
-          <div className="flex items-center justify-between">
-            <span className="font-medium">{chat.title}</span>
-            {currChatId === chat.id && (
-              <Trash2
-                className="text-gray-400"
-                onClick={e => {
-                  e.stopPropagation();
-                  handleDelete(chat.id);
-                }}
-              />
-            )}
-          </div>
-        </button>
-      ))}
+        {chats.map((chat, index) => (
+          <button
+            key={`${chat.id}-${index}`}
+            className={`bg-[#343769] text-white text-left px-4 py-2 mx-4 rounded-lg hover:bg-[#45488f] ${
+              currChatId === chat.id ? "border border-blue-300" : ""
+            }`}
+            onClick={() => selectChat(chat)}
+          >
+            <div className="flex items-center justify-between">
+              <span className="font-medium">{chat.title}</span>
+              {currChatId === chat.id && (
+                <Trash2
+                  className="text-gray-400"
+                  onClick={e => {
+                    e.stopPropagation();
+                    handleDelete(chat.id);
+                  }}
+                />
+              )}
+            </div>
+          </button>
+        ))}
 
       <button className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-300 rounded-full p-2 hover:bg-gray-400">
         <Plus className="text-[#1F2251]" onClick={handleNewChat} />
@@ -156,8 +185,7 @@ function PublicChatSideBar({setMessages, setCurrChatId, currChatId}: {setMessage
   )
 }
 
-function PrivateChatSideBar({setMessages, setCurrChatId, currChatId}: {setMessages: Dispatch<SetStateAction<Message[]>>, setCurrChatId: (chatId: string) => void, currChatId: string}) {
-    const [chats, setChats] = useState<PrivateChat[]>([]);
+function PrivateChatSideBar({setMessages, setCurrChatId, currChatId, titleLoading, chats, setChats, setTitleLoading}: {setMessages: Dispatch<SetStateAction<Message[]>>, setCurrChatId: (chatId: string) => void, currChatId: string,  titleLoading: boolean, chats: PrivateChat[], setChats: Dispatch<SetStateAction<PrivateChat[]>>, setTitleLoading: Dispatch<SetStateAction<boolean>>}) {
     const [selectedChat, setSelectedChat] = useState<PrivateChat | null>(null);
     const [userId, setUserId] = useState<string | null>(null);
 
