@@ -15,7 +15,6 @@ export default function EmployeeLogin() {
     const checkUserAndSubscription = async () => {
       if (!isSignedIn) return;
       try {
-        // First get user data to check user type
         const userRes = await fetch(`/api/users/${user?.id}?isClerkID=true`);
         const userData = await userRes.json();
         console.log('User data:', userData);
@@ -25,7 +24,6 @@ export default function EmployeeLogin() {
           console.log('User data:', user);
           
           if (user.userType === 'Employee') {
-            // Only check subscription for employees
             const subscriptionRes = await fetch('/api/check-subscription');
             const subscriptionData = await subscriptionRes.json();
             
@@ -36,14 +34,11 @@ export default function EmployeeLogin() {
             }
           } else if (user.userType === 'Owner') {
             console.log('Owner logged in');
-            // Owners go directly to dashboard
-            router.push('/DashBoard');
+            router.push('/DashBoard'); // this needs to be updated to be lowercase
           } else {
-            // Default fallback
             router.push('/chat');
           }
         } else {
-          // If user not found, redirect to home page
           router.push('/');
         }
       } catch (err) {

@@ -10,14 +10,12 @@ export async function GET() {
       return NextResponse.json({ subscribed: false }, { status: 401 });
     }
 
-    // Get user from database using Clerk user ID
     const user = await getClerkUser(userId);
     
     if (!user) {
       return NextResponse.json({ subscribed: false }, { status: 404 });
     }
 
-    // Check if user has an active subscription
     const isSubscribed = user.isSubscribed || false;
     
     return NextResponse.json({ subscribed: isSubscribed });

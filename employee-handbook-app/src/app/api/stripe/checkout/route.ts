@@ -30,7 +30,7 @@ export async function POST() {
           quantity: 1,
         },
       ],
-      mode: 'payment', // or 'subscription' for recurring payments
+      mode: 'payment', 
       success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/chat?success=true`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/paywall?canceled=true`,
       metadata: {

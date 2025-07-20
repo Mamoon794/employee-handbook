@@ -13,7 +13,7 @@ export default function PaywallPage() {
     setLoading(true);
     try {
       const res = await axios.post('/api/stripe/checkout');
-      router.push(res.data.url); // Redirect to Stripe Checkout
+      router.push(res.data.url); 
     } catch (err) {
       console.error(err);
       setError('Failed to start checkout session.');
