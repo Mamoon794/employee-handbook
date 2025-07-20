@@ -8,9 +8,10 @@ import { Citation } from '@/types/ai';
 import { useAudioRecorder } from "react-use-audio-recorder";
 
 interface Chat {
-    id: string;
-    title: string;
-    needsTitleUpdate?: boolean;
+  id: string;
+  title: string;
+  needsTitleUpdate?: boolean;
+  messages?: Message[];
 }
 
 
@@ -100,12 +101,12 @@ export function MessageInput({
   const submitUserMessage = async () => {
     if (!inputValue.trim()) return;
 
-    try {
-      const userMessage: Omit<Message, 'createdAt'> = {
-        isFromUser: true,
-        content: inputValue,
-      };
+    const userMessage: Omit<Message, 'createdAt'> = {
+      isFromUser: true,
+      content: inputValue,
+    };
 
+    try {
       // tracking if brand new chat
       const isNewChat = chatId === '';
       // Find the chat object for this chatId
@@ -114,7 +115,18 @@ export function MessageInput({
         chatObj = chats.find((c: Chat) => c.id === chatId);
       }
 
-      setMessages((prevMessages) => [...prevMessages, userMessage as Message]);
+      setMessages((prevMessages) => {
+        const updated = [...prevMessages, userMessage as Message]
+        if (!isPrivate) {
+          if (setChats && chats && chatId) {
+            setChats(chats.map(c =>
+              c.id === chatId ? { ...c, messages: updated } : c
+            ));
+          }
+        }
+        return updated;
+      });
+
       setInputValue('');
       setError('');
 
@@ -244,7 +256,15 @@ export function MessageInput({
           createdAt: new Date(),
           sources: mapCitationsToLinks(data.citations),
         }
-        setMessages((prevMessages) => [...prevMessages, botMessage as Message]);
+        setMessages((prevMessages) => {
+          const updated = [...prevMessages, botMessage as Message]
+          if (setChats && chats && chatId) {
+            setChats(chats.map(c =>
+              c.id === chatId ? { ...c, messages: updated } : c
+            ));
+          }
+          return updated;
+        });
       } else {
         setError(errorMessage);
       }
