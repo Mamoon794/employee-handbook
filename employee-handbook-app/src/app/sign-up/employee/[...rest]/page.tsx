@@ -8,7 +8,7 @@ import { useEffect } from 'react';
 
 export default function EmployeeSignupStart() {
   const router = useRouter();
-  const { isSignedIn } = useUser();
+  const { isSignedIn, user } = useUser();
 
   useEffect(() => {
     const checkSubscription = async () => {
@@ -17,17 +17,17 @@ export default function EmployeeSignupStart() {
         const res = await fetch('/api/check-subscription');
         const data = await res.json();
         if (data.subscribed) {
-          router.push('/chat'); // or your post-signup route
+          router.push('/chat'); 
         } else {
           router.push('/paywall');
         }
       } catch (err) {
         console.error('Subscription check failed:', err);
-        router.push('/paywall'); // fallback to paywall on error
+        router.push('/');
       }
     };
     checkSubscription();
-  }, [isSignedIn]);
+  }, [isSignedIn, user]);
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -53,7 +53,7 @@ export default function EmployeeSignupStart() {
             <SignUp 
               routing="path"
               path="/sign-up/employee/[...rest]"
-              fallbackRedirectUrl="/SignUp/employee/register"
+              fallbackRedirectUrl="/sign-up/employee/register"
               signInUrl="/log-in/[...rest]"
               appearance={{
                 elements: {

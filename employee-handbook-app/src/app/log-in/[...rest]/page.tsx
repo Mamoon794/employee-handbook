@@ -6,27 +6,53 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function EmployeeLogin() {
+  console.log('EmployeeLogin component rendered');
   const router = useRouter();
-  const { isSignedIn } = useUser();
+  const { isSignedIn, user } = useUser();
 
   useEffect(() => {
-    const checkSubscription = async () => {
+    console.log('Login useEffect triggered, isSignedIn:', isSignedIn);
+    const checkUserAndSubscription = async () => {
       if (!isSignedIn) return;
       try {
-        const res = await fetch('/api/check-subscription');
-        const data = await res.json();
-        if (data.subscribed) {
-          router.push('/chat');
+        // First get user data to check user type
+        const userRes = await fetch(`/api/users/${user?.id}?isClerkID=true`);
+        const userData = await userRes.json();
+        console.log('User data:', userData);
+        
+        if (userData && userData[0]) {
+          const user = userData[0];
+          console.log('User data:', user);
+          
+          if (user.userType === 'Employee') {
+            // Only check subscription for employees
+            const subscriptionRes = await fetch('/api/check-subscription');
+            const subscriptionData = await subscriptionRes.json();
+            
+            if (subscriptionData.subscribed) {
+              router.push('/chat');
+            } else {
+              router.push('/paywall');
+            }
+          } else if (user.userType === 'Owner') {
+            console.log('Owner logged in');
+            // Owners go directly to dashboard
+            router.push('/DashBoard');
+          } else {
+            // Default fallback
+            router.push('/chat');
+          }
         } else {
-          router.push('/paywall');
+          // If user not found, redirect to home page
+          router.push('/');
         }
       } catch (err) {
-        console.error('Subscription check failed:', err);
-        router.push('/paywall');
+        console.error('User check failed:', err);
+        router.push('/');
       }
     };
-    checkSubscription();
-  }, [isSignedIn]);
+    checkUserAndSubscription();
+  }, [isSignedIn, user]);
 
   return (
     <div className="min-h-screen bg-white flex flex-col">

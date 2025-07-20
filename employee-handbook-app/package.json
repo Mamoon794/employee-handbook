@@ -21,8 +21,8 @@
     "@clerk/nextjs": "^6.22.0",
     "@clerk/types": "^4.60.1",
     "@firebase/firestore": "^4.7.17",
-    "@headlessui/react": "^2.2.4",
     "@google/genai": "^1.10.0",
+    "@headlessui/react": "^2.2.4",
     "@sentry/nextjs": "^8",
     "axios": "^1.10.0",
     "dompurify": "^3.2.6",
@@ -39,6 +39,7 @@
     "react-hook-form": "^7.58.0",
     "react-icons": "^5.5.0",
     "react-use-audio-recorder": "^0.4.2",
+    "stripe": "^18.3.0",
     "svix": "^1.68.0",
     "tls": "^0.0.1"
   },

@@ -46,9 +46,14 @@ export default function Home() {
           const userData = response.data[0];
           if (userData) {
             if (userData.userType === 'Employee') {
-              router.push('/chat');
+              // Check subscription status for employees
+              if (userData.isSubscribed) {
+                router.push('/chat');
+              } else {
+                router.push('/paywall');
+              }
             } else if (userData.userType === 'Owner') {
-              router.push('/dashboard');
+              router.push('/DashBoard');
               console.log('Redirecting to dashboard');
             } else {
               router.push('/chat');
