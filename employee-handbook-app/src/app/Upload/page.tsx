@@ -2,13 +2,15 @@
 
 'use client';
 
-// New commit
-
 import { useState, useRef, useEffect } from 'react';
+import { UserButton } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
 
 import axiosInstance from '../axios_config';
 
 export default function UploadDocument() {
+  const router = useRouter();
+  
   type pdfFile = {
     name: string;
     type: string;
@@ -89,14 +91,38 @@ export default function UploadDocument() {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
+
+
   return (
     <div className="min-h-screen bg-white flex flex-col font-sans">
       <header className="flex justify-between items-center px-8 py-6 shadow-sm">
         <h1 className="text-2xl font-extrabold italic text-blue-800">Gail</h1>
         <div className="flex gap-4 items-center">
-          <button className="px-6 py-2 bg-[#242267] text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors">Ask a Question</button>
-          <button className="px-6 py-2 bg-blue-800 text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors">View Finances</button>
-          <button className="px-6 py-2 border border-gray-300 text-sm rounded-xl">Log Out</button>
+          <button 
+            className="px-7 py-3 bg-[#242267] text-white rounded-xl font-bold text-base hover:bg-blue-900 transition-colors shadow-sm"
+            onClick={() => router.push('/chat')}
+          >
+            Ask a Question
+          </button>
+          <button 
+            className="px-7 py-3 bg-blue-800 text-white rounded-xl font-bold text-base hover:bg-blue-900 transition-colors shadow-sm"
+            onClick={() => router.push('/finances')}
+          >
+            View Finances
+          </button>
+          <button 
+            className="px-7 py-3 bg-[#242267] text-white rounded-xl font-bold text-base hover:bg-blue-900 transition-colors shadow-sm"
+            onClick={() => router.push('/analytics')}
+          >
+            Analytics
+          </button>
+          <UserButton 
+            appearance={{
+              elements: {
+                avatarBox: "w-15 h-15"
+              }
+            }}
+          />
         </div>
       </header>
 
