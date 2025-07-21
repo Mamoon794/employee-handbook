@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
+import { ArrowLeft } from 'lucide-react';
 
 export default function PaywallPage() {
   const [loading, setLoading] = useState(false);
@@ -26,7 +27,16 @@ export default function PaywallPage() {
     <div className="min-h-screen bg-white flex flex-col font-sans">
       {/* Gail logo header */}
       <header className="flex justify-between items-center px-8 py-6 bg-white shadow-sm">
-        <h1 className="text-2xl font-extrabold italic text-blue-800">Gail</h1>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => router.back()}
+            className="p-2 rounded-full hover:bg-gray-100 transition-colors mr-2"
+            aria-label="Go back"
+          >
+            <ArrowLeft className="w-5 h-5 text-gray-600" />
+          </button>
+          <h1 className="text-2xl font-extrabold italic text-blue-800">Gail</h1>
+        </div>
         <div />
       </header>
 
