@@ -19,8 +19,9 @@ VISITED = set()
 splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200, add_start_index=True)
 
 def is_relevant(text):
-    lower_text = text.lower()
-    return any(keyword in lower_text for keyword in TARGET_KEYWORDS)
+    # lower_text = text.lower()
+    # return any(keyword in lower_text for keyword in TARGET_KEYWORDS)
+    return True
 
 def remove_fragment(url):
     """
