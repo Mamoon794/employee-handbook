@@ -221,6 +221,16 @@ function PrivateChatSideBar({
   const [selectedChat, setSelectedChat] = useState<PrivateChat | null>(null)
   const [userId, setUserId] = useState<string | null>(null)
 
+  const [showPopup, setShowPopup] = useState(false)
+  const [dontShowAgain, setDontShowAgain] = useState(false)
+
+  useEffect(() => {
+    const stored = localStorage.getItem("hideChatWarning")
+    if (stored === "true") {
+      setDontShowAgain(true)
+    }
+  }, [])
+
   useEffect(() => {
     const localUserId = localStorage.getItem("userId")
     if (localUserId) {
@@ -309,6 +319,29 @@ function PrivateChatSideBar({
     }
   }
 
+  const showChatWarningPopup = () => {
+    if (!dontShowAgain && chats.length >= 8) {
+      setShowPopup(true)
+      return
+    } else {
+      handleNewChat()
+    }
+  }
+
+  const closePopup = () => {
+    setShowPopup(false)
+  }
+
+  const handleConfirmNewChat = () => {
+    setShowPopup(false)
+    handleNewChat()
+  }
+
+  const handleDoNotShowAgain = () => {
+    localStorage.setItem("hideChatWarning", "true")
+    setDontShowAgain(true)
+  }
+
   return (
     <aside className="w-64 bg-[#1F2251] text-white flex flex-col min-h-screen relative">
       <div className="flex justify-between items-center p-4">
@@ -362,8 +395,45 @@ function PrivateChatSideBar({
 
       {/* New Chat Button */}
       <button className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-300 rounded-full p-2 hover:bg-gray-400">
-        <Plus className="text-[#1F2251]" onClick={handleNewChat} />
+        <Plus className="text-[#1F2251]" onClick={showChatWarningPopup} />
       </button>
+
+      {/* Popup */}
+      {showPopup && (
+        <div className="fixed inset-0 flex items-center justify-center bg-[rgba(0,0,0,0.2)] z-50 text-black">
+          <div className="bg-white rounded-xl shadow-lg p-6 w-[90%] max-w-md">
+            <h2 className="text-lg font-semibold mb-2">Start New Chat</h2>
+            <p className="mb-4">
+              Only the 8 most recent chats will be shown. Older chats will be
+              hidden.
+            </p>
+
+            <label className="flex items-center space-x-2 mb-4">
+              <input
+                type="checkbox"
+                checked={dontShowAgain}
+                onChange={handleDoNotShowAgain}
+              />
+              <span>Don't show this again</span>
+            </label>
+
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={closePopup}
+                className="px-4 py-2 text-sm bg-gray-200 rounded hover:bg-gray-300"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmNewChat}
+                className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+              >
+                Start New Chat
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </aside>
   )
 }
