@@ -185,6 +185,39 @@ export function MessageInput({
         }
       } else {
         await handlePublicChat();
+
+        // AI-generated title for public chat
+        if (setChats && (isNewChat || (chatObj && chatObj.needsTitleUpdate))) {
+          if (setTitleLoading) setTitleLoading(true);
+          try {
+            const titleRes = await fetch('/api/generate-title', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                message: inputValue,
+                chatId: chatId || threadId,
+                userId: 'public'
+              }),
+            });
+
+            if (!titleRes.ok) throw new Error('Title generation failed');
+
+            const { title } = await titleRes.json();
+            if (title && title !== "New Chat" && setChats) {
+              setChats(prevChats => {
+                return prevChats.map(chat =>
+                  chat.id === (chatId || threadId)
+                    ? { ...chat, title, needsTitleUpdate: false }
+                    : chat
+                );
+              });
+            }
+          } catch (err) {
+            console.error('title generation failed', err);
+          } finally {
+            if (setTitleLoading) setTitleLoading(false);
+          }
+        }
       }
     } catch (err) {
       console.error(err);
