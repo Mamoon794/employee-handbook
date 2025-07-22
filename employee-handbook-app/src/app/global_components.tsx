@@ -162,7 +162,7 @@ function PublicChatSideBar({
   }
 
   return (
-    <aside className="w-64 h-screen bg-[#1F2251] text-white flex flex-col min-h-screen relative">
+    <aside className="w-64 bg-[#1F2251] text-white flex flex-col min-h-screen relative">
       <div className="flex justify-between items-center p-4">
         <Menu className="text-gray-400" />
       </div>
@@ -457,7 +457,7 @@ function MessageThread({
 
   return (
     <div
-      className="flex flex-col gap-6 py-6 px-1 overflow-y-auto"
+      className={`flex flex-col gap-6 py-6 px-1 overflow-y-auto ${messageList.length == 0 ? "flex-1" : ""}`}
       style={{ height: "calc(100vh - 200px)" }}
     >
       {messageList.length === 0 ? (
@@ -670,10 +670,19 @@ function ProvinceDropdown({
   )
 }
 
+function Disclaimer() {
+  return (
+    <p className="text-center text-sm text-gray-500 mt-4">
+      Gail can make mistakes. Your privacy is protected.
+    </p>
+  )
+}
+
 export {
   PrivateChatSideBar,
   PublicChatSideBar,
   MessageThread,
   InputMessage,
   Header,
+  Disclaimer
 }

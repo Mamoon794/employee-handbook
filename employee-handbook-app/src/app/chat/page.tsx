@@ -7,6 +7,7 @@ import {
   InputMessage,
   Header,
   Chat,
+  Disclaimer,
 } from "../global_components"
 import { Message } from "../../models/schema"
 import { useUser } from "@clerk/nextjs"
@@ -70,9 +71,7 @@ export default function ChatUI() {
             chats={chats}
           />
 
-          <p className="text-center text-sm text-gray-500 mt-4">
-            Gail can make mistakes. Your privacy is protected.
-          </p>
+          <Disclaimer/>
         </main>
       </div>
     </div>

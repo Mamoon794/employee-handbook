@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useUser } from '@clerk/nextjs';
-import {MessageThread, InputMessage, Header, PublicChatSideBar } from './global_components';
+import {MessageThread, InputMessage, Header, PublicChatSideBar, Disclaimer } from './global_components';
 import { useRouter } from 'next/navigation';
 import axiosInstance from './axios_config';
 
@@ -81,14 +81,11 @@ export default function Home() {
         <Header province={province} setProvince={setProvince} />
     
         <main className="flex-1 flex flex-col justify-between px-6 pb-6">
-        <div className="flex flex-col flex-1 px-6 pb-2 overflow-hidden">
           {!isSignedIn && !province && (
             <ProvincePopup onSave={(prov) => setProvince(prov)} />
           )}
-    
-          <div className="flex-1 overflow-y-auto">
-            <MessageThread messageList={messages} error={error} />
-          </div>
+
+          <MessageThread messageList={messages} error={error} />
 
           {messages.length === 0 && (
             <div className="flex justify-center gap-4 pb-4">
@@ -121,10 +118,7 @@ export default function Home() {
             chatId={currChatId}
           />
     
-          <p className="text-center text-sm text-gray-500 mt-2">
-            Gail can make mistakes. Your privacy is protected.
-          </p>
-        </div>
+          <Disclaimer/>
         </main>
       </div>
     </div>
