@@ -148,9 +148,11 @@ function ChatSideBar({setMessages, setCurrChatId, currChatId, titleLoading, chat
 function MessageThread({
   messageList,
   error,
+  onRetry,
 }: {
   messageList: Message[];
   error: string;
+  onRetry?: () => void;
 }) {
   const bottomRef = useRef<HTMLDivElement | null>(null);
 
@@ -159,8 +161,8 @@ function MessageThread({
   }, [messageList, error]);
 
   const handleRetry = () => {
-    // TODO
-  }
+    if (onRetry) onRetry();
+  };
 
   return (
     <div className="flex flex-col gap-6 py-6 px-1 overflow-y-auto" style={{ height: 'calc(100vh - 200px)'}}>
