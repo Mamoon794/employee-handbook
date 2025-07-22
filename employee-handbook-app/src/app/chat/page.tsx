@@ -50,7 +50,7 @@ export default function ChatUI() {
           content: data.response,
           isFromUser: false,
           createdAt: new Date(),
-          sources: data.citations?.map((citation: any) => ({
+          sources: data.citations?.map((citation: { title: string; fragmentUrl?: string; originalUrl?: string }) => ({
             title: citation.title,
             url: citation.fragmentUrl || citation.originalUrl,
           })),
