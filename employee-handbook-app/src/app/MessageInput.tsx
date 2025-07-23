@@ -332,7 +332,7 @@ export function MessageInput({
         onKeyDown={handleKeyDown}
         disabled={transcribing}
         placeholder="Ask anything"
-        className={`resize-none w-full px-13 py-4 border border-gray-300 rounded-md 
+        className={`bg-white resize-none w-full px-13 py-4 border border-gray-300 rounded-md 
           text-lg text-black placeholder-gray-400 overflow-y-auto ${ atMaxHeight ? 'overflow-y-auto' : 'overflow-y-hidden'}`}
         style={{ minHeight: lineHeight, maxHeight: maxHeight }}
       />

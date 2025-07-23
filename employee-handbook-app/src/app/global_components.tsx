@@ -482,7 +482,7 @@ function MessageThread({
   return (
     <div
       className="flex flex-1 flex-col gap-6 py-6 px-1 overflow-y-auto"
-      style={{ maxHeight: "calc(100vh - 200px)" }}
+      style={{ maxHeight: "calc(100vh - 130px)" }}
     >
       {messageList.length === 0 ? (
         <div className="flex flex-col justify-center items-center text-center pt-70">

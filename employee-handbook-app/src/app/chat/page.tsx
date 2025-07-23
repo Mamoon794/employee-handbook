@@ -53,30 +53,34 @@ export default function ChatUI() {
         <Header province={province} setProvince={setProvince} />
 
         {/* Chat Area */}
-        <main className="flex-1 flex flex-col justify-between px-6 pb-6">
+        <main className="flex-1 flex flex-col justify-between px-6 pb-6 relative">
           {/* Message Thread */}
           <MessageThread messageList={messages} error={error} />
 
-          {messages.length === 0 && (
-            <PopularQuestions setInputValue={setInputValue}/>
-          )}
+          <div
+            className="absolute bottom-6 left-0 right-0"
+          >
+            {messages.length === 0 && (
+              <PopularQuestions setInputValue={setInputValue} />
+            )}
 
-          {/* Input Bar */}
-          <InputMessage
-            inputValue={inputValue}
-            province={province}
-            setInputValue={setInputValue}
-            isPrivate={true}
-            setMessages={setMessages}
-            chatId={currChatId}
-            setCurrChatId={setCurrChatId}
-            setError={setError}
-            setTitleLoading={setTitleLoading}
-            setChats={setChats}
-            chats={chats}
-          />
+            {/* Input Bar */}
+            <InputMessage
+              inputValue={inputValue}
+              province={province}
+              setInputValue={setInputValue}
+              isPrivate={true}
+              setMessages={setMessages}
+              chatId={currChatId}
+              setCurrChatId={setCurrChatId}
+              setError={setError}
+              setTitleLoading={setTitleLoading}
+              setChats={setChats}
+              chats={chats}
+            />
 
-          <Disclaimer/>
+            <Disclaimer/>
+          </div>
         </main>
       </div>
     </div>

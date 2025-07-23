@@ -80,31 +80,34 @@ export default function Home() {
       <div className="flex-1 flex flex-col min-h-screen">
         <Header province={province} setProvince={setProvince} />
     
-        <main className="flex-1 flex flex-col justify-between px-6 pb-6">
+        <main className="flex-1 flex flex-col justify-between px-6 pb-6 relative">
           {!isSignedIn && !province && (
             <ProvincePopup onSave={(prov) => setProvince(prov)} />
           )}
 
           <MessageThread messageList={messages} error={error} />
+          <div
+            className="absolute bottom-6 left-0 right-0"
+          >
+            {messages.length === 0 && (
+              <PopularQuestions setInputValue={setInputValue} />
+            )}
 
-          {messages.length === 0 && (
-            <PopularQuestions setInputValue={setInputValue}/>
-          )}
-
-          <InputMessage
-            inputValue={inputValue}
-            setInputValue={setInputValue}
-            isPrivate={false}
-            setError={setError}
-            setMessages={setMessages}
-            province={province}
-            threadId={threadIdRef.current}
-            chats={chats}
-            setChats={setChats}
-            chatId={currChatId}
-          />
-    
-          <Disclaimer/>
+            <InputMessage
+              inputValue={inputValue}
+              setInputValue={setInputValue}
+              isPrivate={false}
+              setError={setError}
+              setMessages={setMessages}
+              province={province}
+              threadId={threadIdRef.current}
+              chats={chats}
+              setChats={setChats}
+              chatId={currChatId}
+            />
+            
+            <Disclaimer/>
+          </div>
         </main>
       </div>
     </div>
