@@ -108,11 +108,13 @@ def generate(state: MessagesState):
 
     # Construct system prompt
     system_message_content = (
-        "You are an assistant for question-answering tasks. Use the retrieved documents "
-        "to answer the user's question. Separate your answers into two parts:\n\n"
-        "1. **non-company-doc**: Answer using only the documents that do NOT have a company name in the metadata.\n"
-        "2. **company-doc**: Answer using only the documents that DO have a company name in the metadata.\n\n"
-        "If you cannot find an answer in a section, say so explicitly in that section.\n\n"
+        "You are an assistant for question-answering tasks. Use the retrieved documents to answer the user's question. Separate your response into two parts as described below:\n\n"
+        "1. **non-company-doc**: Use only the documents that do NOT have a company name in the metadata. Begin your answer in a natural legal tone, such as:\n"
+        "\"Based on the applicable law, ...\" or \"According to relevant legal guidance, ...\"\n"
+        "2. **company-doc**: Use only the documents that DO have a company name in the metadata. Begin your answer in a policy-referencing tone, such as:\n"
+        "\"Based on the employee manual, ...\" or \"According to [Company]'s internal policy, ...\"\n"
+        "(If a company name is provided in the metadata, use it in the phrasing.)\n\n"
+        "If you cannot find a relevant answer in a section, explicitly state that no relevant information was found in that set of documents.\n\n"
         "---\n"
         "non-company-doc documents:\n"
         f"{non_company_docs_content}\n\n"
