@@ -450,6 +450,30 @@ function PrivateChatSideBar({
   )
 }
 
+function PopularQuestions({
+  setInputValue
+}: {
+  setInputValue: (inputValue: string) => void
+}) {
+  return (
+    <div className="flex flex-col sm:flex-row justify-center gap-4 pb-4">
+      {[
+        "Do I get paid breaks?",
+        "What is the minimum wage?",
+        "Do I get sick days?",
+      ].map((q, i) => (
+        <button
+          key={i}
+          onClick={() => setInputValue(q)}
+          className="bg-blue-800 text-white font-semibold px-6 py-2 rounded-md hover:bg-blue-600 transition-colors"
+        >
+          {q}
+        </button>
+      ))}
+    </div>
+  )
+}
+
 function MessageThread({
   messageList,
   error,
@@ -469,8 +493,8 @@ function MessageThread({
 
   return (
     <div
-      className="flex flex-col gap-6 py-6 px-1 overflow-y-auto"
-      style={{ height: "calc(100vh - 200px)" }}
+      className="flex flex-1 flex-col gap-6 py-6 px-1 overflow-y-auto"
+      style={{ maxHeight: "calc(100vh - 130px)" }}
     >
       {messageList.length === 0 ? (
         <div className="flex flex-col justify-center items-center text-center pt-70">
@@ -486,7 +510,9 @@ function MessageThread({
           <div key={index} className="flex flex-col">
             {message.isFromUser ? (
               <div className="self-end bg-blue-100 text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm text-lg">
-                <p>{message.content}</p>
+                {message.content.split("\n").map((line, idx) =>
+                  line === "" ? <br key={idx} /> : <p key={idx}>{line}</p>
+                )}
               </div>
             ) : (
               <div className="self-start bg-gray-100 text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm">
@@ -682,10 +708,20 @@ function ProvinceDropdown({
   )
 }
 
+function Disclaimer() {
+  return (
+    <p className="text-center text-sm text-gray-500 mt-4">
+      Gail can make mistakes. Your privacy is protected.
+    </p>
+  )
+}
+
 export {
   PrivateChatSideBar,
   PublicChatSideBar,
+  PopularQuestions,
   MessageThread,
   InputMessage,
   Header,
+  Disclaimer
 }
