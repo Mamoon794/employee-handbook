@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useUser } from '@clerk/nextjs';
-import {MessageThread, InputMessage, Header, PublicChatSideBar, Disclaimer } from './global_components';
+import {MessageThread, InputMessage, Header, PublicChatSideBar, Disclaimer, PopularQuestions } from './global_components';
 import { useRouter } from 'next/navigation';
 import axiosInstance from './axios_config';
 
@@ -88,21 +88,7 @@ export default function Home() {
           <MessageThread messageList={messages} error={error} />
 
           {messages.length === 0 && (
-            <div className="flex justify-center gap-4 pb-4">
-              {[
-                "Do I get paid breaks?",
-                "What is the minimum wage?",
-                "Do I get sick days?",
-              ].map((q, i) => (
-                <button
-                  key={i}
-                  onClick={() => setInputValue(q)}
-                  className="bg-blue-800 text-white font-semibold px-6 py-2 rounded-md hover:bg-blue-600 transition-colors"
-                >
-                  {q}
-                </button>
-              ))}
-            </div>
+            <PopularQuestions setInputValue={setInputValue}/>
           )}
 
           <InputMessage

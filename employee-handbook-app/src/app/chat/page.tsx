@@ -8,6 +8,7 @@ import {
   Header,
   Chat,
   Disclaimer,
+  PopularQuestions,
 } from "../global_components"
 import { Message } from "../../models/schema"
 import { useUser } from "@clerk/nextjs"
@@ -55,6 +56,10 @@ export default function ChatUI() {
         <main className="flex-1 flex flex-col justify-between px-6 pb-6">
           {/* Message Thread */}
           <MessageThread messageList={messages} error={error} />
+
+          {messages.length === 0 && (
+            <PopularQuestions setInputValue={setInputValue}/>
+          )}
 
           {/* Input Bar */}
           <InputMessage
