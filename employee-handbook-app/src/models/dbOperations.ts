@@ -202,10 +202,19 @@ export const getPendingInvitationsByCompany = async (companyId: string): Promise
     .where("companyId", "==", companyId)
     .where("status", "==", "pending");
   const querySnapshot = await theQuery.get();
-  return querySnapshot.docs.map((doc: firestore.QueryDocumentSnapshot<Invitation>) => ({ 
-    id: doc.id, 
-    ...doc.data() 
-  }));
+  return querySnapshot.docs.map((doc: firestore.QueryDocumentSnapshot<firestore.DocumentData>) => {
+    const data = doc.data();
+    return {
+      id: doc.id,
+      email: data.email,
+      createdAt: data.createdAt.toDate(), // firestore to JS
+      companyId: data.companyId,
+      companyName: data.companyName,
+      inviterId: data.inviterId,
+      status: data.status,
+      updatedAt: data.updatedAt.toDate()
+    } as Invitation;
+  });
 };
 
 export const getUserByEmail = async (email: string): Promise<User | null> => {

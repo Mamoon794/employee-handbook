@@ -226,9 +226,70 @@ function MessageThread({
 }
 
 
-function Header({ province, setProvince }: { province: string; setProvince: (prov: string) => void }) {
+// function Header({ province, setProvince }: { province: string; setProvince: (prov: string) => void }) {
+//     const { isSignedIn, user } = useUser();
+//     const router = useRouter();
+
+//     useEffect(() => {
+//         if (isSignedIn && user) {
+//             axiosInstance.get(`/api/users/${user.id}?isClerkID=true`)
+//             .then(response => {
+//               localStorage.setItem('userId', response.data[0].id);
+//               localStorage.setItem('companyId', response.data[0].companyId || '');
+//               setProvince(response.data[0].province || '');
+//             })
+//             .catch(error => {
+//               console.error('Error fetching user data:', error);
+//             });
+//         } 
+//         else {
+//             localStorage.removeItem('userId');
+//         }
+//     }, [isSignedIn, user]);
+
+    
+//     return(
+//         <header className="flex justify-between items-center px-6 py-4">
+//           <h1 className="text-2xl font-bold text-blue-800">Gail</h1>
+//           <div className="flex gap-3 items-center">
+//             {!isSignedIn ? (
+//               <>
+//                 {province !== "" && <span className="px-4"><ProvinceDropdown province={province} setProvince={setProvince} /></span>}
+//                 <LogIn />
+//                 <SignUp />
+//               </>
+//             ) : (
+//               <div className="flex items-center">
+//                 <UserButton afterSignOutUrl="/" />
+//               </div>
+//             )}
+//           </div>
+//         </header>
+//     )
+// }
+
+function Header({ 
+  province, 
+  setProvince,
+  companyName = ''
+}: { 
+  province: string; 
+  setProvince: (prov: string) => void;
+  companyName?: string;
+}) {
     const { isSignedIn, user } = useUser();
     const router = useRouter();
+
+    // company name
+    const getCompanyName = (): string => {
+      if (companyName) return companyName;
+      if (user?.publicMetadata?.companyName) {
+        return typeof user.publicMetadata.companyName === 'string' 
+          ? user.publicMetadata.companyName 
+          : '';
+      }
+      return '';
+    };
 
     useEffect(() => {
         if (isSignedIn && user) {
@@ -247,10 +308,18 @@ function Header({ province, setProvince }: { province: string; setProvince: (pro
         }
     }, [isSignedIn, user]);
 
-    
+    const displayCompanyName = getCompanyName();
+
     return(
         <header className="flex justify-between items-center px-6 py-4">
-          <h1 className="text-2xl font-bold text-blue-800">Gail</h1>
+          <div className="flex items-center gap-4">
+            <h1 className="text-2xl font-bold text-blue-800">Gail</h1>
+            {displayCompanyName && (
+              <span className="text-lg font-medium text-black">
+                | {displayCompanyName}
+              </span>
+            )}
+          </div>
           <div className="flex gap-3 items-center">
             {!isSignedIn ? (
               <>
@@ -259,7 +328,12 @@ function Header({ province, setProvince }: { province: string; setProvince: (pro
                 <SignUp />
               </>
             ) : (
-              <div className="flex items-center">
+              <div className="flex items-center gap-4">
+                {displayCompanyName && (
+                  <span className="text-sm font-medium text-gray-600 hidden md:block">
+                    {displayCompanyName}
+                  </span>
+                )}
                 <UserButton afterSignOutUrl="/" />
               </div>
             )}

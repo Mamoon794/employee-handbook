@@ -35,10 +35,10 @@ export default function ConfirmationPage() {
             before they can join your company.
           </p>
           <button
-            onClick={() => router.push('/DashBoard')}
+            onClick={() => router.push('/add-employee')}
             className="bg-blue-800 hover:bg-blue-900 text-white px-8 py-3 rounded-xl font-bold text-lg transition-colors shadow-md"
           >
-            Back to Dashboard
+            Back
           </button>
         </div>
       </main>
