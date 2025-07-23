@@ -1,24 +1,43 @@
 // // log in page for app
 
 'use client';
-import { SignIn } from '@clerk/nextjs';
-import { useSearchParams } from 'next/navigation';
+import { SignIn, useUser } from '@clerk/nextjs';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function EmployeeLogin() {
+  const router = useRouter();
+  const { isSignedIn } = useUser();
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get('redirect_url') || '/chat';
   const invitationId = searchParams.get('invitationId');
+
+  useEffect(() => {
+    const checkSubscription = async () => {
+      if (!isSignedIn) return;
+      try {
+        const res = await fetch('/api/check-subscription');
+        const data = await res.json();
+        if (data.subscribed) {
+          router.push('/chat');
+        } else {
+          router.push('/paywall');
+        }
+      } catch (err) {
+        console.error('Subscription check failed:', err);
+        router.push('/paywall');
+      }
+    };
+    checkSubscription();
+  }, [isSignedIn]);
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <header className="w-full max-w-7xl mx-auto px-6 py-4">
         <h1 className="text-2xl font-bold text-blue-800">Gail</h1>
       </header>
-      
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="max-w-4xl w-full flex flex-col md:flex-row gap-12 items-center">
-          
-          {/* Left side - Benefits list */}
           <div className="md:w-1/2 space-y-6">
             <h1 className="text-2xl font-bold text-gray-900">
               {invitationId ? 'Accept Your Invitation' : 'Log Into Clerk'}
@@ -53,8 +72,6 @@ export default function EmployeeLogin() {
               )}
             </ul>
           </div>
-          
-          {/* Right side - SignIn component */}
           <div className="md:w-1/2 w-full">
             <SignIn 
               routing="path"
@@ -79,8 +96,6 @@ export default function EmployeeLogin() {
     </div>
   );
 }
-
-
 
 // 'use client';
 // import { SignIn } from '@clerk/nextjs';
