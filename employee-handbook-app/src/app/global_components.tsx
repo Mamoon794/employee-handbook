@@ -164,7 +164,7 @@ function PublicChatSideBar({
 
   return (
     <aside className={`${isCollapsed ? 'w-16' : 'w-64'} h-screen bg-[#1F2251] text-white flex flex-col min-h-screen relative transition-all duration-300`}>
-      <div className={`flex ${isCollapsed ? 'justify-center' : 'justify-between'} items-center p-4 w-full`}>
+      <div className="relative flex p-5 w-full">
         <button onClick={() => setIsCollapsed(!isCollapsed)} aria-label="Toggle sidebar" className="text-gray-400 hover:text-white transition-colors">
           <Menu />
         </button>
@@ -353,7 +353,7 @@ function PrivateChatSideBar({
 
   return (
     <aside className={`${isCollapsed ? 'w-16' : 'w-64'} bg-[#1F2251] text-white flex flex-col min-h-screen relative transition-all duration-300`}>
-      <div className={`flex ${isCollapsed ? 'justify-center' : 'justify-between'} items-center p-4 w-full`}>
+      <div className="relative flex p-5 w-full">
         <button onClick={() => setIsCollapsed(!isCollapsed)} aria-label="Toggle sidebar" className="text-gray-400 hover:text-white transition-colors">
           <Menu />
         </button>
