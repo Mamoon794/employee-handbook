@@ -444,7 +444,7 @@ function PopularQuestions({
   setInputValue: (inputValue: string) => void
 }) {
   return (
-    <div className="flex justify-center gap-4 pb-4">
+    <div className="flex flex-col sm:flex-row justify-center gap-4 pb-4">
       {[
         "Do I get paid breaks?",
         "What is the minimum wage?",
