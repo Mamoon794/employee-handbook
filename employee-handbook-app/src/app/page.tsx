@@ -87,7 +87,7 @@ export default function Home() {
 
           <MessageThread messageList={messages} error={error} />
           <div
-            className="absolute bottom-6 left-0 right-0"
+            className="absolute bottom-6 left-0 right-0 mx-10"
           >
             {messages.length === 0 && (
               <PopularQuestions setInputValue={setInputValue} />
