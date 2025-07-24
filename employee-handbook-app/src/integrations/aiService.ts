@@ -59,15 +59,13 @@ export async function uploadFileToVectorDB(
   return await res.json()
 }
 
-export async function deleteCompanyFromVectorDB(
-  namespace: string
-): Promise<any> {
+export async function deleteCompanyFromVectorDB(company: string): Promise<any> {
   const res = await fetch(`${AI_SERVICE_URL}/company-document`, {
-    method: "DELETE",
+    method: "PATCH",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ company: namespace }),
+    body: JSON.stringify({ company: company }),
   })
 
   if (!res.ok) {
@@ -83,15 +81,15 @@ export async function deleteCompanyFromVectorDB(
 }
 
 export async function deleteDocumentFromVectorDB(
-  source: string,
-  namespace: string
+  url: string,
+  company: string
 ): Promise<any> {
   const res = await fetch(`${AI_SERVICE_URL}/company-document/source`, {
-    method: "DELETE",
+    method: "PATCH",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ url: source, company: namespace }),
+    body: JSON.stringify({ url: url, company: company }),
   })
 
   if (!res.ok) {

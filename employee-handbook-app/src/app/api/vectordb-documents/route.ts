@@ -24,23 +24,18 @@ export async function POST(request: Request) {
   }
 }
 
-// delete the entire namespace
-export async function DELETE(request: Request) {
-  const { namespace } = await request.json()
-  if (!namespace) {
-    return NextResponse.json(
-      { error: "Missing namespace (company name)" },
-      { status: 400 }
-    )
+// delete the entire company
+export async function PATCH(request: Request) {
+  const { company } = await request.json()
+  if (!company) {
+    return NextResponse.json({ error: "Missing company name" }, { status: 400 })
   }
   try {
-    // Assuming there's a function to delete the namespace in the vector DB
-    const res = await deleteCompanyFromVectorDB(namespace)
+    // Assuming there's a function to delete the company in the vector DB
+    const res = await deleteCompanyFromVectorDB(company)
     return NextResponse.json(res, { status: 200 })
   } catch (error: any) {
-    console.error(
-      `Error deleting company ${namespace} from vector DB: ${error}`
-    )
+    console.error(`Error deleting company ${company} from vector DB: ${error}`)
     return NextResponse.json(
       { error: error.message || "Failed to delete company from vector DB" },
       { status: 500 }
