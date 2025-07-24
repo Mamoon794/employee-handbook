@@ -228,7 +228,6 @@ def batch_add_documents(vector_store, documents, namespace, batch_size=100, max_
             print(f"[ERROR] Giving up on batch {i // batch_size + 1} after {max_retries} retries.")
 
 def index_documents():
-    index.describe_index_stats()
     stats = index.describe_index_stats()
     existing_namespaces = stats.get("namespaces", {})
     for namespace, docs in allData.items():
@@ -259,6 +258,18 @@ def batch_add_company_documents(vector_store, documents, company=None, batch_siz
 
 def index_company_documents(splits, company):
     batch_add_company_documents(vector_store, splits, company=company, batch_size=50)
+
+def delete_company_documents(company):
+    """
+    Deletes all documents in the vector store for the specified company.
+    """
+    index.delete(delete_all=True, namespace=company)
+
+def delete_document(url, company):
+    """
+    Deletes a document from the vector store based on the provided URL and company.
+    """
+    index.delete(filter={"source": {"$eq": url}}, namespace=company)
 
 if __name__ == "__main__":
     # Load your JSON file

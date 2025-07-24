@@ -38,7 +38,7 @@ export async function callAiService(
 export async function uploadFileToVectorDB(
   fileurl: string,
   namespace: string
-): Promise<void> {
+): Promise<any> {
   const res = await fetch(`${AI_SERVICE_URL}/company-document`, {
     method: "POST",
     headers: {
@@ -52,6 +52,53 @@ export async function uploadFileToVectorDB(
     throw new Error(
       `Failed to upload file to Vector DB: ${
         errorData.error || "Unknown error in uploadFileToVectorDB"
+      }`
+    )
+  }
+
+  return await res.json()
+}
+
+export async function deleteCompanyFromVectorDB(
+  namespace: string
+): Promise<any> {
+  const res = await fetch(`${AI_SERVICE_URL}/company-document`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ company: namespace }),
+  })
+
+  if (!res.ok) {
+    const errorData = await res.json()
+    throw new Error(
+      `Failed to delete document from Vector DB: ${
+        errorData.error || "Unknown error in deleteDocumentFromVectorDB"
+      }`
+    )
+  }
+
+  return await res.json()
+}
+
+export async function deleteDocumentFromVectorDB(
+  source: string,
+  namespace: string
+): Promise<any> {
+  const res = await fetch(`${AI_SERVICE_URL}/company-document/source`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ url: source, company: namespace }),
+  })
+
+  if (!res.ok) {
+    const errorData = await res.json()
+    throw new Error(
+      `Failed to delete document from Vector DB: ${
+        errorData.error || "Unknown error in deleteDocumentFromVectorDB"
       }`
     )
   }

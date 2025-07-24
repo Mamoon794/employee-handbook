@@ -6,7 +6,7 @@ from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from faster_whisper import WhisperModel
 from pydantic import BaseModel
-from setupProvinces import graph, llm, process_docs, index_company_documents
+from setupProvinces import graph, llm, process_docs, index_company_documents, delete_document, delete_company_documents
 from processCompanyDocs import crawl_company_docs
 import traceback
 
@@ -216,6 +216,32 @@ def upload_document(input: DocInput):
         return {"url": input.url, "company": input.company, "status": "success"}
     except Exception as e:
         print(f"Failed to process document {input.url} for company {input.company}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+    
+@app.delete("/company-document")
+def delete_company_documents(company: str):
+    """
+    Delete all documents from the vector store for the specified company.
+    """
+    try:
+        # Delete the documents from Pinecone vector store
+        delete_company_documents(company)
+        return {"company": company, "status": "success"}
+    except Exception as e:
+        print(f"Failed to delete documents for company {company}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+    
+@app.delete("/company-document/source")
+def delete_document(input: DocInput):
+    """
+    Delete a document from the vector store by its source URL.
+    """
+    try:
+        # Delete the document from Pinecone vector store
+        delete_document(input.url, input.company)
+        return {"url": input.url, "company": input.company, "status": "success"}
+    except Exception as e:
+        print(f"Failed to delete document {input.url} from {input.company}: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/transcribe")
