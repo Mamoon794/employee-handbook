@@ -6,7 +6,7 @@ from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from faster_whisper import WhisperModel
 from pydantic import BaseModel
-from setupProvinces import graph, llm, process_docs, index_company_documents, delete_document, delete_company_documents
+from setupProvinces import graph, llm, process_docs, index_company_documents, delete_document_from_vector_db, delete_company_documents_from_vector_db
 from processCompanyDocs import crawl_company_docs
 import traceback
 
@@ -207,6 +207,9 @@ def upload_document(input: DocInput):
     Upload a company document for storing and processing.
     """
     try:
+        if not input.url or not input.company:
+            raise HTTPException(status_code=400, detail="URL and company name are required")
+
         company_docs = crawl_company_docs(input.url, input.company, namespace=input.company)
         if not isinstance(company_docs, list) or company_docs == []:
             print("company_docs == []: ", company_docs == [])
@@ -218,27 +221,33 @@ def upload_document(input: DocInput):
         print(f"Failed to process document {input.url} for company {input.company}: {e}")
         raise HTTPException(status_code=500, detail=str(e))
     
-@app.delete("/company-document")
-def delete_company_documents(company: str):
+class CompanyName(BaseModel):
+    """
+    Input model for document upload.
+    """
+    company: str  # Company name
+
+@app.patch("/company-document")
+def delete_company_documents(input: CompanyName):
     """
     Delete all documents from the vector store for the specified company.
     """
     try:
         # Delete the documents from Pinecone vector store
-        delete_company_documents(company)
-        return {"company": company, "status": "success"}
+        delete_company_documents_from_vector_db(input.company)
+        return {"company": input.company, "status": "success"}
     except Exception as e:
-        print(f"Failed to delete documents for company {company}: {e}")
+        print(f"Failed to delete documents for company {input.company}: {e}")
         raise HTTPException(status_code=500, detail=str(e))
     
-@app.delete("/company-document/source")
+@app.patch("/company-document/source")
 def delete_document(input: DocInput):
     """
     Delete a document from the vector store by its source URL.
     """
     try:
         # Delete the document from Pinecone vector store
-        delete_document(input.url, input.company)
+        delete_document_from_vector_db(input.url, input.company)
         return {"url": input.url, "company": input.company, "status": "success"}
     except Exception as e:
         print(f"Failed to delete document {input.url} from {input.company}: {e}")
