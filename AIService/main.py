@@ -6,7 +6,7 @@ from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from faster_whisper import WhisperModel
 from pydantic import BaseModel
-from setupProvinces import graph, llm, process_docs, index_company_documents, delete_document_from_vector_db, delete_company_documents_from_vector_db
+from setupProvinces import graph, llm, process_docs, index_company_documents, delete_document_from_vector_db, delete_company_documents_from_vector_db, store_user_message_to_vector_store
 from processCompanyDocs import crawl_company_docs
 import traceback
 
@@ -50,14 +50,10 @@ def get_response(userMessage: RAGInput):
     """
     Get a response from the AI model based on the query.
     """
-    # province_mappings = {"Alberta": "AB", "British Columbia": "BC", "Manitoba": "MB",
-    #                "New Brunswick": "NB", "Newfoundland and Labrador": "NL",
-    #                "Nova Scotia": "NS", "Northwest Territories": "NT", "Nunavut": "NU",
-    #                "Ontario": "ON", "Prince Edward Island": "PE",
-    #                "Quebec": "QC", "Saskatchewan": "SK", "Yukon": "YT"}
-    # print("province_mappings[userMessage.province]:", province_mappings[userMessage.province])
     try:
+        store_user_message_to_vector_store(userMessage.question, userMessage.province, userMessage.company)
         if userMessage.company == "":
+            # store the user message in vector store
             prompt = f"question: {userMessage.question}. If no province in this question is specified, assume the province to be {userMessage.province}."
         else:
             prompt = f"question: {userMessage.question}. If no province in this question is specified, assume the province to be {userMessage.province}. The company name is {userMessage.company}, this information will be used to filter documents."
