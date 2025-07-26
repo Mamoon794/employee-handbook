@@ -16,6 +16,7 @@ export async function handlePublicMessage(
 
     const seen = new Set<string>();
     const citations: Citation[] = [];
+    const titleNum : Record<string, number> = {};
     
     for (const doc of aiResult.metadata) {
         const originalUrl = String(doc.source);
@@ -27,15 +28,23 @@ export async function handlePublicMessage(
             fragmentUrl = `${originalUrl}#page=${doc.page}`;
         } else if (doc.type === "html") {
         // Use text fragment for HTML -> this is unreliable
-        // const firstWords = doc.content.split(" ").slice(0, 10).join(" ");
-        // const fragment = encodeURIComponent(firstWords);
-        // fragmentUrl = `${originalUrl}#:~:text=${fragment}`;
+            let firstWords = doc.content.split("\n")[0].trim()
+            firstWords = firstWords.split(" ").slice(0, 10).join(" ");
+            const fragment = encodeURIComponent(firstWords);
+            fragmentUrl = `${originalUrl}#:~:text=${fragment}`;
+        }
+        if (!(doc.title in titleNum)){
+            titleNum[doc.title] = 1;
+        }
+        else{
+            titleNum[doc.title] += 1;
+            
         }
     
         citations.push({
             originalUrl,
             fragmentUrl,
-            title: doc.title,
+            title: `${doc.title} (${titleNum[doc.title]})`,
         });
 
         if (citations.length >= 3) break;
