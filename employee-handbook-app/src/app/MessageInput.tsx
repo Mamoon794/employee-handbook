@@ -6,6 +6,8 @@ import axiosInstance from './axios_config';
 import { Link, Message } from '../models/schema'; 
 import { Citation } from '@/types/ai';
 import { useAudioRecorder } from "react-use-audio-recorder";
+import { GENERIC_ERROR_MESSAGE } from './global_components';
+
 
 interface Chat {
     id: string;
@@ -41,7 +43,6 @@ export function MessageInput({
   setChats?: Dispatch<SetStateAction<Chat[]>>;
   chats?: Chat[];
 }) {
-  const errorMessage = 'Oops, something went wrong. Want to try again?'
   const province_map: { [key: string]: string } = {
     "ON": "Ontario",
     "AB": "Alberta",
@@ -84,7 +85,7 @@ export function MessageInput({
             setInputValue(inputValue + " " + response.data.transcription);
           } catch (error) {
             console.error("Error during transcription:", error);
-            setError(errorMessage);
+            setError(GENERIC_ERROR_MESSAGE);
           } finally {
             setTranscribing(false);
           }
@@ -176,7 +177,7 @@ export function MessageInput({
       }
     } catch (err) {
       console.error(err);
-      setError(errorMessage);
+      setError(GENERIC_ERROR_MESSAGE);
     }
   };
   
@@ -196,7 +197,7 @@ export function MessageInput({
       threadId: new_chatId
     });
     if (res.status !== 200) {
-      setError(errorMessage);
+      setError(GENERIC_ERROR_MESSAGE);
       return;
     }
 
@@ -213,7 +214,7 @@ export function MessageInput({
       });
     }
     else {
-      setError(errorMessage);
+      setError(GENERIC_ERROR_MESSAGE);
     }
   };
 
@@ -246,11 +247,11 @@ export function MessageInput({
         }
         setMessages((prevMessages) => [...prevMessages, botMessage as Message]);
       } else {
-        setError(errorMessage);
+        setError(GENERIC_ERROR_MESSAGE);
       }
     } catch (err) {
       console.error(err);
-      setError(errorMessage);
+      setError(GENERIC_ERROR_MESSAGE);
     }
   };
 

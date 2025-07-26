@@ -1,6 +1,5 @@
 /* eslint-disable */
 
-
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -11,6 +10,7 @@ import axiosInstance from './axios_config';
 
 import ProvincePopup from "../../components/province";
 import { Message } from '@/models/schema';
+import { GENERIC_ERROR_MESSAGE } from './global_components';
 
 function generateThreadId(): string {
   return Date.now().toString();
@@ -93,6 +93,48 @@ export default function Home() {
     console.log(province);
   }, []);
 
+  const handleRetry = async () => {
+    setError('');
+
+    const lastUserMessage = [...messages].reverse().find((msg) => msg.isFromUser === true);
+    if (!lastUserMessage) return;
+
+    setMessages((prev) => [...prev, lastUserMessage]);
+
+    try {
+      const res = await fetch('/api/public/message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          province,
+          query: lastUserMessage.content,
+          threadId: threadIdRef.current,
+        }),
+      });
+
+      if (!res.ok) throw new Error('Network response was not ok');
+
+      const data = await res.json();
+      if (data.response) {
+        const botMessage: Message = {
+          content: data.response,
+          isFromUser: false,
+          createdAt: new Date(),
+          sources: data.citations?.map((citation: { title: string; fragmentUrl?: string; originalUrl?: string }) => ({
+            title: citation.title,
+            url: citation.fragmentUrl || citation.originalUrl,
+          })),
+        };
+        setMessages((prev) => [...prev, botMessage]);
+      } else {
+        setError(GENERIC_ERROR_MESSAGE);
+      }
+    } catch (err) {
+      console.error(err);
+      setError(GENERIC_ERROR_MESSAGE);
+    }
+  };
+
   return (
     <div className="flex flex-col h-screen bg-white">
       <Header province={province} setProvince={setProvince} />
@@ -112,7 +154,7 @@ export default function Home() {
       )}
   
         <div className="flex-1 overflow-y-auto">
-          <MessageThread messageList={messages} error={error} />
+          <MessageThread messageList={messages} error={error} onRetry={handleRetry} />
         </div>
 
         {messages.length === 0 && (
@@ -149,5 +191,5 @@ export default function Home() {
       </div>
     </div>
   );
-  
+
 }

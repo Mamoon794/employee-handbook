@@ -5,6 +5,7 @@ import {ChatSideBar, MessageThread, InputMessage, Header} from '../global_compon
 import { Message } from '../../models/schema'; 
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
+import { GENERIC_ERROR_MESSAGE } from '../global_components';
 
 interface Chat {
   id: string;
@@ -32,7 +33,9 @@ export default function ChatUI() {
     setMessages((prev) => [...prev, lastUserMessage]);
 
     try {
-      const res = await fetch('/api/public/message', {
+      // TODO: Switch to /api/private/message once implemented
+      const endpoint = '/api/public/message';
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -57,11 +60,11 @@ export default function ChatUI() {
         };
         setMessages((prev) => [...prev, botMessage]);
       } else {
-        setError('Oops, something went wrong. Want to try again?');
+        setError(GENERIC_ERROR_MESSAGE);
       }
     } catch (err) {
       console.error(err);
-      setError('Oops, something went wrong. Want to try again?');
+      setError(GENERIC_ERROR_MESSAGE);
     }
   };
 

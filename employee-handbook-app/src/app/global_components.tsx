@@ -11,6 +11,7 @@ import { Message } from '../models/schema';
 import { marked } from 'marked';
 import dynamic from "next/dynamic";
 
+export const GENERIC_ERROR_MESSAGE = 'Oops, something went wrong. Want to try again?';
 
 const InputMessage = dynamic(() => import('./MessageInput').then(mod => mod.MessageInput), {
   ssr: false,
