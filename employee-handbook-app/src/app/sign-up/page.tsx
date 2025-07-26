@@ -2,11 +2,6 @@
 
 import { Users, User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-<<<<<<< HEAD
-import { LogIn } from '../global_components';
-
-=======
->>>>>>> origin/develop
 
 export default function SignUp() {
   const router = useRouter(); 
@@ -14,11 +9,7 @@ export default function SignUp() {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <header className="flex justify-between items-center px-6 py-4">
-<<<<<<< HEAD
-        <h1 className="text-2xl font-bold text-blue-800">Gail</h1>
-=======
         <h1 className="text-2xl font-extrabold italic text-blue-800">Gail</h1>
->>>>>>> origin/develop
       </header>
 
       <main className="flex-1 flex flex-col items-center justify-center px-6">
@@ -49,16 +40,12 @@ export default function SignUp() {
         <p className="text-gray-700 text-md mb-3">Already have an account?</p>
         
         {/* Login button with navigation */}
-<<<<<<< HEAD
-        <LogIn />
-=======
         <button 
           onClick={() => router.push('/log-in/[...rest]')}
           className="bg-blue-800 text-white font-semibold px-6 py-3 rounded-md hover:bg-blue-700 transition-colors"
         >
           Log in
         </button>
->>>>>>> origin/develop
       </main>
     </div>
   );

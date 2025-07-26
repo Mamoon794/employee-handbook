@@ -35,11 +35,8 @@ export default function EmployerRegistrationForm() {
     const companyData: Omit<Company, "id"> = {
       name: formData.companyName,
       ownerId: clerkUser.id,
-<<<<<<< HEAD
-=======
       s3BucketName: '',
       documents: [],
->>>>>>> origin/develop
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -77,11 +74,7 @@ export default function EmployerRegistrationForm() {
     console.log('Metadata updated successfully'); // debugging
 
     console.log('Redirecting to dashboard...'); // debugging
-<<<<<<< HEAD
     router.push('/dashboard');
-=======
-    router.push('/DashBoard');
->>>>>>> origin/develop
   } catch (err) {
     console.error('Detailed registration error:', err); // debugging
     setError(err instanceof Error ? err.message : 'Registration failed');
@@ -113,11 +106,7 @@ export default function EmployerRegistrationForm() {
         >
           <ArrowLeft className="w-5 h-5 text-gray-600" />
         </button>
-<<<<<<< HEAD
-        <h1 className="text-2xl font-bold text-blue-800">Gail</h1>
-=======
         <h1 className="text-2xl font-extrabold italic text-blue-800">Gail</h1>
->>>>>>> origin/develop
       </header>
 
       <main className="flex-1 flex items-center justify-center p-6">
