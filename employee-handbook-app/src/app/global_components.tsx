@@ -477,9 +477,11 @@ function PopularQuestions({
 function MessageThread({
   messageList,
   error,
+  chatId
 }: {
   messageList: Message[]
-  error: string
+  error: {message: string, chatId: string},
+  chatId: string
 }) {
   const bottomRef = useRef<HTMLDivElement | null>(null)
 
@@ -545,9 +547,9 @@ function MessageThread({
         ))
       )}
 
-      {error && (
+      {error.message && error.chatId === chatId && (
         <div className="self-start border border-red-500 bg-red-200 text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm text-lg">
-          <div>{error}</div>
+          <div>{error.message}</div>
           <div className="pt-4">
             <button
               onClick={handleRetry}

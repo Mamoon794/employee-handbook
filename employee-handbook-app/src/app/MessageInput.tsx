@@ -35,7 +35,7 @@ export function MessageInput({
   province?: string | null;
   chatId?: string;
   setMessages: Dispatch<SetStateAction<Message[]>>;
-  setError: Dispatch<SetStateAction<string>>;
+  setError: Dispatch<SetStateAction<{message: string, chatId: string}>>;
   setCurrChatId?: Dispatch<SetStateAction<string>>;
   threadId?: string | null;
   setTitleLoading?: Dispatch<SetStateAction<boolean>>;
@@ -85,7 +85,7 @@ export function MessageInput({
             setInputValue(inputValue + " " + response.data.transcription);
           } catch (error) {
             console.error("Error during transcription:", error);
-            setError(errorMessage);
+            setError({"message": errorMessage, "chatId": chatId || ''});
           } finally {
             setTranscribing(false);
           }
@@ -128,7 +128,7 @@ export function MessageInput({
       });
 
       setInputValue('');
-      setError('');
+      setError({"message": "", "chatId": ""});
 
       let newChatId = chatId || '';
       if (isPrivate) {
@@ -188,7 +188,7 @@ export function MessageInput({
       }
     } catch (err) {
       console.error(err);
-      setError(errorMessage);
+      setError({"message": errorMessage, "chatId": chatId || ''});
     }
   };
   
@@ -208,7 +208,7 @@ export function MessageInput({
       threadId: new_chatId
     });
     if (res.status !== 200) {
-      setError(errorMessage);
+      setError({"message": errorMessage, "chatId": new_chatId});
       return;
     }
 
@@ -225,7 +225,7 @@ export function MessageInput({
       });
     }
     else {
-      setError(errorMessage);
+      setError({"message": errorMessage, "chatId": new_chatId});
     }
   };
 
@@ -266,11 +266,11 @@ export function MessageInput({
           return updated;
         });
       } else {
-        setError(errorMessage);
+        setError({"message": errorMessage, "chatId": chatId || ''});
       }
     } catch (err) {
       console.error(err);
-      setError(errorMessage);
+      setError({"message": errorMessage, "chatId": chatId || ''});
     }
   };
 

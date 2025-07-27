@@ -22,7 +22,7 @@ export default function Home() {
   const [chats, setChats] = useState<Chat[]>([]);
   const [province, setProvince] = useState<string>('');
   const [messages, setMessages] = useState([] as Message[]);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<{message: string, chatId: string}>({message: '', chatId: ''});
   const [currChatId, setCurrChatId] = useState<string>('');
   // const [sidebarOpen, setSidebarOpen] = useState(true);
 
@@ -85,7 +85,7 @@ export default function Home() {
             <ProvincePopup onSave={(prov) => setProvince(prov)} />
           )}
 
-          <MessageThread messageList={messages} error={error} />
+          <MessageThread messageList={messages} error={error} chatId={currChatId} />
           <div
             className="absolute bottom-6 left-0 right-0 mx-10"
           >
