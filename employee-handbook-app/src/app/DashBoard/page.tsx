@@ -2,12 +2,26 @@
 
 import { useRouter } from 'next/navigation';
 import { useUser, UserButton } from "@clerk/nextjs"; 
+import { useEffect, useState } from 'react';
 import axiosInstance from '../axios_config';
+import PaywallModal from '../../../components/paywall-popup';
 
 export default function Dashboard() {
   const router = useRouter();
   const { user } = useUser();
   const firstName = user?.firstName || "there"; 
+  const [showPaywall, setShowPaywall] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // TO DO: Replace with backend subscription check
+    // For now, forcing to show paywall immediately on dashboard page:
+    setShowPaywall(true);
+    setIsLoading(false);
+    
+    // Placeholder for backend check
+   
+  }, [user]);
 
   async function uploadDocuments(event: React.ChangeEvent<HTMLInputElement>) {
     const files = event.target.files || [];
@@ -22,6 +36,21 @@ export default function Dashboard() {
         },
       });
     }
+  }
+
+  const handlePaywallClose = () => {
+    console.log('PaywallModal close button clicked');
+    setShowPaywall(false);
+  };
+
+
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-xl text-blue-800">Loading...</div>
+      </div>
+    );
   }
 
   return (
@@ -75,6 +104,9 @@ export default function Dashboard() {
 
       {/* Footer bar */}
       <footer className="w-full h-24 bg-[#294494] mt-auto" />
+
+      {/* Paywall Modal */}
+      {showPaywall && <PaywallModal onClose={handlePaywallClose} />}
     </div>
   );
 }
