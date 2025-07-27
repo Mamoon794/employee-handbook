@@ -16,15 +16,8 @@ export default function Dashboard() {
       console.error("No companyId found")
       return
     }
-    const companyres = await axiosInstance.get(
-      `/api/company?id=${companyId}`,
-      {}
-    )
-    const companyName = companyres.data.name || ""
-    if (!companyName) {
-      console.error("No company name found")
-      return
-    }
+
+    const companyName = localStorage.getItem("companyName") || ""
 
     const files = event.target.files || []
     for (let i = 0; i < files.length; i++) {
