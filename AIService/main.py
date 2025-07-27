@@ -8,6 +8,7 @@ from faster_whisper import WhisperModel
 from pydantic import BaseModel
 from setupProvinces import graph, llm, process_docs, index_company_documents, delete_document_from_vector_db, delete_company_documents_from_vector_db, store_user_message_to_vector_store
 from processCompanyDocs import crawl_company_docs
+from kmeans import find_popular_questions_from_vector_db
 import traceback
 
 from pinecone import Pinecone
@@ -273,3 +274,16 @@ async def transcribe_audio(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=f"Transcription failed: {str(e)}")
     finally:
         os.remove(filename)  # clean up temp file
+
+
+@app.get("/popular-questions")
+def get_popular_questions():
+    """
+    Get a list of popular questions from the vector store.
+    """
+    try:
+        questions = find_popular_questions_from_vector_db()
+        return {"popular_questions": questions}
+    except Exception as e:
+        print(f"Failed to retrieve popular questions: {e}")
+        raise HTTPException(status_code=500, detail=str(e))

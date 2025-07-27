@@ -45,6 +45,7 @@ embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
 pc = Pinecone(api_key=pc_api_key)
 index = pc.Index(index_name)
 vector_store = PineconeVectorStore(embedding=embeddings, index=index)
+vector_store_dimension = 768
 
 # Load prompt template from LangChain Hub
 prompt = hub.pull("rlm/rag-prompt", api_url="https://api.smith.langchain.com")
