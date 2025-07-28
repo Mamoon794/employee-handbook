@@ -46,6 +46,7 @@ export interface PublicChat {
   id: string
   title: string
   messages?: Message[]
+  needsTitleUpdate: boolean
 }
 
 function getRowClass(i: number, total: number) {
@@ -118,6 +119,7 @@ function PublicChatSideBar({
       id: generateThreadId(),
       title: `Chat - ${new Date().toLocaleDateString()}-${chats.length + 1}`,
       messages: [],
+      needsTitleUpdate: true
     }
     const updatedChats = [newChat, ...chats]
     setChats(updatedChats)
