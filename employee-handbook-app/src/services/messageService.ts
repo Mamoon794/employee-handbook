@@ -121,7 +121,13 @@ export async function handlePrivateMessage(
     citations.push(...publicCitations)
   }
   citations.push(...privateCitations)
-  let response = aiResult.publicResponse + "<br><br>" + aiResult.privateResponse
+
+  let response: string
+  if (aiResult.publicResponse == aiResult.privateResponse) {
+    response = aiResult.publicResponse
+  } else {
+    response = aiResult.publicResponse + "<br><br>" + aiResult.privateResponse
+  }
 
   console.log("citations:", citations)
   return {

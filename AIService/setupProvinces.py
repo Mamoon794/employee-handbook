@@ -54,14 +54,19 @@ prompt = hub.pull("rlm/rag-prompt", api_url="https://api.smith.langchain.com")
 def retrieve(query: str, province: str, company: str = ""):
     """
     Retrieve employment-related information by searching indexed documents 
-    in the given province. If no province is specified, it defaults to "General". 
-    If a company name is provided, it is used to filter documents.
+    within the specified province. If no province is given, it defaults to "General". 
+    If a company name is provided, it filters documents accordingly.
+
+    Use this tool only when the user is asking a factual or research-based question 
+    related to employment policies or company-specific matters. Do not use this tool for small talk, 
+    greetings, or general conversational questions.
+
     Parameters:
     - query: the user's question.
-    - province: province name like "Alberta", "British Columbia", etc.
-    - company: company name to filter documents (optional).
+    - province: province name such as "Alberta", "British Columbia", etc.
+    - company: (optional) company name to filter documents.
     """
-    print("province:", province)
+    # print("province:", province)
     province_docs = vector_store.similarity_search(query, k=4, namespace=province)
     general_docs = vector_store.similarity_search(query, k=4, namespace="General")
     company_docs = vector_store.similarity_search(query, k=4, namespace=company)
@@ -95,8 +100,8 @@ def generate(state: MessagesState):
             break
     tool_messages = recent_tool_messages[::-1]
 
-    print("tool_messages:", tool_messages)
-    print("length", len(tool_messages))
+    # print("tool_messages:", tool_messages)
+    # print("length", len(tool_messages))
     docs = tool_messages[-1].artifact 
     # Separate docs based on whether metadata has a "company" field
     company_docs = [doc for doc in docs if "company" in doc.metadata]
@@ -109,23 +114,42 @@ def generate(state: MessagesState):
 
     # Construct system prompt
     system_message_content = (
-        "You are an assistant for question-answering tasks. Use the retrieved documents to answer the user's question. Separate your response into two parts as described below:\n\n"
-        "1. **non-company-doc**: Use only the documents that do NOT have a company name in the metadata. Begin your answer in a natural legal tone, such as:\n"
-        "\"Based on the applicable law, ...\" or \"According to relevant legal guidance, ...\"\n"
-        "2. **company-doc**: Use only the documents that DO have a company name in the metadata. Begin your answer in a policy-referencing tone, such as:\n"
-        "\"Based on the employee manual, ...\" or \"According to [Company]'s internal policy, ...\"\n"
-        "(If a company name is provided in the metadata, use it in the phrasing.)\n\n"
-        "If you cannot find a relevant answer in a section, still begin the answer with the appropriate tone (e.g., \"According to applicable law,...\"), state that no relevant information was found, and set the [Found: No] tag.\n"
-        "Always include a final line after each section with one of the following tags to indicate whether an answer was found:\n"
-        "[Found: Yes] if relevant information was found\n"
-        "[Found: No] if no relevant information was found\n\n"
+        "You are an assistant for question-answering tasks. Use the retrieved documents to answer the user's question. "
+        "Format your response in **two clearly separated sections** as described below. "
+        "This formatting is required to allow automatic parsing:\n\n"
+        
+        "1. **public-doc**:\n"
+        "- Use only documents that do **not** have a company name in their metadata.\n"
+        "- Begin with a legal-sounding tone such as:\n"
+        "  \"Based on the applicable law, ...\" or \"According to relevant legal guidance, ...\"\n"
+        "- If no relevant information is found, still write a sentence in the expected tone and end with [Found: No]\n"
+        "- If relevant information is found, write the answer and end with [Found: Yes]\n"
+        "- Start this section with exactly: **public-doc**:\n"
+        
+        "2. **company-doc**:\n"
+        "- Use only documents that **do** have a company name in their metadata.\n"
+        "- Begin with a company policy tone such as:\n"
+        "  \"Based on the employee manual, ...\" or \"According to [Company]'s internal policy, ...\"\n"
+        "- Replace [Company] with the actual company name found in the metadata.\n"
+        "- If the company name is not found in the metadata, use a generic term like \"the company\".\n"
+        "- If no relevant information is found, still write a sentence in the expected tone and end with [Found: No]\n"
+        "- If relevant information is found, write the answer and end with [Found: Yes]\n"
+        "- Start this section with exactly: **company-doc**:\n\n"
+        
+        "Important:\n"
+        "- Do not include any extra sections or commentary outside the two headers.\n"
+        "- Each section must end with [Found: Yes] or [Found: No].\n"
+        "- Do not number the sections. Do not prefix with “1.” or “2.”\n"
+        "— just use the headers exactly as shown: **public-doc**: and **company-doc**:\n\n"
+        
         "---\n"
-        "non-company-doc documents:\n"
+        "public-doc documents:\n"
         f"{non_company_docs_content}\n\n"
         "---\n"
         "company-doc documents:\n"
         f"{company_docs_content}"
     )
+
     conversation_messages = [
         message
         for message in state["messages"]
