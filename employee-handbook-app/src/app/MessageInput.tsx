@@ -1,18 +1,18 @@
 /* eslint-disable */
 
-import { useEffect, useState, Dispatch, SetStateAction, useRef} from 'react';
-import { Search, Mic, Loader2 } from 'lucide-react';
-import axiosInstance from './axios_config';
-import { Link, Message } from '../models/schema'; 
-import { Citation } from '@/types/ai';
-import { useAudioRecorder } from "react-use-audio-recorder";
+import { useEffect, useState, Dispatch, SetStateAction, useRef } from "react"
+import { Search, Mic, Loader2 } from "lucide-react"
+import axiosInstance from "./axios_config"
+import { Link, Message } from "../models/schema"
+import { Citation } from "@/types/ai"
+import { useAudioRecorder } from "react-use-audio-recorder"
 import { generateThreadId } from './global_components';
 
 interface Chat {
-  id: string;
-  title: string;
-  needsTitleUpdate?: boolean;
-  messages?: Message[];
+  id: string
+  title: string
+  needsTitleUpdate?: boolean
+  messages?: Message[]
 }
 
 export function MessageInput({
@@ -26,43 +26,43 @@ export function MessageInput({
   setCurrChatId,
   setTitleLoading,
   setChats,
-  chats
+  chats,
 }: {
-  inputValue: string;
-  setInputValue: Dispatch<SetStateAction<string>>;
-  isPrivate: boolean;
-  province?: string | null;
-  chatId: string;
-  setMessages: Dispatch<SetStateAction<Message[]>>;
-  setError: Dispatch<SetStateAction<string>>;
-  setCurrChatId: Dispatch<SetStateAction<string>>;
-  setTitleLoading?: Dispatch<SetStateAction<boolean>>;
-  setChats: Dispatch<SetStateAction<Chat[]>>;
-  chats: Chat[];
+  inputValue: string
+  setInputValue: Dispatch<SetStateAction<string>>
+  isPrivate: boolean
+  province?: string | null
+  chatId: string
+  setMessages: Dispatch<SetStateAction<Message[]>>
+  setError: Dispatch<SetStateAction<string>>
+  setCurrChatId: Dispatch<SetStateAction<string>>
+  setTitleLoading?: Dispatch<SetStateAction<boolean>>
+  setChats: Dispatch<SetStateAction<Chat[]>>
+  chats: Chat[]
 }) {
-  const errorMessage = 'Oops, something went wrong. Want to try again?'
+  const errorMessage = "Oops, something went wrong. Want to try again?"
   const province_map: { [key: string]: string } = {
-    "ON": "Ontario",
-    "AB": "Alberta",
-    "BC": "British Columbia",
-    "MB": "Manitoba",
-    "NB": "New Brunswick",
-    "NL": "Newfoundland and Labrador",
-    "NS": "Nova Scotia",
-    "PE": "Prince Edward Island",
-    "QC": "Quebec",
-    "SK": "Saskatchewan",
-    "NT": "Northwest Territories",
-    "NU": "Nunavut",
-    "YT": "Yukon"
+    ON: "Ontario",
+    AB: "Alberta",
+    BC: "British Columbia",
+    MB: "Manitoba",
+    NB: "New Brunswick",
+    NL: "Newfoundland and Labrador",
+    NS: "Nova Scotia",
+    PE: "Prince Edward Island",
+    QC: "Quebec",
+    SK: "Saskatchewan",
+    NT: "Northwest Territories",
+    NU: "Nunavut",
+    YT: "Yukon",
   }
 
   const {
     recordingStatus, // "inactive" | "recording" | "paused" | "stopped"
-    recordingTime,   // in seconds
+    recordingTime, // in seconds
     startRecording,
     stopRecording,
-  } = useAudioRecorder();
+  } = useAudioRecorder()
 
   const [listening, setListening] = useState(false);
   const [transcribing, setTranscribing] = useState(false);
@@ -70,39 +70,46 @@ export function MessageInput({
 
   const toggleMic = () => {
     if (listening) {
-      setListening(false);
+      setListening(false)
       stopRecording(async (blob) => {
         if (blob) {
-          setTranscribing(true);
-          const audioFile = new File([blob], `recording-${new Date().toISOString()}.wav`, {type: blob.type});
-          const formData = new FormData();
-          formData.append('file', audioFile);
+          setTranscribing(true)
+          const audioFile = new File(
+            [blob],
+            `recording-${new Date().toISOString()}.wav`,
+            { type: blob.type }
+          )
+          const formData = new FormData()
+          formData.append("file", audioFile)
           try {
-            const response = await axiosInstance.post("/api/messages/transcribe", formData);
-            console.log("Transcription response:", response);
-            setInputValue(inputValue + " " + response.data.transcription);
+            const response = await axiosInstance.post(
+              "/api/messages/transcribe",
+              formData
+            )
+            console.log("Transcription response:", response)
+            setInputValue(inputValue + " " + response.data.transcription)
           } catch (error) {
-            console.error("Error during transcription:", error);
-            setError(errorMessage);
+            console.error("Error during transcription:", error)
+            setError(errorMessage)
           } finally {
-            setTranscribing(false);
+            setTranscribing(false)
           }
         }
-      });
-      console.log("Recording stopped, blob:");
+      })
+      console.log("Recording stopped, blob:")
     } else {
-      setListening(true);
-      startRecording();
+      setListening(true)
+      startRecording()
     }
-  };
+  }
 
   const submitUserMessage = async () => {
-    if (!inputValue.trim()) return;
+    if (!inputValue.trim()) return
 
-    const userMessage: Omit<Message, 'createdAt'> = {
+    const userMessage: Omit<Message, "createdAt"> = {
       isFromUser: true,
       content: inputValue,
-    };
+    }
 
     try {
       // tracking if brand new chat
@@ -114,7 +121,7 @@ export function MessageInput({
         isNewChat = true;
         chatId = '';
         setCurrChatId('')
-      }
+      }    
 
       setInputValue('');
       setError('');
@@ -150,17 +157,17 @@ export function MessageInput({
         setMessages((prevMessages) => {
           return [...prevMessages, userMessage as Message]
         })
-
+          
         if (isNewChat) {
-          const newChat = await axiosInstance.post('/api/chat', {
-            userId: localStorage.getItem('userId'),
-            title: 'New Chat',
+          const newChat = await axiosInstance.post("/api/chat", {
+            userId: localStorage.getItem("userId"),
+            title: "New Chat",
             messages: [userMessage],
-            needsTitleUpdate: true // propagate flag
-          });
-          newChatId = newChat.data.id;
-          if(setCurrChatId) setCurrChatId(newChatId);
-          await handlePrivateChat(newChatId);
+            needsTitleUpdate: true, // propagate flag
+          })
+          newChatId = newChat.data.id
+          if (setCurrChatId) setCurrChatId(newChatId)
+          await handlePrivateChat(newChatId)
         } else {
           await axiosInstance.put(`/api/chat/${chatId}/add-message`, {
             messageData: userMessage
@@ -172,6 +179,41 @@ export function MessageInput({
         // Only do this if the chat has exactly one message (i.e., just created)
         // or if needsTitleUpdate is true
         if (setChats && (isNewChat || (chatObj && chatObj.needsTitleUpdate))) {
+          if (setTitleLoading) setTitleLoading(true)
+          try {
+            const titleRes = await fetch("/api/generate-title", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                message: inputValue,
+                chatId: newChatId,
+                userId: localStorage.getItem("userId"),
+              }),
+            })
+
+            if (!titleRes.ok) throw new Error("Title generation failed")
+
+            const { title } = await titleRes.json()
+            if (title && title !== "New Chat" && setChats) {
+              setChats((prevChats) => {
+                return prevChats.map((chat) =>
+                  chat.id === newChatId
+                    ? { ...chat, title, needsTitleUpdate: false }
+                    : chat
+                )
+              })
+            }
+          } catch (err) {
+            console.error("title generation failed", err)
+          } finally {
+            if (setTitleLoading) setTitleLoading(false)
+          }
+        }
+      } else {
+        await handlePublicChat();
+
+        // AI-generated title for public chat
+        if (setChats && (isNewChat || (chatObj && chatObj.needsTitleUpdate))) {
           if (setTitleLoading) setTitleLoading(true);
           try {
             const titleRes = await fetch('/api/generate-title', {
@@ -179,8 +221,8 @@ export function MessageInput({
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 message: inputValue,
-                chatId: newChatId,
-                userId: localStorage.getItem('userId')
+                chatId: chatId || threadId,
+                userId: 'public'
               }),
             });
 
@@ -190,7 +232,7 @@ export function MessageInput({
             if (title && title !== "New Chat" && setChats) {
               setChats(prevChats => {
                 return prevChats.map(chat =>
-                  chat.id === newChatId
+                  chat.id === (chatId || threadId)
                     ? { ...chat, title, needsTitleUpdate: false }
                     : chat
                 );
@@ -204,45 +246,46 @@ export function MessageInput({
         }
       }
     } catch (err) {
-      console.error(err);
-      setError(errorMessage);
+      console.error(err)
+      setError(errorMessage)
     }
-  };
-  
+  }
+
   function mapCitationsToLinks(citations: Citation[]): Link[] {
-    return citations.map(citation => ({
+    return citations.map((citation) => ({
       title: citation.title,
-      url: citation.fragmentUrl || citation.originalUrl // Use fragmentUrl if available, fallback to originalUrl
-    }));
+      url: citation.fragmentUrl || citation.originalUrl, // Use fragmentUrl if available, fallback to originalUrl
+    }))
   }
 
   const handlePrivateChat = async (new_chatId: string) => {
-    const full_province = province ? province_map[province] : '';
-    console.log("province", province);
-    const res = await axiosInstance.post(`/api/public/message`, {
-      province,
+    const full_province = province ? province_map[province] : ""
+    console.log("private province", province)
+    const companyName = localStorage.getItem("companyName") || ""
+    const res = await axiosInstance.post(`/api/messages/private`, {
+      province: full_province,
       query: inputValue,
-      threadId: new_chatId
-    });
+      threadId: new_chatId,
+      company: companyName,
+    })
     if (res.status !== 200) {
-      setError(errorMessage);
-      return;
+      setError(errorMessage)
+      return
     }
 
-    const data = res.data;
+    const data = res.data
     if (data.response) {
       const botMessage = {
         content: data.response,
         isFromUser: false,
         sources: mapCitationsToLinks(data.citations),
       }
-      setMessages((prevMessages) => [...prevMessages, botMessage as Message]);
+      setMessages((prevMessages) => [...prevMessages, botMessage as Message])
       axiosInstance.put(`/api/chat/${new_chatId}/add-message`, {
         messageData: botMessage,
-      });
-    }
-    else {
-      setError(errorMessage);
+      })
+    } else {
+      setError(errorMessage)
     }
   };
   
@@ -250,22 +293,23 @@ export function MessageInput({
     if (!province) return;
 
     try {
-      console.log("province", province);
-      const res = await fetch('/api/public/message', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      console.log("public province", province)
+      const res = await fetch("/api/messages/public", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           province,
           query: inputValue,
           threadId: newChatId
+          company: "",
         }),
-      });
+      })
 
       if (!res.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error("Network response was not ok")
       }
 
-      const data = await res.json();
+      const data = await res.json()
       if (data.response) {
         const botMessage = {
           content: data.response,
@@ -283,27 +327,27 @@ export function MessageInput({
           return updated;
         });
       } else {
-        setError(errorMessage);
+        setError(errorMessage)
       }
     } catch (err) {
-      console.error(err);
-      setError(errorMessage);
+      console.error(err)
+      setError(errorMessage)
     }
-  };
+  }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      submitUserMessage();
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault()
+      submitUserMessage()
     }
-  };
+  }
 
   // put focus back on the text input so Enter will submit
   useEffect(() => {
     if (!transcribing) {
       textareaRef.current?.focus();
     }
-  }, [transcribing]);
+  }, [transcribing])
 
   const [atMaxHeight, setAtMaxHeight] = useState(false);
 
@@ -356,25 +400,32 @@ export function MessageInput({
 
       {transcribing ? (
         <Loader2 className="absolute left-4 top-1/2 -translate-y-1/2 animate-spin text-gray-500" />
-      ) :
+      ) : (
         <button
           type="button"
           onClick={toggleMic}
           className={`absolute left-4 top-1/2 -translate-y-1/2
-                      ${listening ? "text-red-600 animate-pulse" : "text-gray-400 hover:text-gray-600 transition-colors"}`}
+                      ${
+                        listening
+                          ? "text-red-600 animate-pulse"
+                          : "text-gray-400 hover:text-gray-600 transition-colors"
+                      }`}
           title={listening ? "Stop recording" : "Speak your question"}
         >
           <Mic className="w-6 h-6" />
         </button>
-      }
+      )}
 
       <button
         type="button"
         disabled={transcribing || listening}
         onClick={submitUserMessage}
         className={`absolute right-4 top-1/2 -translate-y-1/2 text-gray-400
-                  ${transcribing || listening ? "cursor-not-allowed opacity-50" : 
-                  "hover:text-gray-600 transition-colors"}`}
+                  ${
+                    transcribing || listening
+                      ? "cursor-not-allowed opacity-50"
+                      : "hover:text-gray-600 transition-colors"
+                  }`}
       >
         <Search className="w-6 h-6" />
       </button>
