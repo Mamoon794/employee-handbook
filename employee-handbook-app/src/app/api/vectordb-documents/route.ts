@@ -15,10 +15,10 @@ export async function POST(request: Request) {
   try {
     const res = await uploadFileToVectorDB(fileurl, namespace)
     return NextResponse.json(res, { status: 200 })
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error uploading file to vector DB:", error)
     return NextResponse.json(
-      { error: error.message || "Failed to upload file to vector DB" },
+      { error: "Failed to upload file to vector DB" },
       { status: 500 }
     )
   }
@@ -34,10 +34,10 @@ export async function PATCH(request: Request) {
     // Assuming there's a function to delete the company in the vector DB
     const res = await deleteCompanyFromVectorDB(company)
     return NextResponse.json(res, { status: 200 })
-  } catch (error: any) {
+  } catch (error) {
     console.error(`Error deleting company ${company} from vector DB: ${error}`)
     return NextResponse.json(
-      { error: error.message || "Failed to delete company from vector DB" },
+      { error: "Failed to delete company from vector DB" },
       { status: 500 }
     )
   }

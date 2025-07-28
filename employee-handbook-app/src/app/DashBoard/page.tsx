@@ -30,7 +30,7 @@ export default function Dashboard() {
         },
       })
       const url = s3res.data.fileUrl
-      const vdbres = await axiosInstance.post("/api/vectordb-documents", {
+      await axiosInstance.post("/api/vectordb-documents", {
         fileurl: url,
         namespace: companyName,
       })

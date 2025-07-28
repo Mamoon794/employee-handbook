@@ -39,7 +39,7 @@ export async function callAiService(
 export async function uploadFileToVectorDB(
   fileurl: string,
   namespace: string
-): Promise<any> {
+): Promise<{ url: string; company: string; status: string }> {
   const res = await fetch(`${AI_SERVICE_URL}/company-document`, {
     method: "POST",
     headers: {
@@ -60,7 +60,9 @@ export async function uploadFileToVectorDB(
   return await res.json()
 }
 
-export async function deleteCompanyFromVectorDB(company: string): Promise<any> {
+export async function deleteCompanyFromVectorDB(
+  company: string
+): Promise<{ company: string; status: string }> {
   const res = await fetch(`${AI_SERVICE_URL}/company-document`, {
     method: "PATCH",
     headers: {
@@ -84,7 +86,7 @@ export async function deleteCompanyFromVectorDB(company: string): Promise<any> {
 export async function deleteDocumentFromVectorDB(
   url: string,
   company: string
-): Promise<any> {
+): Promise<{ url: string; company: string; status: string }> {
   const res = await fetch(`${AI_SERVICE_URL}/company-document/source`, {
     method: "PATCH",
     headers: {
