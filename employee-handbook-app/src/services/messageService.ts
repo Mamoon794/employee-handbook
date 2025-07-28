@@ -8,52 +8,41 @@ import { callAiService } from "@/integrations/aiService"
  * generating hyperlinks to exact section within sources.
  */
 export async function handlePublicMessage(
-    province: string,
-    question: string,
-    threadId: string
+  province: string,
+  question: string,
+  threadId: string
 ): Promise<UserMessageResponse> {
-    const aiResult = await callAiService(province, question, threadId);
+  const aiResult = await callAiService(province, question, threadId)
 
-    const seen = new Set<string>();
-    const citations: Citation[] = [];
-    const titleNum : Record<string, number> = {};
-    
-    for (const doc of aiResult.publicMetadata) {
-        const originalUrl = String(doc.source);
-        if (seen.has(originalUrl)) continue;
-        seen.add(originalUrl);
-    
-        let fragmentUrl = originalUrl;
-        if (doc.type === "pdf") {
-            fragmentUrl = `${originalUrl}#page=${doc.page}`;
-        } else if (doc.type === "html") {
-        // Use text fragment for HTML -> this is unreliable
-            let firstWords = doc.content.split("\n")[0].trim()
-            firstWords = firstWords.split(" ").slice(0, 10).join(" ");
-            const fragment = encodeURIComponent(firstWords);
-            fragmentUrl = `${originalUrl}#:~:text=${fragment}`;
-        }
-        if (!(doc.title in titleNum)){
-            titleNum[doc.title] = 1;
-        }
-        else{
-            titleNum[doc.title] += 1;
-            
-        }
-    
-        citations.push({
-            originalUrl,
-            fragmentUrl,
-            title: `${doc.title} (${titleNum[doc.title]})`,
-        });
+  const seen = new Set<string>()
+  const citations: Citation[] = []
+  const titleNum: Record<string, number> = {}
 
-        if (citations.length >= 3) break;
+  for (const doc of aiResult.publicMetadata) {
+    const originalUrl = String(doc.source)
+    if (seen.has(originalUrl)) continue
+    seen.add(originalUrl)
+
+    let fragmentUrl = originalUrl
+    if (doc.type === "pdf") {
+      fragmentUrl = `${originalUrl}#page=${doc.page}`
+    } else if (doc.type === "html") {
+      // Use text fragment for HTML -> this is unreliable
+      let firstWords = doc.content.split("\n")[0].trim()
+      firstWords = firstWords.split(" ").slice(0, 10).join(" ")
+      const fragment = encodeURIComponent(firstWords)
+      fragmentUrl = `${originalUrl}#:~:text=${fragment}`
+    }
+    if (!(doc.title in titleNum)) {
+      titleNum[doc.title] = 1
+    } else {
+      titleNum[doc.title] += 1
     }
 
     citations.push({
       originalUrl,
       fragmentUrl,
-      title: doc.title,
+      title: `${doc.title} (${titleNum[doc.title]})`,
     })
 
     if (citations.length >= 3) break
