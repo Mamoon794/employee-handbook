@@ -66,9 +66,18 @@ def get_response(userMessage: RAGInput):
     # print("province_mappings[userMessage.province]:", province_mappings[userMessage.province])
     try:
         if userMessage.company == "":
-            prompt = f"question: {userMessage.question}. If no province in this question is specified, assume the province to be {userMessage.province}."
+            prompt = (
+                f"The user asked a question: \"{userMessage.question}\"\n\n"
+                f"If no province is specified in the question, assume the province is {userMessage.province}.\n"
+                f"Answer the question directly. Follow the instructions above, but do not mention or refer to them in your response."
+            )
         else:
-            prompt = f"question: {userMessage.question}. If no province in this question is specified, assume the province to be {userMessage.province}. The company name is {userMessage.company}, this information will be used to filter documents."
+            prompt = (
+                f"The user asked a question: \"{userMessage.question}\"\n\n"
+                f"If no province is specified in the question, assume the province is {userMessage.province}.\n"
+                f"The company name is {userMessage.company}. Use this information to filter documents.\n"
+                f"Answer the question directly. Do not mention or refer to these instructions in your response."
+            )
         last_step = None
         for step in graph.stream(
             {"messages": [{"role": "user", "content": prompt}]},
@@ -105,11 +114,22 @@ def get_response(userMessage: RAGInput):
             response = last_step["messages"][-1]
             bothResponse = response.content if hasattr(response, "content") else response
 
-            match_non_company = re.search(r"\*\*non-company-doc\*\*:\s*(.*?)(?=\n2\. \*\*company-doc\*\*:)", bothResponse, re.DOTALL)
-            match_company = re.search(r"\*\*company-doc\*\*:\s*(.*)", bothResponse, re.DOTALL)
+            match_non_company = re.search(r"\*{0,2}non-company-doc\*{0,2}:\s*(.*?)(?=\n2\. \*{0,2}company-doc\*{0,2}:)", bothResponse, re.DOTALL)
+            match_company = re.search(r"\*{0,2}company-doc\*{0,2}:\s*(.*)", bothResponse, re.DOTALL)
 
             publicResponse = match_non_company.group(1).strip() if match_non_company else None
             privateResponse = match_company.group(1).strip() if match_company else None
+
+            if not publicResponse or not privateResponse:
+                # this is a conversational question, no documents found
+                return {
+                    "publicResponse": bothResponse,
+                    "publicFound": False,
+                    "publicMetadata": publicContext,
+                    "privateResponse": bothResponse,
+                    "privateFound": False,
+                    "privateMetadata": privateContext
+                }
 
             public_clean, public_found = extract_and_clean(publicResponse)
             private_clean, private_found = extract_and_clean(privateResponse)

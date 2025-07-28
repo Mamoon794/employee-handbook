@@ -55,6 +55,11 @@ def retrieve(query: str, province: str, company: str = ""):
     Retrieve employment-related information by searching indexed documents 
     in the given province. If no province is specified, it defaults to "General". 
     If a company name is provided, it is used to filter documents.
+
+    Use this tool only if the user is asking a factual or research-based question 
+    related to employment or policies. Do not use this tool if the user is making small talk, 
+    greeting, or asking general conversational questions.
+
     Parameters:
     - query: the user's question.
     - province: province name like "Alberta", "British Columbia", etc.
