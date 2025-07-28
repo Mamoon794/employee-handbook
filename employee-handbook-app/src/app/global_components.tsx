@@ -27,7 +27,7 @@ const InputMessage = dynamic(
   }
 )
 
-export function generateThreadId(): string {
+function generateThreadId(): string {
   return Date.now().toString();
 }
 
@@ -706,5 +706,6 @@ export {
   MessageThread,
   InputMessage,
   Header,
-  Disclaimer
+  Disclaimer,
+  generateThreadId
 }
