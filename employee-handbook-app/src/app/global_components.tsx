@@ -579,8 +579,13 @@ function Header({
       axiosInstance
         .get(`/api/users/${user.id}?isClerkID=true`)
         .then((response) => {
+          // console.log("response.data in header: ", response.data)
           localStorage.setItem("userId", response.data[0].id)
           localStorage.setItem("companyId", response.data[0].companyId || "")
+          localStorage.setItem(
+            "companyName",
+            response.data[0].companyName || ""
+          )
           setProvince(response.data[0].province || "")
         })
         .catch((error) => {
