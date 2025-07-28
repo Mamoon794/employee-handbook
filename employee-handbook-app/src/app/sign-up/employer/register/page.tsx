@@ -74,7 +74,7 @@ export default function EmployerRegistrationForm() {
     console.log('Metadata updated successfully'); // debugging
 
     console.log('Redirecting to dashboard...'); // debugging
-    router.push('/DashBoard');
+    router.push('/dashboard');
   } catch (err) {
     console.error('Detailed registration error:', err); // debugging
     setError(err instanceof Error ? err.message : 'Registration failed');
