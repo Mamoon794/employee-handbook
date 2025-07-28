@@ -2,6 +2,19 @@ import { useState } from "react";
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
+const pricingTiers = [
+  { min: 1, max: 9, price: 1.00 },
+  { min: 10, max: 49, price: 0.90 },
+  { min: 50, max: 99, price: 0.80 },
+  { min: 100, max: 499, price: 0.70 },
+  { min: 500, max: 999, price: 0.60 },
+  { min: 1000, max: 4999, price: 0.50 },
+  { min: 5000, max: 9999, price: 0.40 },
+  { min: 10000, max: 19999, price: 0.35 },
+  { min: 20000, max: 49999, price: 0.30 },
+  { min: 50000, max: 99999, price: 0.25 },
+];
+
 interface PaywallModalProps {
   onClose: () => void;
 }
@@ -41,11 +54,36 @@ export default function PaywallModal({ onClose }: PaywallModalProps) {
         </div>
 
         <div className="mb-6 p-3 bg-[#f5f7fb] rounded-lg pl-4">
-          <h3 className="text-base font-bold text-gray-800 mb-3 text-center">One-Time Payment:</h3>
-          <div className="flex justify-center">
-            <div className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm border-2 border-blue-200 w-full">
-              <span className="font-medium text-gray-700 text-sm">Premium Access</span>
-              <span className="font-bold text-blue-800 text-sm">$99</span>
+          <h3 className="text-base font-bold text-gray-800 mb-3 text-center">Monthly Pricing:</h3>
+          
+          {/* Employee Count Display */}
+          <div className="mb-4">
+            <div className="flex items-center justify-center space-x-2">
+              <span className="text-sm font-medium text-gray-700">Your Number of Employees:</span>
+              <span className="text-lg font-bold text-blue-800">10</span>
+              <span className="text-sm text-gray-600">employees</span>
+            </div>
+          </div>
+
+          {/* Pricing Tiers List */}
+          <div className="mb-4">
+            <h4 className="text-sm font-bold text-gray-700 mb-3 text-center">Pricing Tiers:</h4>
+            <div className="space-y-2 max-h-48 overflow-y-auto">
+              {pricingTiers.map((tier, index) => {
+                const isCurrentTier = 10 >= tier.min && 10 <= tier.max;
+                return (
+                  <div key={index} className={`flex justify-between items-center p-2 rounded-lg shadow-sm text-sm ${
+                    isCurrentTier ? 'bg-blue-100 border-2 border-blue-300' : 'bg-white'
+                  }`}>
+                    <span className={`${isCurrentTier ? 'font-bold text-blue-800' : 'text-gray-700'}`}>
+                      {tier.min.toLocaleString()}-{tier.max.toLocaleString()} employees
+                    </span>
+                    <span className={`${isCurrentTier ? 'font-bold text-blue-800' : 'font-bold text-blue-800'}`}>
+                      ${tier.price}/month per employee
+                    </span>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
