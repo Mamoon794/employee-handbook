@@ -70,7 +70,7 @@ export default function ChatUI() {
               Welcome to {welcomeCompany}!
             </h2>
             <p className="text-gray-600 mb-6">
-              You can now ask questions specific to your company's policies.
+              You can now ask questions specific to your company&apos;s policies.
             </p>
             <button 
               onClick={() => setShowWelcome(false)}

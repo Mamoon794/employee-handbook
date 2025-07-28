@@ -1,4 +1,3 @@
-/* eslint-disable */
 // initial employee sign up page -- clerk integration
 
 'use client';

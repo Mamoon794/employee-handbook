@@ -9,7 +9,7 @@ export default function EmployeeLogin() {
   const router = useRouter();
   const { isSignedIn } = useUser();
   const searchParams = useSearchParams();
-  const redirectUrl = searchParams.get('redirect_url') || '/chat';
+  //const redirectUrl = searchParams.get('redirect_url') || '/chat';
   const invitationId = searchParams.get('invitationId');
 
   useEffect(() => {

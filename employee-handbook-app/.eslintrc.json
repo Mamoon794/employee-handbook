@@ -1,5 +1,10 @@
 {
-  "extends": ["next/core-web-vitals", "plugin:react/recommended"],
+  "extends": ["next/core-web-vitals", "plugin:@typescript-eslint/recommended"],
+  "plugins": ["@typescript-eslint", "react"],
+  "rules": {
+    "react/react-in-jsx-scope": "off",
+    "react/no-unescaped-entities": "warn"
+  },
   "settings": {
     "react": {
       "version": "detect"
