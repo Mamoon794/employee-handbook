@@ -60,7 +60,6 @@ def get_response(userMessage: RAGInput):
     Get a response from the AI model based on the query.
     """
     try:
-        store_user_message_to_vector_store(userMessage.question, userMessage.province, userMessage.company)
         if userMessage.company == "":
             prompt = (
                 f"The user asked a question: \"{userMessage.question}\"\n\n"
@@ -132,6 +131,9 @@ def get_response(userMessage: RAGInput):
 
             public_clean, public_found = extract_and_clean(publicResponse)
             private_clean, private_found = extract_and_clean(privateResponse)
+
+            # Not a conversational question, store the user message to vector store
+            store_user_message_to_vector_store(userMessage.question, userMessage.province, userMessage.company)
 
             return {
                 "publicResponse": public_clean,
