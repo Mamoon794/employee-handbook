@@ -42,7 +42,6 @@ export default function ChatUI() {
         titleLoading={titleLoading}
         chats={chats}
         setChats={setChats}
-        setTitleLoading={setTitleLoading}
         totalChatsLength={totalChatsLength}
         setTotalChatsLength={setTotalChatsLength}
       />
