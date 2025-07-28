@@ -50,15 +50,26 @@ vector_store = PineconeVectorStore(embedding=embeddings, index=index)
 prompt = hub.pull("rlm/rag-prompt", api_url="https://api.smith.langchain.com")
 
 @tool(response_format="content_and_artifact")
-def retrieve(query: str, province: str):
-    """Retrieve employment-related information by searching indexed documents in the given province. If no province is specified, it defaults to "General". 
+def retrieve(query: str, province: str, company: str = ""):
+    """
+    Retrieve employment-related information by searching indexed documents 
+    within the specified province. If no province is given, it defaults to "General". 
+    If a company name is provided, it filters documents accordingly.
+
+    Use this tool only when the user is asking a factual or research-based question 
+    related to employment policies or company-specific matters. Do not use this tool for small talk, 
+    greetings, or general conversational questions.
+
     Parameters:
     - query: the user's question.
-    - province: province name like "Alberta", "British Columbia", etc."""
-    print("province:", province)
-    province_docs = vector_store.similarity_search(query, k=8, namespace=province)
+    - province: province name such as "Alberta", "British Columbia", etc.
+    - company: (optional) company name to filter documents.
+    """
+    # print("province:", province)
+    province_docs = vector_store.similarity_search(query, k=4, namespace=province)
     general_docs = vector_store.similarity_search(query, k=4, namespace="General")
-    retrieved_docs = province_docs + general_docs
+    company_docs = vector_store.similarity_search(query, k=4, namespace=company)
+    retrieved_docs = province_docs + general_docs + company_docs
     serialized = "\n\n".join(
         (f"DocMetadata: {doc.metadata}\n" f"DocContent: {doc.page_content}")
         for doc in retrieved_docs
@@ -88,16 +99,56 @@ def generate(state: MessagesState):
             break
     tool_messages = recent_tool_messages[::-1]
 
-    # Format into prompt
-    docs_content = "\n\n".join(doc.content for doc in tool_messages)
+    # print("tool_messages:", tool_messages)
+    # print("length", len(tool_messages))
+    docs = tool_messages[-1].artifact 
+    # Separate docs based on whether metadata has a "company" field
+    company_docs = [doc for doc in docs if "company" in doc.metadata]
+    non_company_docs = [doc for doc in docs if "company" not in doc.metadata]
+
+    # Format the doc content for each group
+    # print("company_docs:", company_docs)
+    company_docs_content = "\n\n".join(f"DocMetadata: {doc.metadata}\n" f"DocContent: {doc.page_content}" for doc in company_docs)
+    non_company_docs_content = "\n\n".join(f"DocMetadata: {doc.metadata}\n" f"DocContent: {doc.page_content}" for doc in non_company_docs)
+
+    # Construct system prompt
     system_message_content = (
-        "You are an assistant for question-answering tasks. If a retrieval "
-        "tool is available, use it to get relevant information before answering. "
-        "Answer with some details. If you really can't get the answer from the documents, "
-        "you can say things like I don't have enough information.\n\n"
-        "\n\n"
-        f"{docs_content}"
+        "You are an assistant for question-answering tasks. Use the retrieved documents to answer the user's question. "
+        "Format your response in **two clearly separated sections** as described below. "
+        "This formatting is required to allow automatic parsing:\n\n"
+        
+        "1. **public-doc**:\n"
+        "- Use only documents that do **not** have a company name in their metadata.\n"
+        "- Begin with a legal-sounding tone such as:\n"
+        "  \"Based on the applicable law, ...\" or \"According to relevant legal guidance, ...\"\n"
+        "- If no relevant information is found, still write a sentence in the expected tone and end with [Found: No]\n"
+        "- If relevant information is found, write the answer and end with [Found: Yes]\n"
+        "- Start this section with exactly: **public-doc**:\n"
+        
+        "2. **company-doc**:\n"
+        "- Use only documents that **do** have a company name in their metadata.\n"
+        "- Begin with a company policy tone such as:\n"
+        "  \"Based on the employee manual, ...\" or \"According to [Company]'s internal policy, ...\"\n"
+        "- Replace [Company] with the actual company name found in the metadata.\n"
+        "- If the company name is not found in the metadata, use a generic term like \"the company\".\n"
+        "- If no relevant information is found, still write a sentence in the expected tone and end with [Found: No]\n"
+        "- If relevant information is found, write the answer and end with [Found: Yes]\n"
+        "- Start this section with exactly: **company-doc**:\n\n"
+        
+        "Important:\n"
+        "- Do not include any extra sections or commentary outside the two headers.\n"
+        "- Each section must end with [Found: Yes] or [Found: No].\n"
+        "- Do not number the sections. Do not prefix with “1.” or “2.”\n"
+        "— just use the headers exactly as shown: **public-doc**: and **company-doc**:\n\n"
+        
+        "---\n"
+        "public-doc documents:\n"
+        f"{non_company_docs_content}\n\n"
+        "---\n"
+        "company-doc documents:\n"
+        f"{company_docs_content}"
     )
+
     conversation_messages = [
         message
         for message in state["messages"]
@@ -204,7 +255,6 @@ def batch_add_documents(vector_store, documents, namespace, batch_size=100, max_
             print(f"[ERROR] Giving up on batch {i // batch_size + 1} after {max_retries} retries.")
 
 def index_documents():
-    index.describe_index_stats()
     stats = index.describe_index_stats()
     existing_namespaces = stats.get("namespaces", {})
     for namespace, docs in allData.items():
@@ -219,6 +269,34 @@ def index_documents():
             index.delete(delete_all=True, namespace=namespace)
         # print("length of splits:", len(splits))
         batch_add_documents(vector_store, splits, namespace=namespace, batch_size=50)
+
+# Convert the Document objects to emmbeddings and upload to Pinecone vector store
+def batch_add_company_documents(vector_store, documents, company=None, batch_size=100):
+    for i in range(0, len(documents), batch_size):
+        batch = documents[i:i + batch_size]
+        for doc in batch:
+            doc.metadata.update({
+                "company": company,
+            })
+        try:
+            vector_store.add_documents(batch, namespace=company)
+        except Exception as e:
+            print(f"Failed to upload batch {i // batch_size + 1}: {e}")
+
+def index_company_documents(splits, company):
+    batch_add_company_documents(vector_store, splits, company=company, batch_size=50)
+
+def delete_company_documents_from_vector_db(company):
+    """
+    Deletes all documents in the vector store for the specified company.
+    """
+    index.delete(delete_all=True, namespace=company)
+
+def delete_document_from_vector_db(url, company):
+    """
+    Deletes a document from the vector store based on the provided URL and company.
+    """
+    index.delete(filter={"source": {"$eq": url}}, namespace=company)
 
 if __name__ == "__main__":
     # Load your JSON file
