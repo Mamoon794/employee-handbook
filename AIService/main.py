@@ -108,15 +108,15 @@ def get_response(userMessage: RAGInput):
 
             response = last_step["messages"][-1]
             bothResponse = response.content if hasattr(response, "content") else response
-            print("bothResponse:", bothResponse)
+            # print("bothResponse:", bothResponse)
             match_non_company = re.search(r"\*\*public-doc\*\*:\s*(.*?)(?=\n\*\*company-doc\*\*:)", bothResponse, re.DOTALL)
             match_company = re.search(r"\*\*company-doc\*\*:\s*(.*)", bothResponse, re.DOTALL)
 
             publicResponse = match_non_company.group(1).strip() if match_non_company else None
             privateResponse = match_company.group(1).strip() if match_company else None
 
-            print("publicResponse:", publicResponse)
-            print("privateResponse:", privateResponse)
+            # print("publicResponse:", publicResponse)
+            # print("privateResponse:", privateResponse)
 
             if not publicResponse or not privateResponse:
                 # this is a conversational question, no documents found
@@ -187,56 +187,6 @@ def generate_title(titleInput: TitleInput):
     except Exception as e:
         # if anything goes wrong, return a default title
         return {"title": "New Chat", "chatId": titleInput.chatId, "saved": False}
-
-# step = {
-#     "messages": [
-#         HumanMessage(...),       # no artifact
-#         AIMessage(...),          # no artifact
-#         ToolMessage(...),        # has .artifact
-#         ...
-#     ]
-# }
-
-# # Load environment variables
-# load_dotenv()
-
-# # Ensure required environment variables are set
-# if not os.environ.get("GOOGLE_API_KEY"):
-#     print("Please set the GOOGLE_API_KEY environment variable.")
-
-# if not os.environ.get("PINECONE_API_KEY"):
-#     print("Please set the GOOGLE_API_KEY environment variable.")
-# pc_api_key = os.environ.get("PINECONE_API_KEY")
-
-# if not os.environ.get("PINECONE_INDEX_NAME"):
-#     print("Please set the PINECONE_INDEX_NAME environment variable.")
-# index_name = os.environ.get("PINECONE_INDEX_NAME")
-
-# # Initialize llm models and vector store
-# llm = init_chat_model("gemini-2.0-flash", model_provider="google_genai")
-# embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
-
-# # Initialize Pinecone vector store
-# pc = Pinecone(api_key=pc_api_key)
-# index = pc.Index(index_name)
-# vector_store = PineconeVectorStore(embedding=embeddings, index=index)
-
-
-# # Convert the Document objects to emmbeddings and upload to Pinecone vector store
-# def batch_add_documents(vector_store, documents, company, region, access_level, batch_size=100):
-#     for i in range(0, len(documents), batch_size):
-#         batch = documents[i:i + batch_size]
-#         for doc in batch:
-#             doc.metadata.update({
-#                 "access_level": access_level,
-#                 "company": company,
-#                 "region": region
-#             })
-#         try:
-#             vector_store.add_documents(batch, namespace=company)
-#         except Exception as e:
-#             print(f"Failed to upload batch {i // batch_size + 1}: {e}")
-
 
 class DocInput(BaseModel):
     """
