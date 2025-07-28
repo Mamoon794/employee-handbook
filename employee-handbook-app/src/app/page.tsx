@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useUser } from '@clerk/nextjs';
-import {MessageThread, InputMessage, Header, PublicChatSideBar } from './global_components';
+import {MessageThread, InputMessage, Header, PublicChatSideBar, Disclaimer, PopularQuestions } from './global_components';
 import { useRouter } from 'next/navigation';
 import axiosInstance from './axios_config';
 
@@ -80,51 +80,34 @@ export default function Home() {
       <div className="flex-1 flex flex-col min-h-screen">
         <Header province={province} setProvince={setProvince} />
     
-        <main className="flex-1 flex flex-col justify-between px-6 pb-6">
-        <div className="flex flex-col flex-1 px-6 pb-2 overflow-hidden">
+        <main className="flex-1 flex flex-col justify-between px-6 pb-6 relative">
           {!isSignedIn && !province && (
             <ProvincePopup onSave={(prov) => setProvince(prov)} />
           )}
-    
-          <div className="flex-1 overflow-y-auto">
-            <MessageThread messageList={messages} error={error} />
+
+          <MessageThread messageList={messages} error={error} />
+          <div
+            className="absolute bottom-6 left-0 right-0 mx-10"
+          >
+            {messages.length === 0 && (
+              <PopularQuestions setInputValue={setInputValue} />
+            )}
+
+            <InputMessage
+              inputValue={inputValue}
+              setInputValue={setInputValue}
+              isPrivate={false}
+              setError={setError}
+              setMessages={setMessages}
+              province={province}
+              threadId={threadIdRef.current}
+              chats={chats}
+              setChats={setChats}
+              chatId={currChatId}
+            />
+            
+            <Disclaimer/>
           </div>
-
-          {messages.length === 0 && (
-            <div className="flex justify-center gap-4 pb-4">
-              {[
-                "Do I get paid breaks?",
-                "What is the minimum wage?",
-                "Do I get sick days?",
-              ].map((q, i) => (
-                <button
-                  key={i}
-                  onClick={() => setInputValue(q)}
-                  className="bg-blue-800 text-white font-semibold px-6 py-2 rounded-md hover:bg-blue-600 transition-colors"
-                >
-                  {q}
-                </button>
-              ))}
-            </div>
-          )}
-
-          <InputMessage
-            inputValue={inputValue}
-            setInputValue={setInputValue}
-            isPrivate={false}
-            setError={setError}
-            setMessages={setMessages}
-            province={province}
-            threadId={threadIdRef.current}
-            chats={chats}
-            setChats={setChats}
-            chatId={currChatId}
-          />
-    
-          <p className="text-center text-sm text-gray-500 mt-2">
-            Gail can make mistakes. Your privacy is protected.
-          </p>
-        </div>
         </main>
       </div>
     </div>

@@ -1,10 +1,10 @@
-'use client';
+"use client"
 
-import { useState } from 'react';
-import { Menu, Pencil, Plus, Search } from 'lucide-react';
+import { useState } from "react"
+import { Menu, Pencil, Plus, Search } from "lucide-react"
 
 export default function PublicChatUI() {
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("")
 
   return (
     <div className="min-h-screen flex bg-white">
@@ -24,7 +24,9 @@ export default function PublicChatUI() {
         {/* Header */}
         <header className="flex justify-between items-center px-6 py-4">
           <h1 className="text-2xl font-extrabold italic text-blue-800">Gail</h1>
-          <button className="px-4 py-2 text-sm border rounded-full text-gray-700 hover:bg-gray-50">Log Out</button>
+          <button className="px-4 py-2 text-sm border rounded-full text-gray-700 hover:bg-gray-50">
+            Log Out
+          </button>
         </header>
 
         {/* Chat Area */}
@@ -39,17 +41,17 @@ export default function PublicChatUI() {
             {/* Assistant message */}
             <div className="self-start bg-gray-100 text-gray-800 p-4 rounded-2xl max-w-[70%] shadow-sm">
               <p className="mb-4">
-                Yes, depending on your jurisdiction, you may be entitled to paid breaks.
+                Yes, depending on your jurisdiction, you may be entitled to paid
+                breaks.
               </p>
               <p className="mb-4">
-                In many provinces (e.g., Ontario), employees are entitled to a 30-minute unpaid break after 5
-                consecutive hours of work. However, paid rest breaks (like two 15-minute coffee breaks) are not
-                mandatory under the law — they are often provided by the employer as part of company policy.
+                In many provinces (e.g., Ontario), employees are entitled to a
+                30-minute unpaid break after 5 consecutive hours of work.
+                However, paid rest breaks (like two 15-minute coffee breaks) are
+                not mandatory under the law — they are often provided by the
+                employer as part of company policy.
               </p>
-              <a
-                href="#"
-                className="font-bold text-blue-800 underline"
-              >
+              <a href="#" className="font-bold text-blue-800 underline">
                 Learn more from the Canadian Department of Labour.
               </a>
             </div>
@@ -75,5 +77,5 @@ export default function PublicChatUI() {
         </main>
       </div>
     </div>
-  );
+  )
 }

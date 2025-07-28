@@ -101,7 +101,8 @@ function PublicChatSideBar({
   chats: PublicChat[]
   setChats: Dispatch<SetStateAction<PublicChat[]>>
 }) {
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  // Add collapsed state
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   useEffect(() => {
     const storedChats = localStorage.getItem("publicChats")
@@ -162,37 +163,43 @@ function PublicChatSideBar({
   }
 
   return (
-    <aside className="w-64 h-screen bg-[#1F2251] text-white flex flex-col min-h-screen relative">
-      <div className="flex justify-between items-center p-4">
-        <Menu className="text-gray-400" />
-      </div>
-      <div className="px-4 text-sm text-gray-300 mb-2">Today</div>
-      {chats.map((chat, index) => (
-        <button
-          key={`${chat.id}-${index}`}
-          className={`bg-[#343769] text-white text-left px-4 py-2 mx-4 rounded-lg hover:bg-[#45488f] ${
-            currChatId === chat.id ? "border border-blue-300" : ""
-          }`}
-          onClick={() => selectChat(chat)}
-        >
-          <div className="flex items-center justify-between">
-            <span className="font-medium">{chat.title}</span>
-            {currChatId === chat.id && (
-              <Trash2
-                className="text-gray-400"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  handleDelete(chat.id)
-                }}
-              />
-            )}
-          </div>
+    <aside className={`${isCollapsed ? 'w-16' : 'w-64'} h-screen bg-[#1F2251] text-white flex flex-col min-h-screen relative transition-all duration-300`}>
+      <div className="relative flex p-5 w-full">
+        <button onClick={() => setIsCollapsed(!isCollapsed)} aria-label="Toggle sidebar" className="text-gray-400 hover:text-white transition-colors">
+          <Menu />
         </button>
-      ))}
+      </div>
+      {!isCollapsed && (
+        <>
+          <div className="px-4 text-sm text-gray-300 mb-2">Today</div>
+          {chats.map((chat, index) => (
+            <button
+              key={`${chat.id}-${index}`}
+              className={`bg-[#343769] text-white text-left px-4 py-2 mx-4 rounded-lg hover:bg-[#45488f] ${
+                currChatId === chat.id ? "border border-blue-300" : ""
+              }`}
+              onClick={() => selectChat(chat)}
+            >
+              <div className="flex items-center justify-between">
+                <span className="font-medium">{chat.title}</span>
+                {currChatId === chat.id && (
+                  <Trash2
+                    className="text-gray-400"
+                    onClick={e => {
+                      e.stopPropagation();
+                      handleDelete(chat.id);
+                    }}
+                  />
+                )}
+              </div>
+            </button>
+          ))}
 
-      <button className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-300 rounded-full p-2 hover:bg-gray-400">
-        <Plus className="text-[#1F2251]" onClick={handleNewChat} />
-      </button>
+          <button className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-300 rounded-full p-2 hover:bg-gray-400">
+            <Plus className="text-[#1F2251]" onClick={handleNewChat} />
+          </button>
+        </>
+      )}
     </aside>
   )
 }
@@ -223,6 +230,8 @@ function PrivateChatSideBar({
 
   const [showPopup, setShowPopup] = useState(false)
   const [dontShowAgain, setDontShowAgain] = useState(false)
+  // Add collapsed state
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem("hideChatWarning")
@@ -343,60 +352,63 @@ function PrivateChatSideBar({
   }
 
   return (
-    <aside className="w-64 bg-[#1F2251] text-white flex flex-col min-h-screen relative">
-      <div className="flex justify-between items-center p-4">
-        <Menu className="text-gray-400" />
+    <aside className={`${isCollapsed ? 'w-16' : 'w-64'} bg-[#1F2251] text-white flex flex-col min-h-screen relative transition-all duration-300`}>
+      <div className="relative flex p-5 w-full">
+        <button onClick={() => setIsCollapsed(!isCollapsed)} aria-label="Toggle sidebar" className="text-gray-400 hover:text-white transition-colors">
+          <Menu />
+        </button>
       </div>
-      {/* Spacer to push chats to the bottom */}
-      {/* <div className="flex-grow"></div> */}
-      <div className="">
-        <div className="px-4 text-sm text-gray-300 mb-2">Today</div>
-        <div className="flex flex-col mb-20 space-y-2">
-          {chats.map((chat, index) => (
-            <button
-              key={`${chat.id}-${index}`}
-              className="bg-[#343769] text-white text-left px-4 py-2 mx-4 rounded-lg hover:bg-[#45488f] text-sm sm:text-base
-"
-              onClick={() => {
-                handleChatChange(chat)
-              }}
-            >
-              <div className="flex items-center justify-between">
-                <span className="font-medium">
-                  {titleLoading && selectedChat?.id === chat.id
-                    ? "Generating..."
-                    : chat.title}
-                </span>
-                {selectedChat?.id === chat.id && (
-                  <Trash2
-                    className="text-gray-400"
-                    onClick={() => {
-                      axiosInstance
-                        .delete(`/api/chat/${chat.id}`)
-                        .then(() => {
-                          setChats(chats.filter((c) => c.id !== chat.id))
-                          if (selectedChat?.id === chat.id) {
-                            setSelectedChat(null)
-                            setMessages([])
-                            setCurrChatId("")
-                          }
-                        })
-                        .catch((error) => {
-                          console.error("Error deleting chat:", error)
-                        })
-                    }}
-                  />
-                )}
-              </div>
-            </button>
-          ))}
-        </div>
-      </div>
+      {!isCollapsed && (
+        <>
+          <div className="px-4 text-sm text-gray-300 mb-2">Today</div>
+          <div className="flex flex-col mb-20 space-y-2">
+            {chats.map((chat, index) => (
+              <button
+                key={`${chat.id}-${index}`}
+                className="bg-[#343769] text-white text-left px-4 py-2 mx-4 rounded-lg hover:bg-[#45488f] text-sm sm:text-base"
+                onClick={() => {
+                  handleChatChange(chat)
+                }}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-medium">
+                    {titleLoading && selectedChat?.id === chat.id
+                      ? "Generating..."
+                      : chat.title}
+                  </span>
+                  {selectedChat?.id === chat.id && (
+                    <Trash2
+                      className="text-gray-400"
+                      onClick={() => {
+                        axiosInstance
+                          .delete(`/api/chat/${chat.id}`)
+                          .then(() => {
+                            setChats(chats.filter((c) => c.id !== chat.id))
+                            if (selectedChat?.id === chat.id) {
+                              setSelectedChat(null)
+                              setMessages([])
+                              setCurrChatId("")
+                            }
+                          })
+                          .catch((error) => {
+                            console.error("Error deleting chat:", error)
+                          })
+                      }}
+                    />
+                  )}
+                </div>
+              </button>
+            ))}
+          </div>
+        </>
+      )}
 
       {/* New Chat Button */}
-      <button className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-300 rounded-full p-2 hover:bg-gray-400">
-        <Plus className="text-[#1F2251]" onClick={showChatWarningPopup} />
-      </button>
+      {!isCollapsed && (
+        <button className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-300 rounded-full p-2 hover:bg-gray-400">
+          <Plus className="text-[#1F2251]" onClick={showChatWarningPopup} />
+        </button>
+      )}
 
       {/* Popup */}
       {showPopup && (
@@ -438,6 +450,30 @@ function PrivateChatSideBar({
   )
 }
 
+function PopularQuestions({
+  setInputValue
+}: {
+  setInputValue: (inputValue: string) => void
+}) {
+  return (
+    <div className="flex flex-col sm:flex-row justify-center gap-4 pb-4">
+      {[
+        "Do I get paid breaks?",
+        "What is the minimum wage?",
+        "Do I get sick days?",
+      ].map((q, i) => (
+        <button
+          key={i}
+          onClick={() => setInputValue(q)}
+          className="bg-blue-800 text-white font-semibold px-6 py-2 rounded-md hover:bg-blue-600 transition-colors"
+        >
+          {q}
+        </button>
+      ))}
+    </div>
+  )
+}
+
 function MessageThread({
   messageList,
   error,
@@ -457,8 +493,8 @@ function MessageThread({
 
   return (
     <div
-      className="flex flex-col gap-6 py-6 px-1 overflow-y-auto"
-      style={{ height: "calc(100vh - 200px)" }}
+      className="flex flex-1 flex-col gap-6 py-6 px-1 overflow-y-auto"
+      style={{ maxHeight: "calc(100vh - 130px)" }}
     >
       {messageList.length === 0 ? (
         <div className="flex flex-col justify-center items-center text-center pt-70">
@@ -474,7 +510,9 @@ function MessageThread({
           <div key={index} className="flex flex-col">
             {message.isFromUser ? (
               <div className="self-end bg-blue-100 text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm text-lg">
-                <p>{message.content}</p>
+                {message.content.split("\n").map((line, idx) =>
+                  line === "" ? <br key={idx} /> : <p key={idx}>{line}</p>
+                )}
               </div>
             ) : (
               <div className="self-start bg-gray-100 text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm">
@@ -541,8 +579,13 @@ function Header({
       axiosInstance
         .get(`/api/users/${user.id}?isClerkID=true`)
         .then((response) => {
+          // console.log("response.data in header: ", response.data)
           localStorage.setItem("userId", response.data[0].id)
           localStorage.setItem("companyId", response.data[0].companyId || "")
+          localStorage.setItem(
+            "companyName",
+            response.data[0].companyName || ""
+          )
           setProvince(response.data[0].province || "")
         })
         .catch((error) => {
@@ -670,10 +713,20 @@ function ProvinceDropdown({
   )
 }
 
+function Disclaimer() {
+  return (
+    <p className="text-center text-sm text-gray-500 mt-4">
+      Gail can make mistakes. Your privacy is protected.
+    </p>
+  )
+}
+
 export {
   PrivateChatSideBar,
   PublicChatSideBar,
+  PopularQuestions,
   MessageThread,
   InputMessage,
   Header,
+  Disclaimer
 }

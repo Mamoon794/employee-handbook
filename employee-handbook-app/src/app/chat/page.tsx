@@ -7,6 +7,8 @@ import {
   InputMessage,
   Header,
   Chat,
+  Disclaimer,
+  PopularQuestions,
 } from "../global_components"
 import { Message } from "../../models/schema"
 import { useUser } from "@clerk/nextjs"
@@ -51,28 +53,34 @@ export default function ChatUI() {
         <Header province={province} setProvince={setProvince} />
 
         {/* Chat Area */}
-        <main className="flex-1 flex flex-col justify-between px-6 pb-6">
+        <main className="flex-1 flex flex-col justify-between px-6 pb-6 relative">
           {/* Message Thread */}
           <MessageThread messageList={messages} error={error} />
 
-          {/* Input Bar */}
-          <InputMessage
-            inputValue={inputValue}
-            province={province}
-            setInputValue={setInputValue}
-            isPrivate={true}
-            setMessages={setMessages}
-            chatId={currChatId}
-            setCurrChatId={setCurrChatId}
-            setError={setError}
-            setTitleLoading={setTitleLoading}
-            setChats={setChats}
-            chats={chats}
-          />
+          <div
+            className="absolute bottom-6 left-0 right-0 mx-10"
+          >
+            {messages.length === 0 && (
+              <PopularQuestions setInputValue={setInputValue} />
+            )}
 
-          <p className="text-center text-sm text-gray-500 mt-4">
-            Gail can make mistakes. Your privacy is protected.
-          </p>
+            {/* Input Bar */}
+            <InputMessage
+              inputValue={inputValue}
+              province={province}
+              setInputValue={setInputValue}
+              isPrivate={true}
+              setMessages={setMessages}
+              chatId={currChatId}
+              setCurrChatId={setCurrChatId}
+              setError={setError}
+              setTitleLoading={setTitleLoading}
+              setChats={setChats}
+              chats={chats}
+            />
+
+            <Disclaimer/>
+          </div>
         </main>
       </div>
     </div>

@@ -1,9 +1,3 @@
-"""webScraper.py
-This script crawls a set of URLs to extract relevant documents related to employment law.
-It identifies HTML and PDF documents, extracts text, and saves the results in a structured
-format in a pickle file."""
-
-import json
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse, urldefrag
@@ -12,7 +6,6 @@ from langchain_community.document_loaders import WebBaseLoader, PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 import fitz # PyMuPDF for PDF handling
 import io
-import pickle
 
 
 TARGET_KEYWORDS = [
@@ -26,8 +19,9 @@ VISITED = set()
 splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200, add_start_index=True)
 
 def is_relevant(text):
-    lower_text = text.lower()
-    return any(keyword in lower_text for keyword in TARGET_KEYWORDS)
+    # lower_text = text.lower()
+    # return any(keyword in lower_text for keyword in TARGET_KEYWORDS)
+    return True
 
 def remove_fragment(url):
     """
@@ -63,7 +57,7 @@ def extract_pdf_links(pdf_url):
     return links
 
 # returns a list of LangChain Documents from the crawled URL
-def crawl(url, namespace="General", depth=0, max_depth=MAX_DEPTH, domain=None):
+def crawl_company_docs(url, company, namespace="General", depth=0, max_depth=MAX_DEPTH, domain=None):
     if url in VISITED or depth > max_depth:
         return []
 
@@ -104,10 +98,11 @@ def crawl(url, namespace="General", depth=0, max_depth=MAX_DEPTH, domain=None):
             for page in docs:
                 page.metadata["type"] = "pdf"
                 page.metadata["namespace"] = namespace
+                page.metadata["company"] = company
             for pdf_link in links:
                 full_pdf_link = remove_fragment(urljoin(url, pdf_link))
                 if domain == get_domain(full_pdf_link) and full_pdf_link not in VISITED:
-                    docs.extend(crawl(full_pdf_link, namespace, depth + 1, max_depth, domain=domain))
+                    docs.extend(crawl_company_docs(full_pdf_link, company, namespace, depth + 1, max_depth, domain=domain))
             splitted_docs = splitter.split_documents(docs)
             return splitted_docs
         # add sublinks from HTML pages
@@ -131,13 +126,13 @@ def crawl(url, namespace="General", depth=0, max_depth=MAX_DEPTH, domain=None):
             # Build LangChain Document
             doc = Document(
                 page_content=page_text,
-                metadata={"type": "html", "source": url, "title": page_title, "namespace": namespace}
+                metadata={"type": "html", "source": url, "title": page_title, "namespace": namespace, "company": company}
             )
             docs = [doc]
             for link in soup.find_all("a", href=True):
                 full_url = remove_fragment(urljoin(url, link["href"]))
                 if domain == get_domain(full_url) and full_url not in VISITED and not "/fr/" in full_url:
-                    docs.extend(crawl(full_url, namespace, depth + 1, max_depth, domain=domain))
+                    docs.extend(crawl_company_docs(full_url, company, namespace, depth + 1, max_depth, domain=domain))
 
             splitted_docs = splitter.split_documents(docs)
             return splitted_docs
@@ -145,46 +140,3 @@ def crawl(url, namespace="General", depth=0, max_depth=MAX_DEPTH, domain=None):
     except Exception as e:
         print(f"Failed on {url}: {e}")
         return []
-
-# Load seed URLs from a JSON file
-def crawl_seed_urls(json_path):
-    with open(json_path, "r") as f:
-        data = json.load(f)
-
-    for item in data.get("General", []):
-        url = item.get("url")
-        domain = get_domain(url)
-        docs = crawl(url, namespace="General", domain=domain)
-        extracted_docs.setdefault("General", []).extend(docs)
-
-    for province in data.get("provinces", []):
-        count = 0
-        for doc in province.get("docs", []):
-            url = doc.get("url")
-            domain = get_domain(url)
-            docs = crawl(url, namespace=province["name"], domain=domain)
-            count += len(docs)
-            print(f"Crawled {count} documents for {province['name']} from {url}")
-            extracted_docs.setdefault(province["name"], []).extend(docs)
-
-    print(f"Total count for {province['name']}: {count}")
-    print(f"Total documents extracted for {province['name']}: {len(extracted_docs.get(province['name'], []))}")
-
-    return
-
-if __name__ == "__main__":
-    extracted_docs = {}
-
-    # Load your JSON file
-    crawl_seed_urls("providedDoc.json") # providedDoc: 236.32s user 12.97s system 8% cpu 46:15.07 total
-
-    # with same domain restriction: 21687, without domain restriction: 27398
-    # print(f"Total documents extracted: {len(extracted_docs)}")
-    # for namespace, docs in extracted_docs.items():
-    #     print(f"number of documents in namespace '{namespace}': {len(docs)}")
-
-    # Save the extracted documents to a pickle file
-    with open("extracted_docs.pkl", "wb") as f:
-        pickle.dump(extracted_docs, f)
-
-    # print("Extracted documents:", extracted_docs)
