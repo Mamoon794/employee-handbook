@@ -36,7 +36,7 @@ export function MessageInput({
   setMessages: Dispatch<SetStateAction<Message[]>>
   setError: Dispatch<SetStateAction<string>>
   setCurrChatId: Dispatch<SetStateAction<string>>
-  setTitleLoading?: Dispatch<SetStateAction<boolean>>
+  setTitleLoading: Dispatch<SetStateAction<boolean>>
   setChats: Dispatch<SetStateAction<Chat[]>>
   chats: Chat[]
 }) {
@@ -103,12 +103,51 @@ export function MessageInput({
     }
   }
 
+  /**
+   * Fetches an AI‐generated title and updates chats accordingly.
+   * Always triggers AI title generation after the first message in a chat,
+   * i.e. when the chat is brand-new (only one message) or has been flagged
+   * for a title update (needsTitleUpdate = true).
+   */
+  const generateChatTitle = async (
+    message: string,
+    chatId: string,
+    userId: string
+  ) => {
+    setTitleLoading(true);
+    try {
+      const res = await fetch("/api/generate-title", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message, chatId, userId }),
+      });
+
+      if (!res.ok) throw new Error("Title generation failed");
+
+      const { title } = await res.json();
+      if (title && title !== "New Chat") {
+        setChats(prevChats =>
+          prevChats.map(c =>
+            c.id === chatId
+              ? { ...c, title, needsTitleUpdate: false }
+              : c
+          )
+        );
+      }
+    } catch (err) {
+      console.error("Title generation failed", err);
+    } finally {
+      setTitleLoading(false);
+    }
+  };
+
   const submitUserMessage = async () => {
-    if (!inputValue.trim()) return
+    const messageContent = inputValue.trim();
+    if (!messageContent) return;
 
     const userMessage: Omit<Message, "createdAt"> = {
       isFromUser: true,
-      content: inputValue,
+      content: messageContent,
     }
 
     try {
@@ -153,40 +192,7 @@ export function MessageInput({
             return updated;
           });
         }
-        await handlePublicChat(newChatId);
-
-        // AI-generated title for public chat
-        if (setChats && (isNewChat || (chatObj && chatObj.needsTitleUpdate))) {
-          if (setTitleLoading) setTitleLoading(true);
-          try {
-            const titleRes = await fetch('/api/generate-title', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                message: inputValue,
-                chatId: newChatId,
-                userId: 'public'
-              }),
-            });
-
-            if (!titleRes.ok) throw new Error('Title generation failed');
-
-            const { title } = await titleRes.json();
-            if (title && title !== "New Chat" && setChats) {
-              setChats(prevChats => {
-                return prevChats.map(chat =>
-                  chat.id === (newChatId)
-                    ? { ...chat, title, needsTitleUpdate: false }
-                    : chat
-                );
-              });
-            }
-          } catch (err) {
-            console.error('title generation failed', err);
-          } finally {
-            if (setTitleLoading) setTitleLoading(false);
-          }
-        }
+        await handlePublicChat(newChatId, messageContent);
       } else { // private user
         setMessages((prevMessages) => {
           return [...prevMessages, userMessage as Message]
@@ -201,49 +207,22 @@ export function MessageInput({
           })
           newChatId = newChat.data.id
           if (setCurrChatId) setCurrChatId(newChatId)
-          await handlePrivateChat(newChatId)
         } else {
           await axiosInstance.put(`/api/chat/${chatId}/add-message`, {
             messageData: userMessage
           });
-          await handlePrivateChat(newChatId);
         }
-
-        // Always trigger AI title generation after the first message in a chat
-        // Only do this if the chat has exactly one message (i.e., just created)
-        // or if needsTitleUpdate is true
-        if (setChats && (isNewChat || (chatObj && chatObj.needsTitleUpdate))) {
-          if (setTitleLoading) setTitleLoading(true)
-          try {
-            const titleRes = await fetch("/api/generate-title", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                message: inputValue,
-                chatId: newChatId,
-                userId: localStorage.getItem("userId"),
-              }),
-            })
-
-            if (!titleRes.ok) throw new Error("Title generation failed")
-
-            const { title } = await titleRes.json()
-            if (title && title !== "New Chat" && setChats) {
-              setChats((prevChats) => {
-                return prevChats.map((chat) =>
-                  chat.id === newChatId
-                    ? { ...chat, title, needsTitleUpdate: false }
-                    : chat
-                )
-              })
-            }
-          } catch (err) {
-            console.error("title generation failed", err)
-          } finally {
-            if (setTitleLoading) setTitleLoading(false)
-          }
-        }
+        await handlePrivateChat(newChatId, messageContent)
       }
+
+      const shouldGenerateTitle = isNewChat || (chatObj && chatObj.needsTitleUpdate);
+      if (shouldGenerateTitle) {
+        const userId = isPrivate
+          ? localStorage.getItem("userId") || ""
+          : "public";
+        await generateChatTitle(messageContent, newChatId, userId);
+      }
+
     } catch (err) {
       console.error(err)
       setError(errorMessage)
@@ -257,14 +236,14 @@ export function MessageInput({
     }))
   }
 
-  const handlePrivateChat = async (new_chatId: string) => {
+  const handlePrivateChat = async (newChatId: string, message: string) => {
     const full_province = province ? province_map[province] : ""
     console.log("private province", province)
     const companyName = localStorage.getItem("companyName") || ""
     const res = await axiosInstance.post(`/api/messages/private`, {
       province: full_province,
-      query: inputValue,
-      threadId: new_chatId,
+      query: message,
+      threadId: newChatId,
       company: companyName,
     })
     if (res.status !== 200) {
@@ -280,7 +259,7 @@ export function MessageInput({
         sources: mapCitationsToLinks(data.citations),
       }
       setMessages((prevMessages) => [...prevMessages, botMessage as Message])
-      axiosInstance.put(`/api/chat/${new_chatId}/add-message`, {
+      axiosInstance.put(`/api/chat/${newChatId}/add-message`, {
         messageData: botMessage,
       })
     } else {
@@ -288,7 +267,7 @@ export function MessageInput({
     }
   };
   
-  const handlePublicChat = async (newChatId: string) => {
+  const handlePublicChat = async (newChatId: string, message: string) => {
     if (!province) return;
 
     try {
@@ -298,7 +277,7 @@ export function MessageInput({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           province,
-          query: inputValue,
+          query: message,
           threadId: newChatId,
           company: "",
         }),

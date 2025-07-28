@@ -46,7 +46,7 @@ export interface PublicChat {
   id: string
   title: string
   messages?: Message[]
-  needsTitleUpdate: boolean
+  needsTitleUpdate?: boolean
 }
 
 function getRowClass(i: number, total: number) {
@@ -99,12 +99,14 @@ function PublicChatSideBar({
   currChatId,
   chats,
   setChats,
+  titleLoading
 }: {
   setMessages: Dispatch<SetStateAction<Message[]>>
   setCurrChatId: (chatId: string) => void
   currChatId: string
   chats: PublicChat[]
   setChats: Dispatch<SetStateAction<PublicChat[]>>
+  titleLoading: boolean
 }) {
   // Add collapsed state
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -155,7 +157,11 @@ function PublicChatSideBar({
               onClick={() => selectChat(chat)}
             >
               <div className="flex items-center justify-between">
-                <span className="font-medium">{chat.title}</span>
+                <span className="font-medium">
+                  {titleLoading && currChatId === chat.id
+                    ? "Generating Title..."
+                    : chat.title}
+                </span>
                 {currChatId === chat.id && (
                   <Trash2
                     className="text-gray-400"
@@ -185,7 +191,6 @@ function PrivateChatSideBar({
   titleLoading,
   chats,
   setChats,
-  setTitleLoading,
   totalChatsLength,
   setTotalChatsLength,
 }: {
@@ -195,7 +200,6 @@ function PrivateChatSideBar({
   titleLoading: boolean
   chats: PrivateChat[]
   setChats: Dispatch<SetStateAction<PrivateChat[]>>
-  setTitleLoading: Dispatch<SetStateAction<boolean>>
   totalChatsLength: number
   setTotalChatsLength: Dispatch<SetStateAction<number>>
 }) {
@@ -347,7 +351,7 @@ function PrivateChatSideBar({
                 <div className="flex items-center justify-between">
                   <span className="font-medium">
                     {titleLoading && selectedChat?.id === chat.id
-                      ? "Generating..."
+                      ? "Generating Title..."
                       : chat.title}
                   </span>
                   {selectedChat?.id === chat.id && (

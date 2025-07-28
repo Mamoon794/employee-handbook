@@ -20,6 +20,7 @@ export default function Home() {
   const [messages, setMessages] = useState([] as Message[]);
   const [error, setError] = useState<string>('');
   const [currChatId, setCurrChatId] = useState<string>('');
+  const [titleLoading, setTitleLoading] = useState(false)
 
   useEffect(() => {
     const storedChats = localStorage.getItem("publicChats")
@@ -87,7 +88,14 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex bg-white flex-row">
-      <PublicChatSideBar setCurrChatId={setCurrChatId} currChatId={currChatId} setMessages={setMessages} chats={chats} setChats={setChats}/>
+      <PublicChatSideBar 
+        setCurrChatId={setCurrChatId} 
+        currChatId={currChatId} 
+        setMessages={setMessages} 
+        chats={chats} 
+        setChats={setChats}
+        titleLoading={titleLoading}
+      />
       
       <div className="flex-1 flex flex-col min-h-screen">
         <Header province={province} setProvince={setProvince} />
@@ -113,6 +121,7 @@ export default function Home() {
               setMessages={setMessages}
               province={province}
               chats={chats}
+              setTitleLoading={setTitleLoading}
               setChats={setChats}
               chatId={currChatId}
               setCurrChatId={setCurrChatId}
