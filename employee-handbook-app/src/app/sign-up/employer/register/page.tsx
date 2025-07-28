@@ -106,7 +106,7 @@ export default function EmployerRegistrationForm() {
         >
           <ArrowLeft className="w-5 h-5 text-gray-600" />
         </button>
-        <h1 className="text-2xl font-bold text-blue-800">Gail</h1>
+        <h1 className="text-2xl font-extrabold italic text-blue-800">Gail</h1>
       </header>
 
       <main className="flex-1 flex items-center justify-center p-6">

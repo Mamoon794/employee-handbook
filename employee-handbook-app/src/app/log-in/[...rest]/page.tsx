@@ -7,7 +7,7 @@ export default function EmployeeLogin() {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <header className="w-full max-w-7xl mx-auto px-6 py-4">
-        <h1 className="text-2xl font-bold text-blue-800">Gail</h1>
+        <h1 className="text-2xl font-extrabold italic text-blue-800">Gail</h1>
       </header>
       
 
@@ -37,9 +37,9 @@ export default function EmployeeLogin() {
           <div className="md:w-1/2 w-full">
             <SignIn 
               routing="path"
-              path="/LogIn/[...rest]"
+              path="/log-in/[...rest]"
               fallbackRedirectUrl="/"
-              signUpUrl="/SignUp"
+              signUpUrl="/sign-up"
               appearance={{
                 elements: {
                   rootBox: 'w-full',

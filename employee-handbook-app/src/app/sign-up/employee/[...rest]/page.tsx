@@ -11,7 +11,7 @@ export default function EmployeeSignupStart() {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <header className="w-full max-w-7xl mx-auto px-6 py-4">
-        <h1 className="text-2xl font-bold text-blue-800">Gail</h1>
+        <h1 className="text-2xl font-extrabold italic text-blue-800">Gail</h1>
       </header>
       
       <div className="flex-1 flex items-center justify-center p-6">
@@ -35,9 +35,9 @@ export default function EmployeeSignupStart() {
           <div className="md:w-1/2 w-full">
             <SignUp 
               routing="path"
-              path="/SignUp/employee/[...rest]"
+              path="/sign-up/employee/[...rest]"
               fallbackRedirectUrl="/SignUp/employee/register"
-              signInUrl="/LogIn/[...rest]"
+              signInUrl="/log-in/[...rest]"
               appearance={{
                 elements: {
                   rootBox: 'w-full',
