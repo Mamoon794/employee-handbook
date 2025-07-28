@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation"
 import { useUser, UserButton } from "@clerk/nextjs"
 import axiosInstance from "../axios_config"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { CircularProgress } from "@mui/material"
 
 type pdfFile = {
@@ -43,24 +43,26 @@ export default function Dashboard() {
   const firstName = user?.firstName || "there"
 
 
-  useEffect(() => {
-    async function fetchCompanyDocs() {
-      const companyId = localStorage.getItem('companyId');
-      const companyDocs = await axiosInstance.get(`/api/company/docs/${companyId}`);
-      let get_files : pdfFile[]  = []
-      for (const doc of companyDocs.data.companyDocs) {
-        get_files.push({
-          name: doc.fileName,
-          type: 'application/pdf',
-          url: doc.fileUrl,
-        });
-      }
-      setSavedFiles(get_files);
+  const fetchCompanyDocs = useCallback(async () => {
+    const companyId = localStorage.getItem('companyId');
+    if (!companyId) return;
+    const companyDocs = await axiosInstance.get(`/api/company/docs/${companyId}`);
+    let get_files : pdfFile[]  = []
+    for (const doc of companyDocs.data.companyDocs) {
+      get_files.push({
+        name: doc.fileName,
+        type: 'application/pdf',
+        url: doc.fileUrl,
+      });
     }
+    setSavedFiles(get_files);
+  }, []);
+
+  useEffect(() => {
     if (localStorage.getItem('companyId')) {
       fetchCompanyDocs();
     }
-  }, []);
+  }, [fetchCompanyDocs]);
 
   async function uploadDocuments(event: React.ChangeEvent<HTMLInputElement>) {
     const companyId = localStorage.getItem("companyId") || ""
