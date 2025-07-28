@@ -83,14 +83,13 @@ export default function ChatUI() {
       )}
 
       {/* Sidebar (History) */}
-      <PrivateChatSideBar 
-        setCurrChatId={setCurrChatId} 
-        currChatId={currChatId} 
-        setMessages={setMessages} 
-        titleLoading={titleLoading} 
-        chats={chats} 
-        setChats={setChats} 
-        setTitleLoading={setTitleLoading} 
+      <PrivateChatSideBar
+        setCurrChatId={setCurrChatId}
+        currChatId={currChatId}
+        setMessages={setMessages}
+        titleLoading={titleLoading}
+        chats={chats}
+        setChats={setChats}
         totalChatsLength={totalChatsLength}
         setTotalChatsLength={setTotalChatsLength}
       />
