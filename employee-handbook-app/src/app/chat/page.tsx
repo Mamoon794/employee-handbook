@@ -26,12 +26,14 @@ function ChatContent() {
   const [showWelcome, setShowWelcome] = useState(false);
   const [welcomeCompany, setWelcomeCompany] = useState('');
 
+  // Handle authentication
   useEffect(() => {
     if (!isSignedIn && isSignedIn !== undefined) {
       router.push('/');
     }
   }, [isSignedIn, router]);
 
+  // Handle welcome message and confetti
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
@@ -72,6 +74,7 @@ function ChatContent() {
 
   return (
     <div className="min-h-screen flex bg-white">
+      {/* Welcome Modal */}
       {showWelcome && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-white rounded-lg shadow-md p-8 w-[95%] max-w-md text-center">
@@ -91,18 +94,19 @@ function ChatContent() {
         </div>
       )}
 
-      <PrivateChatSideBar 
-        setCurrChatId={setCurrChatId} 
-        currChatId={currChatId} 
-        setMessages={setMessages} 
-        titleLoading={titleLoading} 
-        chats={chats} 
-        setChats={setChats} 
-        setTitleLoading={setTitleLoading} 
+      {/* Chat Sidebar with all props */}
+      <PrivateChatSideBar
+        setCurrChatId={setCurrChatId}
+        currChatId={currChatId}
+        setMessages={setMessages}
+        titleLoading={titleLoading}
+        chats={chats}
+        setChats={setChats}
         totalChatsLength={totalChatsLength}
         setTotalChatsLength={setTotalChatsLength}
       />
 
+      {/* Main Chat Area */}
       <div className="flex-1 flex flex-col min-h-screen">
         <Header 
           province={province} 
@@ -126,8 +130,7 @@ function ChatContent() {
               setMessages={setMessages} 
               chatId={currChatId} 
               setCurrChatId={setCurrChatId} 
-              setError={setError} 
-              setTitleLoading={setTitleLoading} 
+              setError={setError}  
               setChats={setChats} 
               chats={chats}
             />
