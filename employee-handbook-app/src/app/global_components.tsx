@@ -27,6 +27,10 @@ const InputMessage = dynamic(
   }
 )
 
+export function generateThreadId(): string {
+  return Date.now().toString();
+}
+
 export interface Chat {
   id: string
   title: string
@@ -111,7 +115,7 @@ function PublicChatSideBar({
 
   const handleNewChat = () => {
     const newChat: PublicChat = {
-      id: Date.now().toString(),
+      id: generateThreadId(),
       title: `Chat - ${new Date().toLocaleDateString()}-${chats.length + 1}`,
       messages: [],
     }

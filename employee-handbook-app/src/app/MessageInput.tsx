@@ -6,6 +6,7 @@ import axiosInstance from './axios_config';
 import { Link, Message } from '../models/schema'; 
 import { Citation } from '@/types/ai';
 import { useAudioRecorder } from "react-use-audio-recorder";
+import { generateThreadId } from './global_components';
 
 interface Chat {
   id: string;
@@ -95,10 +96,6 @@ export function MessageInput({
     }
   };
 
-  function generateThreadId(): string {
-    return Date.now().toString();
-  }
-
   const submitUserMessage = async () => {
     if (!inputValue.trim()) return;
 
@@ -109,10 +106,15 @@ export function MessageInput({
 
     try {
       // tracking if brand new chat
-      const isNewChat = chatId === '';
+      let isNewChat = chatId === '';
       // Find the chat object for this chatId
       let chatObj: Chat | undefined = undefined;
       chatObj = chats.find((c: Chat) => c.id === chatId);
+      if (chatObj === undefined) {
+        isNewChat = true;
+        chatId = '';
+        setCurrChatId('')
+      }
 
       setInputValue('');
       setError('');
@@ -133,14 +135,22 @@ export function MessageInput({
             ...prevChats
         ])
         } else {
-          const updated = [...(chatObj?.messages ?? []), userMessage as Message];
-          setMessages(updated);
-          setChats(chats.map(c =>
-            c.id === chatId ? { ...c, messages: updated } : c
-          ));
+          setMessages((prevMessages) => {
+            const updated = [...prevMessages, userMessage as Message]
+            setChats(prevChats => {
+              return prevChats.map(c =>
+                c.id === chatId ? { ...c, messages: updated } : c
+              )
+            });
+            return updated;
+          });
         }
         await handlePublicChat(newChatId);
       } else { // private user
+        setMessages((prevMessages) => {
+          return [...prevMessages, userMessage as Message]
+        })
+
         if (isNewChat) {
           const newChat = await axiosInstance.post('/api/chat', {
             userId: localStorage.getItem('userId'),
