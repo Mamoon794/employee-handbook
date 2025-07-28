@@ -50,11 +50,14 @@ export interface Document {
   fileName?: string;
   uploadDate: Date;
   isPublic: boolean;
+  province: string;
+
 }
 
 export interface Link {
   title: string;
   url: string;
+  page?: number
 }
 
 export interface Invitation {

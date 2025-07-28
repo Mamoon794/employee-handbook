@@ -230,9 +230,7 @@ export default function Analytics() {
               <ArrowLeft className="w-5 h-5 text-gray-600" />
             </button>
             <div>
-              <h1 className="text-2xl font-bold text-blue-800">
-                Employee Analytics
-              </h1>
+              <h1 className="text-2xl font-extrabold italic text-blue-800">Gail</h1>
               <p className="text-gray-600">Insights into your workforce</p>
             </div>
           </div>

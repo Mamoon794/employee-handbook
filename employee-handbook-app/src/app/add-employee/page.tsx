@@ -142,7 +142,7 @@ const handleAddAnother = () => {
   setIsSubmitting(false); // Reset the submitting state
 };
 
-  const handleCancel = () => router.push('/DashBoard');
+  const handleCancel = () => router.push('/dashboard');
 
   return (
     <div className="min-h-screen bg-white flex flex-col font-sans">

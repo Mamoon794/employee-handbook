@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     
     // redirect to sign in if user is not logged in
     if (!userId) {
-      const signInUrl = new URL('/LogIn', request.url);
+      const signInUrl = new URL('/log-in/[...rest]', request.url);
       signInUrl.searchParams.set('redirect_url', `/api/accept-invitation?invitationId=${invitationId}`);
       return NextResponse.redirect(signInUrl);
     }

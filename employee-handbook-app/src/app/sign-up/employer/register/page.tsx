@@ -74,7 +74,7 @@ export default function EmployerRegistrationForm() {
     console.log('Metadata updated successfully'); // debugging
 
     console.log('Redirecting to dashboard...'); // debugging
-    router.push('/DashBoard');
+    router.push('/dashboard');
   } catch (err) {
     console.error('Detailed registration error:', err); // debugging
     setError(err instanceof Error ? err.message : 'Registration failed');
@@ -106,7 +106,7 @@ export default function EmployerRegistrationForm() {
         >
           <ArrowLeft className="w-5 h-5 text-gray-600" />
         </button>
-        <h1 className="text-2xl font-bold text-blue-800">Gail</h1>
+        <h1 className="text-2xl font-extrabold italic text-blue-800">Gail</h1>
       </header>
 
       <main className="flex-1 flex items-center justify-center p-6">
