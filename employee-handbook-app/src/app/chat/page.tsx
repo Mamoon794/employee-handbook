@@ -130,7 +130,8 @@ function ChatContent() {
               setMessages={setMessages} 
               chatId={currChatId} 
               setCurrChatId={setCurrChatId} 
-              setError={setError}  
+              setError={setError} 
+              setTitleLoading={setTitleLoading} 
               setChats={setChats} 
               chats={chats}
             />
