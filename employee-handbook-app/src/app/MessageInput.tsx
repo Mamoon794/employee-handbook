@@ -118,7 +118,6 @@ export function MessageInput({
       setError('');
 
       let newChatId = chatId || '';
-      debugger;
       if (!isPrivate) {  // public user
         if (isNewChat) {
           newChatId = generateThreadId()
@@ -126,12 +125,12 @@ export function MessageInput({
           const updated = [userMessage as Message]
           setMessages(updated);
           setChats(prevChats => [
-            ...prevChats,
             {
               id: newChatId,
               title: 'New Chat',
               messages: updated
-            }
+            },
+            ...prevChats
         ])
         } else {
           const updated = [...(chatObj?.messages ?? []), userMessage as Message];
@@ -140,7 +139,6 @@ export function MessageInput({
             c.id === chatId ? { ...c, messages: updated } : c
           ));
         }
-        debugger;
         await handlePublicChat(newChatId);
       } else { // private user
         if (isNewChat) {
@@ -267,9 +265,11 @@ export function MessageInput({
         }
         setMessages((prevMessages) => {
           const updated = [...prevMessages, botMessage as Message]
-          setChats(chats.map(c =>
-            c.id === newChatId ? { ...c, messages: updated } : c
-          ));
+          setChats(prevChats => {
+            return prevChats.map(c =>
+              c.id === newChatId ? { ...c, messages: updated } : c
+            )
+          });
           return updated;
         });
       } else {
