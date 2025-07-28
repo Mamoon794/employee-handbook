@@ -14,7 +14,6 @@ interface Chat {
   messages?: Message[];
 }
 
-
 export function MessageInput({
   inputValue,
   setInputValue,
@@ -24,7 +23,6 @@ export function MessageInput({
   setMessages,
   setError,
   setCurrChatId,
-  threadId,
   setTitleLoading,
   setChats,
   chats
@@ -33,14 +31,13 @@ export function MessageInput({
   setInputValue: Dispatch<SetStateAction<string>>;
   isPrivate: boolean;
   province?: string | null;
-  chatId?: string;
+  chatId: string;
   setMessages: Dispatch<SetStateAction<Message[]>>;
   setError: Dispatch<SetStateAction<string>>;
-  setCurrChatId?: Dispatch<SetStateAction<string>>;
-  threadId?: string | null;
+  setCurrChatId: Dispatch<SetStateAction<string>>;
   setTitleLoading?: Dispatch<SetStateAction<boolean>>;
-  setChats?: Dispatch<SetStateAction<Chat[]>>;
-  chats?: Chat[];
+  setChats: Dispatch<SetStateAction<Chat[]>>;
+  chats: Chat[];
 }) {
   const errorMessage = 'Oops, something went wrong. Want to try again?'
   const province_map: { [key: string]: string } = {
@@ -98,6 +95,10 @@ export function MessageInput({
     }
   };
 
+  function generateThreadId(): string {
+    return Date.now().toString();
+  }
+
   const submitUserMessage = async () => {
     if (!inputValue.trim()) return;
 
@@ -111,27 +112,37 @@ export function MessageInput({
       const isNewChat = chatId === '';
       // Find the chat object for this chatId
       let chatObj: Chat | undefined = undefined;
-      if (chats && chatId) {
-        chatObj = chats.find((c: Chat) => c.id === chatId);
-      }
-
-      setMessages((prevMessages) => {
-        const updated = [...prevMessages, userMessage as Message]
-        if (!isPrivate) {
-          if (setChats && chats && chatId) {
-            setChats(chats.map(c =>
-              c.id === chatId ? { ...c, messages: updated } : c
-            ));
-          }
-        }
-        return updated;
-      });
+      chatObj = chats.find((c: Chat) => c.id === chatId);
 
       setInputValue('');
       setError('');
 
       let newChatId = chatId || '';
-      if (isPrivate) {
+      debugger;
+      if (!isPrivate) {  // public user
+        if (isNewChat) {
+          newChatId = generateThreadId()
+          setCurrChatId(newChatId)
+          const updated = [userMessage as Message]
+          setMessages(updated);
+          setChats(prevChats => [
+            ...prevChats,
+            {
+              id: newChatId,
+              title: 'New Chat',
+              messages: updated
+            }
+        ])
+        } else {
+          const updated = [...(chatObj?.messages ?? []), userMessage as Message];
+          setMessages(updated);
+          setChats(chats.map(c =>
+            c.id === chatId ? { ...c, messages: updated } : c
+          ));
+        }
+        debugger;
+        await handlePublicChat(newChatId);
+      } else { // private user
         if (isNewChat) {
           const newChat = await axiosInstance.post('/api/chat', {
             userId: localStorage.getItem('userId'),
@@ -146,7 +157,7 @@ export function MessageInput({
           await axiosInstance.put(`/api/chat/${chatId}/add-message`, {
             messageData: userMessage
           });
-          await handlePrivateChat(chatId || '');
+          await handlePrivateChat(newChatId);
         }
 
         // Always trigger AI title generation after the first message in a chat
@@ -183,8 +194,6 @@ export function MessageInput({
             if (setTitleLoading) setTitleLoading(false);
           }
         }
-      } else {
-        await handlePublicChat();
       }
     } catch (err) {
       console.error(err);
@@ -228,8 +237,8 @@ export function MessageInput({
       setError(errorMessage);
     }
   };
-
-  const handlePublicChat = async () => {
+  
+  const handlePublicChat = async (newChatId: string) => {
     if (!province) return;
 
     try {
@@ -240,7 +249,7 @@ export function MessageInput({
         body: JSON.stringify({
           province,
           query: inputValue,
-          threadId
+          threadId: newChatId
         }),
       });
 
@@ -258,11 +267,9 @@ export function MessageInput({
         }
         setMessages((prevMessages) => {
           const updated = [...prevMessages, botMessage as Message]
-          if (setChats && chats && chatId) {
-            setChats(chats.map(c =>
-              c.id === chatId ? { ...c, messages: updated } : c
-            ));
-          }
+          setChats(chats.map(c =>
+            c.id === newChatId ? { ...c, messages: updated } : c
+          ));
           return updated;
         });
       } else {

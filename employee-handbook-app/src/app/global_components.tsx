@@ -104,41 +104,9 @@ function PublicChatSideBar({
   // Add collapsed state
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  useEffect(() => {
-    const storedChats = localStorage.getItem("publicChats")
-    if (storedChats) {
-      try {
-        setChats(JSON.parse(storedChats))
-      } catch {
-        setChats([])
-      }
-    }
-
-    const storedChatId = localStorage.getItem("currPublicChatId")
-    if (storedChatId) setCurrChatId(storedChatId)
-  }, [])
-
-  useEffect(() => {
-    localStorage.setItem("publicChats", JSON.stringify(chats))
-  }, [chats])
-
-  useEffect(() => {
-    if (currChatId) localStorage.setItem("currPublicChatId", currChatId)
-  }, [currChatId])
-
-  useEffect(() => {
-    const stored = localStorage.getItem("publicChats")
-    if (stored) {
-      const parsed = JSON.parse(stored)
-      const chat = parsed.find((c: any) => c.id === currChatId)
-      if (chat) setMessages(chat.messages || [])
-    }
-  }, [currChatId])
-
   const selectChat = (chat: PublicChat) => {
     setCurrChatId(chat.id)
     setMessages(chat.messages || [])
-    localStorage.setItem("currPublicChatId", chat.id)
   }
 
   const handleNewChat = () => {

@@ -10,10 +10,6 @@ import ProvincePopup from "../../components/province";
 import { Message } from '@/models/schema';
 import { Chat } from './global_components';
 
-function generateThreadId(): string {
-  return Date.now().toString();
-}
-
 export default function Home() {
   const { isSignedIn, user } = useUser();
   const router = useRouter();
@@ -24,20 +20,37 @@ export default function Home() {
   const [messages, setMessages] = useState([] as Message[]);
   const [error, setError] = useState<string>('');
   const [currChatId, setCurrChatId] = useState<string>('');
-  // const [sidebarOpen, setSidebarOpen] = useState(true);
-
-  const threadIdRef = useRef<string | null>(null);
 
   useEffect(() => {
-    const storedId = localStorage.getItem("currPublicChatId");
-    if (storedId) {
-      threadIdRef.current = storedId;
-    } else {
-      const newId = generateThreadId();
-      threadIdRef.current = newId;
-      localStorage.setItem("currPublicChatId", newId);
+    const storedChats = localStorage.getItem("publicChats")
+    if (storedChats) {
+      try {
+        setChats(JSON.parse(storedChats))
+      } catch {
+        setChats([])
+      }
     }
-  }, []);
+
+    const storedChatId = localStorage.getItem("currPublicChatId")
+    if (storedChatId) setCurrChatId(storedChatId)
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem("publicChats", JSON.stringify(chats))
+  }, [chats])
+
+  useEffect(() => {
+    localStorage.setItem("currPublicChatId", currChatId)
+  }, [currChatId])
+
+  useEffect(() => {
+    const stored = localStorage.getItem("publicChats")
+    if (stored) {
+      const parsed = JSON.parse(stored)
+      const chat = parsed.find((c: any) => c.id === currChatId)
+      if (chat) setMessages(chat.messages || [])
+    }
+  }, [currChatId])
 
   useEffect(() => {
     if (isSignedIn && user) {
@@ -61,7 +74,6 @@ export default function Home() {
         });
     }
   }, [isSignedIn, user, router]);
-
 
   useEffect(() => {
     const prov = localStorage.getItem('province');
@@ -100,10 +112,10 @@ export default function Home() {
               setError={setError}
               setMessages={setMessages}
               province={province}
-              threadId={threadIdRef.current}
               chats={chats}
               setChats={setChats}
               chatId={currChatId}
+              setCurrChatId={setCurrChatId}
             />
             
             <Disclaimer/>
