@@ -113,12 +113,15 @@ def get_response(userMessage: RAGInput):
 
             response = last_step["messages"][-1]
             bothResponse = response.content if hasattr(response, "content") else response
-
-            match_non_company = re.search(r"\*{0,2}non-company-doc\*{0,2}:\s*(.*?)(?=\n2\. \*{0,2}company-doc\*{0,2}:)", bothResponse, re.DOTALL)
-            match_company = re.search(r"\*{0,2}company-doc\*{0,2}:\s*(.*)", bothResponse, re.DOTALL)
+            print("bothResponse:", bothResponse)
+            match_non_company = re.search(r"\*\*public-doc\*\*:\s*(.*?)(?=\n\*\*company-doc\*\*:)", bothResponse, re.DOTALL)
+            match_company = re.search(r"\*\*company-doc\*\*:\s*(.*)", bothResponse, re.DOTALL)
 
             publicResponse = match_non_company.group(1).strip() if match_non_company else None
             privateResponse = match_company.group(1).strip() if match_company else None
+
+            print("publicResponse:", publicResponse)
+            print("privateResponse:", privateResponse)
 
             if not publicResponse or not privateResponse:
                 # this is a conversational question, no documents found
