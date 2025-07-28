@@ -3,6 +3,7 @@
 "use client"
 
 import { useEffect, useState, Dispatch, SetStateAction, useRef } from "react"
+import Link from "next/link"
 import { Plus, Menu, Trash2 } from "lucide-react"
 import axiosInstance from "./axios_config"
 import { useRouter } from "next/navigation"
@@ -102,7 +103,7 @@ function PublicChatSideBar({
   setChats: Dispatch<SetStateAction<PublicChat[]>>
 }) {
   // Add collapsed state
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false)
 
   useEffect(() => {
     const storedChats = localStorage.getItem("publicChats")
@@ -163,9 +164,17 @@ function PublicChatSideBar({
   }
 
   return (
-    <aside className={`${isCollapsed ? 'w-16' : 'w-64'} h-screen bg-[#1F2251] text-white flex flex-col min-h-screen relative transition-all duration-300`}>
+    <aside
+      className={`${
+        isCollapsed ? "w-16" : "w-64"
+      } h-screen bg-[#1F2251] text-white flex flex-col min-h-screen relative transition-all duration-300`}
+    >
       <div className="relative flex p-5 w-full">
-        <button onClick={() => setIsCollapsed(!isCollapsed)} aria-label="Toggle sidebar" className="text-gray-400 hover:text-white transition-colors">
+        <button
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          aria-label="Toggle sidebar"
+          className="text-gray-400 hover:text-white transition-colors"
+        >
           <Menu />
         </button>
       </div>
@@ -185,9 +194,9 @@ function PublicChatSideBar({
                 {currChatId === chat.id && (
                   <Trash2
                     className="text-gray-400"
-                    onClick={e => {
-                      e.stopPropagation();
-                      handleDelete(chat.id);
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleDelete(chat.id)
                     }}
                   />
                 )}
@@ -231,7 +240,7 @@ function PrivateChatSideBar({
   const [showPopup, setShowPopup] = useState(false)
   const [dontShowAgain, setDontShowAgain] = useState(false)
   // Add collapsed state
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false)
 
   useEffect(() => {
     const stored = localStorage.getItem("hideChatWarning")
@@ -352,9 +361,17 @@ function PrivateChatSideBar({
   }
 
   return (
-    <aside className={`${isCollapsed ? 'w-16' : 'w-64'} bg-[#1F2251] text-white flex flex-col min-h-screen relative transition-all duration-300`}>
+    <aside
+      className={`${
+        isCollapsed ? "w-16" : "w-64"
+      } bg-[#1F2251] text-white flex flex-col min-h-screen relative transition-all duration-300`}
+    >
       <div className="relative flex p-5 w-full">
-        <button onClick={() => setIsCollapsed(!isCollapsed)} aria-label="Toggle sidebar" className="text-gray-400 hover:text-white transition-colors">
+        <button
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          aria-label="Toggle sidebar"
+          className="text-gray-400 hover:text-white transition-colors"
+        >
           <Menu />
         </button>
       </div>
@@ -451,7 +468,7 @@ function PrivateChatSideBar({
 }
 
 function PopularQuestions({
-  setInputValue
+  setInputValue,
 }: {
   setInputValue: (inputValue: string) => void
 }) {
@@ -510,9 +527,11 @@ function MessageThread({
           <div key={index} className="flex flex-col">
             {message.isFromUser ? (
               <div className="self-end bg-blue-100 text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm text-lg">
-                {message.content.split("\n").map((line, idx) =>
-                  line === "" ? <br key={idx} /> : <p key={idx}>{line}</p>
-                )}
+                {message.content
+                  .split("\n")
+                  .map((line, idx) =>
+                    line === "" ? <br key={idx} /> : <p key={idx}>{line}</p>
+                  )}
               </div>
             ) : (
               <div className="self-start bg-gray-100 text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm">
@@ -598,7 +617,17 @@ function Header({
 
   return (
     <header className="flex justify-between items-center px-6 py-4">
-      <h1 className="text-2xl font-extrabold italic text-blue-800">Gail</h1>
+      {!isSignedIn ? (
+        <h1 className="text-2xl font-extrabold italic text-blue-800 cursor-pointer">
+          Gail
+        </h1>
+      ) : (
+        <Link href="/dashboard">
+          <h1 className="text-2xl font-extrabold italic text-blue-800 cursor-pointer">
+            Gail
+          </h1>
+        </Link>
+      )}
       <div className="flex gap-3 items-center">
         {!isSignedIn ? (
           <>
@@ -728,5 +757,5 @@ export {
   MessageThread,
   InputMessage,
   Header,
-  Disclaimer
+  Disclaimer,
 }
