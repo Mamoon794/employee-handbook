@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import {MessageThread, InputMessage, Header, PublicChatSideBar, Disclaimer, PopularQuestions } from './global_components';
 import { useRouter } from 'next/navigation';
@@ -48,7 +48,7 @@ export default function Home() {
     const stored = localStorage.getItem("publicChats")
     if (stored) {
       const parsed = JSON.parse(stored)
-      const chat = parsed.find((c: any) => c.id === currChatId)
+      const chat = parsed.find((c: Chat) => c.id === currChatId)
       if (chat) setMessages(chat.messages || [])
     }
   }, [currChatId])
