@@ -2,6 +2,7 @@ import shutil
 import uuid
 from dotenv import load_dotenv
 import os
+import re
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from faster_whisper import WhisperModel
@@ -46,6 +47,13 @@ class RAGInput(BaseModel):
     thread_id: str = "1"  # default thread_id, can be overridden
     company: str = ""
 
+def extract_and_clean(response_text):
+    match = re.search(r"\[Found:\s*(Yes|No)\]", response_text)
+    found = match.group(1) if match else None
+    found_bool = found == "Yes" if found else False
+    cleaned = re.sub(r"\s*\[Found:\s*(Yes|No)\]\s*", "", response_text).strip()
+    return cleaned, found_bool
+
 @app.post("/responses")
 def get_response(userMessage: RAGInput):
     """
@@ -58,48 +66,63 @@ def get_response(userMessage: RAGInput):
             prompt = f"question: {userMessage.question}. If no province in this question is specified, assume the province to be {userMessage.province}."
         else:
             prompt = f"question: {userMessage.question}. If no province in this question is specified, assume the province to be {userMessage.province}. The company name is {userMessage.company}, this information will be used to filter documents."
+        last_step = None
         for step in graph.stream(
             {"messages": [{"role": "user", "content": prompt}]},
             stream_mode="values",
             config={"configurable": {"thread_id": userMessage.thread_id}},
         ):
-            # print("step:", step)
-            messages = step["messages"]
-            # Find the last ToolMessage by reversing the list and checking type
+            last_step = step  # Get the last step's messages
+
+        if last_step:
+            messages = last_step["messages"]
             last_tool_message = next(
-                (m for m in reversed(messages) if isinstance(m, ToolMessage)), # it's efficient
-                None  # default if no ToolMessage is found
+                (m for m in reversed(messages) if isinstance(m, ToolMessage)),
+                None
             )
 
-            context = []
-            if last_tool_message:
-                # print("Last ToolMessage content:", last_tool_message.content)
-                if hasattr(last_tool_message, "artifact"):
-                    for doc in last_tool_message.artifact:
-                        # print("doc:", doc)
-                        # print("has metadata:", hasattr(doc, "metadata"))
-                        # print("doc.metadata.get company:", doc.metadata.get("company", ""))
-                        # print("has page_content:", hasattr(doc, "page_content"))
-                        if not isinstance(doc, Document):
-                            continue
-                        if hasattr(doc, "metadata") and hasattr(doc, "page_content"):
-                            source = doc.metadata.get("source", "")
-                            title = doc.metadata.get("title", "")
-                            page = doc.metadata.get("page", "") # only pdf have
-                            type = doc.metadata.get("type", "")
-                            docMetadata = {"source": source, "type": type, "title": title, "page": page, "content": doc.page_content}
-                            context.append(docMetadata)
-                            # print("Doc content:", doc.page_content)
-                    # artifact = last_tool_message.artifact
-            else:
-                print("No ToolMessage found.")
+            publicContext = []
+            privateContext = []
 
-            response = step["messages"][-1]
-            finalResponse = response.content if hasattr(response, "content") else response
+            if last_tool_message and hasattr(last_tool_message, "artifact"):
+                for doc in last_tool_message.artifact:
+                    if not isinstance(doc, Document):
+                        continue
+                    if hasattr(doc, "metadata") and hasattr(doc, "page_content"):
+                        source = doc.metadata.get("source", "")
+                        title = doc.metadata.get("title", "")
+                        page = doc.metadata.get("page", "")
+                        type = doc.metadata.get("type", "")
+                        docMetadata = {"source": source, "type": type, "title": title, "page": page, "content": doc.page_content}
+                        if doc.metadata.get("company") == userMessage.company:
+                            privateContext.append(docMetadata)
+                        else:
+                            publicContext.append(docMetadata)
 
-            # step["messages"][-1].pretty_print()
+            response = last_step["messages"][-1]
+            bothResponse = response.content if hasattr(response, "content") else response
 
-        return {"response": finalResponse, "metadata": context}
+            match_non_company = re.search(r"\*\*non-company-doc\*\*:\s*(.*?)(?=\n2\. \*\*company-doc\*\*:)", bothResponse, re.DOTALL)
+            match_company = re.search(r"\*\*company-doc\*\*:\s*(.*)", bothResponse, re.DOTALL)
+
+            publicResponse = match_non_company.group(1).strip() if match_non_company else None
+            privateResponse = match_company.group(1).strip() if match_company else None
+
+            public_clean, public_found = extract_and_clean(publicResponse)
+            private_clean, private_found = extract_and_clean(privateResponse)
+
+            return {
+                "publicResponse": public_clean,
+                "publicFound": public_found,
+                "publicMetadata": publicContext,
+                "privateResponse": private_clean,
+                "privateFound": private_found,
+                "privateMetadata": privateContext
+            }
+        else:
+            print("No step returned from graph.stream.")
+            return None
+
     except Exception as e:
         traceback_str = traceback.format_exc()
         print(f"An error occurred: {e}")
