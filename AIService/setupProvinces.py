@@ -130,6 +130,7 @@ def generate(state: MessagesState):
         "- Begin with a company policy tone such as:\n"
         "  \"Based on the employee manual, ...\" or \"According to [Company]'s internal policy, ...\"\n"
         "- Replace [Company] with the actual company name found in the metadata.\n"
+        "- If the company name is not found in the metadata, use a generic term like \"the company\".\n"
         "- If no relevant information is found, still write a sentence in the expected tone and end with [Found: No]\n"
         "- If relevant information is found, write the answer and end with [Found: Yes]\n"
         "- Start this section with exactly: **company-doc**:\n\n"
