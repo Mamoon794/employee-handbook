@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import {MessageThread, InputMessage, Header, PublicChatSideBar, Disclaimer, PopularQuestions } from './global_components';
 import { useRouter } from 'next/navigation';
@@ -9,10 +9,6 @@ import axiosInstance from './axios_config';
 import ProvincePopup from "../../components/province";
 import { Message } from '@/models/schema';
 import { Chat } from './global_components';
-
-function generateThreadId(): string {
-  return Date.now().toString();
-}
 
 export default function Home() {
   const { isSignedIn, user } = useUser();
@@ -24,20 +20,38 @@ export default function Home() {
   const [messages, setMessages] = useState([] as Message[]);
   const [error, setError] = useState<{message: string, chatId: string}>({message: '', chatId: ''});
   const [currChatId, setCurrChatId] = useState<string>('');
-  // const [sidebarOpen, setSidebarOpen] = useState(true);
-
-  const threadIdRef = useRef<string | null>(null);
+  const [titleLoading, setTitleLoading] = useState(false)
 
   useEffect(() => {
-    const storedId = localStorage.getItem("currPublicChatId");
-    if (storedId) {
-      threadIdRef.current = storedId;
-    } else {
-      const newId = generateThreadId();
-      threadIdRef.current = newId;
-      localStorage.setItem("currPublicChatId", newId);
+    const storedChats = localStorage.getItem("publicChats")
+    if (storedChats) {
+      try {
+        setChats(JSON.parse(storedChats))
+      } catch {
+        setChats([])
+      }
     }
-  }, []);
+
+    const storedChatId = localStorage.getItem("currPublicChatId")
+    if (storedChatId) setCurrChatId(storedChatId)
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem("publicChats", JSON.stringify(chats))
+  }, [chats])
+
+  useEffect(() => {
+    localStorage.setItem("currPublicChatId", currChatId)
+  }, [currChatId])
+
+  useEffect(() => {
+    const stored = localStorage.getItem("publicChats")
+    if (stored) {
+      const parsed = JSON.parse(stored)
+      const chat = parsed.find((c: Chat) => c.id === currChatId)
+      if (chat) setMessages(chat.messages || [])
+    }
+  }, [currChatId])
 
   useEffect(() => {
     if (isSignedIn && user) {
@@ -62,7 +76,6 @@ export default function Home() {
     }
   }, [isSignedIn, user, router]);
 
-
   useEffect(() => {
     const prov = localStorage.getItem('province');
     if (prov) setProvince(prov);
@@ -75,7 +88,14 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex bg-white flex-row">
-      <PublicChatSideBar setCurrChatId={setCurrChatId} currChatId={currChatId} setMessages={setMessages} chats={chats} setChats={setChats}/>
+      <PublicChatSideBar 
+        setCurrChatId={setCurrChatId} 
+        currChatId={currChatId} 
+        setMessages={setMessages} 
+        chats={chats} 
+        setChats={setChats}
+        titleLoading={titleLoading}
+      />
       
       <div className="flex-1 flex flex-col min-h-screen">
         <Header province={province} setProvince={setProvince} />
@@ -100,10 +120,11 @@ export default function Home() {
               setError={setError}
               setMessages={setMessages}
               province={province}
-              threadId={threadIdRef.current}
               chats={chats}
+              setTitleLoading={setTitleLoading}
               setChats={setChats}
               chatId={currChatId}
+              setCurrChatId={setCurrChatId}
             />
             
             <Disclaimer/>
