@@ -78,7 +78,7 @@ export default function ManageEmployees() {
 
         <button
           className="mt-10 px-10 py-3 bg-[#294494] text-white rounded-xl font-bold text-xl"
-          onClick={() => router.push("/DashBoard")}
+          onClick={() => router.push("/dashboard")}
         >
           Back to Dashboard
         </button>
