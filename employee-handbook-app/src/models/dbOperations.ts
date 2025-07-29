@@ -6,7 +6,8 @@ import {
   Company,
   Chat,
   Message,
-  Document
+  Document,
+  PopularQuestion
 } from "./schema";
 
 // collections - users
@@ -163,3 +164,50 @@ export const getCompanyDocuments = async (companyId: string) => {
   const querySnapshot = await theQuery.get();
   return querySnapshot.docs.map((doc: firestore.QueryDocumentSnapshot<firestore.DocumentData>) => ({ id: doc.id, ...doc.data() } as Document));
 };
+
+// collection - popular_questions
+const popularQuestionsRef = db.collection("popular_questions");
+
+/**
+ * Saves an array of popular questions to Firestore `popular_questions` collection in a batch.
+ * @param popularQuestions Array of PopularQuestion objects.
+ */
+export const savePopularQuestions = async (
+  popularQuestions: PopularQuestion[]
+): Promise<void> => {
+  const batch = db.batch();
+
+  popularQuestions.forEach(q => {
+    const docRef = popularQuestionsRef.doc();
+    batch.set(docRef, {
+      province: q.province,
+      company: q.company,
+      text: q.text,
+      createdAt: Timestamp.now()
+    });
+  });
+
+  await batch.commit();
+};
+
+/**
+ * Retrieves popular questions within the past 7 days and a specific scope (i.e. company name and province).
+ * @param company The name of the user's company.
+ * @param province The user's province.
+ */
+export const getPopularQuestions = async (
+  company: string,
+  province: string
+): Promise<PopularQuestion[]> => {
+  const sevenDaysAgo = Timestamp.fromDate(
+    new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+  );
+
+  const query = popularQuestionsRef
+    .where("company", "==", company)
+    .where("province", "==", province)
+    .where("createdAt", ">=", sevenDaysAgo);
+  
+  const snapshot = await query.get();
+  return snapshot.docs.map((doc: firestore.QueryDocumentSnapshot<firestore.DocumentData>) => ({ id: doc.id, ...doc.data() } as PopularQuestion));
+}
