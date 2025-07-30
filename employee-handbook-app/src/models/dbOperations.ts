@@ -7,6 +7,7 @@ import {
   Chat,
   Message,
   Document,
+  UserType,
   PopularQuestion
 } from "./schema";
 
@@ -34,7 +35,47 @@ export const getClerkUser = async (clerkId: string) => {
   const querySnapshot = await theQuery.get();
   return querySnapshot.docs.map((doc: firestore.QueryDocumentSnapshot<firestore.DocumentData>) => ({ id: doc.id, ...doc.data() } as User));
 }
+
+export const getAllUsers = async (companyId: string, sort: string) => {
+  const query = usersRef
+    .where("companyId", "==", companyId)
+    .orderBy(sort);
+  const querySnapshot = await query.get();
+  return querySnapshot.docs.map(
+    (doc: firestore.QueryDocumentSnapshot<firestore.DocumentData>) => 
+      ({ id: doc.id, ...doc.data() } as User)
+  );
+}
+
+export const updateUser = async (userId: string, userType: UserType) => {
+  const query = usersRef.where("clerkUserId", "==", userId).limit(1);
+  const querySnapshot = await query.get();
+  if (querySnapshot.empty) {
+    return null;
+  }
+  const userDoc = querySnapshot.docs[0];
+  const currentData = userDoc.data() as User;
   
+  // only update if userType has changed
+  if (currentData.userType === userType) {
+    return { id: userDoc.id, ...currentData };
+  }
+
+  await userDoc.ref.update({ userType, updatedAt: new Date() });
+  const updatedDoc = await userDoc.ref.get();
+  return { id: updatedDoc.id, ...updatedDoc.data() } as User;
+}
+
+export const deleteUser = async (userId: string) => {
+  const query = usersRef.where("clerkUserId", "==", userId).limit(1);
+  const querySnapshot = await query.get();
+  if (querySnapshot.empty) {
+    return false;
+  }
+  const userDoc = querySnapshot.docs[0];
+  await userDoc.ref.delete();
+  return true;
+}
 
 // // collections - companies
 const companiesRef = db.collection("companies");
