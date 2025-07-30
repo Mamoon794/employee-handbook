@@ -21,7 +21,7 @@ import {
 import { ChevronDown, Check } from "lucide-react"
 import dynamic from "next/dynamic"
 
-const ERROR_MESSAGE = "Oops, something went wrong. Want to try again?";
+const ERROR_MESSAGE = "Oops, something went wrong. Want to try again?"
 
 const InputMessage = dynamic(
   () => import("./MessageInput").then((mod) => mod.MessageInput),
@@ -556,9 +556,9 @@ function MessageThread({
   onRetry,
 }: {
   messageList: Message[]
-  error: {message: string, chatId: string},
-  chatId: string,
-  onRetry?: () => void;
+  error: { message: string; chatId: string }
+  chatId: string
+  onRetry?: () => void
 }) {
   const bottomRef = useRef<HTMLDivElement | null>(null)
 
@@ -567,8 +567,8 @@ function MessageThread({
   }, [messageList, error])
 
   const handleRetry = () => {
-    if (onRetry) onRetry();
-  };
+    if (onRetry) onRetry()
+  }
 
   return (
     <div
@@ -655,7 +655,7 @@ function Header({
   const { isSignedIn, user } = useUser()
   const router = useRouter()
   const [isFinance, setIsFinance] = useState(false)
-  const [isOwnerOrAdministrator, setIsOwnerOrAdministrator] = useState(false)
+  const [canSeeDashboard, setCanSeeDashboard] = useState(false)
   const [isOnDashboard, setIsOnDashboard] = useState(false)
   // const isFinance = true
 
@@ -676,9 +676,9 @@ function Header({
           )
           setProvince(response.data[0].province || "")
           setIsFinance(response.data[0].userType == "Financer")
-          setIsOwnerOrAdministrator(
-            response.data[0].userType === "Owner" ||
-              response.data[0].userType === "Administrator"
+          setCanSeeDashboard(
+            response.data[0].userType == "Owner" ||
+              response.data[0].userType == "Administrator"
           )
         })
         .catch((error) => {
@@ -693,7 +693,7 @@ function Header({
 
   return (
     <header className="flex justify-between items-center px-6 py-4">
-      {!isSignedIn ? (
+      {!isSignedIn || !canSeeDashboard ? (
         <h1 className="text-2xl font-extrabold italic text-blue-800 cursor-pointer">
           Gail
         </h1>
@@ -877,5 +877,5 @@ export {
   Header,
   Disclaimer,
   generateThreadId,
-  ERROR_MESSAGE
+  ERROR_MESSAGE,
 }
