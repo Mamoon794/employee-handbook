@@ -1,73 +1,75 @@
 /* eslint-disable react/no-unescaped-entities */
 // finishing page for employee registration >> creates user in db
 
-'use client';
-import { useUser } from '@clerk/nextjs';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { ArrowLeft } from 'lucide-react';
-import type { UserType, User } from '@/models/schema';
-import axiosInstance from '@/app/axios_config';
+"use client"
+import { useUser } from "@clerk/nextjs"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
+import { ArrowLeft } from "lucide-react"
+import type { UserType, User } from "@/models/schema"
+import axiosInstance from "@/app/axios_config"
 
 export default function EmployeeRegistrationForm() {
-  const { user: clerkUser } = useUser();
-  const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState('');
+  const { user: clerkUser } = useUser()
+  const router = useRouter()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState("")
   const [formData, setFormData] = useState({
-    province: 'ON',
-    isSubscribed: false
-  });
+    province: "ON",
+    isSubscribed: false,
+  })
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setIsSubmitting(true);
-  setError('');
+    e.preventDefault()
+    setIsSubmitting(true)
+    setError("")
 
-  try {
-    console.log('Starting registration process...'); // debugging
-    if (!clerkUser) throw new Error('User not authenticated');
-    if (!clerkUser.primaryEmailAddress?.emailAddress) throw new Error('Email not found');
-    if (!clerkUser.firstName || !clerkUser.lastName) throw new Error('Name information missing');
+    try {
+      console.log("Starting registration process...") // debugging
+      if (!clerkUser) throw new Error("User not authenticated")
+      if (!clerkUser.primaryEmailAddress?.emailAddress)
+        throw new Error("Email not found")
+      if (!clerkUser.firstName || !clerkUser.lastName)
+        throw new Error("Name information missing")
 
-    console.log('Creating user...'); // debugging
-    const userData: Omit<User, "id"> = {
-      clerkUserId: clerkUser.id,
-      firstName: clerkUser.firstName,
-      lastName: clerkUser.lastName,
-      email: clerkUser.primaryEmailAddress.emailAddress,
-      userType: 'Employee' as UserType,
-      isSubscribed: formData.isSubscribed,
-      province: formData.province,
-      //companyId: companyRef.id,
-      //companyName: formData.companyName,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-    await axiosInstance.post('/api/users', userData);
-    console.log('User created successfully'); // debugging
-
-    console.log('Updating Clerk metadata...'); // debugging
-    await clerkUser.update({
-      unsafeMetadata: {
-        role: 'Employee',
+      console.log("Creating user...") // debugging
+      const userData: Omit<User, "id"> = {
+        clerkUserId: clerkUser.id,
+        firstName: clerkUser.firstName,
+        lastName: clerkUser.lastName,
+        email: clerkUser.primaryEmailAddress.emailAddress,
+        userType: "Employee" as UserType,
+        isSubscribed: formData.isSubscribed,
+        province: formData.province,
         //companyId: companyRef.id,
         //companyName: formData.companyName,
-        province: formData.province,
-        userType: 'Employee'
+        createdAt: new Date(),
+        updatedAt: new Date(),
       }
-    });
-    console.log('Metadata updated successfully'); // debugging
+      await axiosInstance.post("/api/users", userData)
+      console.log("User created successfully") // debugging
 
-    console.log('Redirecting to home page...'); // debugging
-    router.push('/dashboard');
-  } catch (err) {
-    console.error('Detailed registration error:', err); // debugging
-    setError(err instanceof Error ? err.message : 'Registration failed');
-  } finally {
-    setIsSubmitting(false);
+      console.log("Updating Clerk metadata...") // debugging
+      await clerkUser.update({
+        unsafeMetadata: {
+          role: "Employee",
+          //companyId: companyRef.id,
+          //companyName: formData.companyName,
+          province: formData.province,
+          userType: "Employee",
+        },
+      })
+      console.log("Metadata updated successfully") // debugging
+
+      console.log("Redirecting to home page...") // debugging
+      router.push("/chat")
+    } catch (err) {
+      console.error("Detailed registration error:", err) // debugging
+      setError(err instanceof Error ? err.message : "Registration failed")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
-};
 
   if (!clerkUser) {
     return (
@@ -79,7 +81,7 @@ export default function EmployeeRegistrationForm() {
           </p>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -97,35 +99,42 @@ export default function EmployeeRegistrationForm() {
 
       <main className="flex-1 flex items-center justify-center p-6">
         <div className="max-w-4xl w-full flex flex-col md:flex-row gap-12">
-          
           {/* left  */}
           <div className="md:w-1/2">
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-gray-900">Account Information</h2>
+              <h2 className="text-2xl font-bold text-gray-900">
+                Account Information
+              </h2>
               <div className="p-6 bg-gray-50 rounded-lg space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    First Name
+                  </label>
                   <input
                     type="text"
-                    value={clerkUser.firstName || ''}
+                    value={clerkUser.firstName || ""}
                     readOnly
                     className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 cursor-not-allowed text-gray-900"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Last Name
+                  </label>
                   <input
                     type="text"
-                    value={clerkUser.lastName || ''}
+                    value={clerkUser.lastName || ""}
                     readOnly
                     className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 cursor-not-allowed text-gray-900"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Email
+                  </label>
                   <input
                     type="email"
-                    value={clerkUser.primaryEmailAddress?.emailAddress || ''}
+                    value={clerkUser.primaryEmailAddress?.emailAddress || ""}
                     readOnly
                     className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 cursor-not-allowed text-gray-900"
                   />
@@ -137,7 +146,9 @@ export default function EmployeeRegistrationForm() {
           {/* right */}
           <div className="md:w-1/2">
             <form onSubmit={handleSubmit} className="space-y-6">
-              <h2 className="text-2xl font-bold text-gray-900">Just a few more details</h2>
+              <h2 className="text-2xl font-bold text-gray-900">
+                Just a few more details
+              </h2>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -145,7 +156,9 @@ export default function EmployeeRegistrationForm() {
                 </label>
                 <select
                   value={formData.province}
-                  onChange={(e) => setFormData({...formData, province: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, province: e.target.value })
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                   required
                 >
@@ -170,14 +183,30 @@ export default function EmployeeRegistrationForm() {
                 >
                   {isSubmitting ? (
                     <span className="inline-flex items-center">
-                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      <svg
+                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
                       </svg>
                       Completing Registration...
                     </span>
                   ) : (
-                    'Complete Registration'
+                    "Complete Registration"
                   )}
                 </button>
               </div>
@@ -201,5 +230,5 @@ export default function EmployeeRegistrationForm() {
         </div>
       </main>
     </div>
-  );
+  )
 }
