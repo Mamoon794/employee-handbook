@@ -494,12 +494,16 @@ function PopularQuestions({
         const fullProvince = province.length == 2 ? provinceMap[province] : province
 
         const request = {
-          company: localStorage.getItem("companyName") || "public",
+          company: localStorage.getItem("companyName") || "",
           province: fullProvince
         }
   
         const response = await axiosInstance.post("/api/popular-questions", request)
-        const popularQuestions = response.data
+        let popularQuestions = response.data
+
+        if (popularQuestions.length > 3) {
+          popularQuestions = popularQuestions.slice(0, 3)
+        }
   
         // if fewer than 3 popular questions are returned, fill the list by 
         // adding default questions until there are 3
@@ -512,7 +516,6 @@ function PopularQuestions({
   
         if (isMounted) {
           setQuestions(merged);
-          console.log(merged)
         }
       } catch (error) {
         console.error("Error retrieving popular questions", error)
@@ -664,6 +667,8 @@ function Header({
         })
     } else {
       localStorage.removeItem("userId")
+      localStorage.removeItem("companyId")
+      localStorage.removeItem("companyName")
     }
   }, [isSignedIn, user])
 

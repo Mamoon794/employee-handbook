@@ -64,12 +64,12 @@ export default function Home() {
 
 
   useEffect(() => {
-    const prov = localStorage.getItem('province');
-    if (prov) setProvince(prov);
+    const prov = localStorage.getItem('publicProvince');
+    if (prov && !isSignedIn) setProvince(prov);
   }, []);
 
   useEffect(() => {
-    if (province) localStorage.setItem('province', province);
+    if (province && !isSignedIn) localStorage.setItem('publicProvince', province);
     console.log(province);
   }, [province]);
 

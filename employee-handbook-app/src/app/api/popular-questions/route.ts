@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
   }
 
   const { company, province } = payload
-  if (!company || !province) {
+  if (!province) {
     return NextResponse.json(
       { error: "Missing company or province" },
       { status: 400 }
