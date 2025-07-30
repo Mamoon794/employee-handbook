@@ -17,30 +17,10 @@ export default function UploadDocument() {
     url: string;
   }
   const [files, setFiles] = useState<File[]>([]);
-  const [savedFiles, setSavedFiles] = useState<pdfFile[]>([]);
   const [isUploaded, setIsUploaded] = useState(false);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
-
-  useEffect(() => {
-    async function fetchCompanyDocs() {
-      const companyId = localStorage.getItem('companyId');
-      const companyDocs = await axiosInstance.get(`/api/company/docs/${companyId}`);
-      let get_files : pdfFile[]  = []
-      for (const doc of companyDocs.data.companyDocs) {
-        get_files.push({
-          name: doc.fileName,
-          type: 'application/pdf',
-          url: doc.fileUrl,
-        });
-      }
-      setSavedFiles(get_files);
-    }
-    if (localStorage.getItem('companyId')) {
-      fetchCompanyDocs();
-    }
-  }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -85,6 +65,7 @@ export default function UploadDocument() {
     await uploadFilesToBackend(files);
     setUploading(false);
     setIsUploaded(true);
+    router.push('/DashBoard');
   };
 
   const handleRemove = (index: number) => {
