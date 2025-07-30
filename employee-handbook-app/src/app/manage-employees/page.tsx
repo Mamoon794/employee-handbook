@@ -3,13 +3,14 @@
 import { useRouter } from 'next/navigation';
 import { FaTrashAlt } from 'react-icons/fa';
 import { UserButton } from '@clerk/nextjs';
+import { useEffect } from 'react';
 
-// Employee" | "Owner" | "Administrator" | "Financer
+// roles = Employee" | "Owner" | "Administrator" | "Financer
 
 const employees = [
   { role: 'Financer', name: 'John Smith' },
   { role: 'Owner', name: 'Jane Doe' },
-  { role: 'Administrator', name: 'Ann Ferris' },
+  { role: 'Administrator', name: 'Annerferfewfewfetgrtegrtbrtbvrvrtbvrtebvretb Ferris' },
   { role: 'Employee', name: 'Eren Yeager' },
   { role: 'Employee', name: 'Bob Smith' },
   { role: 'Financer', name: 'John White' },
@@ -20,6 +21,15 @@ const employees = [
 
 export default function ManageEmployees() {
   const router = useRouter();
+
+  // useEffect = () => {
+    
+  // }
+
+  // const deleteEmployee = () => {
+  //   axiosInstance.delete()
+  // }
+
 
   return (
     <div className="min-h-screen bg-white flex flex-col font-sans">
@@ -36,17 +46,22 @@ export default function ManageEmployees() {
       <main className="flex-1 flex flex-col items-center justify-center py-20">
         <h2 className="text-4xl font-extrabold mb-10 text-center">Manage your employees</h2>
 
-        <div className="w-full max-w-3xl max-h-120 bg-[#f5f7fb] p-8 rounded-2xl shadow-sm flex flex-col gap-4 overflow-y-auto">
+        <div className="w-full max-w-4xl max-h-120 bg-[#f5f7fb] p-8 rounded-2xl shadow-sm flex flex-col gap-4 overflow-y-auto">
           {employees.map((emp, idx) => (
             <div key={idx} className="flex items-center gap-4">
-              <button className="flex-shrink-0 text-lg text-black bg-white border border-gray-300 rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-100">
+              <button 
+                className="flex-shrink-0 text-lg text-black bg-white border border-gray-300 rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-100"
+                // onClick={deleteEmployee()}
+              >
                 <FaTrashAlt />
               </button>
-              <div className="flex-1 flex items-center w-full bg-white">
-                <span className="px-10 py-2 w-1/2 bg-[#4e65a4] text-white rounded-xl text-lg font-semibold min-w-[220px] text-center">
+              <div className="flex-1 flex items-stretch w-full bg-white rounded-xl">
+                <span className="px-10 py-2 w-1/2 bg-[#4e65a4] text-white rounded-xl text-lg font-semibold flex items-center justify-center">
                   {emp.role}
                 </span>
-                <span className="text-xl px-8 py-2 w-1/2 font-bold text-black rounded-xl">{emp.name}</span>
+                <span className="text-xl px-8 py-2 w-1/2 font-bold text-black rounded-xl break-words">
+                  {emp.name}
+                </span>
               </div>
             </div>
           ))}
