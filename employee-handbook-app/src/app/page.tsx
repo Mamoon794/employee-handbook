@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -8,7 +10,7 @@ import axiosInstance from './axios_config';
 
 import ProvincePopup from "../../components/province";
 import { Message } from '@/models/schema';
-import { Chat } from './global_components';
+import { Chat, ERROR_MESSAGE } from './global_components';
 
 export default function Home() {
   const { isSignedIn, user } = useUser();
@@ -91,6 +93,56 @@ export default function Home() {
     console.log(province);
   }, [province]);
 
+  useEffect(() => {
+    sessionStorage.setItem('messages', JSON.stringify(messages));
+  }, [messages]);
+
+  useEffect(() => {
+    console.log(province);
+  }, []);
+
+  const handleRetry = async () => {
+    setError({message: '', chatId: ''});
+
+    const lastUserMessage = [...messages].reverse().find((msg) => msg.isFromUser === true);
+    if (!lastUserMessage) return;
+
+    setMessages((prev) => [...prev, lastUserMessage]);
+
+    try {
+      const res = await fetch('/api/messages/public', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          province,
+          query: lastUserMessage.content,
+          threadId: currChatId,
+        }),
+      });
+
+      if (!res.ok) throw new Error('Network response was not ok');
+
+      const data = await res.json();
+      if (data.response) {
+        const botMessage: Message = {
+          content: data.response,
+          isFromUser: false,
+          createdAt: new Date(),
+          sources: data.citations?.map((citation: { title: string; fragmentUrl?: string; originalUrl?: string }) => ({
+            title: citation.title,
+            url: citation.fragmentUrl || citation.originalUrl,
+          })),
+        };
+        setMessages((prev) => [...prev, botMessage]);
+      } else {
+        setError({message: ERROR_MESSAGE, chatId: currChatId} );
+      }
+    } catch (err) {
+      console.error(err);
+      setError({message: ERROR_MESSAGE, chatId: currChatId} );
+    }
+  };
+
   return (
     <div className="min-h-screen flex bg-white flex-row">
       <PublicChatSideBar 
@@ -110,7 +162,7 @@ export default function Home() {
             <ProvincePopup onSave={(prov) => setProvince(prov)} />
           )}
 
-          <MessageThread messageList={messages} error={error} chatId={currChatId} />
+          <MessageThread messageList={messages} error={error} chatId={currChatId}  onRetry={handleRetry} />
           <div
             className="absolute bottom-6 left-0 right-0 mx-10"
           >
@@ -143,4 +195,5 @@ export default function Home() {
       </div>
     </div>
   );
+  
 }
