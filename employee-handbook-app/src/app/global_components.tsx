@@ -43,6 +43,10 @@ export const provinceMap: { [key: string]: string } = {
   NU: "Nunavut",
   YT: "Yukon",
 }
+        
+function generateThreadId(): string {
+  return Date.now().toString();
+}
 
 export interface Chat {
   id: string
@@ -59,6 +63,7 @@ export interface PublicChat {
   id: string
   title: string
   messages?: Message[]
+  needsTitleUpdate?: boolean
 }
 
 function getRowClass(i: number, total: number) {
@@ -111,58 +116,29 @@ function PublicChatSideBar({
   currChatId,
   chats,
   setChats,
+  titleLoading
 }: {
   setMessages: Dispatch<SetStateAction<Message[]>>
   setCurrChatId: (chatId: string) => void
   currChatId: string
   chats: PublicChat[]
   setChats: Dispatch<SetStateAction<PublicChat[]>>
+  titleLoading: boolean
 }) {
   // Add collapsed state
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  useEffect(() => {
-    const storedChats = localStorage.getItem("publicChats")
-    if (storedChats) {
-      try {
-        setChats(JSON.parse(storedChats))
-      } catch {
-        setChats([])
-      }
-    }
-
-    const storedChatId = localStorage.getItem("currPublicChatId")
-    if (storedChatId) setCurrChatId(storedChatId)
-  }, [])
-
-  useEffect(() => {
-    localStorage.setItem("publicChats", JSON.stringify(chats))
-  }, [chats])
-
-  useEffect(() => {
-    if (currChatId) localStorage.setItem("currPublicChatId", currChatId)
-  }, [currChatId])
-
-  useEffect(() => {
-    const stored = localStorage.getItem("publicChats")
-    if (stored) {
-      const parsed = JSON.parse(stored)
-      const chat = parsed.find((c: any) => c.id === currChatId)
-      if (chat) setMessages(chat.messages || [])
-    }
-  }, [currChatId])
-
   const selectChat = (chat: PublicChat) => {
     setCurrChatId(chat.id)
     setMessages(chat.messages || [])
-    localStorage.setItem("currPublicChatId", chat.id)
   }
 
   const handleNewChat = () => {
     const newChat: PublicChat = {
-      id: Date.now().toString(),
+      id: generateThreadId(),
       title: `Chat - ${new Date().toLocaleDateString()}-${chats.length + 1}`,
       messages: [],
+      needsTitleUpdate: true
     }
     const updatedChats = [newChat, ...chats]
     setChats(updatedChats)
@@ -198,7 +174,11 @@ function PublicChatSideBar({
               onClick={() => selectChat(chat)}
             >
               <div className="flex items-center justify-between">
-                <span className="font-medium">{chat.title}</span>
+                <span className="font-medium">
+                  {titleLoading && currChatId === chat.id
+                    ? "Generating Title..."
+                    : chat.title}
+                </span>
                 {currChatId === chat.id && (
                   <Trash2
                     className="text-gray-400"
@@ -228,7 +208,6 @@ function PrivateChatSideBar({
   titleLoading,
   chats,
   setChats,
-  setTitleLoading,
   totalChatsLength,
   setTotalChatsLength,
 }: {
@@ -238,7 +217,6 @@ function PrivateChatSideBar({
   titleLoading: boolean
   chats: PrivateChat[]
   setChats: Dispatch<SetStateAction<PrivateChat[]>>
-  setTitleLoading: Dispatch<SetStateAction<boolean>>
   totalChatsLength: number
   setTotalChatsLength: Dispatch<SetStateAction<number>>
 }) {
@@ -390,7 +368,7 @@ function PrivateChatSideBar({
                 <div className="flex items-center justify-between">
                   <span className="font-medium">
                     {titleLoading && selectedChat?.id === chat.id
-                      ? "Generating..."
+                      ? "Generating Title..."
                       : chat.title}
                   </span>
                   {selectedChat?.id === chat.id && (
@@ -551,9 +529,11 @@ function PopularQuestions({
 function MessageThread({
   messageList,
   error,
+  chatId
 }: {
   messageList: Message[]
-  error: string
+  error: {message: string, chatId: string},
+  chatId: string
 }) {
   const bottomRef = useRef<HTMLDivElement | null>(null)
 
@@ -619,9 +599,9 @@ function MessageThread({
         ))
       )}
 
-      {error && (
+      {error.message && error.chatId === chatId && (
         <div className="self-start border border-red-500 bg-red-200 text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm text-lg">
-          <div>{error}</div>
+          <div>{error.message}</div>
           <div className="pt-4">
             <button
               onClick={handleRetry}
@@ -804,5 +784,6 @@ export {
   MessageThread,
   InputMessage,
   Header,
-  Disclaimer
+  Disclaimer,
+  generateThreadId
 }
