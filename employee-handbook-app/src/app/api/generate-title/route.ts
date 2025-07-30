@@ -21,9 +21,10 @@ export async function POST(req: Request) {
     
     const { title } = await fastApiResponse.json();
 
-    // updating title
-    await updateChatTitle(chatId, title);
-
+    // updating title in DB for private chats
+    if (userId !== 'public') {
+      await updateChatTitle(chatId, title);
+    }
     
     return NextResponse.json({ title });
   } catch (error) {

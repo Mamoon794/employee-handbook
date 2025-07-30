@@ -7,6 +7,8 @@
 import { useState, useRef, useEffect } from 'react';
 
 import axiosInstance from '../axios_config';
+import { useRouter } from 'next/navigation';
+import { UserButton } from '@clerk/nextjs';
 
 export default function UploadDocument() {
   type pdfFile = {
@@ -15,29 +17,10 @@ export default function UploadDocument() {
     url: string;
   }
   const [files, setFiles] = useState<File[]>([]);
-  const [savedFiles, setSavedFiles] = useState<pdfFile[]>([]);
   const [isUploaded, setIsUploaded] = useState(false);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    async function fetchCompanyDocs() {
-      const companyId = localStorage.getItem('companyId');
-      const companyDocs = await axiosInstance.get(`/api/company/docs/${companyId}`);
-      let get_files : pdfFile[]  = []
-      for (const doc of companyDocs.data.companyDocs) {
-        get_files.push({
-          name: doc.fileName,
-          type: 'application/pdf',
-          url: doc.fileUrl,
-        });
-      }
-      setSavedFiles(get_files);
-    }
-    if (localStorage.getItem('companyId')) {
-      fetchCompanyDocs();
-    }
-  }, []);
+  const router = useRouter();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -82,6 +65,7 @@ export default function UploadDocument() {
     await uploadFilesToBackend(files);
     setUploading(false);
     setIsUploaded(true);
+    router.push('/DashBoard');
   };
 
   const handleRemove = (index: number) => {
@@ -91,12 +75,13 @@ export default function UploadDocument() {
 
   return (
     <div className="min-h-screen bg-white flex flex-col font-sans">
-      <header className="flex justify-between items-center px-8 py-6 shadow-sm">
+      <header className="flex justify-between items-center px-8 py-6 bg-white shadow-sm">
         <h1 className="text-2xl font-extrabold italic text-blue-800">Gail</h1>
         <div className="flex gap-4 items-center">
-          <button className="px-6 py-2 bg-[#242267] text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors">Ask a Question</button>
-          <button className="px-6 py-2 bg-blue-800 text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors">View Finances</button>
-          <button className="px-6 py-2 border border-gray-300 text-sm rounded-xl">Log Out</button>
+          <button className="px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm" onClick={()=>{router.push('/chat');}}>Ask a Question</button>
+          <button className="px-5 py-2 bg-blue-800 text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm" onClick={() => router.push('/finances')}>View Finances</button>
+          <button onClick={() => router.push('/analytics')} className="px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm">Analytics</button>
+          <UserButton appearance={{ elements: { avatarBox: "w-15 h-15" } }} />
         </div>
       </header>
 
