@@ -124,8 +124,8 @@ function AddEmployeeContent() {
         },
         body: JSON.stringify({
           email: formData.email,
-          companyId: searchParams.companyId,
-          companyName: searchParams.companyName,
+          companyId: companyId,
+          companyName: companyName,
           inviterId: user?.id || "",
         }),
       })
