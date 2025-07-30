@@ -1,6 +1,6 @@
 import { getPopularQuestions } from "@/integrations/aiService"
 import { savePopularQuestions } from "@/models/dbOperations"
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 
 /**
  * Scheduled weekly job:
