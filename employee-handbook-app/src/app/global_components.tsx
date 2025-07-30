@@ -656,10 +656,13 @@ function Header({
   const router = useRouter()
   const [isFinance, setIsFinance] = useState(false)
   const [canSeeDashboard, setCanSeeDashboard] = useState(false)
+  const [isOnDashboard, setIsOnDashboard] = useState(false)
   // const isFinance = true
 
   useEffect(() => {
     if (isSignedIn && user) {
+      const pathname = typeof window !== "undefined" ? window.location.pathname : "";
+      setIsOnDashboard(pathname === "/dashboard")
       axiosInstance
         .get(`/api/users/${user.id}?isClerkID=true`)
         .then((response) => {
@@ -702,7 +705,26 @@ function Header({
         </Link>
       )}
       <div className="flex gap-4 items-center">
-        {isFinance && isSignedIn && (
+        {canSeeDashboard && !isOnDashboard && isSignedIn &&(
+          <>
+            <button
+              className="px-5 py-2 bg-blue-800 text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"
+              onClick={() => router.push("/dashboard")}
+            >
+              Dashboard
+            </button>
+
+          </>)
+        }
+        {isSignedIn && isOnDashboard && (
+          <button
+            className="px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"
+            onClick={() => router.push("/chat")}
+          >
+            Ask a Question
+          </button>
+        )}
+        {(isFinance || canSeeDashboard) && isSignedIn && (
           <>
             <button
               className="px-5 py-2 bg-blue-800 text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"
