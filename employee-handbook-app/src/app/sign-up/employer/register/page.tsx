@@ -73,8 +73,8 @@ export default function EmployerRegistrationForm() {
     });
     console.log('Metadata updated successfully'); // debugging
 
-    console.log('Redirecting to dashboard...'); // debugging
-    router.push('/dashboard');
+    console.log('Redirecting to home page for subscription check...'); // debugging
+    router.push('/');
   } catch (err) {
     console.error('Detailed registration error:', err); // debugging
     setError(err instanceof Error ? err.message : 'Registration failed');
