@@ -48,7 +48,7 @@ export default function EmployeeLogin() {
                 <>
                   <li className="flex items-start">
                     <span className="text-green-500 mr-2 mt-1">✓</span>
-                    <span>Join your company's employee portal and access exclusive resources</span>
+                    <span>Join your company&apos;s employee portal and access exclusive resources</span>
                   </li>
                   <li className="flex items-start">
                     <span className="text-green-500 mr-2 mt-1">✓</span>
