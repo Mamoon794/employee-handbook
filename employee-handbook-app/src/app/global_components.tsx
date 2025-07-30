@@ -21,6 +21,8 @@ import {
 import { ChevronDown, Check } from "lucide-react"
 import dynamic from "next/dynamic"
 
+const ERROR_MESSAGE = "Oops, something went wrong. Want to try again?";
+
 const InputMessage = dynamic(
   () => import("./MessageInput").then((mod) => mod.MessageInput),
   {
@@ -44,7 +46,7 @@ export const provinceMap: { [key: string]: string } = {
   NU: "Nunavut",
   YT: "Yukon",
 }
-        
+
 function generateThreadId(): string {
   return Date.now().toString()
 }
@@ -466,51 +468,56 @@ function PopularQuestions({
   setInputValue,
   province,
   messages,
-  chatId
+  chatId,
 }: {
-  setInputValue: (inputValue: string) => void,
-  province: string,
-  messages: Message[],
+  setInputValue: (inputValue: string) => void
+  province: string
+  messages: Message[]
   chatId: string
 }) {
   const defaultQuestions = [
     "Do I get paid breaks?",
     "What is the minimum wage?",
     "Do I get sick days?",
-  ];
+  ]
   const empty = [""]
-  const [questions, setQuestions] = useState<string[]>(empty);
+  const [questions, setQuestions] = useState<string[]>(empty)
 
   useEffect(() => {
-    let isMounted = true;
+    let isMounted = true
 
     const fetchPopular = async () => {
       try {
-        const fullProvince = province.length == 2 ? provinceMap[province] : province
+        const fullProvince =
+          province.length == 2 ? provinceMap[province] : province
 
         const request = {
           company: localStorage.getItem("companyName") || "",
-          province: fullProvince
+          province: fullProvince,
         }
-  
-        const response = await axiosInstance.post("/api/popular-questions", request)
+        console.log("request", request)
+
+        const response = await axiosInstance.post(
+          "/api/popular-questions",
+          request
+        )
         let popularQuestions = response.data
 
         if (popularQuestions.length > 3) {
           popularQuestions = popularQuestions.slice(0, 3)
         }
-  
-        // if fewer than 3 popular questions are returned, fill the list by 
+
+        // if fewer than 3 popular questions are returned, fill the list by
         // adding default questions until there are 3
-        const merged = [...popularQuestions];
+        const merged = [...popularQuestions]
         let i = 0
         while (merged.length < 3) {
           merged.push(defaultQuestions[i])
           i++
         }
-  
+
         if (isMounted) {
-          setQuestions(merged);
+          setQuestions(merged)
         }
       } catch (error) {
         console.error("Error retrieving popular questions", error)
@@ -522,8 +529,8 @@ function PopularQuestions({
     }
 
     return () => {
-      isMounted = false;
-    };
+      isMounted = false
+    }
   }, [province, chatId])
 
   return (
@@ -537,8 +544,7 @@ function PopularQuestions({
           >
             {q}
           </button>
-        ))
-      }
+        ))}
     </div>
   )
 }
@@ -546,11 +552,13 @@ function PopularQuestions({
 function MessageThread({
   messageList,
   error,
-  chatId
+  chatId,
+  onRetry,
 }: {
   messageList: Message[]
   error: {message: string, chatId: string},
-  chatId: string
+  chatId: string,
+  onRetry?: () => void;
 }) {
   const bottomRef = useRef<HTMLDivElement | null>(null)
 
@@ -559,8 +567,8 @@ function MessageThread({
   }, [messageList, error])
 
   const handleRetry = () => {
-    // TODO
-  }
+    if (onRetry) onRetry();
+  };
 
   return (
     <div
@@ -648,8 +656,8 @@ function Header({
 }) {
   const { isSignedIn, user } = useUser()
   const router = useRouter()
+  const [isFinance, setIsFinance] = useState(false)
 
-  // company name
   const getCompanyName = (): string => {
     if (companyName) return companyName;
     if (user?.publicMetadata?.companyName) {
@@ -672,6 +680,7 @@ function Header({
             response.data[0].companyName || ""
           )
           setProvince(response.data[0].province || "")
+          setIsFinance(response.data[0].userType == "Financer")
         })
         .catch((error) => {
           console.error("Error fetching user data:", error)
@@ -704,24 +713,45 @@ function Header({
         )}
       </div>
       <div className="flex gap-3 items-center">
-        {!isSignedIn ? (
+        {isFinance && isSignedIn && (
           <>
-            <span className="px-4">
-              <ProvinceDropdown province={province} setProvince={setProvince} />
-            </span>
-            <LogIn />
-            <SignUp />
+            <button
+              className="px-5 py-2 bg-blue-800 text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"
+              onClick={() => router.push("/finances")}
+            >
+              View Finances
+            </button>
+
+            <button
+              onClick={() => router.push("/analytics")}
+              className="px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"
+            >
+              Analytics
+            </button>
           </>
-        ) : (
-          <div className="flex items-center gap-4">
-            {displayCompanyName && (
-              <span className="text-sm font-medium text-gray-600 hidden md:block">
-                {displayCompanyName}
-              </span>
-            )}
-            <UserButton afterSignOutUrl="/" />
-          </div>
         )}
+
+        <div className="flex items-center gap-4">
+          {displayCompanyName && (
+            <span className="text-sm font-medium text-gray-600 hidden md:block">
+              {displayCompanyName}
+            </span>
+          )}
+          {!isSignedIn ? (
+            <>
+              <span className="px-4">
+                <ProvinceDropdown
+                  province={province}
+                  setProvince={setProvince}
+                />
+              </span>
+              <LogIn />
+              <SignUp />
+            </>
+          ) : (
+            <UserButton afterSignOutUrl="/" />
+          )}
+        </div>
       </div>
     </header>
   )
@@ -839,5 +869,6 @@ export {
   Header,
   Disclaimer,
   generateThreadId,
+  ERROR_MESSAGE
 }
 
