@@ -44,7 +44,7 @@ export const provinceMap: { [key: string]: string } = {
   NU: "Nunavut",
   YT: "Yukon",
 }
-        
+
 function generateThreadId(): string {
   return Date.now().toString()
 }
@@ -466,51 +466,56 @@ function PopularQuestions({
   setInputValue,
   province,
   messages,
-  chatId
+  chatId,
 }: {
-  setInputValue: (inputValue: string) => void,
-  province: string,
-  messages: Message[],
+  setInputValue: (inputValue: string) => void
+  province: string
+  messages: Message[]
   chatId: string
 }) {
   const defaultQuestions = [
     "Do I get paid breaks?",
     "What is the minimum wage?",
     "Do I get sick days?",
-  ];
+  ]
   const empty = [""]
-  const [questions, setQuestions] = useState<string[]>(empty);
+  const [questions, setQuestions] = useState<string[]>(empty)
 
   useEffect(() => {
-    let isMounted = true;
+    let isMounted = true
 
     const fetchPopular = async () => {
       try {
-        const fullProvince = province.length == 2 ? provinceMap[province] : province
+        const fullProvince =
+          province.length == 2 ? provinceMap[province] : province
 
         const request = {
           company: localStorage.getItem("companyName") || "",
-          province: fullProvince
+          province: fullProvince,
         }
-  
-        const response = await axiosInstance.post("/api/popular-questions", request)
+        console.log("request", request)
+
+        const response = await axiosInstance.post(
+          "/api/popular-questions",
+          request
+        )
         let popularQuestions = response.data
 
         if (popularQuestions.length > 3) {
           popularQuestions = popularQuestions.slice(0, 3)
         }
-  
-        // if fewer than 3 popular questions are returned, fill the list by 
+
+        // if fewer than 3 popular questions are returned, fill the list by
         // adding default questions until there are 3
-        const merged = [...popularQuestions];
+        const merged = [...popularQuestions]
         let i = 0
         while (merged.length < 3) {
           merged.push(defaultQuestions[i])
           i++
         }
-  
+
         if (isMounted) {
-          setQuestions(merged);
+          setQuestions(merged)
         }
       } catch (error) {
         console.error("Error retrieving popular questions", error)
@@ -522,8 +527,8 @@ function PopularQuestions({
     }
 
     return () => {
-      isMounted = false;
-    };
+      isMounted = false
+    }
   }, [province, chatId])
 
   return (
@@ -537,8 +542,7 @@ function PopularQuestions({
           >
             {q}
           </button>
-        ))
-      }
+        ))}
     </div>
   )
 }
@@ -546,10 +550,10 @@ function PopularQuestions({
 function MessageThread({
   messageList,
   error,
-  chatId
+  chatId,
 }: {
   messageList: Message[]
-  error: {message: string, chatId: string},
+  error: { message: string; chatId: string }
   chatId: string
 }) {
   const bottomRef = useRef<HTMLDivElement | null>(null)
@@ -646,20 +650,24 @@ function Header({
 }) {
   const { isSignedIn, user } = useUser()
   const router = useRouter()
+  const [isFinance, setIsFinance] = useState(false)
+  // const isFinance = true
 
   useEffect(() => {
     if (isSignedIn && user) {
       axiosInstance
         .get(`/api/users/${user.id}?isClerkID=true`)
         .then((response) => {
-          // console.log("response.data in header: ", response.data)
-          localStorage.setItem("userId", response.data[0].id)
+          console.log("response.data in header: ", response.data)
+          let userId = response.data[0].id
+          localStorage.setItem("userId", userId)
           localStorage.setItem("companyId", response.data[0].companyId || "")
           localStorage.setItem(
             "companyName",
             response.data[0].companyName || ""
           )
           setProvince(response.data[0].province || "")
+          setIsFinance(response.data[0].userType == "Financer")
         })
         .catch((error) => {
           console.error("Error fetching user data:", error)
@@ -684,20 +692,43 @@ function Header({
           </h1>
         </Link>
       )}
-      <div className="flex gap-3 items-center">
-        {!isSignedIn ? (
+      <div className="flex gap-4 items-center">
+        {isFinance && isSignedIn && (
           <>
-            <span className="px-4">
-              <ProvinceDropdown province={province} setProvince={setProvince} />
-            </span>
-            <LogIn />
-            <SignUp />
+            <button
+              className="px-5 py-2 bg-blue-800 text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"
+              onClick={() => router.push("/finances")}
+            >
+              View Finances
+            </button>
+
+            <button
+              onClick={() => router.push("/analytics")}
+              className="px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"
+            >
+              Analytics
+            </button>
           </>
-        ) : (
-          <div className="flex items-center">
-            <UserButton afterSignOutUrl="/" />
-          </div>
         )}
+
+        <div className="flex gap-3 items-center">
+          {!isSignedIn ? (
+            <>
+              <span className="px-4">
+                <ProvinceDropdown
+                  province={province}
+                  setProvince={setProvince}
+                />
+              </span>
+              <LogIn />
+              <SignUp />
+            </>
+          ) : (
+            <div className="flex items-center">
+              <UserButton afterSignOutUrl="/" />
+            </div>
+          )}
+        </div>
       </div>
     </header>
   )

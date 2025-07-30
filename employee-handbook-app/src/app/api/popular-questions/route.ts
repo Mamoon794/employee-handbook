@@ -2,7 +2,7 @@ import { getPopularQuestions } from "@/models/dbOperations"
 import { NextRequest, NextResponse } from "next/server"
 
 interface PopularQuestionsRequest {
-  company: string,
+  company: string
   province: string
 }
 
@@ -24,17 +24,17 @@ export async function POST(req: NextRequest) {
   }
 
   const { company, province } = payload
-  if (!province) {
-    return NextResponse.json(
-      { error: "Missing company or province" },
-      { status: 400 }
-    )
-  }
+  // if (!province) {
+  //   return NextResponse.json(
+  //     { error: "Missing company or province" },
+  //     { status: 400 }
+  //   )
+  // }
 
   // query for popular questions corresponding to the company and province in Firestore
   try {
     const result = await getPopularQuestions(company, province)
-    return NextResponse.json(result.map(q => q.text));
+    return NextResponse.json(result.map((q) => q.text))
   } catch (e) {
     console.log(e)
     return NextResponse.json(
