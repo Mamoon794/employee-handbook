@@ -21,12 +21,31 @@ import {
 import { ChevronDown, Check } from "lucide-react"
 import dynamic from "next/dynamic"
 
+const ERROR_MESSAGE = "Oops, something went wrong. Want to try again?";
+
 const InputMessage = dynamic(
   () => import("./MessageInput").then((mod) => mod.MessageInput),
   {
     ssr: false,
   }
 )
+
+// for converting the abbreviated province stored in local storage for private users to the full province name
+export const provinceMap: { [key: string]: string } = {
+  ON: "Ontario",
+  AB: "Alberta",
+  BC: "British Columbia",
+  MB: "Manitoba",
+  NB: "New Brunswick",
+  NL: "Newfoundland and Labrador",
+  NS: "Nova Scotia",
+  PE: "Prince Edward Island",
+  QC: "Quebec",
+  SK: "Saskatchewan",
+  NT: "Northwest Territories",
+  NU: "Nunavut",
+  YT: "Yukon",
+}
 
 function generateThreadId(): string {
   return Date.now().toString()
@@ -447,24 +466,85 @@ function PrivateChatSideBar({
 
 function PopularQuestions({
   setInputValue,
+  province,
+  messages,
+  chatId,
 }: {
   setInputValue: (inputValue: string) => void
+  province: string
+  messages: Message[]
+  chatId: string
 }) {
+  const defaultQuestions = [
+    "Do I get paid breaks?",
+    "What is the minimum wage?",
+    "Do I get sick days?",
+  ]
+  const empty = [""]
+  const [questions, setQuestions] = useState<string[]>(empty)
+
+  useEffect(() => {
+    let isMounted = true
+
+    const fetchPopular = async () => {
+      try {
+        const fullProvince =
+          province.length == 2 ? provinceMap[province] : province
+
+        const request = {
+          company: localStorage.getItem("companyName") || "",
+          province: fullProvince,
+        }
+        console.log("request", request)
+
+        const response = await axiosInstance.post(
+          "/api/popular-questions",
+          request
+        )
+        let popularQuestions = response.data
+
+        if (popularQuestions.length > 3) {
+          popularQuestions = popularQuestions.slice(0, 3)
+        }
+
+        // if fewer than 3 popular questions are returned, fill the list by
+        // adding default questions until there are 3
+        const merged = [...popularQuestions]
+        let i = 0
+        while (merged.length < 3) {
+          merged.push(defaultQuestions[i])
+          i++
+        }
+
+        if (isMounted) {
+          setQuestions(merged)
+        }
+      } catch (error) {
+        console.error("Error retrieving popular questions", error)
+      }
+    }
+
+    if (messages.length === 0) {
+      fetchPopular()
+    }
+
+    return () => {
+      isMounted = false
+    }
+  }, [province, chatId])
+
   return (
     <div className="flex flex-col sm:flex-row justify-center gap-4 pb-4">
-      {[
-        "Do I get paid breaks?",
-        "What is the minimum wage?",
-        "Do I get sick days?",
-      ].map((q, i) => (
-        <button
-          key={i}
-          onClick={() => setInputValue(q)}
-          className="bg-blue-800 text-white font-semibold px-6 py-2 rounded-md hover:bg-blue-600 transition-colors"
-        >
-          {q}
-        </button>
-      ))}
+      {JSON.stringify(questions) !== JSON.stringify(empty) && // only display questions after its updated with popular questions
+        questions.map((q, i) => (
+          <button
+            key={i}
+            onClick={() => setInputValue(q)}
+            className="bg-blue-800 text-white font-semibold px-6 py-2 rounded-md hover:bg-blue-600 transition-colors"
+          >
+            {q}
+          </button>
+        ))}
     </div>
   )
 }
@@ -472,11 +552,13 @@ function PopularQuestions({
 function MessageThread({
   messageList,
   error,
-  chatId
+  chatId,
+  onRetry,
 }: {
   messageList: Message[]
   error: {message: string, chatId: string},
-  chatId: string
+  chatId: string,
+  onRetry?: () => void;
 }) {
   const bottomRef = useRef<HTMLDivElement | null>(null)
 
@@ -485,8 +567,8 @@ function MessageThread({
   }, [messageList, error])
 
   const handleRetry = () => {
-    // TODO
-  }
+    if (onRetry) onRetry();
+  };
 
   return (
     <div
@@ -572,26 +654,32 @@ function Header({
 }) {
   const { isSignedIn, user } = useUser()
   const router = useRouter()
+  const [isFinance, setIsFinance] = useState(false)
+  // const isFinance = true
 
   useEffect(() => {
     if (isSignedIn && user) {
       axiosInstance
         .get(`/api/users/${user.id}?isClerkID=true`)
         .then((response) => {
-          // console.log("response.data in header: ", response.data)
-          localStorage.setItem("userId", response.data[0].id)
+          console.log("response.data in header: ", response.data)
+          let userId = response.data[0].id
+          localStorage.setItem("userId", userId)
           localStorage.setItem("companyId", response.data[0].companyId || "")
           localStorage.setItem(
             "companyName",
             response.data[0].companyName || ""
           )
           setProvince(response.data[0].province || "")
+          setIsFinance(response.data[0].userType == "Financer")
         })
         .catch((error) => {
           console.error("Error fetching user data:", error)
         })
     } else {
       localStorage.removeItem("userId")
+      localStorage.removeItem("companyId")
+      localStorage.removeItem("companyName")
     }
   }, [isSignedIn, user])
 
@@ -608,20 +696,43 @@ function Header({
           </h1>
         </Link>
       )}
-      <div className="flex gap-3 items-center">
-        {!isSignedIn ? (
+      <div className="flex gap-4 items-center">
+        {isFinance && isSignedIn && (
           <>
-            <span className="px-4">
-              <ProvinceDropdown province={province} setProvince={setProvince} />
-            </span>
-            <LogIn />
-            <SignUp />
+            <button
+              className="px-5 py-2 bg-blue-800 text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"
+              onClick={() => router.push("/finances")}
+            >
+              View Finances
+            </button>
+
+            <button
+              onClick={() => router.push("/analytics")}
+              className="px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"
+            >
+              Analytics
+            </button>
           </>
-        ) : (
-          <div className="flex items-center">
-            <UserButton afterSignOutUrl="/" />
-          </div>
         )}
+
+        <div className="flex gap-3 items-center">
+          {!isSignedIn ? (
+            <>
+              <span className="px-4">
+                <ProvinceDropdown
+                  province={province}
+                  setProvince={setProvince}
+                />
+              </span>
+              <LogIn />
+              <SignUp />
+            </>
+          ) : (
+            <div className="flex items-center">
+              <UserButton afterSignOutUrl="/" />
+            </div>
+          )}
+        </div>
       </div>
     </header>
   )
@@ -739,4 +850,5 @@ export {
   Header,
   Disclaimer,
   generateThreadId,
+  ERROR_MESSAGE
 }
