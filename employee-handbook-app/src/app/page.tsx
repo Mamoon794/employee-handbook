@@ -18,7 +18,7 @@ export default function Home() {
   const [chats, setChats] = useState<Chat[]>([]);
   const [province, setProvince] = useState<string>('');
   const [messages, setMessages] = useState([] as Message[]);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<{message: string, chatId: string}>({message: '', chatId: ''});
   const [currChatId, setCurrChatId] = useState<string>('');
   const [titleLoading, setTitleLoading] = useState(false)
 
@@ -77,12 +77,12 @@ export default function Home() {
   }, [isSignedIn, user, router]);
 
   useEffect(() => {
-    const prov = localStorage.getItem('province');
-    if (prov) setProvince(prov);
+    const prov = localStorage.getItem('publicProvince');
+    if (prov && !isSignedIn) setProvince(prov);
   }, []);
 
   useEffect(() => {
-    if (province) localStorage.setItem('province', province);
+    if (province && !isSignedIn) localStorage.setItem('publicProvince', province);
     console.log(province);
   }, [province]);
 
@@ -105,12 +105,17 @@ export default function Home() {
             <ProvincePopup onSave={(prov) => setProvince(prov)} />
           )}
 
-          <MessageThread messageList={messages} error={error} />
+          <MessageThread messageList={messages} error={error} chatId={currChatId} />
           <div
             className="absolute bottom-6 left-0 right-0 mx-10"
           >
             {messages.length === 0 && (
-              <PopularQuestions setInputValue={setInputValue} />
+              <PopularQuestions 
+                setInputValue={setInputValue} 
+                province={province} 
+                messages={messages}
+                chatId={currChatId}
+              />
             )}
 
             <InputMessage

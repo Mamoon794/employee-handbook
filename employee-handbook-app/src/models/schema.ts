@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase-admin/firestore";
+
 export type UserType = "Employee" | "Owner" | "Administrator" | "Financer"; // types of users
 
 export interface User {
@@ -69,4 +71,12 @@ export interface Invitation {
   status: "pending" | "accepted" | "rejected";
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface PopularQuestion {
+  id?: string
+  province: string
+  company: string
+  text: string
+  createdAt?: Timestamp
 }
