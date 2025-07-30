@@ -1,3 +1,4 @@
+import { PopularQuestion } from "@/models/schema"
 import type { AIResponse } from "@/types/ai"
 
 const AI_SERVICE_URL = process.env.AI_SERVICE_URL
@@ -5,7 +6,7 @@ const AI_SERVICE_URL = process.env.AI_SERVICE_URL
 /**
  * Calls the upstream FastAPI service at POST /responses
  */
-export async function callAiService(
+export async function getChatbotResponse(
   province: string,
   question: string,
   threadId: string,
@@ -31,6 +32,28 @@ export async function callAiService(
   }
 
   return (await res.json()) as AIResponse
+}
+
+/**
+ * Calls the upstream FastAPI service at GET /popular-questions
+ */
+export async function getPopularQuestions(): Promise<PopularQuestion[]> {
+  if (!AI_SERVICE_URL) {
+    throw new Error("AI_SERVICE_URL not configured")
+  }
+
+  const res = await fetch(`${AI_SERVICE_URL}/popular-questions`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" }
+  })
+
+  if (!res.ok) {
+    const text = await res.text()
+    throw new Error(`AI service error: ${text}`)
+  }
+
+  const { popular_questions } = await res.json() as { popular_questions: PopularQuestion[] }
+  return popular_questions
 }
 
 /**

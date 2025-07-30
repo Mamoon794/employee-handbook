@@ -1,6 +1,6 @@
 /* eslint-disable */
 import type { AIResponse, UserMessageResponse, Citation } from "@/types/ai"
-import { callAiService } from "@/integrations/aiService"
+import { getChatbotResponse } from "@/integrations/aiService"
 
 /**
  * Core logic for a public user's question.
@@ -12,7 +12,7 @@ export async function handlePublicMessage(
   question: string,
   threadId: string
 ): Promise<UserMessageResponse> {
-  const aiResult = await callAiService(province, question, threadId)
+  const aiResult = await getChatbotResponse(province, question, threadId)
 
   const seen = new Set<string>()
   const citations: Citation[] = []
@@ -62,7 +62,7 @@ export async function handlePrivateMessage(
   threadId: string,
   company: string = ""
 ): Promise<UserMessageResponse> {
-  const aiResult = await callAiService(province, question, threadId, company)
+  const aiResult = await getChatbotResponse(province, question, threadId, company)
 
   const seen = new Set<string>()
   const publicCitations: Citation[] = []

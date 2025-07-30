@@ -45,6 +45,7 @@ embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
 pc = Pinecone(api_key=pc_api_key)
 index = pc.Index(index_name)
 vector_store = PineconeVectorStore(embedding=embeddings, index=index)
+vector_store_dimension = 768
 
 # Load prompt template from LangChain Hub
 prompt = hub.pull("rlm/rag-prompt", api_url="https://api.smith.langchain.com")
@@ -179,6 +180,58 @@ graph_builder.add_edge("generate", END)
 
 memory = MemorySaver()
 graph = graph_builder.compile(checkpointer=memory)
+
+def returnQuestion(user_message: str) -> bool:
+    """
+    Check if the user message is a question, and if so, return it with corrected grammar and without personal information.
+    If it is not a question, rewrite it as a single concise question.
+    """
+    try:
+        prompt = f"""
+        You are given a user message. Your task is to:
+        1. Determine if it is a question.
+        2. If it is a question, return it with corrected grammar and remove any personal information.
+        3. If it is not a question, rewrite it as a single concise question.
+        Return only the final question, nothing else.
+
+        User message: "{user_message}"
+        """
+        # call Gemini using LangChain llm.invoke() method
+        # input is a list of messages 
+        response = llm.invoke([{"role": "user", "content": prompt}])
+
+        if hasattr(response, "content"):
+            question = response.content.strip()
+        else:
+            question = str(response).strip()
+
+        return {"question": question}
+    except Exception as e:
+        # if anything goes wrong, return an empty string
+        print(f"Error checking question: {e}")
+        return {"question": ""}
+
+def store_user_message_to_vector_store(user_message: str, province: str, company: str):
+    """Filter out those that are not questions. Then, store them in the vector store."""
+    try:
+        validQuestion = returnQuestion(user_message)["question"]
+        if not validQuestion:
+            # Not a question, not storing.
+            return
+        # print("Storing user question to vector store:", user_message)
+        doc = Document(
+            page_content=validQuestion,
+            metadata={
+                "created_at": time.time(),
+                "province": province,
+                "company": company,
+                "namespace": "UserQuestions",
+            }
+        )
+        print("The document that is being stored:", doc)
+        vector_store.add_documents([doc], namespace="UserQuestions")
+    except Exception as e:
+        print(f"Error storing user message to vector store: {e}")
 
 def load_and_split_html(url, title):
     try:

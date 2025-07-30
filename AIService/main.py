@@ -7,8 +7,9 @@ from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from faster_whisper import WhisperModel
 from pydantic import BaseModel
-from setupProvinces import graph, llm, process_docs, index_company_documents, delete_document_from_vector_db, delete_company_documents_from_vector_db
+from setupProvinces import graph, llm, process_docs, index_company_documents, delete_document_from_vector_db, delete_company_documents_from_vector_db, store_user_message_to_vector_store
 from processCompanyDocs import crawl_company_docs
+from kmeans import find_popular_questions_from_vector_db
 import traceback
 
 from pinecone import Pinecone
@@ -58,12 +59,6 @@ def get_response(userMessage: RAGInput):
     """
     Get a response from the AI model based on the query.
     """
-    # province_mappings = {"Alberta": "AB", "British Columbia": "BC", "Manitoba": "MB",
-    #                "New Brunswick": "NB", "Newfoundland and Labrador": "NL",
-    #                "Nova Scotia": "NS", "Northwest Territories": "NT", "Nunavut": "NU",
-    #                "Ontario": "ON", "Prince Edward Island": "PE",
-    #                "Quebec": "QC", "Saskatchewan": "SK", "Yukon": "YT"}
-    # print("province_mappings[userMessage.province]:", province_mappings[userMessage.province])
     try:
         if userMessage.company == "":
             prompt = (
@@ -113,15 +108,15 @@ def get_response(userMessage: RAGInput):
 
             response = last_step["messages"][-1]
             bothResponse = response.content if hasattr(response, "content") else response
-            print("bothResponse:", bothResponse)
+            # print("bothResponse:", bothResponse)
             match_non_company = re.search(r"\*\*public-doc\*\*:\s*(.*?)(?=\n\*\*company-doc\*\*:)", bothResponse, re.DOTALL)
             match_company = re.search(r"\*\*company-doc\*\*:\s*(.*)", bothResponse, re.DOTALL)
 
             publicResponse = match_non_company.group(1).strip() if match_non_company else None
             privateResponse = match_company.group(1).strip() if match_company else None
 
-            print("publicResponse:", publicResponse)
-            print("privateResponse:", privateResponse)
+            # print("publicResponse:", publicResponse)
+            # print("privateResponse:", privateResponse)
 
             if not publicResponse or not privateResponse:
                 # this is a conversational question, no documents found
@@ -136,6 +131,9 @@ def get_response(userMessage: RAGInput):
 
             public_clean, public_found = extract_and_clean(publicResponse)
             private_clean, private_found = extract_and_clean(privateResponse)
+
+            # Not a conversational question, store the user message to vector store
+            store_user_message_to_vector_store(userMessage.question, userMessage.province, userMessage.company)
 
             return {
                 "publicResponse": public_clean,
@@ -189,56 +187,6 @@ def generate_title(titleInput: TitleInput):
     except Exception as e:
         # if anything goes wrong, return a default title
         return {"title": "New Chat", "chatId": titleInput.chatId, "saved": False}
-
-# step = {
-#     "messages": [
-#         HumanMessage(...),       # no artifact
-#         AIMessage(...),          # no artifact
-#         ToolMessage(...),        # has .artifact
-#         ...
-#     ]
-# }
-
-# # Load environment variables
-# load_dotenv()
-
-# # Ensure required environment variables are set
-# if not os.environ.get("GOOGLE_API_KEY"):
-#     print("Please set the GOOGLE_API_KEY environment variable.")
-
-# if not os.environ.get("PINECONE_API_KEY"):
-#     print("Please set the GOOGLE_API_KEY environment variable.")
-# pc_api_key = os.environ.get("PINECONE_API_KEY")
-
-# if not os.environ.get("PINECONE_INDEX_NAME"):
-#     print("Please set the PINECONE_INDEX_NAME environment variable.")
-# index_name = os.environ.get("PINECONE_INDEX_NAME")
-
-# # Initialize llm models and vector store
-# llm = init_chat_model("gemini-2.0-flash", model_provider="google_genai")
-# embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
-
-# # Initialize Pinecone vector store
-# pc = Pinecone(api_key=pc_api_key)
-# index = pc.Index(index_name)
-# vector_store = PineconeVectorStore(embedding=embeddings, index=index)
-
-
-# # Convert the Document objects to emmbeddings and upload to Pinecone vector store
-# def batch_add_documents(vector_store, documents, company, region, access_level, batch_size=100):
-#     for i in range(0, len(documents), batch_size):
-#         batch = documents[i:i + batch_size]
-#         for doc in batch:
-#             doc.metadata.update({
-#                 "access_level": access_level,
-#                 "company": company,
-#                 "region": region
-#             })
-#         try:
-#             vector_store.add_documents(batch, namespace=company)
-#         except Exception as e:
-#             print(f"Failed to upload batch {i // batch_size + 1}: {e}")
-
 
 class DocInput(BaseModel):
     """
@@ -323,3 +271,16 @@ async def transcribe_audio(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=f"Transcription failed: {str(e)}")
     finally:
         os.remove(filename)  # clean up temp file
+
+
+@app.get("/popular-questions")
+def get_popular_questions():
+    """
+    Get a list of popular questions from the vector store.
+    """
+    try:
+        questions = find_popular_questions_from_vector_db()
+        return {"popular_questions": questions}
+    except Exception as e:
+        print(f"Failed to retrieve popular questions: {e}")
+        raise HTTPException(status_code=500, detail=str(e))

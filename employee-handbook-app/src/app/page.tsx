@@ -77,12 +77,12 @@ export default function Home() {
   }, [isSignedIn, user, router]);
 
   useEffect(() => {
-    const prov = localStorage.getItem('province');
-    if (prov) setProvince(prov);
+    const prov = localStorage.getItem('publicProvince');
+    if (prov && !isSignedIn) setProvince(prov);
   }, []);
 
   useEffect(() => {
-    if (province) localStorage.setItem('province', province);
+    if (province && !isSignedIn) localStorage.setItem('publicProvince', province);
     console.log(province);
   }, [province]);
 
@@ -110,7 +110,12 @@ export default function Home() {
             className="absolute bottom-6 left-0 right-0 mx-10"
           >
             {messages.length === 0 && (
-              <PopularQuestions setInputValue={setInputValue} />
+              <PopularQuestions 
+                setInputValue={setInputValue} 
+                province={province} 
+                messages={messages}
+                chatId={currChatId}
+              />
             )}
 
             <InputMessage
