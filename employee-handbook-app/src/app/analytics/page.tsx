@@ -22,6 +22,7 @@ import {
 } from "./utils/analytics.utility"
 import DateRangePicker from "./components/DateRangePicker"
 import TypewriterEffect from "./components/TypewriterEffect"
+import Link from "next/link"
 
 export default function Analytics() {
   const router = useRouter()
@@ -57,12 +58,22 @@ export default function Analytics() {
   ] = useState("")
   const [aiExplanationForQuestionsAsked, setAIExplanationForQuestionsAsked] =
     useState("")
-  const [bulletPointsEmployeeDistribution, setBulletPointsEmployeeDistribution] = useState("")
-  const [bulletPointsEmployeeRegistration, setBulletPointsEmployeeRegistration] = useState("")
-  const [bulletPointsQuestionsAsked, setBulletPointsQuestionsAsked] = useState("")
-  const [loadingBulletPointsDistribution, setLoadingBulletPointsDistribution] = useState(false)
-  const [loadingBulletPointsRegistration, setLoadingBulletPointsRegistration] = useState(false)
-  const [loadingBulletPointsQuestions, setLoadingBulletPointsQuestions] = useState(false)
+  const [
+    bulletPointsEmployeeDistribution,
+    setBulletPointsEmployeeDistribution,
+  ] = useState("")
+  const [
+    bulletPointsEmployeeRegistration,
+    setBulletPointsEmployeeRegistration,
+  ] = useState("")
+  const [bulletPointsQuestionsAsked, setBulletPointsQuestionsAsked] =
+    useState("")
+  const [loadingBulletPointsDistribution, setLoadingBulletPointsDistribution] =
+    useState(false)
+  const [loadingBulletPointsRegistration, setLoadingBulletPointsRegistration] =
+    useState(false)
+  const [loadingBulletPointsQuestions, setLoadingBulletPointsQuestions] =
+    useState(false)
 
   const handleDateChange = (newStartDate: string, newEndDate: string) => {
     setStartDate(newStartDate)
@@ -80,7 +91,7 @@ export default function Analytics() {
       setBulletPointsEmployeeDistribution("")
       setBulletPointsEmployeeRegistration("")
       setBulletPointsQuestionsAsked("")
-      
+
       try {
         const [
           employeeCount,
@@ -153,39 +164,48 @@ export default function Analytics() {
   useEffect(() => {
     const fetchAllBulletPoints = async () => {
       // Wait for all AI explanations to be ready
-      if (aiExplanationForEmployeeDistribution && aiExplanationForEmployeeRegistration && aiExplanationForQuestionsAsked) {
+      if (
+        aiExplanationForEmployeeDistribution &&
+        aiExplanationForEmployeeRegistration &&
+        aiExplanationForQuestionsAsked
+      ) {
         // Set all loading states
         setLoadingBulletPointsDistribution(true)
         setLoadingBulletPointsRegistration(true)
         setLoadingBulletPointsQuestions(true)
-        
+
         // Clear existing bullet points
         setBulletPointsEmployeeDistribution("")
         setBulletPointsEmployeeRegistration("")
         setBulletPointsQuestionsAsked("")
-        
+
         try {
           // Add delay between calls to respect rate limits
-          const bulletPointsDistribution = await getBulletPointSummary(aiExplanationForEmployeeDistribution)
+          const bulletPointsDistribution = await getBulletPointSummary(
+            aiExplanationForEmployeeDistribution
+          )
           setBulletPointsEmployeeDistribution(bulletPointsDistribution)
           setLoadingBulletPointsDistribution(false)
-          
+
           // Wait 2 seconds between calls
-          await new Promise(resolve => setTimeout(resolve, 2000))
-          
-          const bulletPointsRegistration = await getBulletPointSummary(aiExplanationForEmployeeRegistration)
+          await new Promise((resolve) => setTimeout(resolve, 2000))
+
+          const bulletPointsRegistration = await getBulletPointSummary(
+            aiExplanationForEmployeeRegistration
+          )
           setBulletPointsEmployeeRegistration(bulletPointsRegistration)
           setLoadingBulletPointsRegistration(false)
-          
+
           // Wait 2 seconds between calls
-          await new Promise(resolve => setTimeout(resolve, 2000))
-          
-          const bulletPointsQuestions = await getBulletPointSummary(aiExplanationForQuestionsAsked)
+          await new Promise((resolve) => setTimeout(resolve, 2000))
+
+          const bulletPointsQuestions = await getBulletPointSummary(
+            aiExplanationForQuestionsAsked
+          )
           setBulletPointsQuestionsAsked(bulletPointsQuestions)
           setLoadingBulletPointsQuestions(false)
-          
         } catch (error) {
-          console.error('Error fetching bullet points:', error)
+          console.error("Error fetching bullet points:", error)
           // Stop all loading states on error
           setLoadingBulletPointsDistribution(false)
           setLoadingBulletPointsRegistration(false)
@@ -195,7 +215,11 @@ export default function Analytics() {
     }
 
     fetchAllBulletPoints()
-  }, [aiExplanationForEmployeeDistribution, aiExplanationForEmployeeRegistration, aiExplanationForQuestionsAsked])
+  }, [
+    aiExplanationForEmployeeDistribution,
+    aiExplanationForEmployeeRegistration,
+    aiExplanationForQuestionsAsked,
+  ])
 
   const employeeStats = {
     total: totalEmployees,
@@ -230,7 +254,11 @@ export default function Analytics() {
               <ArrowLeft className="w-5 h-5 text-gray-600" />
             </button>
             <div>
-              <h1 className="text-2xl font-extrabold italic text-blue-800">Gail</h1>
+              <Link href="/dashboard">
+                <h1 className="text-2xl font-extrabold italic text-blue-800">
+                  Gail
+                </h1>
+              </Link>
               <p className="text-gray-600">Insights into your workforce</p>
             </div>
           </div>
@@ -421,13 +449,15 @@ export default function Analytics() {
                         <span>Generating AI insights...</span>
                       </div>
                     ) : bulletPointsEmployeeDistribution ? (
-                      <TypewriterEffect 
+                      <TypewriterEffect
                         text={bulletPointsEmployeeDistribution}
                         speed={30}
                         className="text-sm"
                       />
                     ) : (
-                      <p className="text-sm text-gray-500">No insights available</p>
+                      <p className="text-sm text-gray-500">
+                        No insights available
+                      </p>
                     )}
                   </div>
                 </>
@@ -543,13 +573,15 @@ export default function Analytics() {
                           <span>Generating insights...</span>
                         </div>
                       ) : bulletPointsEmployeeRegistration ? (
-                        <TypewriterEffect 
+                        <TypewriterEffect
                           text={bulletPointsEmployeeRegistration}
                           speed={25}
                           className="text-xs"
                         />
                       ) : (
-                        <p className="text-xs text-gray-500">No insights available</p>
+                        <p className="text-xs text-gray-500">
+                          No insights available
+                        </p>
                       )}
                     </div>
                   </div>
@@ -637,13 +669,15 @@ export default function Analytics() {
                           <span>Generating insights...</span>
                         </div>
                       ) : bulletPointsQuestionsAsked ? (
-                        <TypewriterEffect 
+                        <TypewriterEffect
                           text={bulletPointsQuestionsAsked}
                           speed={25}
                           className="text-xs"
                         />
                       ) : (
-                        <p className="text-xs text-gray-500">No insights available</p>
+                        <p className="text-xs text-gray-500">
+                          No insights available
+                        </p>
                       )}
                     </div>
                   </div>
