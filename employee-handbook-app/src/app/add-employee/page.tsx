@@ -1,191 +1,202 @@
-'use client';
+"use client"
 
-import { useState, useEffect, Suspense } from 'react';
-import { useRouter } from 'next/navigation';
-import { useUser, UserButton } from "@clerk/nextjs";
-import { FaEnvelope } from 'react-icons/fa';
+import { useState, useEffect, Suspense } from "react"
+import { useRouter } from "next/navigation"
+import { useUser, UserButton } from "@clerk/nextjs"
+import { FaEnvelope } from "react-icons/fa"
 
 interface PendingInvite {
-  id: string;
-  email: string;
-  createdAt: string;
+  id: string
+  email: string
+  createdAt: string
 }
 
 interface ApiInvite {
-  id: string;
-  email: string;
+  id: string
+  email: string
   createdAt?: {
-    toDate?: () => Date;
-  };
+    toDate?: () => Date
+  }
 }
 
 function AddEmployeeContent() {
-  const router = useRouter();
-  const { user } = useUser();
+  const router = useRouter()
+  const { user } = useUser()
   const [searchParams, setSearchParams] = useState({
-    companyId: '',
-    companyName: 'Your Company'
-  });
-  
-  const [showConfirmation, setShowConfirmation] = useState(false);
-  const [confirmedEmail, setConfirmedEmail] = useState('');
-  const [formData, setFormData] = useState({ email: '' });
-  const [error, setError] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [pendingInvites, setPendingInvites] = useState<PendingInvite[]>([]);
-  const [isLoadingInvites, setIsLoadingInvites] = useState(true);
+    companyId: "",
+    companyName: "Your Company",
+  })
+
+  const [showConfirmation, setShowConfirmation] = useState(false)
+  const [confirmedEmail, setConfirmedEmail] = useState("")
+  const [formData, setFormData] = useState({ email: "" })
+  const [error, setError] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [pendingInvites, setPendingInvites] = useState<PendingInvite[]>([])
+  const [isLoadingInvites, setIsLoadingInvites] = useState(true)
 
   useEffect(() => {
     // Safe window access for client-side only
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search)
       setSearchParams({
-        companyId: params.get('companyId') || '',
-        companyName: params.get('companyName') || 'Your Company'
-      });
+        companyId: params.get("companyId") || "",
+        companyName: params.get("companyName") || "Your Company",
+      })
     }
-  }, []);
+  }, [])
 
   useEffect(() => {
-    if (!searchParams.companyId) return;
+    if (!searchParams.companyId) return
 
     const fetchPendingInvites = async () => {
       try {
-        const response = await fetch(`/api/get-pending-invites?companyId=${searchParams.companyId}`);
-        if (!response.ok) throw new Error('Failed to fetch invites');
-        
-        const data = await response.json();
+        const response = await fetch(
+          `/api/get-pending-invites?companyId=${searchParams.companyId}`
+        )
+        if (!response.ok) throw new Error("Failed to fetch invites")
+
+        const data = await response.json()
         const formattedData = data.map((invite: ApiInvite) => ({
           ...invite,
-          createdAt: invite.createdAt?.toDate?.()?.toISOString() || new Date().toISOString()
-        }));
-        setPendingInvites(formattedData);
+          createdAt:
+            invite.createdAt?.toDate?.()?.toISOString() ||
+            new Date().toISOString(),
+        }))
+        setPendingInvites(formattedData)
       } catch (error) {
-        console.error('Error fetching pending invites:', error);
-        setError('Failed to load pending invites');
+        console.error("Error fetching pending invites:", error)
+        setError("Failed to load pending invites")
       } finally {
-        setIsLoadingInvites(false);
+        setIsLoadingInvites(false)
       }
-    };
+    }
 
-    fetchPendingInvites();
-  }, [searchParams.companyId]);
+    fetchPendingInvites()
+  }, [searchParams.companyId])
 
   const formatDate = (dateString: string) => {
     try {
-      const date = new Date(dateString);
-      return isNaN(date.getTime()) 
-        ? 'Date unavailable' 
-        : date.toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric'
-          });
+      const date = new Date(dateString)
+      return isNaN(date.getTime())
+        ? "Date unavailable"
+        : date.toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          })
     } catch {
-      return 'Date unavailable';
+      return "Date unavailable"
     }
-  };
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    setError('');
-  };
+    setFormData({ ...formData, [e.target.name]: e.target.value })
+    setError("")
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!searchParams.companyId || !searchParams.companyName) {
-      setError("Company information is missing");
-      return;
+    e.preventDefault()
+    const companyId = localStorage.getItem("companyId")
+    const companyName = localStorage.getItem("companyName")
+    if (!companyId || !companyName) {
+      setError("Company information is missing")
+      return
     }
 
     const isAlreadyInvited = pendingInvites.some(
-      invite => invite.email.toLowerCase() === formData.email.toLowerCase()
-    );
-    
+      (invite) => invite.email.toLowerCase() === formData.email.toLowerCase()
+    )
+
     if (isAlreadyInvited) {
-      setError('Invite already sent to this email.');
-      return;
+      setError("Invite already sent to this email.")
+      return
     }
-    
-    setIsSubmitting(true);
-    setError('');
+
+    setIsSubmitting(true)
+    setError("")
 
     try {
-      const response = await fetch('/api/send-invitation', {
-        method: 'POST',
+      const response = await fetch("/api/send-invitation", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           email: formData.email,
           companyId: searchParams.companyId,
           companyName: searchParams.companyName,
-          inviterId: user?.id || '',
+          inviterId: user?.id || "",
         }),
-      });
+      })
 
-      const data = await response.json();
+      const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to send invitation');
+        throw new Error(data.error || "Failed to send invitation")
       }
 
-      setConfirmedEmail(formData.email);
-      setShowConfirmation(true);
-      setFormData({ email: '' });
-      setIsSubmitting(false);
+      setConfirmedEmail(formData.email)
+      setShowConfirmation(true)
+      setFormData({ email: "" })
+      setIsSubmitting(false)
 
-      const invitesResponse = await fetch(`/api/get-pending-invites?companyId=${searchParams.companyId}`);
+      const invitesResponse = await fetch(
+        `/api/get-pending-invites?companyId=${searchParams.companyId}`
+      )
       if (invitesResponse.ok) {
-        const updatedInvites = await invitesResponse.json() as ApiInvite[];
-        setPendingInvites(updatedInvites.map((invite) => ({
-          ...invite,
-          createdAt: invite.createdAt?.toDate?.()?.toISOString() || new Date().toISOString()
-        })));
+        const updatedInvites = (await invitesResponse.json()) as ApiInvite[]
+        setPendingInvites(
+          updatedInvites.map((invite) => ({
+            ...invite,
+            createdAt:
+              invite.createdAt?.toDate?.()?.toISOString() ||
+              new Date().toISOString(),
+          }))
+        )
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unknown error occurred');
-      setIsSubmitting(false);
+      setError(err instanceof Error ? err.message : "An unknown error occurred")
+      setIsSubmitting(false)
     }
-  };
+  }
 
   const handleAddAnother = () => {
-    setShowConfirmation(false);
-    setConfirmedEmail('');
-    setIsSubmitting(false);
-  };
+    setShowConfirmation(false)
+    setConfirmedEmail("")
+    setIsSubmitting(false)
+  }
 
-  const handleCancel = () => router.push('/dashboard');
+  const handleCancel = () => router.push("/dashboard")
 
   return (
     <div className="min-h-screen bg-white flex flex-col font-sans">
       <header className="flex justify-between items-center px-8 py-6 bg-white shadow-sm">
         <h1 className="text-2xl font-extrabold italic text-blue-800">Gail</h1>
         <div className="flex gap-4 items-center">
-          <button 
-            className="px-7 py-3 bg-[#242267] text-white rounded-xl font-bold text-base hover:bg-blue-900 transition-colors shadow-sm" 
-            onClick={() => router.push('/chat')}
+          <button
+            className="px-7 py-3 bg-[#242267] text-white rounded-xl font-bold text-base hover:bg-blue-900 transition-colors shadow-sm"
+            onClick={() => router.push("/chat")}
           >
             Ask a Question
           </button>
-          <button 
+          <button
             className="px-7 py-3 bg-blue-800 text-white rounded-xl font-bold text-base hover:bg-blue-900 transition-colors shadow-sm"
-            onClick={() => router.push('/finances')}
+            onClick={() => router.push("/finances")}
           >
             View Finances
           </button>
-          <button 
-            onClick={() => router.push('/analytics')}
+          <button
+            onClick={() => router.push("/analytics")}
             className="px-7 py-3 bg-[#242267] text-white rounded-xl font-bold text-base hover:bg-blue-900 transition-colors shadow-sm"
           >
             Analytics
           </button>
-          <UserButton 
+          <UserButton
             appearance={{
               elements: {
-                avatarBox: "w-15 h-15"
-              }
+                avatarBox: "w-15 h-15",
+              },
             }}
           />
         </div>
@@ -199,9 +210,11 @@ function AddEmployeeContent() {
                 Invitation Sent!
               </h2>
               <p className="mb-6 text-gray-700">
-                An invitation has been sent to{' '}
-                <span className="font-bold text-blue-800">{confirmedEmail}</span>. 
-                They&apos;ll need to accept it before joining your company.
+                An invitation has been sent to{" "}
+                <span className="font-bold text-blue-800">
+                  {confirmedEmail}
+                </span>
+                . They&apos;ll need to accept it before joining your company.
               </p>
               <div className="flex justify-center gap-3">
                 <button
@@ -210,7 +223,7 @@ function AddEmployeeContent() {
                 >
                   Add Another Employee
                 </button>
-                <button 
+                <button
                   onClick={handleCancel}
                   className="border border-gray-300 px-6 py-2 rounded-lg font-semibold text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                 >
@@ -223,7 +236,7 @@ function AddEmployeeContent() {
               <h2 className="text-xl font-bold mb-6 text-gray-800 text-center">
                 Add New Employee
               </h2>
-              
+
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
                   <label className="block text-sm font-semibold text-gray-700">
@@ -247,19 +260,19 @@ function AddEmployeeContent() {
                 )}
 
                 <div className="flex justify-center gap-3 pt-2">
-                  <button 
-                    type="button" 
-                    onClick={handleCancel} 
+                  <button
+                    type="button"
+                    onClick={handleCancel}
                     className="border border-gray-300 px-6 py-2 rounded-lg font-semibold text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                   >
                     Cancel
                   </button>
-                  <button 
-                    type="submit" 
+                  <button
+                    type="submit"
                     className="bg-blue-800 text-white px-6 py-2 rounded-lg font-semibold text-sm hover:bg-blue-700 transition-colors"
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? 'Sending...' : 'Send Invitation'}
+                    {isSubmitting ? "Sending..." : "Send Invitation"}
                   </button>
                 </div>
               </form>
@@ -273,7 +286,7 @@ function AddEmployeeContent() {
                 Pending Invitations
               </span>
             </h3>
-            
+
             {isLoadingInvites ? (
               <div className="text-center py-2 text-gray-500 text-sm">
                 Loading pending invites...
@@ -285,10 +298,15 @@ function AddEmployeeContent() {
             ) : (
               <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
                 {pendingInvites.map((invite) => (
-                  <div key={invite.id} className="p-3 bg-white rounded-lg border border-gray-200">
+                  <div
+                    key={invite.id}
+                    className="p-3 bg-white rounded-lg border border-gray-200"
+                  >
                     <div className="flex justify-between items-start">
                       <div>
-                        <p className="font-medium text-gray-800 text-sm">{invite.email}</p>
+                        <p className="font-medium text-gray-800 text-sm">
+                          {invite.email}
+                        </p>
                         <p className="text-xs text-gray-500 mt-1">
                           Sent: {formatDate(invite.createdAt)}
                         </p>
@@ -304,17 +322,21 @@ function AddEmployeeContent() {
 
       <footer className="w-full h-24 bg-[#294494] mt-auto" />
     </div>
-  );
+  )
 }
 
 export default function AddEmployeePage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="animate-pulse text-blue-800">Loading employee data...</div>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-white flex items-center justify-center">
+          <div className="animate-pulse text-blue-800">
+            Loading employee data...
+          </div>
+        </div>
+      }
+    >
       <AddEmployeeContent />
     </Suspense>
-  );
+  )
 }
