@@ -60,10 +60,15 @@ export default function Home() {
           const userData = response.data[0];
           if (userData) {
             if (userData.userType === 'Employee') {
+              // Employees get free access to chat
               router.push('/chat');
             } else if (userData.userType === 'Owner') {
-              router.push('/dashboard');
-              console.log('Redirecting to dashboard');
+              // Check subscription status for owners/employers
+              if (userData.isSubscribed) {
+                router.push('/dashboard');
+              } else {
+                router.push('/dashboard'); // Show dashboard with paywall popup
+              }
             } else {
               router.push('/chat');
             }
