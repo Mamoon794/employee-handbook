@@ -306,11 +306,11 @@ export function MessageInput({
           return updated;
         });
       } else {
-        setError({"message": errorMessage, "chatId": chatId || ''});
+        setError({"message": errorMessage, "chatId": newChatId || ''});
       }
     } catch (err) {
-      console.error(err);
-      setError({"message": errorMessage, "chatId": chatId || ''});
+      console.error("Error in public chat:", chatId)
+      setError({"message": errorMessage, "chatId": newChatId || ''});
     }
   }
 
