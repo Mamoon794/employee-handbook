@@ -9,6 +9,7 @@ import {
   Chat,
   Disclaimer,
   PopularQuestions,
+  ERROR_MESSAGE
 } from "../global_components"
 import { Message } from "../../models/schema"
 import { useUser } from "@clerk/nextjs"
@@ -27,7 +28,7 @@ export default function ChatUI() {
   const [totalChatsLength, setTotalChatsLength] = useState<number>(0)
 
   const handleRetry = async () => {
-    setError("");
+    setError({message: '', chatId: ''});
 
     const lastUserMessage = [...messages].reverse().find((msg) => msg.isFromUser === true);
     if (!lastUserMessage) return;
@@ -62,11 +63,11 @@ export default function ChatUI() {
         };
         setMessages((prev) => [...prev, botMessage]);
       } else {
-        setError(GENERIC_ERROR_MESSAGE);
+        setError({message: ERROR_MESSAGE, chatId: currChatId});
       }
     } catch (err) {
       console.error(err);
-      setError(GENERIC_ERROR_MESSAGE);
+      setError({message: ERROR_MESSAGE, chatId: currChatId});
     }
   };
 

@@ -10,7 +10,7 @@ import axiosInstance from './axios_config';
 
 import ProvincePopup from "../../components/province";
 import { Message } from '@/models/schema';
-import { Chat } from './global_components';
+import { Chat, ERROR_MESSAGE } from './global_components';
 
 export default function Home() {
   const { isSignedIn, user } = useUser();
@@ -97,7 +97,7 @@ export default function Home() {
   }, []);
 
   const handleRetry = async () => {
-    setError('');
+    setError({message: '', chatId: ''});
 
     const lastUserMessage = [...messages].reverse().find((msg) => msg.isFromUser === true);
     if (!lastUserMessage) return;
@@ -111,7 +111,7 @@ export default function Home() {
         body: JSON.stringify({
           province,
           query: lastUserMessage.content,
-          threadId: threadIdRef.current,
+          threadId: currChatId,
         }),
       });
 
@@ -130,11 +130,11 @@ export default function Home() {
         };
         setMessages((prev) => [...prev, botMessage]);
       } else {
-        setError(GENERIC_ERROR_MESSAGE);
+        setError({message: ERROR_MESSAGE, chatId: currChatId} );
       }
     } catch (err) {
       console.error(err);
-      setError(GENERIC_ERROR_MESSAGE);
+      setError({message: ERROR_MESSAGE, chatId: currChatId} );
     }
   };
 

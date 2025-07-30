@@ -20,6 +20,8 @@ import {
 import { ChevronDown, Check } from "lucide-react"
 import dynamic from "next/dynamic"
 
+const ERROR_MESSAGE = "Oops, something went wrong. Want to try again?";
+
 const InputMessage = dynamic(
   () => import("./MessageInput").then((mod) => mod.MessageInput),
   {
@@ -455,7 +457,7 @@ function PopularQuestions({
 function MessageThread({
   messageList,
   error,
-  chatId
+  chatId,
   onRetry,
 }: {
   messageList: Message[]
@@ -711,5 +713,6 @@ export {
   InputMessage,
   Header,
   Disclaimer,
-  generateThreadId
+  generateThreadId,
+  ERROR_MESSAGE
 }
