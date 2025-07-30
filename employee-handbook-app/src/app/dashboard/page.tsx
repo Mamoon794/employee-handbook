@@ -50,7 +50,7 @@ export default function Dashboard() {
     if (!companyId) return;
     const companyDocs = await axiosInstance.get(`/api/company/docs/${companyId}`);
     let get_files : pdfFile[]  = []
-    for (const doc of companyDocs.data?.companyDocs) {
+    for (const doc of companyDocs.data?.companyDocs || []) {
       get_files.push({
         name: doc.fileName,
         type: 'application/pdf',
