@@ -1,7 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { useUser, UserButton } from "@clerk/nextjs"
+import { useUser } from "@clerk/nextjs"
 import { useEffect, useState } from "react"
 import axiosInstance from "../axios_config"
 import PaywallModal from "../../../components/paywall-popup"
