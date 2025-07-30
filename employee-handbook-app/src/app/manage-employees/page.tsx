@@ -29,7 +29,7 @@ export default function ManageEmployees() {
         .get(`/api/users/${user.id}?isClerkID=true`)
         .then((response) => {
           setCompanyId(response.data[0].companyId || "")
-          setCompanyName(response.data[0].companyName || "")
+          // setCompanyName(response.data[0].companyName || "")
           // setProvince(response.data[0].province || "")
           setRole(response.data[0].userType || "Employee")
         })
