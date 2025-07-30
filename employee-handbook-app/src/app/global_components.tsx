@@ -27,6 +27,23 @@ const InputMessage = dynamic(
   }
 )
 
+// for converting the abbreviated province stored in local storage for private users to the full province name
+export const provinceMap: { [key: string]: string } = {
+  ON: "Ontario",
+  AB: "Alberta",
+  BC: "British Columbia",
+  MB: "Manitoba",
+  NB: "New Brunswick",
+  NL: "Newfoundland and Labrador",
+  NS: "Nova Scotia",
+  PE: "Prince Edward Island",
+  QC: "Quebec",
+  SK: "Saskatchewan",
+  NT: "Northwest Territories",
+  NU: "Nunavut",
+  YT: "Yukon",
+}
+
 export interface Chat {
   id: string
   title: string
@@ -451,25 +468,79 @@ function PrivateChatSideBar({
 }
 
 function PopularQuestions({
-  setInputValue
+  setInputValue,
+  province,
+  messages,
+  chatId
 }: {
-  setInputValue: (inputValue: string) => void
+  setInputValue: (inputValue: string) => void,
+  province: string,
+  messages: Message[],
+  chatId: string
 }) {
+  const defaultQuestions = [
+    "Do I get paid breaks?",
+    "What is the minimum wage?",
+    "Do I get sick days?",
+  ];
+  const empty = [""]
+  const [questions, setQuestions] = useState<string[]>(empty);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchPopular = async () => {
+      try {
+        const fullProvince = province.length == 2 ? provinceMap[province] : province
+
+        const request = {
+          company: localStorage.getItem("companyName") || "public",
+          province: fullProvince
+        }
+  
+        const response = await axiosInstance.post("/api/popular-questions", request)
+        const popularQuestions = response.data
+  
+        // if fewer than 3 popular questions are returned, fill the list by 
+        // adding default questions until there are 3
+        const merged = [...popularQuestions];
+        let i = 0
+        while (merged.length < 3) {
+          merged.push(defaultQuestions[i])
+          i++
+        }
+  
+        if (isMounted) {
+          setQuestions(merged);
+          console.log(merged)
+        }
+      } catch (error) {
+        console.error("Error retrieving popular questions", error)
+      }
+    }
+
+    if (messages.length === 0) {
+      fetchPopular()
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [province, chatId])
+
   return (
     <div className="flex flex-col sm:flex-row justify-center gap-4 pb-4">
-      {[
-        "Do I get paid breaks?",
-        "What is the minimum wage?",
-        "Do I get sick days?",
-      ].map((q, i) => (
-        <button
-          key={i}
-          onClick={() => setInputValue(q)}
-          className="bg-blue-800 text-white font-semibold px-6 py-2 rounded-md hover:bg-blue-600 transition-colors"
-        >
-          {q}
-        </button>
-      ))}
+      {JSON.stringify(questions) !== JSON.stringify(empty) && // only display questions after its updated with popular questions
+        questions.map((q, i) => (
+          <button
+            key={i}
+            onClick={() => setInputValue(q)}
+            className="bg-blue-800 text-white font-semibold px-6 py-2 rounded-md hover:bg-blue-600 transition-colors"
+          >
+            {q}
+          </button>
+        ))
+      }
     </div>
   )
 }

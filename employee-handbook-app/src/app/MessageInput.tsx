@@ -6,6 +6,7 @@ import axiosInstance from "./axios_config"
 import { Link, Message } from "../models/schema"
 import { Citation } from "@/types/ai"
 import { useAudioRecorder } from "react-use-audio-recorder"
+import { provinceMap } from "./global_components"
 
 interface Chat {
   id: string
@@ -42,21 +43,6 @@ export function MessageInput({
   chats?: Chat[]
 }) {
   const errorMessage = "Oops, something went wrong. Want to try again?"
-  const province_map: { [key: string]: string } = {
-    ON: "Ontario",
-    AB: "Alberta",
-    BC: "British Columbia",
-    MB: "Manitoba",
-    NB: "New Brunswick",
-    NL: "Newfoundland and Labrador",
-    NS: "Nova Scotia",
-    PE: "Prince Edward Island",
-    QC: "Quebec",
-    SK: "Saskatchewan",
-    NT: "Northwest Territories",
-    NU: "Nunavut",
-    YT: "Yukon",
-  }
 
   const {
     recordingStatus, // "inactive" | "recording" | "paused" | "stopped"
@@ -241,7 +227,7 @@ export function MessageInput({
   }
 
   const handlePrivateChat = async (new_chatId: string) => {
-    const full_province = province ? province_map[province] : ""
+    const full_province = province ? provinceMap[province] : ""
     console.log("private province", province)
     const companyName = localStorage.getItem("companyName") || ""
     const res = await axiosInstance.post(`/api/messages/private`, {
@@ -282,8 +268,7 @@ export function MessageInput({
         body: JSON.stringify({
           province,
           query: inputValue,
-          threadId,
-          company: "",
+          threadId
         }),
       })
 

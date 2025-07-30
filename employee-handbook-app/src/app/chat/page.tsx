@@ -61,7 +61,12 @@ export default function ChatUI() {
             className="absolute bottom-6 left-0 right-0 mx-10"
           >
             {messages.length === 0 && (
-              <PopularQuestions setInputValue={setInputValue} />
+              <PopularQuestions 
+                setInputValue={setInputValue} 
+                province={province}
+                messages={messages}
+                chatId = {currChatId}
+              />
             )}
 
             {/* Input Bar */}
