@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from "next/server"
  * 2. Stores them in Firestore
  * 3. Returns success status and count of saved docs
  */
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     // fetch from AI service
     const popularQuestions = await getPopularQuestions();
@@ -21,10 +21,11 @@ export async function GET(req: NextRequest) {
       { success: true, count: popularQuestions.length },
       { status: 200 }
     );
-  } catch (error: any) {
+  } catch (error) {
     console.error('[weekly-popular-job] error:', error);
+    const message = error instanceof Error ? error.message : "Popular questions job failed";
     return NextResponse.json(
-      { success: false, message: error.message || 'Unknown error' },
+      { success: false, message },
       { status: 500 }
     );
   }

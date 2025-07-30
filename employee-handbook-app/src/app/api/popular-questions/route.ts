@@ -35,10 +35,10 @@ export async function POST(req: NextRequest) {
   try {
     const result = await getPopularQuestions(company, province)
     return NextResponse.json(result.map(q => q.text));
-  } catch (e: any) {
+  } catch (e) {
     console.log(e)
     return NextResponse.json(
-      { error: e.message || "Server error" },
+      { error: "Failed to retrieve popular questions" },
       { status: 500 }
     )
   }
