@@ -15,11 +15,7 @@ const pricingTiers = [
   { min: 50000, max: 99999, price: 0.25 },
 ];
 
-interface PaywallModalProps {
-  onClose: () => void;
-}
-
-export default function PaywallModal({ onClose }: PaywallModalProps) {
+export default function PaywallModal() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
