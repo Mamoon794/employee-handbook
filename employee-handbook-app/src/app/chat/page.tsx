@@ -17,7 +17,10 @@ import { useRouter } from "next/navigation"
 export default function ChatUI() {
   const [messages, setMessages] = useState([] as Message[])
   const [chats, setChats] = useState<Chat[]>([])
-  const [error, setError] = useState<{message: string, chatId: string}>({message: '', chatId: ''})
+  const [error, setError] = useState<{ message: string; chatId: string }>({
+    message: "",
+    chatId: "",
+  })
   const [currChatId, setCurrChatId] = useState<string>("")
   const [province, setProvince] = useState<string>("")
   const [inputValue, setInputValue] = useState<string>("")
@@ -54,17 +57,19 @@ export default function ChatUI() {
         {/* Chat Area */}
         <main className="flex-1 flex flex-col justify-between px-6 pb-6 relative">
           {/* Message Thread */}
-          <MessageThread messageList={messages} error={error} chatId={currChatId}/>
+          <MessageThread
+            messageList={messages}
+            error={error}
+            chatId={currChatId}
+          />
 
-          <div
-            className="absolute bottom-6 left-0 right-0 mx-10"
-          >
+          <div className="absolute bottom-6 left-0 right-0 mx-10">
             {messages.length === 0 && (
-              <PopularQuestions 
-                setInputValue={setInputValue} 
+              <PopularQuestions
+                setInputValue={setInputValue}
                 province={province}
                 messages={messages}
-                chatId = {currChatId}
+                chatId={currChatId}
               />
             )}
 
@@ -83,7 +88,7 @@ export default function ChatUI() {
               chats={chats}
             />
 
-            <Disclaimer/>
+            <Disclaimer />
           </div>
         </main>
       </div>
