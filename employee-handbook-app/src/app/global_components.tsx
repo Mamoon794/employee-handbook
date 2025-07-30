@@ -705,7 +705,7 @@ function Header({
         </Link>
       )}
       <div className="flex gap-4 items-center">
-        {isOwnerOrAdministrator && !isOnDashboard && isSignedIn &&(
+        {canSeeDashboard && !isOnDashboard && isSignedIn &&(
           <>
             <button
               className="px-5 py-2 bg-blue-800 text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"
@@ -724,7 +724,7 @@ function Header({
             Ask a Question
           </button>
         )}
-        {(isFinance || isOwnerOrAdministrator) && isSignedIn && (
+        {(isFinance || canSeeDashboard) && isSignedIn && (
           <>
             <button
               className="px-5 py-2 bg-blue-800 text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"
