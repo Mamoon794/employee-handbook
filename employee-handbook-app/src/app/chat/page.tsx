@@ -9,7 +9,8 @@ import {
   Chat,
   Disclaimer,
   PopularQuestions,
-  ERROR_MESSAGE
+  ERROR_MESSAGE,
+  provinceMap
 } from "../global_components"
 import { Message } from "../../models/schema"
 import { useUser } from "@clerk/nextjs"
@@ -36,16 +37,21 @@ export default function ChatUI() {
     setMessages((prev) => [...prev, lastUserMessage]);
 
     try {
-      // TODO: Switch to /api/private/message once implemented
-      const endpoint = '/api/public/message';
+
+
+      const endpoint = '/api/messages/private';
+      const currProvince = provinceMap[province] || province;
+      const sendBody = {
+        province: currProvince,
+        query: lastUserMessage.content,
+        threadId: currChatId,
+        company: localStorage.getItem("companyName") || "",
+      }
+
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          province,
-          query: lastUserMessage.content,
-          threadId: currChatId,
-        }),
+        body: JSON.stringify(sendBody),
       });
 
       if (!res.ok) throw new Error('Network response was not ok');

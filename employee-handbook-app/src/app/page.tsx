@@ -110,7 +110,7 @@ export default function Home() {
     setMessages((prev) => [...prev, lastUserMessage]);
 
     try {
-      const res = await fetch('/api/public/message', {
+      const res = await fetch('/api/messages/public', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
