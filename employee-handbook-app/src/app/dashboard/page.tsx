@@ -20,20 +20,27 @@ export default function Dashboard() {
         return
       }
 
-      try {
-        const response = await axiosInstance.get("/api/check-subscription")
-        const { subscribed } = response.data
-
-        // Only show paywall if user is not subscribed
-        setShowPaywall(!subscribed)
-        setIsLoading(false)
-      } catch (error) {
-        console.error("Error checking subscription status:", error)
-        // If error occurs, show paywall as fallback (safer approach)
-        setShowPaywall(true)
-        setIsLoading(false)
+      const userType = user.unsafeMetadata?.userType as string;
+      
+      if (userType === 'Employee') {
+        setShowPaywall(false);
+        setIsLoading(false);
+        return;
       }
-    }
+
+      try {
+        const response = await axiosInstance.get('/api/check-subscription');
+        const { subscribed } = response.data;
+        
+        setShowPaywall(!subscribed);
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Error checking subscription status:', error);
+        // If error occurs, show paywall as fallback for employers only
+        setShowPaywall(userType !== 'Employee');
+        setIsLoading(false);
+      }
+    };
 
     checkSubscriptionStatus()
   }, [user])
