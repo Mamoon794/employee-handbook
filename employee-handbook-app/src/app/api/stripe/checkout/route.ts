@@ -31,8 +31,8 @@ export async function POST() {
         },
       ],
       mode: 'payment', 
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/DashBoard?success=true`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/paywall?canceled=true`,
+      success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/dashboard?success=true`,
+      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/dashboard?canceled=true`,
       metadata: {
         userId: userId,
       },

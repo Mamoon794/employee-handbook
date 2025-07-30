@@ -65,9 +65,9 @@ export default function Home() {
             } else if (userData.userType === 'Owner') {
               // Check subscription status for owners/employers
               if (userData.isSubscribed) {
-                router.push('/DashBoard');
+                router.push('/dashboard');
               } else {
-                router.push('/paywall');
+                router.push('/dashboard'); // Show dashboard with paywall popup
               }
             } else {
               router.push('/chat');

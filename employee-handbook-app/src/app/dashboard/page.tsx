@@ -14,13 +14,28 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // TO DO: Replace with backend subscription check
-    // For now, forcing to show paywall immediately on dashboard page:
-    setShowPaywall(true);
-    setIsLoading(false);
-    
-    // Placeholder for backend check
-   
+    const checkSubscriptionStatus = async () => {
+      if (!user) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const response = await axiosInstance.get('/api/check-subscription');
+        const { subscribed } = response.data;
+        
+        // Only show paywall if user is not subscribed
+        setShowPaywall(!subscribed);
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Error checking subscription status:', error);
+        // If error occurs, show paywall as fallback (safer approach)
+        setShowPaywall(true);
+        setIsLoading(false);
+      }
+    };
+
+    checkSubscriptionStatus();
   }, [user]);
 
   async function uploadDocuments(event: React.ChangeEvent<HTMLInputElement>) {

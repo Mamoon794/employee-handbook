@@ -48,23 +48,36 @@ export async function POST(req: NextRequest) {
 
 async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
   console.log('Checkout session completed:', session.id);
+  console.log('Payment status:', session.payment_status);
+  console.log('Session metadata:', session.metadata);
   
   if (session.payment_status === 'paid' && session.metadata?.userId) {
     const userId = session.metadata.userId;
+    console.log('Processing subscription update for user:', userId);
     
     // Update user subscription status in database
     const userSnapshot = await db.collection('users')
       .where('clerkUserId', '==', userId)
       .get();
 
+    console.log('Found users in database:', userSnapshot.size);
+
     if (!userSnapshot.empty) {
       const userDoc = userSnapshot.docs[0];
+      console.log('Current user data:', userDoc.data());
+      
       await userDoc.ref.update({
         isSubscribed: true,
         updatedAt: new Date(),
       });
-      console.log(`Updated subscription for user ${userId}`);
+      console.log(`✅ Successfully updated subscription for user ${userId}`);
+    } else {
+      console.log('❌ No user found in database with clerkUserId:', userId);
     }
+  } else {
+    console.log('❌ Payment not completed or no userId in metadata');
+    console.log('Payment status:', session.payment_status);
+    console.log('Metadata:', session.metadata);
   }
 }
 

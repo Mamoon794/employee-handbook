@@ -10,13 +10,17 @@ export async function GET() {
       return NextResponse.json({ subscribed: false }, { status: 401 });
     }
 
-    const user = await getClerkUser(userId);
+    const users = await getClerkUser(userId);
     
-    if (!user) {
+    if (!users || users.length === 0) {
       return NextResponse.json({ subscribed: false }, { status: 404 });
     }
 
+    const user = users[0]; // getClerkUser returns an array
     const isSubscribed = user.isSubscribed || false;
+    
+    console.log('Checking subscription for user:', userId);
+    console.log('User data:', { id: user.id, isSubscribed: user.isSubscribed });
     
     return NextResponse.json({ subscribed: isSubscribed });
     
