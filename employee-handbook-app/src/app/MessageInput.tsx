@@ -34,7 +34,7 @@ export function MessageInput({
   province?: string | null
   chatId: string
   setMessages: Dispatch<SetStateAction<Message[]>>
-  setError: Dispatch<SetStateAction<string>>
+  setError: Dispatch<SetStateAction<{message: string, chatId: string}>>;
   setCurrChatId: Dispatch<SetStateAction<string>>
   setTitleLoading: Dispatch<SetStateAction<boolean>>
   setChats: Dispatch<SetStateAction<Chat[]>>
@@ -89,8 +89,8 @@ export function MessageInput({
             console.log("Transcription response:", response)
             setInputValue(inputValue + " " + response.data.transcription)
           } catch (error) {
-            console.error("Error during transcription:", error)
-            setError(errorMessage)
+            console.error("Error during transcription:", error);
+            setError({"message": errorMessage, "chatId": chatId || ''});
           } finally {
             setTranscribing(false)
           }
@@ -163,7 +163,7 @@ export function MessageInput({
       }    
 
       setInputValue('');
-      setError('');
+      setError({"message": "", "chatId": ""});
 
       let newChatId = chatId || '';
       if (!isPrivate) {  // public user
@@ -224,8 +224,8 @@ export function MessageInput({
       }
 
     } catch (err) {
-      console.error(err)
-      setError(errorMessage)
+      console.error(err);
+      setError({"message": errorMessage, "chatId": chatId || ''});
     }
   }
 
@@ -247,8 +247,8 @@ export function MessageInput({
       company: companyName,
     })
     if (res.status !== 200) {
-      setError(errorMessage)
-      return
+      setError({"message": errorMessage, "chatId": newChatId});
+      return;
     }
 
     const data = res.data
@@ -261,9 +261,10 @@ export function MessageInput({
       setMessages((prevMessages) => [...prevMessages, botMessage as Message])
       axiosInstance.put(`/api/chat/${newChatId}/add-message`, {
         messageData: botMessage,
-      })
-    } else {
-      setError(errorMessage)
+      });
+    }
+    else {
+      setError({"message": errorMessage, "chatId": newChatId});
     }
   };
   
@@ -305,11 +306,11 @@ export function MessageInput({
           return updated;
         });
       } else {
-        setError(errorMessage)
+        setError({"message": errorMessage, "chatId": chatId || ''});
       }
     } catch (err) {
-      console.error(err)
-      setError(errorMessage)
+      console.error(err);
+      setError({"message": errorMessage, "chatId": chatId || ''});
     }
   }
 
