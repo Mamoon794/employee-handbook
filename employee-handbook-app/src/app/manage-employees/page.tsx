@@ -14,10 +14,10 @@ export default function ManageEmployees() {
 
   const [employees, setEmployees] = useState<User[]>([])
   // const [deletedPopup, setDeletedPopup] = useState<boolean>(false)
-  const [province, setProvince] = useState<string>("")
+  // const [province, setProvince] = useState<string>("")
   const [role, setRole] = useState<string>("")
   const [companyId, setCompanyId] = useState<string>("")
-  const [companyName, setCompanyName] = useState<string>("")
+  // const [companyName, setCompanyName] = useState<string>("")
 
   const { isSignedIn, user } = useUser()
 
@@ -29,7 +29,7 @@ export default function ManageEmployees() {
         .then((response) => {
           setCompanyId(response.data[0].companyId || "")
           setCompanyName(response.data[0].companyName || "")
-          setProvince(response.data[0].province || "")
+          // setProvince(response.data[0].province || "")
           setRole(response.data[0].userType || "Employee")
         })
         .catch((error) => {
@@ -37,7 +37,7 @@ export default function ManageEmployees() {
         })
     } else {
       setCompanyId("")
-      setCompanyName("")
+      // setCompanyName("")
     }
   }, [isSignedIn, user])
 
@@ -54,7 +54,7 @@ export default function ManageEmployees() {
     }
   }, [companyId]);
 
-  const deleteEmployee = async (userId: string, firstName: string, lastName: string, indexToRemove: number) => {
+  const deleteEmployee = async (userId: string) => {
     const response = await axiosInstance.delete(`/api/users/${userId}`)
     if (response.status === 204) {
       // setDeletedPopup(true)
@@ -64,7 +64,7 @@ export default function ManageEmployees() {
     }
   }
 
-  const handleRoleChange = async (userId: string, newRole: string, idx: number) => {
+  const handleRoleChange = async (userId: string, newRole: string) => {
     try {
       const response = await axiosInstance.patch(`/api/users/${userId}`, { userType: newRole });
       if (response.status === 200) {
@@ -103,7 +103,7 @@ export default function ManageEmployees() {
                     <select
                       className="px-10 py-2 w-1/2 bg-[#4e65a4] text-white rounded-xl text-lg font-semibold flex text-center"
                       value={emp.userType}
-                      onChange={e => handleRoleChange(emp.clerkUserId, e.target.value, idx)}
+                      onChange={e => handleRoleChange(emp.clerkUserId, e.target.value)}
                     >
                       {USER_TYPES.map(type => (
                         <option key={type} value={type}>{type}</option>
@@ -122,7 +122,7 @@ export default function ManageEmployees() {
                   { user?.id !== emp.clerkUserId && (role === "Owner" || role === "Administrator") && (
                     <button 
                       className="absolute right-3 ml-3 text-lg text-black bg-white border border-gray-300 rounded-full w-7 h-7 flex items-center justify-center hover:bg-gray-100"
-                      onClick={() => deleteEmployee(emp.clerkUserId, emp.firstName, emp.lastName, idx)}
+                      onClick={() => deleteEmployee(emp.clerkUserId)}
                       title="Remove employee"
                     >
                       <FaTrashAlt />
