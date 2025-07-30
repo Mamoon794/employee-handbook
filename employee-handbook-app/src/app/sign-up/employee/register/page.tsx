@@ -60,7 +60,7 @@ export default function EmployeeRegistrationForm() {
     console.log('Metadata updated successfully'); // debugging
 
     console.log('Redirecting to home page...'); // debugging
-    router.push('/');
+    router.push('/dashboard');
   } catch (err) {
     console.error('Detailed registration error:', err); // debugging
     setError(err instanceof Error ? err.message : 'Registration failed');
