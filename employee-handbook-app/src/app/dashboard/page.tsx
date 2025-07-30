@@ -53,13 +53,6 @@ export default function Dashboard() {
     }
   }
 
-  const handlePaywallClose = () => {
-    console.log('PaywallModal close button clicked');
-    setShowPaywall(false);
-  };
-
-
-
   if (isLoading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -121,7 +114,7 @@ export default function Dashboard() {
       <footer className="w-full h-24 bg-[#294494] mt-auto" />
 
       {/* Paywall Modal */}
-      {showPaywall && <PaywallModal onClose={handlePaywallClose} />}
+      {showPaywall && <PaywallModal />}
     </div>
   );
 }
