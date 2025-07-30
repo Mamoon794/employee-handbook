@@ -3,6 +3,7 @@
 "use client"
 
 import { useEffect, useState, Dispatch, SetStateAction, useRef } from "react"
+import Link from "next/link"
 import { Plus, Menu, Trash2 } from "lucide-react"
 import axiosInstance from "./axios_config"
 import { useRouter } from "next/navigation"
@@ -29,8 +30,25 @@ const InputMessage = dynamic(
   }
 )
 
+// for converting the abbreviated province stored in local storage for private users to the full province name
+export const provinceMap: { [key: string]: string } = {
+  ON: "Ontario",
+  AB: "Alberta",
+  BC: "British Columbia",
+  MB: "Manitoba",
+  NB: "New Brunswick",
+  NL: "Newfoundland and Labrador",
+  NS: "Nova Scotia",
+  PE: "Prince Edward Island",
+  QC: "Quebec",
+  SK: "Saskatchewan",
+  NT: "Northwest Territories",
+  NU: "Nunavut",
+  YT: "Yukon",
+}
+        
 function generateThreadId(): string {
-  return Date.now().toString();
+  return Date.now().toString()
 }
 
 export interface Chat {
@@ -101,7 +119,7 @@ function PublicChatSideBar({
   currChatId,
   chats,
   setChats,
-  titleLoading
+  titleLoading,
 }: {
   setMessages: Dispatch<SetStateAction<Message[]>>
   setCurrChatId: (chatId: string) => void
@@ -111,7 +129,7 @@ function PublicChatSideBar({
   titleLoading: boolean
 }) {
   // Add collapsed state
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false)
 
   const selectChat = (chat: PublicChat) => {
     setCurrChatId(chat.id)
@@ -123,7 +141,7 @@ function PublicChatSideBar({
       id: generateThreadId(),
       title: `Chat - ${new Date().toLocaleDateString()}-${chats.length + 1}`,
       messages: [],
-      needsTitleUpdate: true
+      needsTitleUpdate: true,
     }
     const updatedChats = [newChat, ...chats]
     setChats(updatedChats)
@@ -141,9 +159,17 @@ function PublicChatSideBar({
   }
 
   return (
-    <aside className={`${isCollapsed ? 'w-16' : 'w-64'} h-screen bg-[#1F2251] text-white flex flex-col min-h-screen relative transition-all duration-300`}>
+    <aside
+      className={`${
+        isCollapsed ? "w-16" : "w-64"
+      } h-screen bg-[#1F2251] text-white flex flex-col min-h-screen relative transition-all duration-300`}
+    >
       <div className="relative flex p-5 w-full">
-        <button onClick={() => setIsCollapsed(!isCollapsed)} aria-label="Toggle sidebar" className="text-gray-400 hover:text-white transition-colors">
+        <button
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          aria-label="Toggle sidebar"
+          className="text-gray-400 hover:text-white transition-colors"
+        >
           <Menu />
         </button>
       </div>
@@ -167,9 +193,9 @@ function PublicChatSideBar({
                 {currChatId === chat.id && (
                   <Trash2
                     className="text-gray-400"
-                    onClick={e => {
-                      e.stopPropagation();
-                      handleDelete(chat.id);
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleDelete(chat.id)
                     }}
                   />
                 )}
@@ -211,7 +237,7 @@ function PrivateChatSideBar({
   const [showPopup, setShowPopup] = useState(false)
   const [dontShowAgain, setDontShowAgain] = useState(false)
   // Add collapsed state
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false)
 
   useEffect(() => {
     const stored = localStorage.getItem("hideChatWarning")
@@ -332,9 +358,17 @@ function PrivateChatSideBar({
   }
 
   return (
-    <aside className={`${isCollapsed ? 'w-16' : 'w-64'} bg-[#1F2251] text-white flex flex-col min-h-screen relative transition-all duration-300`}>
+    <aside
+      className={`${
+        isCollapsed ? "w-16" : "w-64"
+      } bg-[#1F2251] text-white flex flex-col min-h-screen relative transition-all duration-300`}
+    >
       <div className="relative flex p-5 w-full">
-        <button onClick={() => setIsCollapsed(!isCollapsed)} aria-label="Toggle sidebar" className="text-gray-400 hover:text-white transition-colors">
+        <button
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          aria-label="Toggle sidebar"
+          className="text-gray-400 hover:text-white transition-colors"
+        >
           <Menu />
         </button>
       </div>
@@ -431,25 +465,82 @@ function PrivateChatSideBar({
 }
 
 function PopularQuestions({
-  setInputValue
+  setInputValue,
+  province,
+  messages,
+  chatId
 }: {
-  setInputValue: (inputValue: string) => void
+  setInputValue: (inputValue: string) => void,
+  province: string,
+  messages: Message[],
+  chatId: string
 }) {
+  const defaultQuestions = [
+    "Do I get paid breaks?",
+    "What is the minimum wage?",
+    "Do I get sick days?",
+  ];
+  const empty = [""]
+  const [questions, setQuestions] = useState<string[]>(empty);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchPopular = async () => {
+      try {
+        const fullProvince = province.length == 2 ? provinceMap[province] : province
+
+        const request = {
+          company: localStorage.getItem("companyName") || "",
+          province: fullProvince
+        }
+  
+        const response = await axiosInstance.post("/api/popular-questions", request)
+        let popularQuestions = response.data
+
+        if (popularQuestions.length > 3) {
+          popularQuestions = popularQuestions.slice(0, 3)
+        }
+  
+        // if fewer than 3 popular questions are returned, fill the list by 
+        // adding default questions until there are 3
+        const merged = [...popularQuestions];
+        let i = 0
+        while (merged.length < 3) {
+          merged.push(defaultQuestions[i])
+          i++
+        }
+  
+        if (isMounted) {
+          setQuestions(merged);
+        }
+      } catch (error) {
+        console.error("Error retrieving popular questions", error)
+      }
+    }
+
+    if (messages.length === 0) {
+      fetchPopular()
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [province, chatId])
+
   return (
     <div className="flex flex-col sm:flex-row justify-center gap-4 pb-4">
-      {[
-        "Do I get paid breaks?",
-        "What is the minimum wage?",
-        "Do I get sick days?",
-      ].map((q, i) => (
-        <button
-          key={i}
-          onClick={() => setInputValue(q)}
-          className="bg-blue-800 text-white font-semibold px-6 py-2 rounded-md hover:bg-blue-600 transition-colors"
-        >
-          {q}
-        </button>
-      ))}
+      {JSON.stringify(questions) !== JSON.stringify(empty) && // only display questions after its updated with popular questions
+        questions.map((q, i) => (
+          <button
+            key={i}
+            onClick={() => setInputValue(q)}
+            className="bg-blue-800 text-white font-semibold px-6 py-2 rounded-md hover:bg-blue-600 transition-colors"
+          >
+            {q}
+          </button>
+        ))
+      }
     </div>
   )
 }
@@ -494,9 +585,11 @@ function MessageThread({
           <div key={index} className="flex flex-col">
             {message.isFromUser ? (
               <div className="self-end bg-blue-100 text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm text-lg">
-                {message.content.split("\n").map((line, idx) =>
-                  line === "" ? <br key={idx} /> : <p key={idx}>{line}</p>
-                )}
+                {message.content
+                  .split("\n")
+                  .map((line, idx) =>
+                    line === "" ? <br key={idx} /> : <p key={idx}>{line}</p>
+                  )}
               </div>
             ) : (
               <div className="self-start bg-gray-100 text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm">
@@ -577,12 +670,24 @@ function Header({
         })
     } else {
       localStorage.removeItem("userId")
+      localStorage.removeItem("companyId")
+      localStorage.removeItem("companyName")
     }
   }, [isSignedIn, user])
 
   return (
     <header className="flex justify-between items-center px-6 py-4">
-      <h1 className="text-2xl font-extrabold italic text-blue-800">Gail</h1>
+      {!isSignedIn ? (
+        <h1 className="text-2xl font-extrabold italic text-blue-800 cursor-pointer">
+          Gail
+        </h1>
+      ) : (
+        <Link href="/dashboard">
+          <h1 className="text-2xl font-extrabold italic text-blue-800 cursor-pointer">
+            Gail
+          </h1>
+        </Link>
+      )}
       <div className="flex gap-3 items-center">
         {!isSignedIn ? (
           <>
