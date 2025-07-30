@@ -655,10 +655,14 @@ function Header({
   const { isSignedIn, user } = useUser()
   const router = useRouter()
   const [isFinance, setIsFinance] = useState(false)
+  const [isOwnerOrAdministrator, setIsOwnerOrAdministrator] = useState(false)
+  const [isOnDashboard, setIsOnDashboard] = useState(false)
   // const isFinance = true
 
   useEffect(() => {
     if (isSignedIn && user) {
+      const pathname = typeof window !== "undefined" ? window.location.pathname : "";
+      setIsOnDashboard(pathname === "/dashboard")
       axiosInstance
         .get(`/api/users/${user.id}?isClerkID=true`)
         .then((response) => {
@@ -672,6 +676,10 @@ function Header({
           )
           setProvince(response.data[0].province || "")
           setIsFinance(response.data[0].userType == "Financer")
+          setIsOwnerOrAdministrator(
+            response.data[0].userType === "Owner" ||
+              response.data[0].userType === "Administrator"
+          )
         })
         .catch((error) => {
           console.error("Error fetching user data:", error)
@@ -697,7 +705,26 @@ function Header({
         </Link>
       )}
       <div className="flex gap-4 items-center">
-        {isFinance && isSignedIn && (
+        {isOwnerOrAdministrator && !isOnDashboard && isSignedIn &&(
+          <>
+            <button
+              className="px-5 py-2 bg-blue-800 text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"
+              onClick={() => router.push("/dashboard")}
+            >
+              Dashboard
+            </button>
+
+          </>)
+        }
+        {isSignedIn && isOnDashboard && (
+          <button
+            className="px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"
+            onClick={() => router.push("/chat")}
+          >
+            Ask a Question
+          </button>
+        )}
+        {(isFinance || isOwnerOrAdministrator) && isSignedIn && (
           <>
             <button
               className="px-5 py-2 bg-blue-800 text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"
