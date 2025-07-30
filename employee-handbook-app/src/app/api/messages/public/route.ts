@@ -10,7 +10,6 @@ import type { PublicMessageRequest } from "@/types/ai"
  * - province: the user's selected province
  * - query: the user's query
  * - threadId: the user's thread ID enabling continuous conversation
- * - company: empty string for public users (not used in this context)
  *
  * Returns the AI-generated response.
  */

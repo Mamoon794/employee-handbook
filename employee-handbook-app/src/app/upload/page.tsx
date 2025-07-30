@@ -65,7 +65,7 @@ export default function UploadDocument() {
     await uploadFilesToBackend(files);
     setUploading(false);
     setIsUploaded(true);
-    router.push('/DashBoard');
+          router.push('/dashboard');
   };
 
   const handleRemove = (index: number) => {

@@ -1,4 +1,4 @@
-'use client';
+"use client"
 
 import { useRouter } from 'next/navigation';
 import { FaTrashAlt } from 'react-icons/fa';
@@ -6,11 +6,12 @@ import { UserButton, useUser } from '@clerk/nextjs';
 import { useEffect, useState } from 'react';
 import { User } from '@/models/schema';
 import axiosInstance from '../axios_config';
+import Link from "next/link";
 
 const USER_TYPES = ["Employee", "Owner", "Administrator", "Financer"] as const;
 
 export default function ManageEmployees() {
-  const router = useRouter();
+  const router = useRouter()
 
   const [employees, setEmployees] = useState<User[]>([])
   // const [deletedPopup, setDeletedPopup] = useState<boolean>(false)
@@ -81,22 +82,42 @@ export default function ManageEmployees() {
   return (
     <div className="min-h-screen bg-white flex flex-col font-sans">
       <header className="flex justify-between items-center px-8 py-6 bg-white shadow-sm">
-        <h1 className="text-2xl font-extrabold italic text-blue-800">Gail</h1>
+        <Link href="/dashboard">
+          <h1 className="text-2xl font-extrabold italic text-blue-800">Gail</h1>
+        </Link>
         <div className="flex gap-4 items-center">
-          <button className="px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm" onClick={()=>{router.push('/chat');}}>Ask a Question</button>
-          <button className="px-5 py-2 bg-blue-800 text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm" onClick={() => router.push('/finances')}>View Finances</button>
-          <button onClick={() => router.push('/analytics')} className="px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm">Analytics</button>
+          <button
+            className="px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"
+            onClick={() => {
+              router.push("/chat")
+            }}
+          >
+            Ask a Question
+          </button>
+          <button
+            className="px-5 py-2 bg-blue-800 text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"
+            onClick={() => router.push("/finances")}
+          >
+            View Finances
+          </button>
+          <button
+            onClick={() => router.push("/analytics")}
+            className="px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"
+          >
+            Analytics
+          </button>
           <UserButton appearance={{ elements: { avatarBox: "w-15 h-15" } }} />
         </div>
       </header>
 
       <main className="flex-1 flex flex-col items-center justify-center py-20">
-        <h2 className="text-4xl font-extrabold mb-10 text-center">Manage your employees</h2>
+        <h2 className="text-4xl font-extrabold mb-10 text-center">
+          Manage your employees
+        </h2>
 
         <div className="w-full max-w-4xl max-h-120 bg-[#f5f7fb] p-8 rounded-2xl shadow-sm flex flex-col gap-4 overflow-y-auto">
           {employees.map((emp, idx) => (
             <div key={idx} className="flex items-center gap-4">
-
               <div className="flex-1 flex items-stretch w-full bg-white rounded-xl">
                 {
                   role === "Owner" ? (
@@ -136,13 +157,13 @@ export default function ManageEmployees() {
 
         <button
           className="mt-10 px-10 py-3 bg-[#294494] text-white rounded-xl font-bold text-xl"
-                      onClick={() => router.push('/dashboard')}
-          >
-            Back to Dashboard
+          onClick={() => router.push("/dashboard")}
+        >
+          Back to Dashboard
         </button>
       </main>
 
       <footer className="w-full h-24 bg-[#294494] mt-auto" />
     </div>
-  );
+  )
 }
