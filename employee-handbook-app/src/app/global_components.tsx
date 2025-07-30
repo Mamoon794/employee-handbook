@@ -648,7 +648,6 @@ function MessageThread({
 function Header({
   province,
   setProvince,
-  companyName = ''
 }: { 
   province: string; 
   setProvince: (prov: string) => void;
@@ -658,19 +657,14 @@ function Header({
   const router = useRouter()
   const [isFinance, setIsFinance] = useState(false)
   const [canSeeDashboard, setCanSeeDashboard] = useState(false)
-
-  const getCompanyName = (): string => {
-    if (companyName) return companyName;
-    if (user?.publicMetadata?.companyName) {
-      return typeof user.publicMetadata.companyName === 'string' 
-        ? user.publicMetadata.companyName 
-        : '';
-    }
-    return '';
-  };
+  const [companyName, setCompanyName] = useState<string | null>(null)
+  const [isOnDashboard, setIsOnDashboard] = useState(false)
+  // const isFinance = true
 
   useEffect(() => {
     if (isSignedIn && user) {
+      const pathname = typeof window !== "undefined" ? window.location.pathname : "";
+      setIsOnDashboard(pathname === "/dashboard")
       axiosInstance
         .get(`/api/users/${user.id}?isClerkID=true`)
         .then((response) => {
@@ -680,6 +674,7 @@ function Header({
             "companyName",
             response.data[0].companyName || ""
           )
+          setCompanyName(response.data[0].companyName || null)
           setProvince(response.data[0].province || "")
           setIsFinance(response.data[0].userType == "Financer")
           setCanSeeDashboard(
@@ -695,7 +690,6 @@ function Header({
     }
   }, [isSignedIn, user])
 
-  const displayCompanyName = getCompanyName();
 
   return (
     <header className="flex justify-between items-center px-6 py-4">
@@ -711,9 +705,9 @@ function Header({
             </h1>
           </Link>
         )}
-        {displayCompanyName && (
+        {companyName && (
           <span className="text-lg font-medium text-black hidden md:block">
-            | {displayCompanyName}
+            | {companyName}
           </span>
         )}
       </div>
@@ -737,9 +731,9 @@ function Header({
         )}
 
         <div className="flex items-center gap-4">
-          {displayCompanyName && (
+          {companyName && (
             <span className="text-sm font-medium text-gray-600 hidden md:block">
-              {displayCompanyName}
+              {companyName}
             </span>
           )}
           {!isSignedIn ? (

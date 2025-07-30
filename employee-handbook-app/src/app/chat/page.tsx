@@ -30,7 +30,7 @@ function ChatContent() {
   const [province, setProvince] = useState('');
   const [inputValue, setInputValue] = useState('');
   const router = useRouter();
-  const { isSignedIn, user } = useUser();
+  const { isSignedIn } = useUser();
   const [titleLoading, setTitleLoading] = useState(false);
   const [totalChatsLength, setTotalChatsLength] = useState(0);
   const [showWelcome, setShowWelcome] = useState(false);
@@ -163,7 +163,6 @@ function ChatContent() {
         <Header 
           province={province} 
           setProvince={setProvince}
-          companyName={user?.publicMetadata.companyName as string || ''}
         />
 
         <main className="flex-1 flex flex-col justify-between px-4 sm:px-6 pb-6 relative">
