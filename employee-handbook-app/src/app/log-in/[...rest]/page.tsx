@@ -59,7 +59,7 @@ export default function EmployeeLogin() {
                 <>
                   <li className="flex items-start">
                     <span className="text-green-500 mr-2 mt-1">✓</span>
-                    <span>Access your personalized employee dashboard</span>
+                    <span>Access your dashboard</span>
                   </li>
                   <li className="flex items-start">
                     <span className="text-green-500 mr-2 mt-1">✓</span>
