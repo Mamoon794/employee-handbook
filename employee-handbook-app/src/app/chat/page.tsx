@@ -1,43 +1,53 @@
 'use client';
 
 import { useEffect, useState, Suspense } from 'react';
-import { 
-  PrivateChatSideBar, 
-  MessageThread, 
-  InputMessage, 
-  Header, 
-  Disclaimer, 
-  PopularQuestions, 
-  ERROR_MESSAGE, 
-  provinceMap 
+import {
+  PrivateChatSideBar,
+  MessageThread,
+  InputMessage,
+  Header,
+  Chat,
+  Disclaimer,
+  PopularQuestions,
+  ERROR_MESSAGE,
+  provinceMap
 } from '../global_components';
-import { type Message } from '../../models/schema'; 
+import { Message } from '../../models/schema';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import confetti from 'canvas-confetti';
 
-interface Chat {
-  id: string;
-  title: string;
-  needsTitleUpdate?: boolean;
+export default function ChatPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="animate-pulse text-blue-800 text-lg">Loading chat interface...</div>
+      </div>
+    }>
+      <ChatContent />
+    </Suspense>
+  );
 }
 
 function ChatContent() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [chats, setChats] = useState<Chat[]>([]);
-  const [error, setError] = useState<{message: string, chatId: string}>({message: '', chatId: ''});
-  const [currChatId, setCurrChatId] = useState('');
-  const [province, setProvince] = useState('');
-  const [inputValue, setInputValue] = useState('');
+  const [error, setError] = useState<{ message: string; chatId: string }>({
+    message: "",
+    chatId: "",
+  });
+  const [currChatId, setCurrChatId] = useState("");
+  const [province, setProvince] = useState("");
+  const [inputValue, setInputValue] = useState("");
   const router = useRouter();
   const { isSignedIn } = useUser();
   const [titleLoading, setTitleLoading] = useState(false);
   const [totalChatsLength, setTotalChatsLength] = useState(0);
   const [showWelcome, setShowWelcome] = useState(false);
-  const [welcomeCompany, setWelcomeCompany] = useState('');
+  const [welcomeCompany, setWelcomeCompany] = useState("");
 
   const handleRetry = async () => {
-    setError({message: '', chatId: ''});
+    setError({ message: "", chatId: "" });
 
     const lastUserMessage = [...messages].reverse().find((msg) => msg.isFromUser === true);
     if (!lastUserMessage) return;
@@ -45,7 +55,7 @@ function ChatContent() {
     setMessages((prev) => [...prev, lastUserMessage]);
 
     try {
-      const endpoint = '/api/messages/private';
+      const endpoint = "/api/messages/private";
       const currProvince = provinceMap[province] || province;
       const sendBody = {
         province: currProvince,
@@ -55,12 +65,12 @@ function ChatContent() {
       };
 
       const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(sendBody),
       });
 
-      if (!res.ok) throw new Error('Network response was not ok');
+      if (!res.ok) throw new Error("Network response was not ok");
 
       const data = await res.json();
       if (data.response) {
@@ -70,33 +80,33 @@ function ChatContent() {
           createdAt: new Date(),
           sources: data.citations?.map((citation: { title: string; fragmentUrl?: string; originalUrl?: string }) => ({
             title: citation.title,
-            url: citation.fragmentUrl || citation.originalUrl || '',
+            url: citation.fragmentUrl || citation.originalUrl || "",
           })),
         };
         setMessages((prev) => [...prev, botMessage]);
       } else {
-        setError({message: ERROR_MESSAGE, chatId: currChatId});
+        setError({ message: ERROR_MESSAGE, chatId: currChatId });
       }
     } catch (err) {
       console.error(err);
-      setError({message: ERROR_MESSAGE, chatId: currChatId});
+      setError({ message: ERROR_MESSAGE, chatId: currChatId });
     }
   };
 
   useEffect(() => {
     if (!isSignedIn && isSignedIn !== undefined) {
-      router.push('/');
+      router.push("/");
     }
   }, [isSignedIn, router]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     const params = new URLSearchParams(window.location.search);
-    const welcomeParam = params.get('welcome');
-    const companyParam = params.get('company');
+    const welcomeParam = params.get("welcome");
+    const companyParam = params.get("company");
     
-    if (welcomeParam === 'true' && companyParam) {
+    if (welcomeParam === "true" && companyParam) {
       setShowWelcome(true);
       setWelcomeCompany(decodeURIComponent(companyParam));
 
@@ -105,27 +115,17 @@ function ChatContent() {
           particleCount: 150,
           spread: 70,
           origin: { y: 0.6 },
-          colors: ['#242267', '#294494', '#3a7bd5'],
+          colors: ["#242267", "#294494", "#3a7bd5"],
         });
       };
 
-      const timer = setTimeout(triggerConfetti, 100);
-      
-      const cleanUrl = () => {
-        window.history.replaceState({}, '', window.location.pathname);
-      };
-
-      const urlTimer = setTimeout(cleanUrl, 1000);
-
-      return () => {
-        clearTimeout(timer);
-        clearTimeout(urlTimer);
-      };
+      setTimeout(triggerConfetti, 100);
+      window.history.replaceState({}, "", window.location.pathname);
     }
   }, []);
 
   return (
-    <div className="min-h-screen flex bg-white">
+    <div className="min-h-screen flex bg-white flex-row">
       {/* Welcome Modal */}
       {showWelcome && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
@@ -146,7 +146,7 @@ function ChatContent() {
         </div>
       )}
 
-      {/* Chat Sidebar */}
+      {/* Sidebar (History) */}
       <PrivateChatSideBar
         setCurrChatId={setCurrChatId}
         currChatId={currChatId}
@@ -158,22 +158,22 @@ function ChatContent() {
         setTotalChatsLength={setTotalChatsLength}
       />
 
-      {/* Main Chat Area */}
+      {/* Main Content */}
       <div className="flex-1 flex flex-col min-h-screen">
-        <Header 
-          province={province} 
-          setProvince={setProvince}
-        />
+        {/* Header */}
+        <Header province={province} setProvince={setProvince} />
 
-        <main className="flex-1 flex flex-col justify-between px-4 sm:px-6 pb-6 relative">
-          <MessageThread 
-            messageList={messages} 
-            error={error} 
+        {/* Chat Area */}
+        <main className="flex-1 flex flex-col justify-between px-6 pb-6 relative">
+          {/* Message Thread */}
+          <MessageThread
+            messageList={messages}
+            error={error}
             chatId={currChatId}
             onRetry={handleRetry}
           />
 
-          <div className="absolute bottom-6 left-0 right-0 mx-4 sm:mx-10">
+          <div className="absolute bottom-6 left-0 right-0 mx-10">
             {messages.length === 0 && (
               <PopularQuestions
                 setInputValue={setInputValue}
@@ -183,17 +183,18 @@ function ChatContent() {
               />
             )}
 
-            <InputMessage 
-              inputValue={inputValue} 
-              province={province} 
-              setInputValue={setInputValue} 
-              isPrivate={true} 
-              setMessages={setMessages} 
-              chatId={currChatId} 
-              setCurrChatId={setCurrChatId} 
-              setError={setError} 
-              setTitleLoading={setTitleLoading} 
-              setChats={setChats} 
+            {/* Input Bar */}
+            <InputMessage
+              inputValue={inputValue}
+              province={province}
+              setInputValue={setInputValue}
+              isPrivate={true}
+              setMessages={setMessages}
+              chatId={currChatId}
+              setCurrChatId={setCurrChatId}
+              setError={setError}
+              setTitleLoading={setTitleLoading}
+              setChats={setChats}
               chats={chats}
             />
 
@@ -202,17 +203,5 @@ function ChatContent() {
         </main>
       </div>
     </div>
-  );
-}
-
-export default function ChatPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="animate-pulse text-blue-800 text-lg">Loading chat interface...</div>
-      </div>
-    }>
-      <ChatContent />
-    </Suspense>
   );
 }

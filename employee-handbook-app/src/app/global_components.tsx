@@ -648,17 +648,16 @@ function MessageThread({
 function Header({
   province,
   setProvince,
-}: { 
-  province: string; 
-  setProvince: (prov: string) => void;
-  companyName?: string;
+}: {
+  province: string
+  setProvince: (prov: string) => void
 }) {
   const { isSignedIn, user } = useUser()
   const router = useRouter()
   const [isFinance, setIsFinance] = useState(false)
   const [canSeeDashboard, setCanSeeDashboard] = useState(false)
-  const [companyName, setCompanyName] = useState<string | null>(null)
   const [isOnDashboard, setIsOnDashboard] = useState(false)
+  const [companyName, setCompanyName] = useState<string | null>(null)
   // const isFinance = true
 
   useEffect(() => {
@@ -668,7 +667,9 @@ function Header({
       axiosInstance
         .get(`/api/users/${user.id}?isClerkID=true`)
         .then((response) => {
-          localStorage.setItem("userId", response.data[0].id)
+          console.log("response.data in header: ", response.data)
+          let userId = response.data[0].id
+          localStorage.setItem("userId", userId)
           localStorage.setItem("companyId", response.data[0].companyId || "")
           localStorage.setItem(
             "companyName",
@@ -687,9 +688,11 @@ function Header({
         })
     } else {
       localStorage.removeItem("userId")
+      localStorage.removeItem("companyId")
+      localStorage.removeItem("companyName")
+      setCompanyName(null)
     }
   }, [isSignedIn, user])
-
 
   return (
     <header className="flex justify-between items-center px-6 py-4">
@@ -711,8 +714,26 @@ function Header({
           </span>
         )}
       </div>
-      <div className="flex gap-3 items-center">
-        {isFinance && isSignedIn && (
+      <div className="flex gap-4 items-center">
+        {canSeeDashboard && !isOnDashboard && isSignedIn &&(
+          <>
+            <button
+              className="px-5 py-2 bg-blue-800 text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"
+              onClick={() => router.push("/dashboard")}
+            >
+              Dashboard
+            </button>
+          </>
+        )}
+        {isSignedIn && isOnDashboard && (
+          <button
+            className="px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"
+            onClick={() => router.push("/chat")}
+          >
+            Ask a Question
+          </button>
+        )}
+        {(isFinance || canSeeDashboard) && isSignedIn && (
           <>
             <button
               className="px-5 py-2 bg-blue-800 text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"
@@ -720,7 +741,6 @@ function Header({
             >
               View Finances
             </button>
-
             <button
               onClick={() => router.push("/analytics")}
               className="px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"
@@ -730,12 +750,7 @@ function Header({
           </>
         )}
 
-        <div className="flex items-center gap-4">
-          {companyName && (
-            <span className="text-sm font-medium text-gray-600 hidden md:block">
-              {companyName}
-            </span>
-          )}
+        <div className="flex gap-3 items-center">
           {!isSignedIn ? (
             <>
               <span className="px-4">
@@ -748,7 +763,9 @@ function Header({
               <SignUp />
             </>
           ) : (
-            <UserButton afterSignOutUrl="/" />
+            <div className="flex items-center">
+              <UserButton afterSignOutUrl="/" />
+            </div>
           )}
         </div>
       </div>
@@ -870,4 +887,3 @@ export {
   generateThreadId,
   ERROR_MESSAGE,
 }
-
