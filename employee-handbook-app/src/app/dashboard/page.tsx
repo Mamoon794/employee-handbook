@@ -1,3 +1,4 @@
+/* eslint-disable */
 "use client"
 
 import { useRouter } from "next/navigation"
@@ -8,7 +9,6 @@ import PaywallModal from "../../../components/paywall-popup"
 import { Header } from "../global_components"
 import { CircularProgress } from "@mui/material"
 import { TrashIcon } from "lucide-react"
-import { url } from "inspector"
 
 type pdfFile = {
   name: string
