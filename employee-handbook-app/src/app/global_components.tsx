@@ -670,10 +670,7 @@ function Header({
           let userId = response.data[0].id
           localStorage.setItem("userId", userId)
           localStorage.setItem("companyId", response.data[0].companyId || "")
-          localStorage.setItem(
-            "companyName",
-            response.data[0].companyName || ""
-          )
+          localStorage.setItem("companyName", response.data[0].companyName || "")
           setProvince(response.data[0].province || "")
           setIsFinance(response.data[0].userType == "Financer")
           setCanSeeDashboard(
@@ -756,6 +753,12 @@ function Header({
             </>
           ) : (
             <div className="flex items-center">
+              <span className="px-4">
+                <ProvinceDropdown
+                  province={province}
+                  setProvince={setProvince}
+                />
+              </span>
               <UserButton afterSignOutUrl="/" />
             </div>
           )}
