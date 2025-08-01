@@ -175,10 +175,16 @@ export default function Dashboard() {
           isPublic: false,
         })
 
-        await axiosInstance.post("/api/vectordb-documents", {
+        const vdbres = await axiosInstance.post("/api/vectordb-documents", {
           fileurl: url,
           namespace: companyName,
         })
+
+        if (vdbres.data.company_docs_len == 0) {
+          alert(
+            "No extractable text found. This PDF may be scanned or image-based. Please delete it and upload a version with selectable text."
+          )
+        }
       }
       setSavedFiles([...savedFiles])
       await axiosInstance.put("/api/company/docs", {
