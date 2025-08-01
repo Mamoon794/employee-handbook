@@ -4,7 +4,7 @@ import { sendInvitationEmail } from '@/lib/email';
 import { getAuth } from '@clerk/nextjs/server';
 
 export async function POST(request: NextRequest) {
-  const { userId } = getAuth(request);
+  const { email, companyId, companyName, userId } = await request.json();
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -12,7 +12,6 @@ export async function POST(request: NextRequest) {
   console.log('Received request to send invitation'); // debugging
 
   try {
-    const { email, companyId, companyName } = await request.json();
     console.log(`Processing invitation for ${email} to company ${companyId}`); // debugging
 
     const existingUser = await getUserByEmail(email);

@@ -34,6 +34,9 @@ function AddEmployeeContent() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [pendingInvites, setPendingInvites] = useState<PendingInvite[]>([])
   const [isLoadingInvites, setIsLoadingInvites] = useState(true)
+  const [companyId, setCompanyId] = useState<string | null>(null)
+  const [companyName, setCompanyName] = useState<string | null>(null)
+
 
   useEffect(() => {
     // Safe window access for client-side only
@@ -47,12 +50,21 @@ function AddEmployeeContent() {
   }, [])
 
   useEffect(() => {
-    if (!searchParams.companyId) return
+    const storedCompanyId = localStorage.getItem("companyId")
+    const storedCompanyName = localStorage.getItem("companyName")
+
+    setCompanyId(storedCompanyId)
+    setCompanyName(storedCompanyName)
+  }, [])
+
+
+  useEffect(() => {
+    if (!companyId) return
 
     const fetchPendingInvites = async () => {
       try {
         const response = await fetch(
-          `/api/get-pending-invites?companyId=${searchParams.companyId}`
+          `/api/get-pending-invites?companyId=${companyId}`
         )
         if (!response.ok) throw new Error("Failed to fetch invites")
 
@@ -73,7 +85,7 @@ function AddEmployeeContent() {
     }
 
     fetchPendingInvites()
-  }, [searchParams.companyId])
+  }, [companyId])
 
   const formatDate = (dateString: string) => {
     try {
@@ -97,8 +109,6 @@ function AddEmployeeContent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    const companyId = localStorage.getItem("companyId")
-    const companyName = localStorage.getItem("companyName")
     if (!companyId || !companyName) {
       setError("Company information is missing")
       return
@@ -117,6 +127,7 @@ function AddEmployeeContent() {
     setError("")
 
     try {
+      const user = localStorage.getItem("userId")
       const response = await fetch("/api/send-invitation", {
         method: "POST",
         headers: {
@@ -126,7 +137,7 @@ function AddEmployeeContent() {
           email: formData.email,
           companyId: companyId,
           companyName: companyName,
-          inviterId: user?.id || "",
+          userId: user,
         }),
       })
 
@@ -142,7 +153,7 @@ function AddEmployeeContent() {
       setIsSubmitting(false)
 
       const invitesResponse = await fetch(
-        `/api/get-pending-invites?companyId=${searchParams.companyId}`
+        `/api/get-pending-invites?companyId=${companyId}`
       )
       if (invitesResponse.ok) {
         const updatedInvites = (await invitesResponse.json()) as ApiInvite[]
