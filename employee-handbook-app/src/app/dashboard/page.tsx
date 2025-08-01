@@ -7,6 +7,7 @@ import axiosInstance from "../axios_config"
 import PaywallModal from "../../../components/paywall-popup"
 import { Header } from "../global_components"
 import { CircularProgress } from "@mui/material"
+import { TrashIcon } from "lucide-react"
 
 type pdfFile = {
   name: string;
@@ -16,26 +17,53 @@ type pdfFile = {
 
 type CustProps = {
   files: pdfFile[];
+  setFiles: React.Dispatch<React.SetStateAction<pdfFile[]>>;
 };
 
-const FilePreview: React.FC<CustProps> = ({ files }) => {
+const FilePreview: React.FC<CustProps> = ({ files, setFiles }) => {
   const handleOpen = (file: pdfFile) => {
     window.open(file.url, "_blank", "noopener,noreferrer");
   };
 
+
+  async function handleDelete(file: pdfFile, index: number) {
+    try{
+      await axiosInstance.delete('/api/company/docs', {
+          data: {
+            companyId: localStorage.getItem('companyId'),
+            index: index,
+          },
+      });
+      setFiles(files.filter((_, i) => i !== index));
+
+    } catch (error) {
+      console.error("Error deleting file:", error);
+      alert("Failed to delete file. Please try again later.");
+    }
+  };
+
   return (
     <div className="max-h-64 overflow-y-auto w-full space-y-2 mb-3">
-    {files.map((file, index) => (
-      <div key={index}
-        onClick={() => handleOpen(file)}
-        className="cursor-pointer p-4 border rounded hover:bg-gray-100"
-      >
-        <p className="text-blue-600">{file.name}</p>
-      </div>
-    ))}
+      {files.map((file, index) => (
+        <div
+          key={index}
+          className="flex items-center justify-between cursor-pointer p-4 border rounded hover:bg-gray-100"
+        >
+          <div onClick={() => handleOpen(file)} className="flex-1">
+            <p className="text-blue-600">{file.name}</p>
+          </div>
+          <button
+            onClick={() => handleDelete(file, index)}
+            aria-label={`Delete ${file.name}`}
+          >
+            <TrashIcon className="h-5 w-5" />
+          </button>
+        </div>
+      ))}
     </div>
   );
 };
+
 
 export default function Dashboard() {
   const router = useRouter()
@@ -177,7 +205,7 @@ export default function Dashboard() {
           ) : (
             <p className="text-lg text-black font-bold mb-12 text-center">It seems there are currently no files uploaded.</p>
           )}
-          <FilePreview files={savedFiles} />
+          <FilePreview files={savedFiles} setFiles={setSavedFiles} />
           {isLoading ? (
             <CircularProgress />
             
