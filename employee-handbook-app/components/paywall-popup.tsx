@@ -48,7 +48,7 @@ export default function PaywallModal() {
         const users = response.data;
         
         // Count only employees (not owners, administrators, etc.)
-        const employees = users.filter((user: any) => user.userType === 'Employee');
+        const employees = users.filter((user: { userType: string }) => user.userType === 'Employee');
         setEmployeeCount(employees.length);
       } catch (error) {
         console.error('Error fetching employee count:', error);
