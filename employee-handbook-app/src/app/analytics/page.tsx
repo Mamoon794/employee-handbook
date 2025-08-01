@@ -23,6 +23,7 @@ import {
 import DateRangePicker from "./components/DateRangePicker"
 import TypewriterEffect from "./components/TypewriterEffect"
 import Link from "next/link"
+import { Header } from "../global_components"
 
 export default function Analytics() {
   const router = useRouter()
@@ -239,6 +240,7 @@ export default function Analytics() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
+      <Header showHeader={false} province=""  setProvince={()=>{}}/>
       <header
         className="bg-white shadow-sm border-b"
         role="banner"

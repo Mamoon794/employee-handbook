@@ -645,12 +645,15 @@ function MessageThread({
   )
 }
 
+
 function Header({
   province,
   setProvince,
+  showHeader = true
 }: {
   province: string
-  setProvince: (prov: string) => void
+  setProvince: (prov: string) => void,
+  showHeader?: boolean
 }) {
   const { isSignedIn, user } = useUser()
   const router = useRouter()
@@ -659,9 +662,36 @@ function Header({
   const [isOnDashboard, setIsOnDashboard] = useState(false)
   // const isFinance = true
 
+
+function checkAuthentication(isSignedIn: boolean, canSeeDashboard: boolean) {
+  const pathname = typeof window !== "undefined" ? window.location.pathname : "";
+   if (pathname === "/dashboard") {
+      if (!isSignedIn) {
+        router.push("/")
+      }
+      else if(!canSeeDashboard) {
+        router.push("/chat")
+      }
+    }
+
+    else if (pathname === "/finances") {
+      if (!isSignedIn) {
+        router.push("/")
+      }
+    }
+    else if (pathname === "/analytics") {
+      if (!isSignedIn) {
+        router.push("/")
+      }
+      else if (!canSeeDashboard) {
+        router.push("/chat")
+      }
+    }
+  }
+
   useEffect(() => {
+    const pathname = typeof window !== "undefined" ? window.location.pathname : "";
     if (isSignedIn && user) {
-      const pathname = typeof window !== "undefined" ? window.location.pathname : "";
       setIsOnDashboard(pathname === "/dashboard")
       axiosInstance
         .get(`/api/users/${user.id}?isClerkID=true`)
@@ -677,6 +707,8 @@ function Header({
             response.data[0].userType == "Owner" ||
               response.data[0].userType == "Administrator"
           )
+
+          checkAuthentication(true, response.data[0].userType == "Owner" || response.data[0].userType == "Administrator")
         })
         .catch((error) => {
           console.error("Error fetching user data:", error)
@@ -685,8 +717,14 @@ function Header({
       localStorage.removeItem("userId")
       localStorage.removeItem("companyId")
       localStorage.removeItem("companyName")
+      checkAuthentication(false, false)
     }
+
   }, [isSignedIn, user])
+
+  if (!showHeader) {
+    return null
+  }
 
   return (
     <header className="flex justify-between items-center px-6 py-4">
