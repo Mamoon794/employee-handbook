@@ -8,39 +8,50 @@ import PaywallModal from "../../../components/paywall-popup"
 import { Header } from "../global_components"
 import { CircularProgress } from "@mui/material"
 import { TrashIcon } from "lucide-react"
+import { url } from "inspector"
 
 type pdfFile = {
-  name: string;
-  type: string;
-  url: string;
+  name: string
+  type: string
+  url: string
 }
 
 type CustProps = {
-  files: pdfFile[];
-  setFiles: React.Dispatch<React.SetStateAction<pdfFile[]>>;
-};
+  files: pdfFile[]
+  setFiles: React.Dispatch<React.SetStateAction<pdfFile[]>>
+}
 
 const FilePreview: React.FC<CustProps> = ({ files, setFiles }) => {
   const handleOpen = (file: pdfFile) => {
-    window.open(file.url, "_blank", "noopener,noreferrer");
-  };
-
+    window.open(file.url, "_blank", "noopener,noreferrer")
+  }
 
   async function handleDelete(file: pdfFile, index: number) {
-    try{
-      await axiosInstance.delete('/api/company/docs', {
-          data: {
-            companyId: localStorage.getItem('companyId'),
-            index: index,
-          },
-      });
-      setFiles(files.filter((_, i) => i !== index));
+    try {
+      await axiosInstance.delete("/api/company/docs", {
+        data: {
+          companyId: localStorage.getItem("companyId"),
+          index: index,
+        },
+      })
+      setFiles(files.filter((_, i) => i !== index))
 
+      // Also delete from vector DB
+      const companyName = localStorage.getItem("companyName") || ""
+      try {
+        await axiosInstance.patch("/api/vectordb-documents/source", {
+          url: file.url,
+          company: companyName,
+        })
+      } catch (error) {
+        console.error("Error deleting from vector DB:", error)
+        alert("Failed to delete from vector DB. Please try again later.")
+      }
     } catch (error) {
-      console.error("Error deleting file:", error);
-      alert("Failed to delete file. Please try again later.");
+      console.error("Error deleting file:", error)
+      alert("Failed to delete file. Please try again later.")
     }
-  };
+  }
 
   return (
     <div className="max-h-64 overflow-y-auto w-full space-y-2 mb-3">
@@ -61,40 +72,40 @@ const FilePreview: React.FC<CustProps> = ({ files, setFiles }) => {
         </div>
       ))}
     </div>
-  );
-};
-
+  )
+}
 
 export default function Dashboard() {
   const router = useRouter()
   const { user } = useUser()
   const firstName = user?.firstName || "there"
   const [showPaywall, setShowPaywall] = useState(false)
-  const [savedFiles, setSavedFiles] = useState<pdfFile[]>([]);
+  const [savedFiles, setSavedFiles] = useState<pdfFile[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [province, setProvince] = useState<string>("")
 
-
   const fetchCompanyDocs = useCallback(async () => {
-    const companyId = localStorage.getItem('companyId');
-    if (!companyId) return;
-    const companyDocs = await axiosInstance.get(`/api/company/docs/${companyId}`);
-    let get_files : pdfFile[]  = []
+    const companyId = localStorage.getItem("companyId")
+    if (!companyId) return
+    const companyDocs = await axiosInstance.get(
+      `/api/company/docs/${companyId}`
+    )
+    let get_files: pdfFile[] = []
     for (const doc of companyDocs.data.companyDocs) {
       get_files.push({
         name: doc.fileName,
-        type: 'application/pdf',
+        type: "application/pdf",
         url: doc.fileUrl,
-      });
+      })
     }
-    setSavedFiles(get_files);
-  }, []);
+    setSavedFiles(get_files)
+  }, [])
 
   useEffect(() => {
-    if (localStorage.getItem('companyId')) {
-      fetchCompanyDocs();
+    if (localStorage.getItem("companyId")) {
+      fetchCompanyDocs()
     }
-  }, [fetchCompanyDocs]);
+  }, [fetchCompanyDocs])
 
   useEffect(() => {
     const checkSubscriptionStatus = async () => {
@@ -103,27 +114,27 @@ export default function Dashboard() {
         return
       }
 
-      const userType = user.unsafeMetadata?.userType as string;
-      
-      if (userType === 'Employee') {
-        setShowPaywall(false);
-        setIsLoading(false);
-        return;
+      const userType = user.unsafeMetadata?.userType as string
+
+      if (userType === "Employee") {
+        setShowPaywall(false)
+        setIsLoading(false)
+        return
       }
 
       try {
-        const response = await axiosInstance.get('/api/check-subscription');
-        const { subscribed } = response.data;
-        
-        setShowPaywall(!subscribed);
-        setIsLoading(false);
+        const response = await axiosInstance.get("/api/check-subscription")
+        const { subscribed } = response.data
+
+        setShowPaywall(!subscribed)
+        setIsLoading(false)
       } catch (error) {
-        console.error('Error checking subscription status:', error);
+        console.error("Error checking subscription status:", error)
         // If error occurs, show paywall as fallback for employers only
-        setShowPaywall(userType !== 'Employee');
-        setIsLoading(false);
+        setShowPaywall(userType !== "Employee")
+        setIsLoading(false)
       }
-    };
+    }
 
     checkSubscriptionStatus()
   }, [user])
@@ -140,7 +151,7 @@ export default function Dashboard() {
     const files = event.target.files || []
     setIsLoading(true)
     try {
-      let documentData = [];
+      let documentData = []
       for (let i = 0; i < files.length; i++) {
         const formData = new FormData()
         formData.append("file", files[i])
@@ -155,28 +166,28 @@ export default function Dashboard() {
         savedFiles.push({
           name: files[i].name,
           type: files[i].type,
-          url: url
-        });
+          url: url,
+        })
         documentData.push({
           fileUrl: url,
           fileName: files[i].name,
           uploadDate: new Date(),
           isPublic: false,
-        });
-        
+        })
+
         await axiosInstance.post("/api/vectordb-documents", {
           fileurl: url,
           namespace: companyName,
         })
       }
-      setSavedFiles([...savedFiles]);
-      await axiosInstance.put('/api/company/docs',{
-        companyId: localStorage.getItem('companyId'),
+      setSavedFiles([...savedFiles])
+      await axiosInstance.put("/api/company/docs", {
+        companyId: localStorage.getItem("companyId"),
         documents: documentData,
-      });
+      })
     } catch (error) {
-      console.error("Error uploading documents:", error);
-      alert("Failed to upload documents. Please try again later.");
+      console.error("Error uploading documents:", error)
+      alert("Failed to upload documents. Please try again later.")
     }
     setIsLoading(false)
   }
@@ -201,26 +212,30 @@ export default function Dashboard() {
             Welcome, {firstName}!
           </h2>
           {savedFiles.length > 0 ? (
-            <p className="text-lg text-black font-bold mb-12 text-center">You have {savedFiles.length} files uploaded:</p>
+            <p className="text-lg text-black font-bold mb-12 text-center">
+              You have {savedFiles.length} files uploaded:
+            </p>
           ) : (
-            <p className="text-lg text-black font-bold mb-12 text-center">It seems there are currently no files uploaded.</p>
+            <p className="text-lg text-black font-bold mb-12 text-center">
+              It seems there are currently no files uploaded.
+            </p>
           )}
           <FilePreview files={savedFiles} setFiles={setSavedFiles} />
           {isLoading ? (
             <CircularProgress />
-            
-          )
-          : (<label className="bg-[#294494] text-white font-extrabold px-12 py-5 rounded-xl text-xl hover:bg-blue-900 transition-colors shadow-md cursor-pointer">
-            Upload Documents
-            <input
-              type="file"
-              name="file"
-              accept=".pdf"
-              multiple
-              onChange={uploadDocuments}
-              className="hidden"
-            />
-          </label>)}
+          ) : (
+            <label className="bg-[#294494] text-white font-extrabold px-12 py-5 rounded-xl text-xl hover:bg-blue-900 transition-colors shadow-md cursor-pointer">
+              Upload Documents
+              <input
+                type="file"
+                name="file"
+                accept=".pdf"
+                multiple
+                onChange={uploadDocuments}
+                className="hidden"
+              />
+            </label>
+          )}
         </div>
         {/* Employee Management Card */}
         <div className="w-full max-w-sm bg-[#f5f7fb] rounded-xl shadow-lg flex flex-col items-center py-12 px-8">
