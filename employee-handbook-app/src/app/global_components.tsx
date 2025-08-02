@@ -695,30 +695,30 @@ function Header({
   }, [isSignedIn, user])
 
   return (
-    <header className="flex justify-between items-center px-6 py-4">
-      <div className="flex items-center gap-4">
+    <header className="flex justify-between items-center px-4 sm:px-6 py-3 sm:py-4">
+      <div className="flex items-center gap-2 sm:gap-4">
         {!isSignedIn || !canSeeDashboard ? (
-          <h1 className="text-2xl font-extrabold italic text-blue-800 cursor-pointer">
+          <h1 className="text-xl sm:text-2xl font-extrabold italic text-blue-800 cursor-pointer">
             Gail
           </h1>
         ) : (
           <Link href="/dashboard">
-            <h1 className="text-2xl font-extrabold italic text-blue-800 cursor-pointer">
+            <h1 className="text-xl sm:text-2xl font-extrabold italic text-blue-800 cursor-pointer">
               Gail
             </h1>
           </Link>
         )}
         {companyName && (
-          <span className="text-lg font-medium text-black hidden md:block">
+          <span className="text-sm sm:text-lg font-medium text-black hidden sm:block">
             | {companyName}
           </span>
         )}
       </div>
-      <div className="flex gap-4 items-center">
+      <div className="flex gap-2 sm:gap-4 items-center">
         {canSeeDashboard && !isOnDashboard && isSignedIn &&(
           <>
             <button
-              className="px-5 py-2 bg-blue-800 text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"
+              className="px-3 sm:px-5 py-2 bg-blue-800 text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-900 transition-colors shadow-sm"
               onClick={() => router.push("/dashboard")}
             >
               Dashboard
@@ -727,7 +727,7 @@ function Header({
         )}
         {isSignedIn && isOnDashboard && (
           <button
-            className="px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"
+            className="px-3 sm:px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-900 transition-colors shadow-sm"
             onClick={() => router.push("/chat")}
           >
             Ask a Question
@@ -736,14 +736,14 @@ function Header({
         {(isFinance || canSeeDashboard) && isSignedIn && (
           <>
             <button
-              className="px-5 py-2 bg-blue-800 text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"
+              className="px-3 sm:px-5 py-2 bg-blue-800 text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-900 transition-colors shadow-sm hidden sm:block"
               onClick={() => router.push("/finances")}
             >
               View Finances
             </button>
             <button
               onClick={() => router.push("/analytics")}
-              className="px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"
+              className="px-3 sm:px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-900 transition-colors shadow-sm hidden sm:block"
             >
               Analytics
             </button>

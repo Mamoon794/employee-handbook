@@ -180,42 +180,42 @@ function AddEmployeeContent() {
     <div className="min-h-screen bg-white flex flex-col font-sans">
       <Header province={province} setProvince={setProvince} />
 
-      <main className="flex-1 flex flex-col items-center py-8 px-4">
-        <div className="w-full max-w-2xl mx-auto space-y-6">
+      <main className="flex-1 flex flex-col items-center py-6 sm:py-8 px-4 sm:px-6">
+        <div className="w-full max-w-2xl mx-auto space-y-4 sm:space-y-6">
           {showConfirmation ? (
-            <div className="bg-[#f5f7fb] p-8 rounded-2xl shadow-sm text-center border border-gray-200">
-              <h2 className="text-2xl font-bold mb-4 text-gray-800">
+            <div className="bg-[#f5f7fb] p-4 sm:p-6 lg:p-8 rounded-2xl shadow-sm text-center border border-gray-200">
+              <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-gray-800">
                 Invitation Sent!
               </h2>
-              <p className="mb-6 text-gray-700">
+              <p className="mb-4 sm:mb-6 text-sm sm:text-base text-gray-700">
                 An invitation has been sent to{" "}
                 <span className="font-bold text-blue-800">
                   {confirmedEmail}
                 </span>
                 . They&apos;ll need to accept it before joining your company.
               </p>
-              <div className="flex justify-center gap-3">
+              <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-3">
                 <button
                   onClick={handleAddAnother}
-                  className="bg-blue-800 text-white px-6 py-2 rounded-lg font-semibold text-sm hover:bg-blue-700 transition-colors"
+                  className="bg-blue-800 text-white px-4 sm:px-6 py-2 rounded-lg font-semibold text-sm hover:bg-blue-700 transition-colors"
                 >
                   Add Another Employee
                 </button>
                 <button
                   onClick={handleCancel}
-                  className="border border-gray-300 px-6 py-2 rounded-lg font-semibold text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="border border-gray-300 px-4 sm:px-6 py-2 rounded-lg font-semibold text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                 >
                   Back to Dashboard
                 </button>
               </div>
             </div>
           ) : (
-            <div className="bg-[#f5f7fb] p-6 rounded-2xl shadow-sm">
-              <h2 className="text-xl font-bold mb-6 text-gray-800 text-center">
+            <div className="bg-[#f5f7fb] p-4 sm:p-6 rounded-2xl shadow-sm">
+              <h2 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-gray-800 text-center">
                 Add New Employee
               </h2>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
                 <div className="space-y-2">
                   <label className="block text-sm font-semibold text-gray-700">
                     Employee Email:
@@ -225,29 +225,29 @@ function AddEmployeeContent() {
                     type="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 text-gray-800 bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 sm:px-4 py-2 rounded-lg border border-gray-300 text-gray-800 bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                     placeholder="employee@example.com"
                     required
                   />
                 </div>
 
                 {error && (
-                  <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded text-sm">
+                  <div className="bg-red-100 border border-red-400 text-red-700 px-3 sm:px-4 py-2 rounded text-xs sm:text-sm">
                     {error}
                   </div>
                 )}
 
-                <div className="flex justify-center gap-3 pt-2">
+                <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-3 pt-2">
                   <button
                     type="button"
                     onClick={handleCancel}
-                    className="border border-gray-300 px-6 py-2 rounded-lg font-semibold text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                    className="border border-gray-300 px-4 sm:px-6 py-2 rounded-lg font-semibold text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="bg-blue-800 text-white px-6 py-2 rounded-lg font-semibold text-sm hover:bg-blue-700 transition-colors"
+                    className="bg-blue-800 text-white px-4 sm:px-6 py-2 rounded-lg font-semibold text-sm hover:bg-blue-700 transition-colors"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? "Sending..." : "Send Invitation"}
@@ -257,8 +257,8 @@ function AddEmployeeContent() {
             </div>
           )}
 
-          <div className="bg-[#f5f7fb] p-6 rounded-2xl shadow-sm">
-            <h3 className="text-lg font-bold mb-4 text-gray-800 text-center">
+          <div className="bg-[#f5f7fb] p-4 sm:p-6 rounded-2xl shadow-sm">
+            <h3 className="text-base sm:text-lg font-bold mb-3 sm:mb-4 text-gray-800 text-center">
               <span className="flex items-center justify-center gap-2">
                 <FaEnvelope className="text-blue-600" />
                 Pending Invitations
