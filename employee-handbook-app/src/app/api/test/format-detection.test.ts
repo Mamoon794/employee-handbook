@@ -129,7 +129,7 @@ Additional requirements:
 
   describe('Carousel Parsing', () => {
     it('should correctly parse carousel cards for steps', () => {
-      const { cards, remainingContent } = parseCarouselCards(testCases.carouselSteps.input)
+      const { cards } = parseCarouselCards(testCases.carouselSteps.input)
       
       expect(cards).toHaveLength(3)
       expect(cards[0].title).toBe('Step 1: Document the Issue')
