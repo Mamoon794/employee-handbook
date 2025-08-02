@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createInvitation, getUserByEmail } from '@/models/dbOperations';
 import { sendInvitationEmail } from '@/lib/email';
-import { getAuth } from '@clerk/nextjs/server';
 
 export async function POST(request: NextRequest) {
   const { email, companyId, companyName, userId } = await request.json();

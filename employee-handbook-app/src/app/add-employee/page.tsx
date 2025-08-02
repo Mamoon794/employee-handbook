@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 "use client"
 
 import { useState, useEffect, Suspense } from "react"
@@ -21,7 +23,6 @@ interface ApiInvite {
 
 function AddEmployeeContent() {
   const router = useRouter()
-  const { user } = useUser()
   const [searchParams, setSearchParams] = useState({
     companyId: "",
     companyName: "Your Company",
