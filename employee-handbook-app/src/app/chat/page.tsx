@@ -10,7 +10,6 @@ import {
   Disclaimer,
   PopularQuestions,
   ERROR_MESSAGE,
-  provinceMap
 } from '../global_components';
 import { Message } from '../../models/schema';
 import { useUser } from '@clerk/nextjs';
