@@ -8,16 +8,34 @@ export const useIdleTimeout = (timeoutMinutes = 60, warningMinutes = 5) => {
   const [showWarning, setShowWarning] = useState(false);
   const [secondsLeft, setSecondsLeft] = useState(warningMinutes * 60);
 
-  const ABSOLUTE_SESSION_LIMIT = 7 * 24 * 60; 
+  const ABSOLUTE_SESSION_LIMIT = 1; 
 
   useEffect(() => {
     if (!isSignedIn || !user) return;
 
-    const sessionAgeMinutes = (Date.now() - new Date(user.lastSignInAt || 0).getTime()) / (1000 * 60);
-    if (sessionAgeMinutes >= ABSOLUTE_SESSION_LIMIT) {
-      signOut();
-      return;
+    const loginTimestamp = localStorage.getItem('loginTimestamp');
+    if (loginTimestamp) {
+      const loginTime = parseInt(loginTimestamp, 10)
+      const now = Date.now();
+      const diffInMinutes = (now - loginTime) / (1000 * 60);
+
+      if (diffInMinutes >= ABSOLUTE_SESSION_LIMIT) {
+        signOut().then(() => {
+          localStorage.removeItem('loginTimestamp'); 
+          window.location.reload();
+        });
+        return;
+      }
+    } else {
+      localStorage.setItem('loginTimestamp', Date.now().toString());
+      // window.location.reload();
     }
+
+    // const sessionAgeMinutes = (Date.now() - new Date(user.lastSignInAt || 0).getTime()) / (1000 * 60);
+    // if (sessionAgeMinutes >= ABSOLUTE_SESSION_LIMIT) {
+    //   signOut();
+    //   return;
+    // }
 
     let timeoutId: NodeJS.Timeout;
     let warningTimeoutId: NodeJS.Timeout;
