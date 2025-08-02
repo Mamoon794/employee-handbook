@@ -7,6 +7,7 @@ import {
   Chat,
   Message,
   Document,
+  Invitation,
   UserType,
   PopularQuestion
 } from "./schema";
@@ -205,6 +206,75 @@ export const getCompanyDocuments = async (companyId: string) => {
   const querySnapshot = await theQuery.get();
   return querySnapshot.docs.map((doc: firestore.QueryDocumentSnapshot<firestore.DocumentData>) => ({ id: doc.id, ...doc.data() } as Document));
 };
+
+// for invitations
+
+// collections - invitations
+const invitationsRef = db.collection("invitations");
+
+export const createInvitation = async (invitationData: Omit<Invitation, "id" | "status">) => {
+  const dataToAdd = {
+    ...invitationData,
+    status: "pending",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+  const docRef = await invitationsRef.add(dataToAdd);
+  return docRef;
+};
+
+export const getInvitation = async (invitationId: string) => {
+  const docRef = invitationsRef.doc(invitationId);
+  const docSnap = await docRef.get();
+  return docSnap.exists ? ({ id: docSnap.id, ...docSnap.data() } as Invitation) : null;
+};
+
+export const updateInvitationStatus = async (invitationId: string, status: "accepted" | "rejected") => {
+  await invitationsRef.doc(invitationId).update({
+    status,
+    updatedAt: new Date(),
+  });
+};
+
+export const getPendingInvitationsByCompany = async (companyId: string): Promise<Invitation[]> => {
+  const theQuery = invitationsRef
+    .where("companyId", "==", companyId)
+    .where("status", "==", "pending");
+  const querySnapshot = await theQuery.get();
+  return querySnapshot.docs.map((doc: firestore.QueryDocumentSnapshot<firestore.DocumentData>) => {
+    const data = doc.data();
+    return {
+      id: doc.id,
+      email: data.email,
+      createdAt: data.createdAt.toDate(), // firestore to JS
+      companyId: data.companyId,
+      companyName: data.companyName,
+      inviterId: data.inviterId,
+      status: data.status,
+      updatedAt: data.updatedAt.toDate()
+    } as Invitation;
+  });
+};
+
+export const getUserByEmail = async (email: string): Promise<User | null> => {
+  try {
+    console.log(`Looking up user by email: ${email}`); // debugging
+    const theQuery = usersRef.where("email", "==", email);
+    const querySnapshot = await theQuery.get();
+    
+    const users = querySnapshot.docs.map((doc: firestore.QueryDocumentSnapshot<User>) => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    
+    console.log(`Found ${users.length} users with this email`); // debugging
+    return users[0] || null;
+  } catch (error) {
+    console.error('Error in getUserByEmail:', error);
+    throw error;
+  }
+};
+
 
 // collection - popular_questions
 const popularQuestionsRef = db.collection("popular_questions");

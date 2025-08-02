@@ -1,0 +1,4 @@
+echo "22" > .nvmrc
+git add .nvmrc
+git commit -m "Specify Node 22 requirement"
+git push
