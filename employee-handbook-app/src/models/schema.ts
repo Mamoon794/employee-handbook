@@ -62,6 +62,17 @@ export interface Link {
   page?: number
 }
 
+export interface Invitation {
+  id?: string;
+  email: string;
+  companyId: string;
+  companyName: string;
+  inviterId: string; // owner that sent the invite
+  status: "pending" | "accepted" | "rejected";
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface PopularQuestion {
   id?: string
   province: string
