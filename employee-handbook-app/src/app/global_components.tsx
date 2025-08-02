@@ -686,7 +686,7 @@ function Header({
         .catch((error) => {
           console.error("Error fetching user data:", error)
         })
-    } else {
+    } else if (isSignedIn !== undefined) {
       localStorage.removeItem("userId")
       localStorage.removeItem("companyId")
       localStorage.removeItem("companyName")

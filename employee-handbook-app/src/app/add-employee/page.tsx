@@ -4,8 +4,8 @@
 
 import { useState, useEffect, Suspense } from "react"
 import { useRouter } from "next/navigation"
-import { useUser, UserButton } from "@clerk/nextjs"
 import { FaEnvelope } from "react-icons/fa"
+import { Header } from "../global_components"
 
 interface PendingInvite {
   id: string
@@ -37,25 +37,20 @@ function AddEmployeeContent() {
   const [isLoadingInvites, setIsLoadingInvites] = useState(true)
   const [companyId, setCompanyId] = useState<string | null>(null)
   const [companyName, setCompanyName] = useState<string | null>(null)
+  const [province, setProvince] = useState<string>("")
+
+
 
 
   useEffect(() => {
-    // Safe window access for client-side only
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search)
-      setSearchParams({
-        companyId: params.get("companyId") || "",
-        companyName: params.get("companyName") || "Your Company",
-      })
-    }
-  }, [])
 
-  useEffect(() => {
     const storedCompanyId = localStorage.getItem("companyId")
     const storedCompanyName = localStorage.getItem("companyName")
-
-    setCompanyId(storedCompanyId)
-    setCompanyName(storedCompanyName)
+    if (storedCompanyId || storedCompanyName) {
+      
+      setCompanyId(storedCompanyId)
+      setCompanyName(storedCompanyName)
+    }
   }, [])
 
 
@@ -183,36 +178,7 @@ function AddEmployeeContent() {
 
   return (
     <div className="min-h-screen bg-white flex flex-col font-sans">
-      <header className="flex justify-between items-center px-8 py-6 bg-white shadow-sm">
-        <h1 className="text-2xl font-extrabold italic text-blue-800">Gail</h1>
-        <div className="flex gap-4 items-center">
-          <button
-            className="px-7 py-3 bg-[#242267] text-white rounded-xl font-bold text-base hover:bg-blue-900 transition-colors shadow-sm"
-            onClick={() => router.push("/chat")}
-          >
-            Ask a Question
-          </button>
-          <button
-            className="px-7 py-3 bg-blue-800 text-white rounded-xl font-bold text-base hover:bg-blue-900 transition-colors shadow-sm"
-            onClick={() => router.push("/finances")}
-          >
-            View Finances
-          </button>
-          <button
-            onClick={() => router.push("/analytics")}
-            className="px-7 py-3 bg-[#242267] text-white rounded-xl font-bold text-base hover:bg-blue-900 transition-colors shadow-sm"
-          >
-            Analytics
-          </button>
-          <UserButton
-            appearance={{
-              elements: {
-                avatarBox: "w-15 h-15",
-              },
-            }}
-          />
-        </div>
-      </header>
+      <Header province={province} setProvince={setProvince} />
 
       <main className="flex-1 flex flex-col items-center py-8 px-4">
         <div className="w-full max-w-2xl mx-auto space-y-6">
