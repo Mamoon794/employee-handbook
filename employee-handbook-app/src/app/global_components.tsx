@@ -871,7 +871,7 @@ function ProvinceDropdown({
 function Disclaimer() {
   return (
     <p className="text-center text-sm text-gray-500 mt-4">
-      Gail can make mistakes. Your privacy is protected.
+       © Copyright 2025, Analana Inc. All rights reserved. GAIL can make mistakes, please verify your results.
     </p>
   )
 }
