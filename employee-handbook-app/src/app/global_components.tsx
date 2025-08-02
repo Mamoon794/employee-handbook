@@ -657,6 +657,7 @@ function Header({
   const [isFinance, setIsFinance] = useState(false)
   const [canSeeDashboard, setCanSeeDashboard] = useState(false)
   const [isOnDashboard, setIsOnDashboard] = useState(false)
+  const [companyName, setCompanyName] = useState<string | null>(null)
   // const isFinance = true
 
   useEffect(() => {
@@ -674,6 +675,7 @@ function Header({
             "companyName",
             response.data[0].companyName || ""
           )
+          setCompanyName(response.data[0].companyName || null)
           setProvince(response.data[0].province || "")
           setIsFinance(response.data[0].userType == "Financer")
           setCanSeeDashboard(
@@ -684,26 +686,34 @@ function Header({
         .catch((error) => {
           console.error("Error fetching user data:", error)
         })
-    } else {
+    } else if (isSignedIn !== undefined) {
       localStorage.removeItem("userId")
       localStorage.removeItem("companyId")
       localStorage.removeItem("companyName")
+      setCompanyName(null)
     }
   }, [isSignedIn, user])
 
   return (
     <header className="flex justify-between items-center px-6 py-4">
-      {!isSignedIn || !canSeeDashboard ? (
-        <h1 className="text-2xl font-extrabold italic text-blue-800 cursor-pointer">
-          Gail
-        </h1>
-      ) : (
-        <Link href="/dashboard">
+      <div className="flex items-center gap-4">
+        {!isSignedIn || !canSeeDashboard ? (
           <h1 className="text-2xl font-extrabold italic text-blue-800 cursor-pointer">
             Gail
           </h1>
-        </Link>
-      )}
+        ) : (
+          <Link href="/dashboard">
+            <h1 className="text-2xl font-extrabold italic text-blue-800 cursor-pointer">
+              Gail
+            </h1>
+          </Link>
+        )}
+        {companyName && (
+          <span className="text-lg font-medium text-black hidden md:block">
+            | {companyName}
+          </span>
+        )}
+      </div>
       <div className="flex gap-4 items-center">
         {canSeeDashboard && !isOnDashboard && isSignedIn &&(
           <>
@@ -713,9 +723,8 @@ function Header({
             >
               Dashboard
             </button>
-
-          </>)
-        }
+          </>
+        )}
         {isSignedIn && isOnDashboard && (
           <button
             className="px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"
@@ -732,7 +741,6 @@ function Header({
             >
               View Finances
             </button>
-
             <button
               onClick={() => router.push("/analytics")}
               className="px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"

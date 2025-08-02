@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from 'next/navigation';
-import { useUser } from "@clerk/nextjs";
+import { useUser, useClerk } from "@clerk/nextjs";
 import axios from 'axios';
 
 const pricingTiers = [
@@ -23,6 +23,7 @@ export default function PaywallModal() {
   const [isLoadingCount, setIsLoadingCount] = useState(true);
   const router = useRouter();
   const { user } = useUser();
+  const { signOut } = useClerk();
 
   useEffect(() => {
     const fetchEmployeeCount = async () => {
@@ -47,7 +48,7 @@ export default function PaywallModal() {
         const users = response.data;
         
         // Count only employees (not owners, administrators, etc.)
-        const employees = users.filter((user: any) => user.userType === 'Employee');
+        const employees = users.filter((user: { userType: string }) => user.userType === 'Employee');
         setEmployeeCount(employees.length);
       } catch (error) {
         console.error('Error fetching employee count:', error);
@@ -134,6 +135,14 @@ export default function PaywallModal() {
         >
           {loading ? 'Redirecting...' : 'Subscribe Now'}
         </button>
+        
+        <button
+          onClick={() => signOut(() => router.push('/'))}
+          className="w-full mt-3 bg-gray-200 text-gray-700 font-medium py-3 rounded-xl text-base hover:bg-gray-300 transition-colors shadow-sm"
+        >
+          Logout
+        </button>
+        
         {error && <p className="text-red-500 mt-4 text-center">{error}</p>}
       </div>
     </div>
