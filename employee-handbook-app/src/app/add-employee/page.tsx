@@ -124,8 +124,12 @@ function AddEmployeeContent() {
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
-    setError("")
+    const { name, value } = e.target;
+    setFormData({ 
+      ...formData, 
+      [name]: value.toLowerCase() 
+    });
+    setError("");
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
