@@ -18,6 +18,8 @@ import {
   ListboxOption,
   ListboxOptions,
 } from "@headlessui/react"
+import { CarouselCards } from "@/components/carousel-cards"
+import type { CarouselCard } from "@/types/ai"
 import { ChevronDown, Check } from "lucide-react"
 import dynamic from "next/dynamic"
 
@@ -111,6 +113,55 @@ export function markdownListToTable(md: string): string {
   }
 
   throw new Error("marked.parse returned a Promise, but a string was expected.")
+}
+
+
+export function parseCarouselCards(markdown: string): {
+  cards: CarouselCard[]
+  remainingContent: string
+} {
+  const carouselRegex = /:::carousel\n([\s\S]*?):::/g
+  const cards: CarouselCard[] = []
+  let remainingContent = markdown
+
+  let match
+  while ((match = carouselRegex.exec(markdown)) !== null) {
+    const carouselContent = match[1]
+    const cardBlocks = carouselContent.split(/\n---\n/).filter(block => block.trim())
+    
+    for (const block of cardBlocks) {
+      const lines = block.trim().split('\n')
+      const card: CarouselCard = { title: '', content: '' }
+      
+      for (const line of lines) {
+        if (line.startsWith('card:')) {
+          card.title = line.replace('card:', '').trim()
+        } else if (line.startsWith('content:')) {
+          card.content = line.replace('content:', '').trim()
+        } else if (line.startsWith('icon:')) {
+          card.icon = line.replace('icon:', '').trim()
+        } else if (line.startsWith('action:')) {
+          const actionParts = line.replace('action:', '').trim().split('|').map(p => p.trim())
+          if (actionParts.length === 2) {
+            card.action = {
+              text: actionParts[0],
+              url: actionParts[1]
+            }
+          }
+        } else if (card.content && line.trim()) {
+          card.content += '\n' + line
+        }
+      }
+      
+      if (card.title && card.content) {
+        cards.push(card)
+      }
+    }
+    
+    remainingContent = remainingContent.replace(match[0], '')
+  }
+  
+  return { cards, remainingContent }
 }
 
 function PublicChatSideBar({
@@ -597,12 +648,24 @@ function MessageThread({
               </div>
             ) : (
               <div className="self-start bg-gray-100 text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm">
-                <div
-                  className="text-lg"
-                  dangerouslySetInnerHTML={{
-                    __html: markdownListToTable(message.content),
-                  }}
-                />
+                {(() => {
+                  const { cards, remainingContent } = parseCarouselCards(message.content)
+                  return (
+                    <>
+                      {remainingContent.trim() && (
+                        <div
+                          className="text-lg"
+                          dangerouslySetInnerHTML={{
+                            __html: markdownListToTable(remainingContent),
+                          }}
+                        />
+                      )}
+                      {cards.length > 0 && (
+                        <CarouselCards cards={cards} />
+                      )}
+                    </>
+                  )
+                })()}
                 {message.sources && message.sources.length > 0 && (
                   <div className="mt-2 flex flex-col gap-2">
                     {message.sources
