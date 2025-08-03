@@ -158,9 +158,8 @@ EMAILJS_TEMPLATE_ID=<your_emailjs_template_id>
 
 ## Documentation
 
-The documentation for the AI service endpoints is located in the `AIService/` folder. You can either import `AIService_postman_collection.json` into Postman, or open `AIService_collection.openapi` using [Swagger Editor](https://editor.swagger.io/).
-
-
+For API documentation related to the AI service, refer to [`AIService/routes.md`](AIService/routes.md).
+For API documentation related to the Next.js app, refer to [`employee-handbook-app/src/app/api/routes.md`](employee-handbook-app/src/app/api/routes.md).
 
 ## Deployment Notes for Forked Repository
 
