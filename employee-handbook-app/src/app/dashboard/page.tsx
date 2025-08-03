@@ -212,17 +212,17 @@ export default function Dashboard() {
       <Header province={province} setProvince={setProvince} />
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col md:flex-row items-center justify-center gap-24 px-8 py-16 w-full max-w-7xl mx-auto">
-        <div className="flex-1 flex flex-col items-center justify-center">
-          <h2 className="text-4xl font-extrabold text-blue-800 mb-8 text-center">
+      <main className="flex-1 flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-24 px-4 sm:px-6 lg:px-8 py-8 lg:py-16 w-full max-w-7xl mx-auto">
+        <div className="flex-1 flex flex-col items-center justify-center w-full max-w-md lg:max-w-none">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-blue-800 mb-6 lg:mb-8 text-center px-4">
             Welcome, {firstName}!
           </h2>
           {savedFiles.length > 0 ? (
-            <p className="text-lg text-black font-bold mb-12 text-center">
+            <p className="text-base sm:text-lg text-black font-bold mb-8 lg:mb-12 text-center px-4">
               You have {savedFiles.length} files uploaded:
             </p>
           ) : (
-            <p className="text-lg text-black font-bold mb-12 text-center">
+            <p className="text-base sm:text-lg text-black font-bold mb-8 lg:mb-12 text-center px-4">
               It seems there are currently no files uploaded.
             </p>
           )}
@@ -230,7 +230,7 @@ export default function Dashboard() {
           {isLoading ? (
             <CircularProgress />
           ) : (
-            <label className="bg-[#294494] text-white font-extrabold px-12 py-5 rounded-xl text-xl hover:bg-blue-900 transition-colors shadow-md cursor-pointer">
+            <label className="bg-[#294494] text-white font-extrabold px-6 sm:px-8 lg:px-12 py-3 sm:py-4 lg:py-5 rounded-xl text-lg sm:text-xl hover:bg-blue-900 transition-colors shadow-md cursor-pointer w-full max-w-xs sm:max-w-sm text-center">
               Upload Documents
               <input
                 type="file"
@@ -244,18 +244,18 @@ export default function Dashboard() {
           )}
         </div>
         {/* Employee Management Card */}
-        <div className="w-full max-w-sm bg-[#f5f7fb] rounded-xl shadow-lg flex flex-col items-center py-12 px-8">
-          <div className="text-xl font-bold text-black mb-10 text-center">
+        <div className="w-full max-w-sm bg-[#f5f7fb] rounded-xl shadow-lg flex flex-col items-center py-8 sm:py-10 lg:py-12 px-6 sm:px-8 mt-8 lg:mt-0">
+          <div className="text-lg sm:text-xl font-bold text-black mb-8 lg:mb-10 text-center">
             Employee Management
           </div>
           <button
-            className="w-full bg-[#e3e8f0] text-black font-extrabold py-4 rounded-xl mb-5 text-base hover:bg-[#d1d5db] transition-colors shadow-sm"
+            className="w-full bg-[#e3e8f0] text-black font-extrabold py-3 sm:py-4 rounded-xl mb-4 lg:mb-5 text-sm sm:text-base hover:bg-[#d1d5db] transition-colors shadow-sm"
             onClick={() => router.push("/add-employee")}
           >
             Add Employees
           </button>
           <button
-            className="w-full bg-[#e3e8f0] text-black font-extrabold py-4 rounded-xl text-base hover:bg-[#d1d5db] transition-colors shadow-sm"
+            className="w-full bg-[#e3e8f0] text-black font-extrabold py-3 sm:py-4 rounded-xl text-sm sm:text-base hover:bg-[#d1d5db] transition-colors shadow-sm"
             onClick={() => router.push("/manage-employees")}
           >
             Manage Employees
