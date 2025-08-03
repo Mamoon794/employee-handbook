@@ -6,7 +6,7 @@ import axiosInstance from "./axios_config"
 import { Link, Message } from "../models/schema"
 import { Citation } from "@/types/ai"
 import { useAudioRecorder } from "react-use-audio-recorder"
-import { provinceMap, generateThreadId } from "./global_components"
+import { generateThreadId } from "./global_components"
 
 interface Chat {
   id: string
@@ -222,7 +222,7 @@ export function MessageInput({
   }
 
   const handlePrivateChat = async (newChatId: string, message: string) => {
-    const full_province = province ? provinceMap[province] : ""
+    const full_province = province;
     console.log("private province", province)
     const companyName = localStorage.getItem("companyName") || ""
     const res = await axiosInstance.post(`/api/messages/private`, {

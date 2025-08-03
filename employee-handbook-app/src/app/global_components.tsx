@@ -645,12 +645,15 @@ function MessageThread({
   )
 }
 
+
 function Header({
   province,
   setProvince,
+  showHeader = true
 }: {
   province: string
-  setProvince: (prov: string) => void
+  setProvince: (prov: string) => void,
+  showHeader?: boolean
 }) {
   const { isSignedIn, user } = useUser()
   const router = useRouter()
@@ -660,9 +663,36 @@ function Header({
   const [companyName, setCompanyName] = useState<string | null>(null)
   // const isFinance = true
 
+
+function checkAuthentication(isSignedIn: boolean, canSeeDashboard: boolean) {
+  const pathname = typeof window !== "undefined" ? window.location.pathname : "";
+   if (pathname === "/dashboard") {
+      if (!isSignedIn) {
+        router.push("/")
+      }
+      else if(!canSeeDashboard) {
+        router.push("/chat")
+      }
+    }
+
+    else if (pathname === "/finances") {
+      if (!isSignedIn) {
+        router.push("/")
+      }
+    }
+    else if (pathname === "/analytics") {
+      if (!isSignedIn) {
+        router.push("/")
+      }
+      else if (!canSeeDashboard) {
+        router.push("/chat")
+      }
+    }
+  }
+
   useEffect(() => {
+    const pathname = typeof window !== "undefined" ? window.location.pathname : "";
     if (isSignedIn && user) {
-      const pathname = typeof window !== "undefined" ? window.location.pathname : "";
       setIsOnDashboard(pathname === "/dashboard")
       axiosInstance
         .get(`/api/users/${user.id}?isClerkID=true`)
@@ -671,10 +701,7 @@ function Header({
           let userId = response.data[0].id
           localStorage.setItem("userId", userId)
           localStorage.setItem("companyId", response.data[0].companyId || "")
-          localStorage.setItem(
-            "companyName",
-            response.data[0].companyName || ""
-          )
+          localStorage.setItem("companyName", response.data[0].companyName || "")
           setCompanyName(response.data[0].companyName || null)
           setProvince(response.data[0].province || "")
           setIsFinance(response.data[0].userType == "Financer")
@@ -682,6 +709,8 @@ function Header({
             response.data[0].userType == "Owner" ||
               response.data[0].userType == "Administrator"
           )
+
+          checkAuthentication(true, response.data[0].userType == "Owner" || response.data[0].userType == "Administrator")
         })
         .catch((error) => {
           console.error("Error fetching user data:", error)
@@ -690,9 +719,15 @@ function Header({
       localStorage.removeItem("userId")
       localStorage.removeItem("companyId")
       localStorage.removeItem("companyName")
+      checkAuthentication(false, false)
       setCompanyName(null)
     }
+
   }, [isSignedIn, user])
+
+  if (!showHeader) {
+    return null
+  }
 
   return (
     <header className="flex justify-between items-center px-6 py-4">
@@ -764,6 +799,12 @@ function Header({
             </>
           ) : (
             <div className="flex items-center">
+              <span className="px-4">
+                <ProvinceDropdown
+                  province={province}
+                  setProvince={setProvince}
+                />
+              </span>
               <UserButton afterSignOutUrl="/" />
             </div>
           )}
