@@ -5,29 +5,34 @@ import { useEffect } from 'react';
 
 export default function EmployeeLogin() {
   const router = useRouter();
-  const { isSignedIn } = useUser();
+  const { isSignedIn, user } = useUser();
   const searchParams = useSearchParams();
   const invitationId = searchParams.get('invitationId');
   const redirectUrl = searchParams.get('redirect_url') || '/chat';
 
   useEffect(() => {
-    const checkSubscription = async () => {
-      if (!isSignedIn) return;
+    const handlePostLogin = async () => {
+      if (!isSignedIn || !user) return;
+      
       try {
-        const res = await fetch('/api/check-subscription');
-        const data = await res.json();
-        if (data.subscribed) {
+        // Check user type from metadata
+        const userType = user.unsafeMetadata?.userType as string;
+        
+        if (userType === 'Employee') {
+          // Employees go directly to chat
           router.push(redirectUrl);
         } else {
-          router.push('/paywall');
+          // Employers/Owners go to dashboard which will handle trial/paywall logic
+          router.push('/dashboard');
         }
       } catch (err) {
-        console.error('Subscription check failed:', err);
-        router.push('/paywall');
+        console.error('Post-login redirect failed:', err);
+        // Default to dashboard on error
+        router.push('/dashboard');
       }
     };
-    checkSubscription();
-  }, [isSignedIn, router, redirectUrl]);
+    handlePostLogin();
+  }, [isSignedIn, user, router, redirectUrl]);
 
   return (
     <div className="min-h-screen bg-white flex flex-col">

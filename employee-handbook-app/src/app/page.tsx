@@ -67,20 +67,24 @@ export default function Home() {
 
   useEffect(() => {
     if (isSignedIn && user) {
-      axiosInstance
-        .get(`/api/users/${user.id}?isClerkID=true`)
-        .then((response) => {
-          const userData = response.data[0]
+      axiosInstance.get(`/api/users/${user.id}?isClerkID=true`)
+        .then(async response => {
+          const userData = response.data[0];
           if (userData) {
             if (userData.userType === "Employee") {
               // Employees get free access to chat
-              router.push("/chat")
-            } else if (userData.userType === "Owner") {
-              // Check subscription status for owners/employers
-              if (userData.isSubscribed) {
-                router.push("/dashboard")
-              } else {
-                router.push("/dashboard") // Show dashboard with paywall popup
+              router.push('/chat');
+            } else if (userData.userType === 'Owner') {
+              // Check subscription status using the API that considers trial period
+              try {
+                const subscriptionResponse = await axiosInstance.get('/api/check-subscription');
+                const { subscribed } = subscriptionResponse.data;
+                
+                // Always redirect to dashboard - it will handle showing paywall if needed
+                router.push('/dashboard');
+              } catch (error) {
+                console.error('Error checking subscription:', error);
+                router.push('/dashboard');
               }
             } else {
               router.push("/chat")

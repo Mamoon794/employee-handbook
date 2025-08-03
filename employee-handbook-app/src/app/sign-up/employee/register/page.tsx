@@ -25,14 +25,12 @@ export default function EmployeeRegistrationForm() {
     setError("")
 
     try {
-      console.log("Starting registration process...") // debugging
       if (!clerkUser) throw new Error("User not authenticated")
       if (!clerkUser.primaryEmailAddress?.emailAddress)
         throw new Error("Email not found")
       if (!clerkUser.firstName || !clerkUser.lastName)
         throw new Error("Name information missing")
 
-      console.log("Creating user...") // debugging
       const userData: Omit<User, "id"> = {
         clerkUserId: clerkUser.id,
         firstName: clerkUser.firstName,
@@ -47,9 +45,7 @@ export default function EmployeeRegistrationForm() {
         updatedAt: new Date(),
       }
       await axiosInstance.post("/api/users", userData)
-      console.log("User created successfully") // debugging
 
-      console.log("Updating Clerk metadata...") // debugging
       await clerkUser.update({
         unsafeMetadata: {
           role: "Employee",
@@ -59,9 +55,7 @@ export default function EmployeeRegistrationForm() {
           userType: "Employee",
         },
       })
-      console.log("Metadata updated successfully") // debugging
 
-      console.log("Redirecting to home page...") // debugging
       router.push("/chat")
     } catch (err) {
       console.error("Detailed registration error:", err) // debugging
