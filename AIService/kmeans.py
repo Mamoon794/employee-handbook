@@ -46,11 +46,11 @@ def find_popular_questions_from_vector_db():
     centroids_by_group = {}
     for key, questions in groups.items():
         embeddings = [q["embedding"] for q in questions]
-        if len(questions) <= 5:
-            # if there are fewer than 5 questions, use the embeddings directly
+        if len(questions) <= 3:
+            # if there are fewer than 3 questions, use the embeddings directly
             centroids_by_group[key] = embeddings
             continue
-        kmeans = KMeans(n_clusters=5, random_state=42).fit(embeddings)
+        kmeans = KMeans(n_clusters=3, random_state=42).fit(embeddings)
         centroids_by_group[key] = kmeans.cluster_centers_
 
     # Now, for each group, find the closest question to each centroid
