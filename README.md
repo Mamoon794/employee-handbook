@@ -47,9 +47,39 @@ As an employer, you can upload your company policies and documents, add employee
 The analytics page will show you the number of employees, total questions asked and more.
 ![Analytics](deliverables/D2/images/analytics.png)
 
-Right now there's no restrictions on who can access the employer dashboard. This will be implemented in the future.
+## Stripe Payment Integration
 
-## Setup (For Developers)
+To support subscription-based access and control for employer-only features (e.g., uploading company documents, team management, analytics), we integrated Stripe Checkout with a **free 7-day trial** for new employer accounts.
+
+### Free Trial
+
+New employers receive a **1-week free trial** after sign-up to explore the platform, upload documents, and invite employees. Once the trial ends, if no subscription is active, the employer is redirected to the paywall and temporarily loses access to premium features until payment is completed.
+
+### How It Works
+
+When an employer visits the Home Page, the app checks their **trial and subscription status** by querying Firebase.
+
+- If the employer has an active subscription or is within the free trial period, they are redirected to the **Dashboard**.
+- If neither is active, they are redirected to the **Paywall Page**.
+
+On the Paywall Page:
+
+- Clicking **Subscribe** initiates a **Stripe Checkout session**.
+- After successful payment, **Stripe triggers a webhook**, which updates the employer’s subscription status in **Firebase**.
+- Once Firebase reflects the updated status, the employer gains full access to premium features via the Dashboard.
+
+
+
+
+### Related Files
+
+- `employee-handbook-app/src/app/api/stripe/checkout/route.ts` – Creates a Stripe Checkout session when the employer clicks **Subscribe** on the Paywall page.
+- `employee-handbook-app/src/app/api/stripe/webhook/route.ts` – Handles Stripe webhook events (like `checkout.session.completed`) and updates the employer’s subscription status in Firebase.
+- `employee-handbook-app/src/app/paywall/page.tsx` – Displays the paywall UI for employers who are not subscribed or have an expired trial.
+
+
+
+## Setup, Deployment & Maintenance Guide
 
 This project consists of two parts:
 
@@ -65,6 +95,8 @@ cd employee-handbook-app
 npm install
 npm run dev
 ```
+To deploy the frontend, connect your GitHub repo to Vercel at https://vercel.com/new. Be sure to add environment variables in the Vercel dashboard.
+
 
 ### 2. AI Service (for chatbot only)
 
@@ -75,6 +107,10 @@ cd AIService
 pip install -r requirements.txt
 uvicorn main:app --reload
 ```
+If deploying the AI backend to Railway, make sure to:
+- Connect the `AIService/` directory as a Railway project
+- Set environment variables in the Railway dashboard
+- Expose the service URL and add it as `AI_SERVICE_URL` in the frontend `.env`
 
 To load documents into Pinecone, run the following in a new terminal:
 
@@ -130,6 +166,47 @@ FIREBASE_UNIVERSE_DOMAIN=<your_firebase_universe_domain>
 ## Documentation
 
 The documentation for the AI service endpoints is located in the `AIService/` folder. You can either import `AIService_postman_collection.json` into Postman, or open `AIService_collection.openapi` using [Swagger Editor](https://editor.swagger.io/).
+
+## Testing & Edge Case Handling
+
+This project includes a mix of automated test scripts and manual validation.
+
+### Automated Tests
+
+- `redirect.test.ts` (Jest): Tests role-based login redirect logic.
+- `transcription_test.ts`: Manually validates AI voice transcription via the `/api/messages/transcribe` endpoint.
+- `AIService/test.py`: Verifies Pinecone vector index, deletion, and embedding setup.
+
+> GitHub Actions runs a test command (`npm test`) on each pull request. This ensures any present tests pass before merge. However, some tests are not fully integrated into the CI workflow (e.g. AIService or audio tests run locally).
+
+### Manual Feature Testing
+
+In addition to code-based checks, the following features were manually tested across different user types:
+
+- Role-based login and dashboard redirects
+- Stripe subscription & paywall behavior
+- AI chatbot responses and fallback states
+- Chat title generation via AI
+- Audio transcription and accuracy
+- Dashboard functionality:
+  - Uploading and managing documents
+  - Viewing finances
+  - Accessing analytics
+  - Adding and managing employees
+- Response format handling:
+  - Verified correct display of chatbot responses in both card and list formats based on content type
+
+---
+
+
+### Deployment Notes for Forked Repository
+
+This project is deployed through a **forked version of the original team repository**:
+
+- Git-based auto-deployment is enabled in Vercel — pushing to the `main` branch of the fork automatically triggers a new deployment.
+- However, the fork **does not sync automatically** with the original repo. If updates are made to the original team repository, you’ll need to **manually pull them into the fork** to keep the deployed site up to date.
+
+Be sure to periodically sync the fork if you’re maintaining the production deployment.
 
 ## Core Features
 
