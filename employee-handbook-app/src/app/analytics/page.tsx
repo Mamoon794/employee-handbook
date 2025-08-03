@@ -749,6 +749,7 @@ export default function Analytics() {
             <div className="space-y-4">
               {!loading && topQuestions.length == 0 ? (
                 <p className="text-sm text-gray-600 mt-1">
+                  {/* eslint-disable-next-line react/no-unescaped-entities */}
                   Looks like top questions aren't available yet! They're
                   calculated weekly, so please check back soon.
                 </p>
