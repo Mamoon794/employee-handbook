@@ -275,11 +275,18 @@ This project includes a mix of automated test scripts and manual validation.
 
 ### Automated Tests
 
-- `redirect.test.ts` (Jest): Tests role-based login redirect logic.
-- `transcription_test.ts`: Manually validates AI voice transcription via the `/api/messages/transcribe` endpoint.
-- `AIService/test.py`: Verifies Pinecone vector index, deletion, and embedding setup.
+This project uses both **Jest** (for JavaScript/TypeScript) and **Pytest** (for Python) to ensure backend and frontend stability.
 
-> GitHub Actions runs a test command (`npm test`) on each pull request. This ensures any present tests pass before merge. However, some tests are not fully integrated into the CI workflow (e.g. AIService or audio tests run locally).
+
+#### JavaScript Tests (Jest)
+These files follow the format: `**/test/**/*.test.ts`, `**/test/**/*.test.tsx`.
+
+#### Python Tests (Pytest)
+Python tests are located in the `AIService/tests` directory.
+
+> GitHub Actions runs both Jest and Pytest on each pull request.  
+> This ensures all tests pass before merging into `main`.
+
 
 ### Manual Feature Testing
 
