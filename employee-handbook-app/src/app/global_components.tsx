@@ -890,10 +890,10 @@ function Header({
         )}
       </div>
       <div className="flex gap-2 sm:gap-4 items-center">
-        {canSeeDashboard && !isOnDashboard && isSignedIn &&(
+        {canSeeDashboard && !isOnDashboard && isSignedIn && (
           <>
             <button
-              className="px-3 sm:px-5 py-2 bg-blue-800 text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-900 transition-colors shadow-sm"
+              className="px-3 sm:px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-900 transition-colors shadow-sm"
               onClick={() => router.push("/dashboard")}
             >
               Dashboard
