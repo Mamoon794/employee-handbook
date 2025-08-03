@@ -210,7 +210,7 @@ def upload_document(input: DocInput):
             print(f"Skipping non-list entry for company {input.company}: {company_docs}")
         splits = process_docs(company_docs)
         index_company_documents(splits, input.company)
-        return {"url": input.url, "company": input.company, "status": "success"}
+        return {"url": input.url, "company": input.company, "company_docs_len": len(company_docs), "status": "success"}
     except Exception as e:
         print(f"Failed to process document {input.url} for company {input.company}: {e}")
         raise HTTPException(status_code=500, detail=str(e))

@@ -18,6 +18,8 @@ import {
   ListboxOption,
   ListboxOptions,
 } from "@headlessui/react"
+import { CarouselCards } from "@/components/carousel-cards"
+import type { CarouselCard } from "@/types/ai"
 import { ChevronDown, Check } from "lucide-react"
 import dynamic from "next/dynamic"
 
@@ -113,6 +115,60 @@ export function markdownListToTable(md: string): string {
   throw new Error("marked.parse returned a Promise, but a string was expected.")
 }
 
+export function parseCarouselCards(markdown: string): {
+  cards: CarouselCard[]
+  remainingContent: string
+} {
+  const carouselRegex = /:::carousel\n([\s\S]*?):::/g
+  const cards: CarouselCard[] = []
+  let remainingContent = markdown
+
+  let match
+  while ((match = carouselRegex.exec(markdown)) !== null) {
+    const carouselContent = match[1]
+    const cardBlocks = carouselContent
+      .split(/\n---\n/)
+      .filter((block) => block.trim())
+
+    for (const block of cardBlocks) {
+      const lines = block.trim().split("\n")
+      const card: CarouselCard = { title: "", content: "" }
+
+      for (const line of lines) {
+        if (line.startsWith("card:")) {
+          card.title = line.replace("card:", "").trim()
+        } else if (line.startsWith("content:")) {
+          card.content = line.replace("content:", "").trim()
+        } else if (line.startsWith("icon:")) {
+          card.icon = line.replace("icon:", "").trim()
+        } else if (line.startsWith("action:")) {
+          const actionParts = line
+            .replace("action:", "")
+            .trim()
+            .split("|")
+            .map((p) => p.trim())
+          if (actionParts.length === 2) {
+            card.action = {
+              text: actionParts[0],
+              url: actionParts[1],
+            }
+          }
+        } else if (card.content && line.trim()) {
+          card.content += "\n" + line
+        }
+      }
+
+      if (card.title && card.content) {
+        cards.push(card)
+      }
+    }
+
+    remainingContent = remainingContent.replace(match[0], "")
+  }
+
+  return { cards, remainingContent }
+}
+
 function PublicChatSideBar({
   setMessages,
   setCurrChatId,
@@ -130,6 +186,9 @@ function PublicChatSideBar({
 }) {
   // Add collapsed state
   const [isCollapsed, setIsCollapsed] = useState(false)
+
+  const [showPopup, setShowPopup] = useState(false)
+  const [dontShowAgain, setDontShowAgain] = useState(false)
 
   const selectChat = (chat: PublicChat) => {
     setCurrChatId(chat.id)
@@ -158,6 +217,36 @@ function PublicChatSideBar({
     }
   }
 
+  useEffect(() => {
+    const stored = localStorage.getItem("hideChatWarning")
+    if (stored === "true") {
+      setDontShowAgain(true)
+    }
+  }, [])
+
+  const showChatWarningPopup = () => {
+    if (!dontShowAgain && chats.length >= 8) {
+      setShowPopup(true)
+      return
+    } else {
+      handleNewChat()
+    }
+  }
+
+  const closePopup = () => {
+    setShowPopup(false)
+  }
+
+  const handleConfirmNewChat = () => {
+    setShowPopup(false)
+    handleNewChat()
+  }
+
+  const handleDoNotShowAgain = () => {
+    localStorage.setItem("hideChatWarning", "true")
+    setDontShowAgain(true)
+  }
+
   return (
     <aside
       className={`${
@@ -176,36 +265,74 @@ function PublicChatSideBar({
       {!isCollapsed && (
         <>
           <div className="px-4 text-sm text-gray-300 mb-2">Today</div>
-          {chats.map((chat, index) => (
-            <button
-              key={`${chat.id}-${index}`}
-              className={`bg-[#343769] text-white text-left px-4 py-2 mx-4 rounded-lg hover:bg-[#45488f] ${
-                currChatId === chat.id ? "border border-blue-300" : ""
-              }`}
-              onClick={() => selectChat(chat)}
-            >
-              <div className="flex items-center justify-between">
-                <span className="font-medium">
-                  {titleLoading && currChatId === chat.id
-                    ? "Generating Title..."
-                    : chat.title}
-                </span>
-                {currChatId === chat.id && (
-                  <Trash2
-                    className="text-gray-400"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleDelete(chat.id)
-                    }}
-                  />
-                )}
-              </div>
-            </button>
-          ))}
+          <div className="flex flex-col mb-20 space-y-2">
+            {chats.slice(0, 8).map((chat, index) => (
+              <button
+                key={`${chat.id}-${index}`}
+                className={`bg-[#343769] text-white text-left px-4 py-2 mx-4 rounded-lg hover:bg-[#45488f] ${
+                  currChatId === chat.id ? "border border-blue-300" : ""
+                }`}
+                onClick={() => selectChat(chat)}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-medium">
+                    {titleLoading && currChatId === chat.id
+                      ? "Generating Title..."
+                      : chat.title}
+                  </span>
+                  {currChatId === chat.id && (
+                    <Trash2
+                      className="text-gray-400"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleDelete(chat.id)
+                      }}
+                    />
+                  )}
+                </div>
+              </button>
+            ))}
+          </div>
 
           <button className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-300 rounded-full p-2 hover:bg-gray-400">
-            <Plus className="text-[#1F2251]" onClick={handleNewChat} />
+            <Plus className="text-[#1F2251]" onClick={showChatWarningPopup} />
           </button>
+          {/* Popup */}
+          {showPopup && (
+            <div className="fixed inset-0 flex items-center justify-center bg-[rgba(0,0,0,0.2)] z-50 text-black">
+              <div className="bg-white rounded-xl shadow-lg p-6 w-[90%] max-w-md">
+                <h2 className="text-lg font-semibold mb-2">Start New Chat</h2>
+                <p className="mb-4">
+                  Only the 8 most recent chats will be shown. Older chats will
+                  be hidden.
+                </p>
+
+                <label className="flex items-center space-x-2 mb-4">
+                  <input
+                    type="checkbox"
+                    checked={dontShowAgain}
+                    onChange={handleDoNotShowAgain}
+                  />
+                  <span>Don't show this again</span>
+                </label>
+
+                <div className="flex justify-end space-x-3">
+                  <button
+                    onClick={closePopup}
+                    className="px-4 py-2 text-sm bg-gray-200 rounded hover:bg-gray-300"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleConfirmNewChat}
+                    className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+                  >
+                    Start New Chat
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </>
       )}
     </aside>
@@ -597,12 +724,24 @@ function MessageThread({
               </div>
             ) : (
               <div className="self-start bg-gray-100 text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm">
-                <div
-                  className="text-lg"
-                  dangerouslySetInnerHTML={{
-                    __html: markdownListToTable(message.content),
-                  }}
-                />
+                {(() => {
+                  const { cards, remainingContent } = parseCarouselCards(
+                    message.content
+                  )
+                  return (
+                    <>
+                      {remainingContent.trim() && (
+                        <div
+                          className="text-lg"
+                          dangerouslySetInnerHTML={{
+                            __html: markdownListToTable(remainingContent),
+                          }}
+                        />
+                      )}
+                      {cards.length > 0 && <CarouselCards cards={cards} />}
+                    </>
+                  )
+                })()}
                 {message.sources && message.sources.length > 0 && (
                   <div className="mt-2 flex flex-col gap-2">
                     {message.sources
@@ -648,9 +787,11 @@ function MessageThread({
 function Header({
   province,
   setProvince,
+  showHeader = true,
 }: {
   province: string
   setProvince: (prov: string) => void
+  showHeader?: boolean
 }) {
   const { isSignedIn, user } = useUser()
   const router = useRouter()
@@ -660,9 +801,32 @@ function Header({
   const [companyName, setCompanyName] = useState<string | null>(null)
   // const isFinance = true
 
+  function checkAuthentication(isSignedIn: boolean, canSeeDashboard: boolean) {
+    const pathname =
+      typeof window !== "undefined" ? window.location.pathname : ""
+    if (pathname === "/dashboard") {
+      if (!isSignedIn) {
+        router.push("/")
+      } else if (!canSeeDashboard) {
+        router.push("/chat")
+      }
+    } else if (pathname === "/finances") {
+      if (!isSignedIn) {
+        router.push("/")
+      }
+    } else if (pathname === "/analytics") {
+      if (!isSignedIn) {
+        router.push("/")
+      } else if (!canSeeDashboard) {
+        router.push("/chat")
+      }
+    }
+  }
+
   useEffect(() => {
+    const pathname =
+      typeof window !== "undefined" ? window.location.pathname : ""
     if (isSignedIn && user) {
-      const pathname = typeof window !== "undefined" ? window.location.pathname : "";
       setIsOnDashboard(pathname === "/dashboard")
       axiosInstance
         .get(`/api/users/${user.id}?isClerkID=true`)
@@ -682,6 +846,12 @@ function Header({
             response.data[0].userType == "Owner" ||
               response.data[0].userType == "Administrator"
           )
+
+          checkAuthentication(
+            true,
+            response.data[0].userType == "Owner" ||
+              response.data[0].userType == "Administrator"
+          )
         })
         .catch((error) => {
           console.error("Error fetching user data:", error)
@@ -690,35 +860,40 @@ function Header({
       localStorage.removeItem("userId")
       localStorage.removeItem("companyId")
       localStorage.removeItem("companyName")
+      checkAuthentication(false, false)
       setCompanyName(null)
     }
   }, [isSignedIn, user])
 
+  if (!showHeader) {
+    return null
+  }
+
   return (
-    <header className="flex justify-between items-center px-6 py-4">
-      <div className="flex items-center gap-4">
+    <header className="flex justify-between items-center px-4 sm:px-6 py-3 sm:py-4">
+      <div className="flex items-center gap-2 sm:gap-4">
         {!isSignedIn || !canSeeDashboard ? (
-          <h1 className="text-2xl font-extrabold italic text-blue-800 cursor-pointer">
+          <h1 className="text-xl sm:text-2xl font-extrabold italic text-blue-800 cursor-pointer">
             Gail
           </h1>
         ) : (
           <Link href="/dashboard">
-            <h1 className="text-2xl font-extrabold italic text-blue-800 cursor-pointer">
+            <h1 className="text-xl sm:text-2xl font-extrabold italic text-blue-800 cursor-pointer">
               Gail
             </h1>
           </Link>
         )}
         {companyName && (
-          <span className="text-lg font-medium text-black hidden md:block">
+          <span className="text-sm sm:text-lg font-medium text-black hidden sm:block">
             | {companyName}
           </span>
         )}
       </div>
-      <div className="flex gap-4 items-center">
+      <div className="flex gap-2 sm:gap-4 items-center">
         {canSeeDashboard && !isOnDashboard && isSignedIn &&(
           <>
             <button
-              className="px-5 py-2 bg-blue-800 text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"
+              className="px-3 sm:px-5 py-2 bg-blue-800 text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-900 transition-colors shadow-sm"
               onClick={() => router.push("/dashboard")}
             >
               Dashboard
@@ -727,7 +902,7 @@ function Header({
         )}
         {isSignedIn && isOnDashboard && (
           <button
-            className="px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"
+            className="px-3 sm:px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-900 transition-colors shadow-sm"
             onClick={() => router.push("/chat")}
           >
             Ask a Question
@@ -736,14 +911,14 @@ function Header({
         {(isFinance || canSeeDashboard) && isSignedIn && (
           <>
             <button
-              className="px-5 py-2 bg-blue-800 text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"
+              className="px-3 sm:px-5 py-2 bg-blue-800 text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-900 transition-colors shadow-sm hidden sm:block"
               onClick={() => router.push("/finances")}
             >
               View Finances
             </button>
             <button
               onClick={() => router.push("/analytics")}
-              className="px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"
+              className="px-3 sm:px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-900 transition-colors shadow-sm hidden sm:block"
             >
               Analytics
             </button>
@@ -764,6 +939,12 @@ function Header({
             </>
           ) : (
             <div className="flex items-center">
+              <span className="px-4">
+                <ProvinceDropdown
+                  province={province}
+                  setProvince={setProvince}
+                />
+              </span>
               <UserButton afterSignOutUrl="/" />
             </div>
           )}
@@ -871,7 +1052,8 @@ function ProvinceDropdown({
 function Disclaimer() {
   return (
     <p className="text-center text-sm text-gray-500 mt-4">
-      Gail can make mistakes. Your privacy is protected.
+      © Copyright 2025, Analana Inc. All rights reserved. GAIL can make
+      mistakes, please verify your results.
     </p>
   )
 }
