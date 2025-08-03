@@ -217,28 +217,12 @@ export default function Dashboard() {
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-blue-800 mb-6 lg:mb-8 text-center px-4">
             Welcome, {firstName}!
           </h2>
-<<<<<<< HEAD
-          <p className="text-base sm:text-lg text-black font-bold mb-8 lg:mb-12 text-center px-4">
-            It seems there are currently no files uploaded.
-          </p>
-          <label className="bg-[#294494] text-white font-extrabold px-6 sm:px-8 lg:px-12 py-3 sm:py-4 lg:py-5 rounded-xl text-lg sm:text-xl hover:bg-blue-900 transition-colors shadow-md cursor-pointer w-full max-w-xs sm:max-w-sm text-center">
-            Upload Documents
-            <input
-              type="file"
-              name="file"
-              accept=".pdf"
-              multiple
-              onChange={uploadDocuments}
-              className="hidden"
-            />
-          </label>
-=======
           {savedFiles.length > 0 ? (
-            <p className="text-lg text-black font-bold mb-12 text-center">
+            <p className="text-base sm:text-lg text-black font-bold mb-8 lg:mb-12 text-center px-4">
               You have {savedFiles.length} files uploaded:
             </p>
           ) : (
-            <p className="text-lg text-black font-bold mb-12 text-center">
+            <p className="text-base sm:text-lg text-black font-bold mb-8 lg:mb-12 text-center px-4">
               It seems there are currently no files uploaded.
             </p>
           )}
@@ -246,7 +230,7 @@ export default function Dashboard() {
           {isLoading ? (
             <CircularProgress />
           ) : (
-            <label className="bg-[#294494] text-white font-extrabold px-12 py-5 rounded-xl text-xl hover:bg-blue-900 transition-colors shadow-md cursor-pointer">
+            <label className="bg-[#294494] text-white font-extrabold px-6 sm:px-8 lg:px-12 py-3 sm:py-4 lg:py-5 rounded-xl text-lg sm:text-xl hover:bg-blue-900 transition-colors shadow-md cursor-pointer w-full max-w-xs sm:max-w-sm text-center">
               Upload Documents
               <input
                 type="file"
@@ -258,7 +242,6 @@ export default function Dashboard() {
               />
             </label>
           )}
->>>>>>> origin/develop
         </div>
         {/* Employee Management Card */}
         <div className="w-full max-w-sm bg-[#f5f7fb] rounded-xl shadow-lg flex flex-col items-center py-8 sm:py-10 lg:py-12 px-6 sm:px-8 mt-8 lg:mt-0">
