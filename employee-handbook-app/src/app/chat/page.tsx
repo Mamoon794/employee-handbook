@@ -10,7 +10,6 @@ import {
   Disclaimer,
   PopularQuestions,
   ERROR_MESSAGE,
-  provinceMap
 } from '../global_components';
 import { Message } from '../../models/schema';
 import { useUser } from '@clerk/nextjs';
@@ -56,7 +55,7 @@ function ChatContent() {
 
     try {
       const endpoint = "/api/messages/private";
-      const currProvince = provinceMap[province] || province;
+      const currProvince =  province;
       const sendBody = {
         province: currProvince,
         query: lastUserMessage.content,

@@ -43,3 +43,13 @@ export interface Citation {
   fragmentUrl: string
   title: string
 }
+
+export interface CarouselCard {
+  title: string
+  content: string
+  icon?: string
+  action?: {
+    text: string
+    url: string
+  }
+}

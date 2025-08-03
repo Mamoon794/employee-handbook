@@ -1,81 +1,106 @@
-import { NextResponse } from 'next/server';
-import { db } from '../../../../dbConfig/firebaseConfig';
-import { DocumentData } from 'firebase/firestore';
+import { NextResponse } from "next/server"
+import { db } from "../../../../dbConfig/firebaseConfig"
+import { DocumentData } from "firebase/firestore"
 
 export async function GET(request: Request) {
   try {
-    const { searchParams } = new URL(request.url);
-    const startDate = searchParams.get('startDate');
-    const endDate = searchParams.get('endDate');
-    
-    const usersRef = db.collection("users");
-    let employeeSnapshot;
-    
+    const { searchParams } = new URL(request.url)
+    const startDate = searchParams.get("startDate")
+    const endDate = searchParams.get("endDate")
+    const companyId = searchParams.get("companyId")
+    if (!companyId) {
+      return NextResponse.json(
+        { error: "Company ID is required", success: false },
+        { status: 400 }
+      )
+    }
+
+    const usersRef = db.collection("users").where("companyId", "==", companyId)
+    let employeeSnapshot
+
     if (!startDate || !endDate) {
-      employeeSnapshot = await usersRef.where("userType", "==", "Employee").get();
+      employeeSnapshot = await usersRef
+        // .where("userType", "==", "Employee")
+        .get()
     } else {
       try {
-        const startTimestamp = new Date(startDate);
-        const endTimestamp = new Date(endDate);
-        endTimestamp.setHours(23, 59, 59, 999); 
-        
-        employeeSnapshot = await usersRef.where("userType", "==", "Employee")
-                                       .where("createdAt", ">=", startTimestamp)
-                                       .where("createdAt", "<=", endTimestamp)
-                                       .get();
+        const startTimestamp = new Date(startDate)
+        const endTimestamp = new Date(endDate)
+        endTimestamp.setHours(23, 59, 59, 999)
+
+        employeeSnapshot = await usersRef
+          // .where("userType", "==", "Employee")
+          .where("createdAt", ">=", startTimestamp)
+          .where("createdAt", "<=", endTimestamp)
+          .get()
       } catch {
-        console.log("Composite index not available, falling back to client-side filtering");
-        const allEmployeesSnapshot = await usersRef.where("userType", "==", "Employee").get();
-        
-        const startTimestamp = new Date(startDate);
-        const endTimestamp = new Date(endDate);
-        endTimestamp.setHours(23, 59, 59, 999);
-        
-        const filteredDocs = allEmployeesSnapshot.docs.filter((doc: DocumentData) => {
-          const userData = doc.data();
-          const createdAt = userData.createdAt?.toDate?.() || new Date(userData.createdAt);
-          return createdAt >= startTimestamp && createdAt <= endTimestamp;
-        });
-        
+        // console.log("Composite index not available, falling back to client-side filtering");
+        const allEmployeesSnapshot = await usersRef
+          // .where("userType", "==", "Employee")
+          .get()
+
+        const startTimestamp = new Date(startDate)
+        const endTimestamp = new Date(endDate)
+        endTimestamp.setHours(23, 59, 59, 999)
+
+        const filteredDocs = allEmployeesSnapshot.docs.filter(
+          (doc: DocumentData) => {
+            const userData = doc.data()
+            const createdAt =
+              userData.createdAt?.toDate?.() || new Date(userData.createdAt)
+            return createdAt >= startTimestamp && createdAt <= endTimestamp
+          }
+        )
+
         employeeSnapshot = {
           docs: filteredDocs,
-          size: filteredDocs.length
-        };
+          size: filteredDocs.length,
+        }
       }
     }
-    
-    const provinceCounts: { [key: string]: number } = {};
-    let totalEmployees = 0;
-    
+
+    const provinceCounts: { [key: string]: number } = {}
+    let totalEmployees = 0
+
     employeeSnapshot.docs.forEach((doc: DocumentData) => {
-      const userData = doc.data();
-      const province = userData.province || 'Unknown'; // maybe "other" can work as well?
-      provinceCounts[province] = (provinceCounts[province] || 0) + 1;
-      totalEmployees++;
-    });
-    
-    const provinceDistribution = Object.entries(provinceCounts).map(([province, count]) => ({
-      province,
-      count,
-      percentage: totalEmployees > 0 ? Math.round((count / totalEmployees) * 100 * 10) / 10 : 0
-    }));
-    
-    const sortedDistribution = provinceDistribution.sort((a, b) => b.count - a.count);
-    
-    console.log("=== PROVINCE DISTRIBUTION ===");
-    console.log("Total employees:", totalEmployees);
-    console.log("Province breakdown:", sortedDistribution);
-    
-    return NextResponse.json({ 
-      totalEmployees, 
-      provinceDistribution: sortedDistribution, 
-      success: true 
-    });
+      const userData = doc.data()
+      const province = userData.province || "Unknown" // maybe "other" can work as well?
+      provinceCounts[province] = (provinceCounts[province] || 0) + 1
+      totalEmployees++
+    })
+
+    const provinceDistribution = Object.entries(provinceCounts).map(
+      ([province, count]) => ({
+        province,
+        count,
+        percentage:
+          totalEmployees > 0
+            ? Math.round((count / totalEmployees) * 100 * 10) / 10
+            : 0,
+      })
+    )
+
+    const sortedDistribution = provinceDistribution.sort(
+      (a, b) => b.count - a.count
+    )
+
+    // console.log("=== PROVINCE DISTRIBUTION ===");
+    // console.log("Total employees:", totalEmployees);
+    // console.log("Province breakdown:", sortedDistribution);
+
+    return NextResponse.json({
+      totalEmployees,
+      provinceDistribution: sortedDistribution,
+      success: true,
+    })
   } catch (error) {
-    console.error("Error fetching province distribution:", error);
-    return NextResponse.json({ 
-      error: 'Failed to fetch province distribution', 
-      success: false 
-    }, { status: 500 });
+    console.error("Error fetching province distribution:", error)
+    return NextResponse.json(
+      {
+        error: "Failed to fetch province distribution",
+        success: false,
+      },
+      { status: 500 }
+    )
   }
-} 
+}

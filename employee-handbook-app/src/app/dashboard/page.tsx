@@ -1,19 +1,111 @@
+/* eslint-disable */
 "use client"
 
 import { useRouter } from "next/navigation"
 import { useUser } from "@clerk/nextjs"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import axiosInstance from "../axios_config"
 import PaywallModal from "../../../components/paywall-popup"
 import { Header } from "../global_components"
+import { CircularProgress } from "@mui/material"
+import { TrashIcon } from "lucide-react"
+
+type pdfFile = {
+  name: string
+  type: string
+  url: string
+}
+
+type CustProps = {
+  files: pdfFile[]
+  setFiles: React.Dispatch<React.SetStateAction<pdfFile[]>>
+}
+
+const FilePreview: React.FC<CustProps> = ({ files, setFiles }) => {
+  const handleOpen = (file: pdfFile) => {
+    window.open(file.url, "_blank", "noopener,noreferrer")
+  }
+
+  async function handleDelete(file: pdfFile, index: number) {
+    try {
+      await axiosInstance.delete("/api/company/docs", {
+        data: {
+          companyId: localStorage.getItem("companyId"),
+          index: index,
+        },
+      })
+      setFiles(files.filter((_, i) => i !== index))
+
+      // Also delete from vector DB
+      const companyName = localStorage.getItem("companyName") || ""
+      try {
+        await axiosInstance.patch("/api/vectordb-documents/source", {
+          url: file.url,
+          company: companyName,
+        })
+      } catch (error) {
+        console.error("Error deleting from vector DB:", error)
+        alert("Failed to delete from vector DB. Please try again later.")
+      }
+    } catch (error) {
+      console.error("Error deleting file:", error)
+      alert("Failed to delete file. Please try again later.")
+    }
+  }
+
+  return (
+    <div className="max-h-64 overflow-y-auto w-full space-y-2 mb-3">
+      {files.map((file, index) => (
+        <div
+          key={index}
+          className="flex items-center justify-between cursor-pointer p-4 border rounded hover:bg-gray-100"
+        >
+          <div onClick={() => handleOpen(file)} className="flex-1">
+            <p className="text-blue-600">{file.name}</p>
+          </div>
+          <button
+            onClick={() => handleDelete(file, index)}
+            aria-label={`Delete ${file.name}`}
+          >
+            <TrashIcon className="h-5 w-5" />
+          </button>
+        </div>
+      ))}
+    </div>
+  )
+}
 
 export default function Dashboard() {
   const router = useRouter()
   const { user } = useUser()
   const firstName = user?.firstName || "there"
   const [showPaywall, setShowPaywall] = useState(false)
+  const [savedFiles, setSavedFiles] = useState<pdfFile[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [province, setProvince] = useState<string>("")
+
+  const fetchCompanyDocs = useCallback(async () => {
+    const companyId = localStorage.getItem("companyId")
+    if (!companyId) return
+    const companyDocs = await axiosInstance.get(
+      `/api/company/docs/${companyId}`
+    )
+    let get_files: pdfFile[] = []
+    for (const doc of companyDocs.data.companyDocs) {
+      get_files.push({
+        name: doc.fileName,
+        type: "application/pdf",
+        url: doc.fileUrl,
+      })
+    }
+    setSavedFiles(get_files)
+  }, [])
+
+  useEffect(() => {
+    if (localStorage.getItem("companyId")) {
+      fetchCompanyDocs()
+    }
+  }, [fetchCompanyDocs])
 
   useEffect(() => {
     const checkSubscriptionStatus = async () => {
@@ -22,44 +114,88 @@ export default function Dashboard() {
         return
       }
 
-      const userType = user.unsafeMetadata?.userType as string;
-      
-      if (userType === 'Employee') {
-        setShowPaywall(false);
-        setIsLoading(false);
-        return;
+      const userType = user.unsafeMetadata?.userType as string
+
+      if (userType === "Employee") {
+        setShowPaywall(false)
+        setIsLoading(false)
+        return
       }
 
       try {
-        const response = await axiosInstance.get('/api/check-subscription');
-        const { subscribed } = response.data;
-        
-        setShowPaywall(!subscribed);
-        setIsLoading(false);
+        const response = await axiosInstance.get("/api/check-subscription")
+        const { subscribed } = response.data
+
+        setShowPaywall(!subscribed)
+        setIsLoading(false)
       } catch (error) {
-        console.error('Error checking subscription status:', error);
+        console.error("Error checking subscription status:", error)
         // If error occurs, show paywall as fallback for employers only
-        setShowPaywall(userType !== 'Employee');
-        setIsLoading(false);
+        setShowPaywall(userType !== "Employee")
+        setIsLoading(false)
       }
-    };
+    }
 
     checkSubscriptionStatus()
   }, [user])
 
   async function uploadDocuments(event: React.ChangeEvent<HTMLInputElement>) {
-    const files = event.target.files || []
-    for (let i = 0; i < files.length; i++) {
-      const formData = new FormData()
-      formData.append("file", files[i])
-      formData.append("bucketName", "employee-handbook-app")
-
-      await axiosInstance.post("/api/s3/upload", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
+    const companyId = localStorage.getItem("companyId") || ""
+    if (!companyId) {
+      console.error("No companyId found")
+      return
     }
+
+    const companyName = localStorage.getItem("companyName") || ""
+
+    const files = event.target.files || []
+    setIsLoading(true)
+    try {
+      let documentData = []
+      for (let i = 0; i < files.length; i++) {
+        const formData = new FormData()
+        formData.append("file", files[i])
+        formData.append("bucketName", "employee-handbook-app")
+
+        const s3res = await axiosInstance.post("/api/s3/upload", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        const url = s3res.data.fileUrl
+        savedFiles.push({
+          name: files[i].name,
+          type: files[i].type,
+          url: url,
+        })
+        documentData.push({
+          fileUrl: url,
+          fileName: files[i].name,
+          uploadDate: new Date(),
+          isPublic: false,
+        })
+
+        const vdbres = await axiosInstance.post("/api/vectordb-documents", {
+          fileurl: url,
+          namespace: companyName,
+        })
+
+        if (vdbres.data.company_docs_len == 0) {
+          alert(
+            "No extractable text found. This PDF may be scanned or image-based. Please delete it and upload a version with selectable text."
+          )
+        }
+      }
+      setSavedFiles([...savedFiles])
+      await axiosInstance.put("/api/company/docs", {
+        companyId: localStorage.getItem("companyId"),
+        documents: documentData,
+      })
+    } catch (error) {
+      console.error("Error uploading documents:", error)
+      alert("Failed to upload documents. Please try again later.")
+    }
+    setIsLoading(false)
   }
 
   if (isLoading) {
@@ -81,6 +217,7 @@ export default function Dashboard() {
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-blue-800 mb-6 lg:mb-8 text-center px-4">
             Welcome, {firstName}!
           </h2>
+<<<<<<< HEAD
           <p className="text-base sm:text-lg text-black font-bold mb-8 lg:mb-12 text-center px-4">
             It seems there are currently no files uploaded.
           </p>
@@ -95,6 +232,33 @@ export default function Dashboard() {
               className="hidden"
             />
           </label>
+=======
+          {savedFiles.length > 0 ? (
+            <p className="text-lg text-black font-bold mb-12 text-center">
+              You have {savedFiles.length} files uploaded:
+            </p>
+          ) : (
+            <p className="text-lg text-black font-bold mb-12 text-center">
+              It seems there are currently no files uploaded.
+            </p>
+          )}
+          <FilePreview files={savedFiles} setFiles={setSavedFiles} />
+          {isLoading ? (
+            <CircularProgress />
+          ) : (
+            <label className="bg-[#294494] text-white font-extrabold px-12 py-5 rounded-xl text-xl hover:bg-blue-900 transition-colors shadow-md cursor-pointer">
+              Upload Documents
+              <input
+                type="file"
+                name="file"
+                accept=".pdf"
+                multiple
+                onChange={uploadDocuments}
+                className="hidden"
+              />
+            </label>
+          )}
+>>>>>>> origin/develop
         </div>
         {/* Employee Management Card */}
         <div className="w-full max-w-sm bg-[#f5f7fb] rounded-xl shadow-lg flex flex-col items-center py-8 sm:py-10 lg:py-12 px-6 sm:px-8 mt-8 lg:mt-0">
@@ -117,7 +281,11 @@ export default function Dashboard() {
       </main>
 
       {/* Footer bar */}
-      <footer className="w-full h-24 bg-[#294494] mt-auto" />
+      <footer className="w-full h-24 bg-[#294494] mt-auto flex items-center justify-center px-4">
+        <p className="text-center text-sm text-white">
+          © Copyright 2025, Analana Inc. All rights reserved. GAIL can make mistakes, please verify your results.
+        </p>
+      </footer>
 
       {/* Paywall Modal */}
       {showPaywall && <PaywallModal />}

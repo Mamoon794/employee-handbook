@@ -18,6 +18,8 @@ import {
   ListboxOption,
   ListboxOptions,
 } from "@headlessui/react"
+import { CarouselCards } from "@/components/carousel-cards"
+import type { CarouselCard } from "@/types/ai"
 import { ChevronDown, Check } from "lucide-react"
 import dynamic from "next/dynamic"
 
@@ -111,6 +113,55 @@ export function markdownListToTable(md: string): string {
   }
 
   throw new Error("marked.parse returned a Promise, but a string was expected.")
+}
+
+
+export function parseCarouselCards(markdown: string): {
+  cards: CarouselCard[]
+  remainingContent: string
+} {
+  const carouselRegex = /:::carousel\n([\s\S]*?):::/g
+  const cards: CarouselCard[] = []
+  let remainingContent = markdown
+
+  let match
+  while ((match = carouselRegex.exec(markdown)) !== null) {
+    const carouselContent = match[1]
+    const cardBlocks = carouselContent.split(/\n---\n/).filter(block => block.trim())
+    
+    for (const block of cardBlocks) {
+      const lines = block.trim().split('\n')
+      const card: CarouselCard = { title: '', content: '' }
+      
+      for (const line of lines) {
+        if (line.startsWith('card:')) {
+          card.title = line.replace('card:', '').trim()
+        } else if (line.startsWith('content:')) {
+          card.content = line.replace('content:', '').trim()
+        } else if (line.startsWith('icon:')) {
+          card.icon = line.replace('icon:', '').trim()
+        } else if (line.startsWith('action:')) {
+          const actionParts = line.replace('action:', '').trim().split('|').map(p => p.trim())
+          if (actionParts.length === 2) {
+            card.action = {
+              text: actionParts[0],
+              url: actionParts[1]
+            }
+          }
+        } else if (card.content && line.trim()) {
+          card.content += '\n' + line
+        }
+      }
+      
+      if (card.title && card.content) {
+        cards.push(card)
+      }
+    }
+    
+    remainingContent = remainingContent.replace(match[0], '')
+  }
+  
+  return { cards, remainingContent }
 }
 
 function PublicChatSideBar({
@@ -597,12 +648,24 @@ function MessageThread({
               </div>
             ) : (
               <div className="self-start bg-gray-100 text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm">
-                <div
-                  className="text-lg"
-                  dangerouslySetInnerHTML={{
-                    __html: markdownListToTable(message.content),
-                  }}
-                />
+                {(() => {
+                  const { cards, remainingContent } = parseCarouselCards(message.content)
+                  return (
+                    <>
+                      {remainingContent.trim() && (
+                        <div
+                          className="text-lg"
+                          dangerouslySetInnerHTML={{
+                            __html: markdownListToTable(remainingContent),
+                          }}
+                        />
+                      )}
+                      {cards.length > 0 && (
+                        <CarouselCards cards={cards} />
+                      )}
+                    </>
+                  )
+                })()}
                 {message.sources && message.sources.length > 0 && (
                   <div className="mt-2 flex flex-col gap-2">
                     {message.sources
@@ -645,12 +708,15 @@ function MessageThread({
   )
 }
 
+
 function Header({
   province,
   setProvince,
+  showHeader = true
 }: {
   province: string
-  setProvince: (prov: string) => void
+  setProvince: (prov: string) => void,
+  showHeader?: boolean
 }) {
   const { isSignedIn, user } = useUser()
   const router = useRouter()
@@ -660,9 +726,36 @@ function Header({
   const [companyName, setCompanyName] = useState<string | null>(null)
   // const isFinance = true
 
+
+function checkAuthentication(isSignedIn: boolean, canSeeDashboard: boolean) {
+  const pathname = typeof window !== "undefined" ? window.location.pathname : "";
+   if (pathname === "/dashboard") {
+      if (!isSignedIn) {
+        router.push("/")
+      }
+      else if(!canSeeDashboard) {
+        router.push("/chat")
+      }
+    }
+
+    else if (pathname === "/finances") {
+      if (!isSignedIn) {
+        router.push("/")
+      }
+    }
+    else if (pathname === "/analytics") {
+      if (!isSignedIn) {
+        router.push("/")
+      }
+      else if (!canSeeDashboard) {
+        router.push("/chat")
+      }
+    }
+  }
+
   useEffect(() => {
+    const pathname = typeof window !== "undefined" ? window.location.pathname : "";
     if (isSignedIn && user) {
-      const pathname = typeof window !== "undefined" ? window.location.pathname : "";
       setIsOnDashboard(pathname === "/dashboard")
       axiosInstance
         .get(`/api/users/${user.id}?isClerkID=true`)
@@ -671,10 +764,7 @@ function Header({
           let userId = response.data[0].id
           localStorage.setItem("userId", userId)
           localStorage.setItem("companyId", response.data[0].companyId || "")
-          localStorage.setItem(
-            "companyName",
-            response.data[0].companyName || ""
-          )
+          localStorage.setItem("companyName", response.data[0].companyName || "")
           setCompanyName(response.data[0].companyName || null)
           setProvince(response.data[0].province || "")
           setIsFinance(response.data[0].userType == "Financer")
@@ -682,6 +772,8 @@ function Header({
             response.data[0].userType == "Owner" ||
               response.data[0].userType == "Administrator"
           )
+
+          checkAuthentication(true, response.data[0].userType == "Owner" || response.data[0].userType == "Administrator")
         })
         .catch((error) => {
           console.error("Error fetching user data:", error)
@@ -690,9 +782,15 @@ function Header({
       localStorage.removeItem("userId")
       localStorage.removeItem("companyId")
       localStorage.removeItem("companyName")
+      checkAuthentication(false, false)
       setCompanyName(null)
     }
+
   }, [isSignedIn, user])
+
+  if (!showHeader) {
+    return null
+  }
 
   return (
     <header className="flex justify-between items-center px-4 sm:px-6 py-3 sm:py-4">
@@ -764,6 +862,12 @@ function Header({
             </>
           ) : (
             <div className="flex items-center">
+              <span className="px-4">
+                <ProvinceDropdown
+                  province={province}
+                  setProvince={setProvince}
+                />
+              </span>
               <UserButton afterSignOutUrl="/" />
             </div>
           )}
@@ -871,7 +975,7 @@ function ProvinceDropdown({
 function Disclaimer() {
   return (
     <p className="text-center text-sm text-gray-500 mt-4">
-      Gail can make mistakes. Your privacy is protected.
+       © Copyright 2025, Analana Inc. All rights reserved. GAIL can make mistakes, please verify your results.
     </p>
   )
 }

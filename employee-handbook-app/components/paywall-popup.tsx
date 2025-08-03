@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { useState, useEffect } from "react";
 import { useRouter } from 'next/navigation';
 import { useUser, useClerk } from "@clerk/nextjs";

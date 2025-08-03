@@ -23,3 +23,20 @@ export async function PUT(request: Request) {
     }
     return new Response(JSON.stringify({ message: 'Company documents updated successfully' }), { status: 200 });
 }
+
+export async function DELETE(request: Request) {
+    try {
+        const { companyId, index }: { companyId: string; index: number } = await request.json();
+        const getCompanyResponse = await getCompany(companyId);
+        if (!getCompanyResponse || !getCompanyResponse.documents || index < 0 || index >= getCompanyResponse.documents.length) {
+            return new Response(JSON.stringify({ error: 'Invalid company ID or document index' }), { status: 404 });
+        }
+        getCompanyResponse.documents.splice(index, 1);
+        await updateCompany(companyId, { documents: getCompanyResponse.documents });
+    } catch (error) {
+        console.error("Error deleting company document:", error);
+        Sentry.captureException(error);
+        return new Response(JSON.stringify({ error: 'Failed to delete company document' }), { status: 500 });
+    }
+    return new Response(JSON.stringify({ message: 'Company document deleted successfully' }), { status: 200 });
+}
