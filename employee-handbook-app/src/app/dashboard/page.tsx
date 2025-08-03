@@ -231,11 +231,18 @@ export default function Dashboard() {
               <div>
                 <p className="font-semibold">Free Trial Active</p>
                 <p className="text-sm opacity-90">
-                  Your trial ends on {new Date(trialInfo.trialEndsAt!).toLocaleDateString('en-US', { 
-                    month: 'long', 
-                    day: 'numeric', 
-                    year: 'numeric' 
-                  })}
+                  {(() => {
+                    const today = new Date();
+                    const trialEnd = new Date(trialInfo.trialEndsAt!);
+                    const diffTime = trialEnd.getTime() - today.getTime();
+                    const daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    
+                    return `You have ${daysRemaining} day${daysRemaining !== 1 ? 's' : ''} remaining in your trial. Trial ends on ${trialEnd.toLocaleDateString('en-US', { 
+                      month: 'long', 
+                      day: 'numeric', 
+                      year: 'numeric' 
+                    })}`;
+                  })()}
                 </p>
               </div>
             </div>
