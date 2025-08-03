@@ -26,12 +26,10 @@ export default function EmployerRegistrationForm() {
   setError('');
 
   try {
-    console.log('Starting registration process...'); // debugging
     if (!clerkUser) throw new Error('User not authenticated');
     if (!clerkUser.primaryEmailAddress?.emailAddress) throw new Error('Email not found');
     if (!clerkUser.firstName || !clerkUser.lastName) throw new Error('Name information missing');
 
-    console.log('Creating company...'); // debugging
     const companyData: Omit<Company, "id"> = {
       name: formData.companyName,
       ownerId: clerkUser.id,
@@ -42,9 +40,7 @@ export default function EmployerRegistrationForm() {
     };
     const companyResponse = await axiosInstance.post('/api/company', { companyData });
     const companyRef = companyResponse.data; 
-    console.log('Company created with ID:', companyRef.id); // debugging
 
-    console.log('Creating user...'); // debugging
     const userData: Omit<User, "id"> = {
       clerkUserId: clerkUser.id,
       firstName: clerkUser.firstName,
@@ -59,9 +55,7 @@ export default function EmployerRegistrationForm() {
       updatedAt: new Date()
     };
     await axiosInstance.post('/api/users', userData);
-    console.log('User created successfully'); // debugging
 
-    console.log('Updating Clerk metadata...'); // debugging
     await clerkUser.update({
       unsafeMetadata: {
         role: 'Owner',
@@ -71,12 +65,10 @@ export default function EmployerRegistrationForm() {
         userType: 'Owner'
       }
     });
-    console.log('Metadata updated successfully'); // debugging
 
-    console.log('Redirecting to home page for subscription check...'); // debugging
     router.push('/');
   } catch (err) {
-    console.error('Detailed registration error:', err); // debugging
+    console.error('Registration error:', err);
     setError(err instanceof Error ? err.message : 'Registration failed');
   } finally {
     setIsSubmitting(false);
