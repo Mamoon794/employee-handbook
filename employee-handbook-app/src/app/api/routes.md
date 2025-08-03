@@ -192,3 +192,38 @@
       }
       ```
     - Response: A plain-text, concise summary paragraph highlighting the main trends in the questions asked.
+
+**POST /api/vectordb-documents**
+
+- Description: Uploads a file to the vector database (Pinecone). The file is fetched from the provided URL and stored under the specified namespace after being chunked into smaller document segments.
+- Example Body:
+  ```json
+  {
+    "fileurl": "https://www.thewednesdaychef.com/files/plain-vanilla-cake-1.pdf",
+    "namespace": "IsaCompany"
+  }
+  ```
+- Response: Returns the file URL, namespace (company), number of document chunks stored in the vector DB, and a status indicating success or failure.
+
+**PATCH /api/vectordb-documents**
+
+- Description: Deletes all documents stored under the specified company (namespace) from the vector database.
+- Example Body:
+  ```json
+  {
+    "namespace": "IsaCompany"
+  }
+  ```
+- Response: Returns the namespace (company) and a status indicating success or failure.
+
+**PATCH /api/vectordb-documents/source**
+
+- Description: Deletes a specific document (identified by the file URL) from the vector database under the specified company (namespace).
+- Example Body:
+  ```json
+  {
+    "fileurl": "https://www.thewednesdaychef.com/files/plain-vanilla-cake-1.pdf",
+    "namespace": "IsaCompany"
+  }
+  ```
+- Response: Returns the file URL, namespace (company) and a status indicating success or failure.
