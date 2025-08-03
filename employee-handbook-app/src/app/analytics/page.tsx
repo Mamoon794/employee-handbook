@@ -21,6 +21,7 @@ import {
   getAIExplanationForEmployeeRegistration,
   getAIExplanationForQuestionsAsked,
   getBulletPointSummary,
+  getTopQuestions,
 } from "./utils/analytics.utility"
 import DateRangePicker from "./components/DateRangePicker"
 import TypewriterEffect from "./components/TypewriterEffect"
@@ -47,6 +48,13 @@ export default function Analytics() {
   const [newQuestionsAsked, setNewQuestionsAsked] = useState(0)
   const [totalDocumentsUploaded, setTotalDocumentsUploaded] = useState(0)
   const [newDocumentsUploaded, setNewDocumentsUploaded] = useState(0)
+  const [topQuestions, setTopQuestions] = useState<
+    Array<{
+      id: string
+      province: string
+      text: string
+    }>
+  >([])
   const [monthlyChartData, setMonthlyChartData] = useState<
     Array<{
       month: string
@@ -94,6 +102,12 @@ export default function Analytics() {
       console.error("Company ID not found in localStorage")
       return
     }
+    const companyName = localStorage.getItem("companyName") || ""
+    if (!companyName) {
+      alert("Error: Company Name not found. Please log in again.")
+      console.error("Company Name not found in localStorage")
+      return
+    }
 
     const fetchAnalyticsData = async () => {
       setLoading(true)
@@ -114,6 +128,7 @@ export default function Analytics() {
           { totalQuestionsAsked, newQuestionsAsked },
           { totalDocumentsUploaded, newDocumentsUploaded },
           monthlyAnalytics,
+          topQuestions,
         ] = await Promise.all([
           getEmployees(startDate, endDate, companyId),
           getProvinceDistribution(startDate, endDate, companyId),
@@ -121,6 +136,7 @@ export default function Analytics() {
           getQuestionsAsked(startDate, endDate, companyId),
           getDocuments(startDate, endDate, companyId),
           getMonthlyData(startDate, endDate, companyId),
+          getTopQuestions(startDate, endDate, companyName),
         ])
 
         setTotalEmployees(totalEmployees)
@@ -132,11 +148,16 @@ export default function Analytics() {
         setTotalActiveUsers(totalActiveUsers)
         setNewDocumentsUploaded(newDocumentsUploaded)
         setMonthlyChartData(monthlyAnalytics)
+        setTopQuestions(topQuestions)
       } catch (error) {
         console.error("Error fetching analytics data:", error)
+        setTotalEmployees(0)
         setNewEmployees(0)
         setProvinceData([])
         setTotalQuestionsAsked(0)
+        setNewQuestionsAsked(0)
+        setTotalDocumentsUploaded(0)
+        setNewDocumentsUploaded(0)
         setMonthlyChartData([])
         // Stop loading states on error
         setLoadingBulletPointsDistribution(false)
@@ -251,13 +272,13 @@ export default function Analytics() {
     retentionRate: 94.2,
   }
 
-  const topQuestions = [
-    { question: "What are my vacation entitlements?", count: 34 },
-    { question: "How do I request time off?", count: 28 },
-    { question: "What is the dress code policy?", count: 22 },
-    { question: "How do I access my benefits?", count: 19 },
-    { question: "What are the remote work policies?", count: 15 },
-  ]
+  // const topQuestions = [
+  //   { question: "What are my vacation entitlements?", count: 34 },
+  //   { question: "How do I request time off?", count: 28 },
+  //   { question: "What is the dress code policy?", count: 22 },
+  //   { question: "How do I access my benefits?", count: 19 },
+  //   { question: "What are the remote work policies?", count: 15 },
+  // ]
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -750,12 +771,12 @@ export default function Analytics() {
                         #{index + 1}
                       </span>
                     </div>
-                    <p className="text-gray-900 font-medium">{item.question}</p>
+                    <p className="text-gray-900 font-medium">{item.text}</p>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <span className="text-sm text-gray-600">Asked</span>
+                    <span className="text-sm text-gray-600">From</span>
                     <span className="font-semibold text-purple-600">
-                      {item.count} times
+                      {item.province}
                     </span>
                   </div>
                 </div>

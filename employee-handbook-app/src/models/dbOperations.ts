@@ -346,7 +346,7 @@ export const getPopularQuestions = async (
   )
 
   let query
-  if (province == "") {
+  if (province == "" || province == "General") {
     query = popularQuestionsRef
       .where("company", "==", company)
       .where("createdAt", ">=", sevenDaysAgo)

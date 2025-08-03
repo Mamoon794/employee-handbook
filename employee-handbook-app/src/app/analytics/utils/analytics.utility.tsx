@@ -137,6 +137,58 @@ export const getDocuments = async (
   }
 }
 
+type Question = {
+  id: string
+  province: string
+  text: string
+}
+
+export const getTopQuestions = async (
+  startDate?: string,
+  endDate?: string,
+  companyName?: string
+): Promise<
+  Array<{
+    id: string
+    province: string
+    text: string
+  }>
+> => {
+  try {
+    const params = new URLSearchParams()
+    if (startDate) params.append("startDate", startDate)
+    if (endDate) params.append("endDate", endDate)
+    if (companyName) params.append("company", companyName)
+
+    const response = await fetch(
+      `/api/analytics/popular-questions?${params.toString()}`
+    )
+    if (!response.ok) {
+      throw new Error("Failed to fetch top questions")
+    }
+    const data = await response.json()
+    const questions: Question[] = data.topQuestions.map(
+      (q: {
+        id: string
+        province: string
+        company: string
+        text: string
+        createdAt: object
+      }) => ({ id: q.id, province: q.province, text: q.text })
+    )
+
+    const uniqueQuestions: Question[] = Array.from(
+      new Map<string, Question>(
+        questions.map((q) => [`${q.province}-${q.text}`, q])
+      ).values()
+    )
+    return uniqueQuestions
+  } catch (error) {
+    console.error("Error fetching total documents uploaded:", error)
+    return []
+  }
+}
+
 export const getMonthlyData = async (
   startDate: string,
   endDate: string,
