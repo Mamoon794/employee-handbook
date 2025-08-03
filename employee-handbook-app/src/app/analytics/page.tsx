@@ -269,7 +269,7 @@ export default function Analytics() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
-      <Header showHeader={false} province=""  setProvince={()=>{}}/>
+      <Header showHeader={false} province="" setProvince={() => {}} />
       <header
         className="bg-white shadow-sm border-b"
         role="banner"
@@ -747,27 +747,34 @@ export default function Analytics() {
           </div>
           <div className="p-6">
             <div className="space-y-4">
-              {topQuestions.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
-                >
-                  <div className="flex items-center space-x-4">
-                    <div className="flex-shrink-0 w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                      <span className="text-sm font-semibold text-purple-600">
-                        #{index + 1}
+              {!loading && topQuestions.length == 0 ? (
+                <p className="text-sm text-gray-600 mt-1">
+                  Looks like top questions aren't available yet! They're
+                  calculated weekly, so please check back soon.
+                </p>
+              ) : (
+                topQuestions.map((item, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+                  >
+                    <div className="flex items-center space-x-4">
+                      <div className="flex-shrink-0 w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                        <span className="text-sm font-semibold text-purple-600">
+                          #{index + 1}
+                        </span>
+                      </div>
+                      <p className="text-gray-900 font-medium">{item.text}</p>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm text-gray-600">From</span>
+                      <span className="font-semibold text-purple-600">
+                        {item.province}
                       </span>
                     </div>
-                    <p className="text-gray-900 font-medium">{item.text}</p>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-sm text-gray-600">From</span>
-                    <span className="font-semibold text-purple-600">
-                      {item.province}
-                    </span>
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
         </div>
