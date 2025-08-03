@@ -26,7 +26,8 @@ export async function GET(request: Request) {
     }
 
     const startTimestamp = new Date(startDate)
-    const endTimestamp = new Date(endDate)
+    const [year, month, day] = endDate.split("-").map(Number)
+    const endTimestamp = new Date(year, month - 1, day) // month is 0-based
 
     if (isNaN(startTimestamp.getTime()) || isNaN(endTimestamp.getTime())) {
       return NextResponse.json(
