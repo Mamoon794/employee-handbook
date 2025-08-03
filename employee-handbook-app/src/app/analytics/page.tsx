@@ -265,21 +265,6 @@ export default function Analytics() {
     aiExplanationForQuestionsAsked,
   ])
 
-  const employeeStats = {
-    total: newEmployees,
-    active: 231,
-    newThisMonth: 18,
-    retentionRate: 94.2,
-  }
-
-  // const topQuestions = [
-  //   { question: "What are my vacation entitlements?", count: 34 },
-  //   { question: "How do I request time off?", count: 28 },
-  //   { question: "What is the dress code policy?", count: 22 },
-  //   { question: "How do I access my benefits?", count: 19 },
-  //   { question: "What are the remote work policies?", count: 15 },
-  // ]
-
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}

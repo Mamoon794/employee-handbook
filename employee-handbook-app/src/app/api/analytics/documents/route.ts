@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server"
 import { db } from "../../../../dbConfig/firebaseConfig"
-import { DocumentData, QueryDocumentSnapshot } from "firebase/firestore"
 
 export async function GET(request: Request) {
   try {

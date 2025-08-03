@@ -146,45 +146,12 @@ export async function GET(request: Request) {
       )
     }
 
-    const generateDummyData = (timeLabel: string) => {
-      const seed = timeLabel
-        .split("")
-        .reduce((acc, char) => acc + char.charCodeAt(0), 0)
-      const random = (multiplier: number) => ((seed * multiplier) % 97) / 97 // Simple pseudo-random
-
-      if (showDailyData) {
-        const baseEmployees = Math.floor(random(1) * 5) + 1 // 1-6 employees
-        const baseQuestions = Math.floor(random(2) * 10) + 2 // 2-12 questions
-        const baseDocuments = Math.floor(random(3) * 3) + 1 // 1-4 documents
-
-        return {
-          employees: baseEmployees,
-          questions: baseQuestions,
-          documents: baseDocuments,
-        }
-      } else {
-        const baseEmployees = Math.floor(random(1) * 15) + 2 // 2-17 employees
-        const baseQuestions = Math.floor(random(2) * 40) + 5 // 5-45 questions
-        const baseDocuments = Math.floor(random(3) * 8) + 1 // 1-9 documents
-
-        const monthNum = new Date(timeLabel + " 1").getMonth()
-        const seasonalMultiplier = 1 + Math.sin((monthNum * Math.PI) / 6) * 0.3 // Vary by season
-
-        return {
-          employees: Math.floor(baseEmployees * seasonalMultiplier),
-          questions: Math.floor(baseQuestions * seasonalMultiplier),
-          documents: Math.floor(baseDocuments * seasonalMultiplier),
-        }
-      }
-    }
-
     const result = timeLabels.map((timeLabel) => {
       const realData = timeData[timeLabel] || {
         employees: 0,
         questions: 0,
         documents: 0,
       }
-      const dummyData = generateDummyData(timeLabel)
 
       return {
         month: keyToDisplay[timeLabel] || timeLabel,
