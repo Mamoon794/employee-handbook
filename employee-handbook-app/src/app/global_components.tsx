@@ -652,9 +652,6 @@ function MessageThread({
                   const { cards, remainingContent } = parseCarouselCards(message.content)
                   return (
                     <>
-                      {cards.length > 0 && (
-                        <CarouselCards cards={cards} />
-                      )}
                       {remainingContent.trim() && (
                         <div
                           className="text-lg"
@@ -662,6 +659,9 @@ function MessageThread({
                             __html: markdownListToTable(remainingContent),
                           }}
                         />
+                      )}
+                      {cards.length > 0 && (
+                        <CarouselCards cards={cards} />
                       )}
                     </>
                   )
