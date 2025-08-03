@@ -22,7 +22,8 @@ export async function GET(request: Request) {
     const employeeIds = employeeSnapshot.docs.map((doc: DocumentData) => doc.id)
 
     const startTimestamp = new Date(startDate)
-    const endTimestamp = new Date(endDate)
+    const [year, month, day] = endDate.split("-").map(Number)
+    const endTimestamp = new Date(year, month - 1, day) // month is 0-based
 
     const chatsRef = db.collection("chats")
     const chatsSnapshot = await chatsRef

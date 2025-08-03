@@ -28,7 +28,8 @@ export async function GET(request: Request) {
           const uploadDate =
             doc.uploadDate?.toDate?.() || new Date(doc.uploadDate)
           const startTimestamp = new Date(startDate)
-          const endTimestamp = new Date(endDate)
+          const [year, month, day] = endDate.split("-").map(Number)
+          const endTimestamp = new Date(year, month - 1, day) // month is 0-based
           endTimestamp.setHours(23, 59, 59, 999)
           if (uploadDate >= startTimestamp && uploadDate <= endTimestamp) {
             newDocumentsUploaded++
