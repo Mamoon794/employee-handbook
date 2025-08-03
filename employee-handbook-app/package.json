@@ -15,7 +15,7 @@
     "test:firestore": "tsx src/test-firestore.ts",
     "tsc": "tsc",
     "tsc:test": "tsc -p tsconfig.test.json",
-    "test": "npm run test:firestore"
+    "test": "jest"
   },
   "engines": {
     "node": ">=18.0.0"
