@@ -1,14 +1,14 @@
 "use client"
 
-import { useRouter } from 'next/navigation';
-import { FaTrashAlt } from 'react-icons/fa';
-import { UserButton, useUser } from '@clerk/nextjs';
-import { useEffect, useState } from 'react';
-import { User } from '@/models/schema';
-import axiosInstance from '../axios_config';
-import Link from "next/link";
+import { useRouter } from "next/navigation"
+import { FaTrashAlt } from "react-icons/fa"
+import { UserButton, useUser } from "@clerk/nextjs"
+import { useEffect, useState } from "react"
+import { User } from "@/models/schema"
+import axiosInstance from "../axios_config"
+import Link from "next/link"
 
-const USER_TYPES = ["Employee", "Owner", "Administrator", "Financer"] as const;
+const USER_TYPES = ["Employee", "Owner", "Administrator", "Financer"] as const
 
 export default function ManageEmployees() {
   const router = useRouter()
@@ -46,14 +46,14 @@ export default function ManageEmployees() {
     axiosInstance
       .get(`/api/company/${companyId}/users`)
       .then((usersResponse) => setEmployees(usersResponse.data))
-      .catch((err) => console.error("Error fetching employees:", err));
-  };
+      .catch((err) => console.error("Error fetching employees:", err))
+  }
 
   useEffect(() => {
     if (companyId) {
-      fetchEmployees();
+      fetchEmployees()
     }
-  }, [companyId]);
+  }, [companyId])
 
   const deleteEmployee = async (userId: string) => {
     const response = await axiosInstance.delete(`/api/users/${userId}`)
@@ -67,7 +67,9 @@ export default function ManageEmployees() {
 
   const handleRoleChange = async (userId: string, newRole: string) => {
     try {
-      const response = await axiosInstance.patch(`/api/users/${userId}`, { userType: newRole });
+      const response = await axiosInstance.patch(`/api/users/${userId}`, {
+        userType: newRole,
+      })
       if (response.status === 200) {
         fetchEmployees()
         if (user?.id === userId) {
@@ -75,9 +77,9 @@ export default function ManageEmployees() {
         }
       }
     } catch (error) {
-      console.error("Failed to update role:", error);
+      console.error("Failed to update role:", error)
     }
-  };
+  }
 
   return (
     <div className="min-h-screen bg-white flex flex-col font-sans">
@@ -119,36 +121,39 @@ export default function ManageEmployees() {
           {employees.map((emp, idx) => (
             <div key={idx} className="flex items-center gap-4">
               <div className="flex-1 flex items-stretch w-full bg-white rounded-xl">
-                {
-                  role === "Owner" ? (
-                    <select
-                      className="px-10 py-2 w-1/2 bg-[#4e65a4] text-white rounded-xl text-lg font-semibold flex text-center"
-                      value={emp.userType}
-                      onChange={e => handleRoleChange(emp.clerkUserId, e.target.value)}
-                    >
-                      {USER_TYPES.map(type => (
-                        <option key={type} value={type}>{type}</option>
-                      ))}
-                    </select>
-                  ) : (
-                    <span className="px-10 py-2 w-1/2 bg-[#4e65a4] text-white rounded-xl text-lg font-semibold flex items-center justify-center">
-                      {emp.userType}
-                    </span>
-                  )
-                }
+                {role === "Owner" ? (
+                  <select
+                    className="px-10 py-2 w-1/2 bg-[#4e65a4] text-white rounded-xl text-lg font-semibold flex text-center"
+                    value={emp.userType}
+                    onChange={(e) =>
+                      handleRoleChange(emp.clerkUserId, e.target.value)
+                    }
+                  >
+                    {USER_TYPES.map((type) => (
+                      <option key={type} value={type}>
+                        {type}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <span className="px-10 py-2 w-1/2 bg-[#4e65a4] text-white rounded-xl text-lg font-semibold flex items-center justify-center">
+                    {emp.userType}
+                  </span>
+                )}
                 <div className="w-1/2 flex items-center px-8 py-2 relative">
                   <span className="text-xl font-bold text-black break-words flex-1 text-center">
                     {emp.firstName + " " + emp.lastName}
                   </span>
-                  { user?.id !== emp.clerkUserId && (role === "Owner" || role === "Administrator") && (
-                    <button 
-                      className="absolute right-3 ml-3 text-lg text-black bg-white border border-gray-300 rounded-full w-7 h-7 flex items-center justify-center hover:bg-gray-100"
-                      onClick={() => deleteEmployee(emp.clerkUserId)}
-                      title="Remove employee"
-                    >
-                      <FaTrashAlt />
-                    </button>
-                  )}
+                  {user?.id !== emp.clerkUserId &&
+                    (role === "Owner" || role === "Administrator") && (
+                      <button
+                        className="absolute right-3 ml-3 text-lg text-black bg-white border border-gray-300 rounded-full w-7 h-7 flex items-center justify-center hover:bg-gray-100"
+                        onClick={() => deleteEmployee(emp.clerkUserId)}
+                        title="Remove employee"
+                      >
+                        <FaTrashAlt />
+                      </button>
+                    )}
                 </div>
               </div>
             </div>
