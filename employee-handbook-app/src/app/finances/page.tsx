@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { ArrowLeft, DollarSign, CreditCard, TrendingUp, Calendar, Download, CheckCircle, FileText } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { Header } from '../global_components';
 
 export default function Finances() {
   const router = useRouter();
@@ -52,6 +53,7 @@ export default function Finances() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
+      <Header showHeader={false} province=""  setProvince={()=>{}}/>
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-4">

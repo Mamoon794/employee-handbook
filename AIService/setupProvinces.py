@@ -45,22 +45,34 @@ embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
 pc = Pinecone(api_key=pc_api_key)
 index = pc.Index(index_name)
 vector_store = PineconeVectorStore(embedding=embeddings, index=index)
+vector_store_dimension = 768
 
 # Load prompt template from LangChain Hub
 prompt = hub.pull("rlm/rag-prompt", api_url="https://api.smith.langchain.com")
 
 @tool(response_format="content_and_artifact")
-def retrieve(query: str, province: str):
-    """Retrieve employment-related information by searching indexed documents in the given province. If no province is specified, it defaults to "General". 
+def retrieve(query: str, province: str, company: str = ""):
+    """
+    Retrieve employment-related information by searching indexed documents 
+    within the specified province. If no province is given, it defaults to "General". 
+    If a company name is provided, it filters documents accordingly.
+
+    Use this tool only when the user is asking a factual or research-based question 
+    related to employment policies or company-specific matters. Do not use this tool for small talk, 
+    greetings, or general conversational questions.
+
     Parameters:
     - query: the user's question.
-    - province: province name like "Alberta", "British Columbia", etc."""
-    print("province:", province)
-    province_docs = vector_store.similarity_search(query, k=8, namespace=province)
+    - province: province name such as "Alberta", "British Columbia", etc.
+    - company: (optional) company name to filter documents.
+    """
+    # print("province:", province)
+    province_docs = vector_store.similarity_search(query, k=4, namespace=province)
     general_docs = vector_store.similarity_search(query, k=4, namespace="General")
-    retrieved_docs = province_docs + general_docs
+    company_docs = vector_store.similarity_search(query, k=4, namespace=company)
+    retrieved_docs = province_docs + general_docs + company_docs
     serialized = "\n\n".join(
-        (f"DocMetadata: {doc.metadata}\n" f"DocContent: {doc.page_content}")
+        f"DocMetadata: {doc.metadata}\nDocContent: {doc.page_content}"
         for doc in retrieved_docs
     )
     return serialized, retrieved_docs
@@ -88,16 +100,90 @@ def generate(state: MessagesState):
             break
     tool_messages = recent_tool_messages[::-1]
 
-    # Format into prompt
-    docs_content = "\n\n".join(doc.content for doc in tool_messages)
+    # print("tool_messages:", tool_messages)
+    # print("length", len(tool_messages))
+    docs = tool_messages[-1].artifact 
+    # Separate docs based on whether metadata has a "company" field
+    company_docs = [doc for doc in docs if "company" in doc.metadata]
+    non_company_docs = [doc for doc in docs if "company" not in doc.metadata]
+
+    # Format the doc content for each group
+    # print("company_docs:", company_docs)
+    company_docs_content = "\n\n".join(f"DocMetadata: {doc.metadata}\nDocContent: {doc.page_content}" for doc in company_docs)
+    non_company_docs_content = "\n\n".join(f"DocMetadata: {doc.metadata}\nDocContent: {doc.page_content}" for doc in non_company_docs)
+
+    # Construct system prompt
     system_message_content = (
-        "You are an assistant for question-answering tasks. If a retrieval "
-        "tool is available, use it to get relevant information before answering. "
-        "Answer with some details. If you really can't get the answer from the documents, "
-        "you can say things like I don't have enough information.\n\n"
-        "\n\n"
-        f"{docs_content}"
+        "You are an assistant for question-answering tasks. Use the retrieved documents to answer the user's question. "
+        "Format your response in **two clearly separated sections** as described below. "
+        "This formatting is required to allow automatic parsing:\n\n"
+        "1. **public-doc**:\n"
+        "- Use only documents that do **not** have a company name in their metadata.\n"
+        "- Begin with a legal-sounding tone such as:\n"
+        "  \"Based on the applicable law, ...\" or \"According to relevant legal guidance, ...\"\n"
+        "- IMPORTANT: When answering questions about steps, processes, options, or comparisons, use the carousel format:\n"
+        "  :::carousel\n"
+        "  card: Step 1 Title\n"
+        "  content: Detailed description of this step\n"
+        "  icon: 📋\n"
+        "  ---\n"
+        "  card: Step 2 Title\n"
+        "  content: Detailed description of this step\n"
+        "  icon: ✍️\n"
+        "  :::\n"
+        "- Use carousel format SPECIFICALLY for:\n"
+        "  * Questions containing 'steps to', 'how to', 'process for', 'procedure to'\n"
+        "  * Multiple options or choices (e.g., 'what are my options')\n"
+        "  * Comparisons between different things\n"
+        "  * Lists of important rights or highlights\n"
+        "- Use regular text/lists for simple information that doesn't involve steps or choices\n"
+        "- If no relevant information is found, still write a sentence in the expected tone and end with [Found: No]\n"
+        "- If relevant information is found, write the answer and end with [Found: Yes]\n"
+        "- Start this section with exactly: **public-doc**:\n"
+        "2. **company-doc**:\n"
+        "- Use only documents that **do** have a company name in their metadata.\n"
+        "- Begin with a company policy tone such as:\n"
+        "  \"Based on the employee manual, ...\" or \"According to [Company]'s internal policy, ...\"\n"
+        "- Replace `[Company]` with the **actual company name** from the metadata.\n"
+        "- If the company name is not available, use 'the company' instead.\n"
+        "- **Do not output the placeholder `[Company]` in your response.**\n"
+        "- IMPORTANT: Use the same carousel format as in public-doc when presenting steps, processes, or options\n"
+        "- If no relevant information is found, still write a sentence in the expected tone and end with [Found: No]\n"
+        "- If relevant information is found, write the answer and end with [Found: Yes]\n"
+        "- Start this section with exactly: **company-doc**:\n"
+        
+        "Important:\n"
+        "- Do not include any extra sections or commentary outside the two headers.\n"
+        "- Each section must end with [Found: Yes] or [Found: No].\n"
+        "- Do not number the sections. Do not prefix with '1.' or '2.'\n"
+        "— just use the headers exactly as shown: **public-doc**: and **company-doc**:\n\n"
+        
+        "EXAMPLE for a question like 'What are the steps to apply for parental leave?':\n"
+        "**public-doc**:\n"
+        "Based on the applicable law, here are the steps to apply for parental leave:\n\n"
+        ":::carousel\n"
+        "card: Step 1: Determine Eligibility\n"
+        "content: Ensure you have been employed for at least 13 weeks before the expected birth date\n"
+        "icon: ✅\n"
+        "---\n"
+        "card: Step 2: Provide Written Notice\n"
+        "content: Give your employer at least 2 weeks' written notice before starting leave. Specify if you want 37 or 63 weeks\n"
+        "icon: 📝\n"
+        "---\n"
+        "card: Step 3: Submit Documentation\n"
+        "content: Provide any required medical certificates or proof of birth/adoption\n"
+        "icon: 📋\n"
+        ":::\n"
+        "[Found: Yes]\n\n"
+        
+        "---\n"
+        "public-doc documents:\n"
+        f"{non_company_docs_content}\n\n"
+        "---\n"
+        "company-doc documents:\n"
+        f"{company_docs_content}"
     )
+
     conversation_messages = [
         message
         for message in state["messages"]
@@ -127,6 +213,58 @@ graph_builder.add_edge("generate", END)
 
 memory = MemorySaver()
 graph = graph_builder.compile(checkpointer=memory)
+
+def returnQuestion(user_message: str) -> bool:
+    """
+    Check if the user message is a question, and if so, return it with corrected grammar and without personal information.
+    If it is not a question, rewrite it as a single concise question.
+    """
+    try:
+        prompt = f"""
+        You are given a user message. Your task is to:
+        1. Determine if it is a question.
+        2. If it is a question, return it with corrected grammar and remove any personal information.
+        3. If it is not a question, rewrite it as a single concise question.
+        Return only the final question, nothing else.
+
+        User message: "{user_message}"
+        """
+        # call Gemini using LangChain llm.invoke() method
+        # input is a list of messages 
+        response = llm.invoke([{"role": "user", "content": prompt}])
+
+        if hasattr(response, "content"):
+            question = response.content.strip()
+        else:
+            question = str(response).strip()
+
+        return {"question": question}
+    except Exception as e:
+        # if anything goes wrong, return an empty string
+        print(f"Error checking question: {e}")
+        return {"question": ""}
+
+def store_user_message_to_vector_store(user_message: str, province: str, company: str):
+    """Filter out those that are not questions. Then, store them in the vector store."""
+    try:
+        validQuestion = returnQuestion(user_message)["question"]
+        if not validQuestion:
+            # Not a question, not storing.
+            return
+        # print("Storing user question to vector store:", user_message)
+        doc = Document(
+            page_content=validQuestion,
+            metadata={
+                "created_at": time.time(),
+                "province": province,
+                "company": company,
+                "namespace": "UserQuestions",
+            }
+        )
+        print("The document that is being stored:", doc)
+        vector_store.add_documents([doc], namespace="UserQuestions")
+    except Exception as e:
+        print(f"Error storing user message to vector store: {e}")
 
 def load_and_split_html(url, title):
     try:
@@ -204,7 +342,6 @@ def batch_add_documents(vector_store, documents, namespace, batch_size=100, max_
             print(f"[ERROR] Giving up on batch {i // batch_size + 1} after {max_retries} retries.")
 
 def index_documents():
-    index.describe_index_stats()
     stats = index.describe_index_stats()
     existing_namespaces = stats.get("namespaces", {})
     for namespace, docs in allData.items():
@@ -219,6 +356,34 @@ def index_documents():
             index.delete(delete_all=True, namespace=namespace)
         # print("length of splits:", len(splits))
         batch_add_documents(vector_store, splits, namespace=namespace, batch_size=50)
+
+# Convert the Document objects to emmbeddings and upload to Pinecone vector store
+def batch_add_company_documents(vector_store, documents, company=None, batch_size=100):
+    for i in range(0, len(documents), batch_size):
+        batch = documents[i:i + batch_size]
+        for doc in batch:
+            doc.metadata.update({
+                "company": company,
+            })
+        try:
+            vector_store.add_documents(batch, namespace=company)
+        except Exception as e:
+            print(f"Failed to upload batch {i // batch_size + 1}: {e}")
+
+def index_company_documents(splits, company):
+    batch_add_company_documents(vector_store, splits, company=company, batch_size=50)
+
+def delete_company_documents_from_vector_db(company):
+    """
+    Deletes all documents in the vector store for the specified company.
+    """
+    index.delete(delete_all=True, namespace=company)
+
+def delete_document_from_vector_db(url, company):
+    """
+    Deletes a document from the vector store based on the provided URL and company.
+    """
+    index.delete(filter={"source": {"$eq": url}}, namespace=company)
 
 if __name__ == "__main__":
     # Load your JSON file

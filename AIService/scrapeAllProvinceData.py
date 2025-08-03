@@ -103,6 +103,7 @@ def crawl(url, namespace="General", depth=0, max_depth=MAX_DEPTH, domain=None):
             docs = pdfloader.load()
             for page in docs:
                 page.metadata["type"] = "pdf"
+                page.metadata["namespace"] = namespace
             for pdf_link in links:
                 full_pdf_link = remove_fragment(urljoin(url, pdf_link))
                 if domain == get_domain(full_pdf_link) and full_pdf_link not in VISITED:

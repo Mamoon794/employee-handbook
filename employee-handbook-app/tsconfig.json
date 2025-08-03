@@ -19,9 +19,9 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@/components/*": ["./components/*"]
     },
-    // Add these new options:
     "typeRoots": ["./node_modules/@types", "./src/types"],
     "types": ["node"]
   },
@@ -31,7 +31,7 @@
     "**/*.tsx", 
     ".next/types/**/*.ts", 
     "components/province.tsx",
-    "src/types/**/*"  // Add this line
+    "src/types/**/*" 
   ],
   "exclude": ["node_modules"]
 }

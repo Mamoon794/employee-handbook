@@ -11,17 +11,22 @@ import {
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import {
-  getTotalEmployees,
+  getEmployees,
   getProvinceDistribution,
-  getTotalQuestionsAsked,
+  getActiveUsers,
+  getQuestionsAsked,
+  getDocuments,
   getMonthlyData,
   getAIExplanationForEmployeeDistribution,
   getAIExplanationForEmployeeRegistration,
   getAIExplanationForQuestionsAsked,
   getBulletPointSummary,
+  getTopQuestions,
 } from "./utils/analytics.utility"
 import DateRangePicker from "./components/DateRangePicker"
 import TypewriterEffect from "./components/TypewriterEffect"
+import Link from "next/link"
+import { Header } from "../global_components"
 
 export default function Analytics() {
   const router = useRouter()
@@ -34,11 +39,23 @@ export default function Analytics() {
     return new Date().toISOString().split("T")[0]
   })
   const [totalEmployees, setTotalEmployees] = useState(0)
+  const [newEmployees, setNewEmployees] = useState(0)
   const [provinceData, setProvinceData] = useState<
     Array<{ province: string; count: number; percentage: number }>
   >([])
   const [loading, setLoading] = useState(true)
+  const [totalActiveUsers, setTotalActiveUsers] = useState(0)
   const [totalQuestionsAsked, setTotalQuestionsAsked] = useState(0)
+  const [newQuestionsAsked, setNewQuestionsAsked] = useState(0)
+  const [totalDocumentsUploaded, setTotalDocumentsUploaded] = useState(0)
+  const [newDocumentsUploaded, setNewDocumentsUploaded] = useState(0)
+  const [topQuestions, setTopQuestions] = useState<
+    Array<{
+      id: string
+      province: string
+      text: string
+    }>
+  >([])
   const [monthlyChartData, setMonthlyChartData] = useState<
     Array<{
       month: string
@@ -57,12 +74,22 @@ export default function Analytics() {
   ] = useState("")
   const [aiExplanationForQuestionsAsked, setAIExplanationForQuestionsAsked] =
     useState("")
-  const [bulletPointsEmployeeDistribution, setBulletPointsEmployeeDistribution] = useState("")
-  const [bulletPointsEmployeeRegistration, setBulletPointsEmployeeRegistration] = useState("")
-  const [bulletPointsQuestionsAsked, setBulletPointsQuestionsAsked] = useState("")
-  const [loadingBulletPointsDistribution, setLoadingBulletPointsDistribution] = useState(false)
-  const [loadingBulletPointsRegistration, setLoadingBulletPointsRegistration] = useState(false)
-  const [loadingBulletPointsQuestions, setLoadingBulletPointsQuestions] = useState(false)
+  const [
+    bulletPointsEmployeeDistribution,
+    setBulletPointsEmployeeDistribution,
+  ] = useState("")
+  const [
+    bulletPointsEmployeeRegistration,
+    setBulletPointsEmployeeRegistration,
+  ] = useState("")
+  const [bulletPointsQuestionsAsked, setBulletPointsQuestionsAsked] =
+    useState("")
+  const [loadingBulletPointsDistribution, setLoadingBulletPointsDistribution] =
+    useState(false)
+  const [loadingBulletPointsRegistration, setLoadingBulletPointsRegistration] =
+    useState(false)
+  const [loadingBulletPointsQuestions, setLoadingBulletPointsQuestions] =
+    useState(false)
 
   const handleDateChange = (newStartDate: string, newEndDate: string) => {
     setStartDate(newStartDate)
@@ -70,6 +97,19 @@ export default function Analytics() {
   }
 
   useEffect(() => {
+    const companyId = localStorage.getItem("companyId") || ""
+    if (!companyId) {
+      alert("Error: Company ID not found. Please log in again.")
+      console.error("Company ID not found in localStorage")
+      return
+    }
+    const companyName = localStorage.getItem("companyName") || ""
+    if (!companyName) {
+      alert("Error: Company Name not found. Please log in again.")
+      console.error("Company Name not found in localStorage")
+      return
+    }
+
     const fetchAnalyticsData = async () => {
       setLoading(true)
       // Set loading states for AI insights when timeline changes
@@ -80,29 +120,45 @@ export default function Analytics() {
       setBulletPointsEmployeeDistribution("")
       setBulletPointsEmployeeRegistration("")
       setBulletPointsQuestionsAsked("")
-      
+
       try {
         const [
-          employeeCount,
+          { totalEmployees, newEmployees },
           provinceDistribution,
-          questionsAsked,
+          totalActiveUsers,
+          { totalQuestionsAsked, newQuestionsAsked },
+          { totalDocumentsUploaded, newDocumentsUploaded },
           monthlyAnalytics,
+          topQuestions,
         ] = await Promise.all([
-          getTotalEmployees(startDate, endDate),
-          getProvinceDistribution(startDate, endDate),
-          getTotalQuestionsAsked(startDate, endDate),
-          getMonthlyData(startDate, endDate),
+          getEmployees(startDate, endDate, companyId),
+          getProvinceDistribution(startDate, endDate, companyId),
+          getActiveUsers(startDate, endDate, companyId),
+          getQuestionsAsked(startDate, endDate, companyId),
+          getDocuments(startDate, endDate, companyId),
+          getMonthlyData(startDate, endDate, companyId),
+          getTopQuestions(startDate, endDate, companyName),
         ])
 
-        setTotalEmployees(employeeCount)
+        setTotalEmployees(totalEmployees)
+        setNewEmployees(newEmployees)
         setProvinceData(provinceDistribution)
-        setTotalQuestionsAsked(questionsAsked)
+        setTotalQuestionsAsked(totalQuestionsAsked)
+        setNewQuestionsAsked(newQuestionsAsked)
+        setTotalDocumentsUploaded(totalDocumentsUploaded)
+        setTotalActiveUsers(totalActiveUsers)
+        setNewDocumentsUploaded(newDocumentsUploaded)
         setMonthlyChartData(monthlyAnalytics)
+        setTopQuestions(topQuestions)
       } catch (error) {
         console.error("Error fetching analytics data:", error)
         setTotalEmployees(0)
+        setNewEmployees(0)
         setProvinceData([])
         setTotalQuestionsAsked(0)
+        setNewQuestionsAsked(0)
+        setTotalDocumentsUploaded(0)
+        setNewDocumentsUploaded(0)
         setMonthlyChartData([])
         // Stop loading states on error
         setLoadingBulletPointsDistribution(false)
@@ -153,39 +209,48 @@ export default function Analytics() {
   useEffect(() => {
     const fetchAllBulletPoints = async () => {
       // Wait for all AI explanations to be ready
-      if (aiExplanationForEmployeeDistribution && aiExplanationForEmployeeRegistration && aiExplanationForQuestionsAsked) {
+      if (
+        aiExplanationForEmployeeDistribution &&
+        aiExplanationForEmployeeRegistration &&
+        aiExplanationForQuestionsAsked
+      ) {
         // Set all loading states
         setLoadingBulletPointsDistribution(true)
         setLoadingBulletPointsRegistration(true)
         setLoadingBulletPointsQuestions(true)
-        
+
         // Clear existing bullet points
         setBulletPointsEmployeeDistribution("")
         setBulletPointsEmployeeRegistration("")
         setBulletPointsQuestionsAsked("")
-        
+
         try {
           // Add delay between calls to respect rate limits
-          const bulletPointsDistribution = await getBulletPointSummary(aiExplanationForEmployeeDistribution)
+          const bulletPointsDistribution = await getBulletPointSummary(
+            aiExplanationForEmployeeDistribution
+          )
           setBulletPointsEmployeeDistribution(bulletPointsDistribution)
           setLoadingBulletPointsDistribution(false)
-          
+
           // Wait 2 seconds between calls
-          await new Promise(resolve => setTimeout(resolve, 2000))
-          
-          const bulletPointsRegistration = await getBulletPointSummary(aiExplanationForEmployeeRegistration)
+          await new Promise((resolve) => setTimeout(resolve, 2000))
+
+          const bulletPointsRegistration = await getBulletPointSummary(
+            aiExplanationForEmployeeRegistration
+          )
           setBulletPointsEmployeeRegistration(bulletPointsRegistration)
           setLoadingBulletPointsRegistration(false)
-          
+
           // Wait 2 seconds between calls
-          await new Promise(resolve => setTimeout(resolve, 2000))
-          
-          const bulletPointsQuestions = await getBulletPointSummary(aiExplanationForQuestionsAsked)
+          await new Promise((resolve) => setTimeout(resolve, 2000))
+
+          const bulletPointsQuestions = await getBulletPointSummary(
+            aiExplanationForQuestionsAsked
+          )
           setBulletPointsQuestionsAsked(bulletPointsQuestions)
           setLoadingBulletPointsQuestions(false)
-          
         } catch (error) {
-          console.error('Error fetching bullet points:', error)
+          console.error("Error fetching bullet points:", error)
           // Stop all loading states on error
           setLoadingBulletPointsDistribution(false)
           setLoadingBulletPointsRegistration(false)
@@ -195,26 +260,16 @@ export default function Analytics() {
     }
 
     fetchAllBulletPoints()
-  }, [aiExplanationForEmployeeDistribution, aiExplanationForEmployeeRegistration, aiExplanationForQuestionsAsked])
-
-  const employeeStats = {
-    total: totalEmployees,
-    active: 231,
-    newThisMonth: 18,
-    retentionRate: 94.2,
-  }
-
-  const topQuestions = [
-    { question: "What are my vacation entitlements?", count: 34 },
-    { question: "How do I request time off?", count: 28 },
-    { question: "What is the dress code policy?", count: 22 },
-    { question: "How do I access my benefits?", count: 19 },
-    { question: "What are the remote work policies?", count: 15 },
-  ]
+  }, [
+    aiExplanationForEmployeeDistribution,
+    aiExplanationForEmployeeRegistration,
+    aiExplanationForQuestionsAsked,
+  ])
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
+      <Header showHeader={false} province=""  setProvince={()=>{}}/>
       <header
         className="bg-white shadow-sm border-b"
         role="banner"
@@ -230,9 +285,11 @@ export default function Analytics() {
               <ArrowLeft className="w-5 h-5 text-gray-600" />
             </button>
             <div>
-              <h1 className="text-2xl font-bold text-blue-800">
-                Employee Analytics
-              </h1>
+              <Link href="/dashboard">
+                <h1 className="text-2xl font-extrabold italic text-blue-800">
+                  Gail
+                </h1>
+              </Link>
               <p className="text-gray-600">Insights into your workforce</p>
             </div>
           </div>
@@ -252,13 +309,13 @@ export default function Analytics() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Total Employees
+                  Company Size
                 </p>
                 <p className="text-3xl font-bold text-gray-900">
-                  {loading ? "..." : employeeStats.total}
+                  {loading ? "..." : totalEmployees}
                 </p>
                 <p className="text-sm text-green-600 mt-1">
-                  +{employeeStats.newThisMonth} this month
+                  +{newEmployees} this period
                 </p>
               </div>
               <div className="p-3 bg-blue-100 rounded-full">
@@ -271,13 +328,16 @@ export default function Analytics() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Retention Rate
+                  Active Users
                 </p>
                 <p className="text-3xl font-bold text-gray-900">
-                  {employeeStats.retentionRate}%
+                  {totalActiveUsers}
                 </p>
                 <p className="text-sm text-green-600 mt-1">
-                  +2.3% vs last period
+                  {totalActiveUsers > 0 && totalEmployees > 0
+                    ? ((totalActiveUsers / totalEmployees) * 100).toFixed(2)
+                    : 0}
+                  % engagement rate
                 </p>
               </div>
               <div className="p-3 bg-purple-100 rounded-full">
@@ -295,7 +355,9 @@ export default function Analytics() {
                 <p className="text-3xl font-bold text-gray-900">
                   {loading ? "..." : totalQuestionsAsked}
                 </p>
-                <p className="text-sm text-orange-600 mt-1">+14% this month</p>
+                <p className="text-sm text-orange-600 mt-1">
+                  +{newQuestionsAsked} this period
+                </p>
               </div>
               <div className="p-3 bg-orange-100 rounded-full">
                 <MessageSquare className="w-6 h-6 text-orange-600" />
@@ -309,8 +371,12 @@ export default function Analytics() {
                 <p className="text-sm font-medium text-gray-600">
                   Documents Uploaded
                 </p>
-                <p className="text-3xl font-bold text-gray-900">38</p>
-                <p className="text-sm text-indigo-600 mt-1">+12 this month</p>
+                <p className="text-3xl font-bold text-gray-900">
+                  {loading ? "..." : totalDocumentsUploaded}
+                </p>
+                <p className="text-sm text-indigo-600 mt-1">
+                  +{newDocumentsUploaded} this period
+                </p>
               </div>
               <div className="p-3 bg-indigo-100 rounded-full">
                 <FileText className="w-6 h-6 text-indigo-600" />
@@ -423,13 +489,15 @@ export default function Analytics() {
                         <span>Generating AI insights...</span>
                       </div>
                     ) : bulletPointsEmployeeDistribution ? (
-                      <TypewriterEffect 
+                      <TypewriterEffect
                         text={bulletPointsEmployeeDistribution}
                         speed={30}
                         className="text-sm"
                       />
                     ) : (
-                      <p className="text-sm text-gray-500">No insights available</p>
+                      <p className="text-sm text-gray-500">
+                        No insights available
+                      </p>
                     )}
                   </div>
                 </>
@@ -545,13 +613,15 @@ export default function Analytics() {
                           <span>Generating insights...</span>
                         </div>
                       ) : bulletPointsEmployeeRegistration ? (
-                        <TypewriterEffect 
+                        <TypewriterEffect
                           text={bulletPointsEmployeeRegistration}
                           speed={25}
                           className="text-xs"
                         />
                       ) : (
-                        <p className="text-xs text-gray-500">No insights available</p>
+                        <p className="text-xs text-gray-500">
+                          No insights available
+                        </p>
                       )}
                     </div>
                   </div>
@@ -639,13 +709,15 @@ export default function Analytics() {
                           <span>Generating insights...</span>
                         </div>
                       ) : bulletPointsQuestionsAsked ? (
-                        <TypewriterEffect 
+                        <TypewriterEffect
                           text={bulletPointsQuestionsAsked}
                           speed={25}
                           className="text-xs"
                         />
                       ) : (
-                        <p className="text-xs text-gray-500">No insights available</p>
+                        <p className="text-xs text-gray-500">
+                          No insights available
+                        </p>
                       )}
                     </div>
                   </div>
@@ -686,12 +758,12 @@ export default function Analytics() {
                         #{index + 1}
                       </span>
                     </div>
-                    <p className="text-gray-900 font-medium">{item.question}</p>
+                    <p className="text-gray-900 font-medium">{item.text}</p>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <span className="text-sm text-gray-600">Asked</span>
+                    <span className="text-sm text-gray-600">From</span>
                     <span className="font-semibold text-purple-600">
-                      {item.count} times
+                      {item.province}
                     </span>
                   </div>
                 </div>

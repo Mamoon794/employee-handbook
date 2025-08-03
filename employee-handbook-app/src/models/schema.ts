@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase-admin/firestore";
+
 export type UserType = "Employee" | "Owner" | "Administrator" | "Financer"; // types of users
 
 export interface User {
@@ -50,9 +52,31 @@ export interface Document {
   fileName?: string;
   uploadDate: Date;
   isPublic: boolean;
+  province: string;
+
 }
 
 export interface Link {
   title: string;
   url: string;
+  page?: number
+}
+
+export interface Invitation {
+  id?: string;
+  email: string;
+  companyId: string;
+  companyName: string;
+  inviterId: string; // owner that sent the invite
+  status: "pending" | "accepted" | "rejected";
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface PopularQuestion {
+  id?: string
+  province: string
+  company: string
+  text: string
+  createdAt?: Timestamp
 }
