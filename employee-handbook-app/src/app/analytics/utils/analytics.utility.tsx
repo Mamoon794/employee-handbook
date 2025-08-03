@@ -1,33 +1,41 @@
-export const getTotalEmployees = async (
+export const getEmployees = async (
   startDate?: string,
-  endDate?: string
-): Promise<number> => {
+  endDate?: string,
+  companyId?: string
+): Promise<{ totalEmployees: number; newEmployees: number }> => {
   try {
     const params = new URLSearchParams()
     if (startDate) params.append("startDate", startDate)
     if (endDate) params.append("endDate", endDate)
-    
+    if (companyId) params.append("companyId", companyId)
+
     const response = await fetch(`/api/analytics/users?${params.toString()}`)
     if (!response.ok) {
-      throw new Error("Failed to fetch total employees")
+      throw new Error("Failed to fetch new employees")
     }
     const data = await response.json()
-    return data.totalEmployees
+    // console.log("Total employees fetched:", data)
+    return {
+      totalEmployees: data.totalEmployees,
+      newEmployees: data.newEmployees,
+    }
   } catch (error) {
     console.error("Error fetching total employees:", error)
-    return 0
+    return { totalEmployees: 0, newEmployees: 0 }
   }
 }
 
 export const getProvinceDistribution = async (
   startDate?: string,
-  endDate?: string
+  endDate?: string,
+  companyId?: string
 ): Promise<Array<{ province: string; count: number; percentage: number }>> => {
   try {
     const params = new URLSearchParams()
     if (startDate) params.append("startDate", startDate)
     if (endDate) params.append("endDate", endDate)
-    
+    if (companyId) params.append("companyId", companyId)
+
     const response = await fetch(
       `/api/analytics/provinces?${params.toString()}`
     )
@@ -45,14 +53,42 @@ export const getProvinceDistribution = async (
   }
 }
 
-export const getTotalQuestionsAsked = async (
+export const getActiveUsers = async (
   startDate?: string,
-  endDate?: string
+  endDate?: string,
+  companyId?: string
 ): Promise<number> => {
   try {
     const params = new URLSearchParams()
     if (startDate) params.append("startDate", startDate)
     if (endDate) params.append("endDate", endDate)
+    if (companyId) params.append("companyId", companyId)
+
+    const response = await fetch(
+      `/api/analytics/active-users?${params.toString()}`
+    )
+    if (!response.ok) {
+      throw new Error("Failed to fetch total active users")
+    }
+    const data = await response.json()
+    return data.totalActiveUsers
+  } catch (error) {
+    console.error("Error fetching total active users:", error)
+    return 0
+  }
+}
+
+export const getQuestionsAsked = async (
+  startDate?: string,
+  endDate?: string,
+  companyId?: string
+): Promise<{ totalQuestionsAsked: number; newQuestionsAsked: number }> => {
+  try {
+    const params = new URLSearchParams()
+    if (startDate) params.append("startDate", startDate)
+    if (endDate) params.append("endDate", endDate)
+    if (companyId) params.append("companyId", companyId)
+
     const response = await fetch(
       `/api/analytics/questions?${params.toString()}`
     )
@@ -60,16 +96,51 @@ export const getTotalQuestionsAsked = async (
       throw new Error("Failed to fetch total questions asked")
     }
     const data = await response.json()
-    return data.totalQuestionsAsked
+    return {
+      totalQuestionsAsked: data.totalQuestionsAsked,
+      newQuestionsAsked: data.newQuestionsAsked,
+    }
   } catch (error) {
     console.error("Error fetching total questions asked:", error)
-    return 0
+    return { totalQuestionsAsked: 0, newQuestionsAsked: 0 }
+  }
+}
+
+export const getDocuments = async (
+  startDate?: string,
+  endDate?: string,
+  companyId?: string
+): Promise<{
+  totalDocumentsUploaded: number
+  newDocumentsUploaded: number
+}> => {
+  try {
+    const params = new URLSearchParams()
+    if (startDate) params.append("startDate", startDate)
+    if (endDate) params.append("endDate", endDate)
+    if (companyId) params.append("companyId", companyId)
+
+    const response = await fetch(
+      `/api/analytics/documents?${params.toString()}`
+    )
+    if (!response.ok) {
+      throw new Error("Failed to fetch total documents uploaded")
+    }
+    const data = await response.json()
+    return {
+      totalDocumentsUploaded: data.totalDocumentsUploaded,
+      newDocumentsUploaded: data.newDocumentsUploaded,
+    }
+  } catch (error) {
+    console.error("Error fetching total documents uploaded:", error)
+    return { totalDocumentsUploaded: 0, newDocumentsUploaded: 0 }
   }
 }
 
 export const getMonthlyData = async (
   startDate: string,
-  endDate: string
+  endDate: string,
+  companyId: string
 ): Promise<
   Array<{
     month: string
@@ -82,6 +153,7 @@ export const getMonthlyData = async (
     const params = new URLSearchParams()
     params.append("startDate", startDate)
     params.append("endDate", endDate)
+    params.append("companyId", companyId)
 
     const response = await fetch(`/api/analytics/monthly?${params.toString()}`)
     if (!response.ok) {
@@ -128,10 +200,17 @@ export async function getAIExplanationForEmployeeRegistration(
   }>
 ): Promise<string> {
   try {
-    const employeeRegistrationData = monthlyChartData.map((data: { month: string; employees: number; questions: number; documents: number }) => ({
-      time: data.month,
-      employees: data.employees,
-    }))
+    const employeeRegistrationData = monthlyChartData.map(
+      (data: {
+        month: string
+        employees: number
+        questions: number
+        documents: number
+      }) => ({
+        time: data.month,
+        employees: data.employees,
+      })
+    )
     const response = await fetch(`/api/ai-summary/employee-registration`, {
       method: "POST",
       headers: {
@@ -161,10 +240,17 @@ export async function getAIExplanationForQuestionsAsked(
   }>
 ): Promise<string> {
   try {
-    const questionsAskedData = monthlyChartData.map((data: { month: string; employees: number; questions: number; documents: number }) => ({
-      time: data.month,
-      questions: data.questions,
-    }))
+    const questionsAskedData = monthlyChartData.map(
+      (data: {
+        month: string
+        employees: number
+        questions: number
+        documents: number
+      }) => ({
+        time: data.month,
+        questions: data.questions,
+      })
+    )
     const response = await fetch(`/api/ai-summary/questions-asked`, {
       method: "POST",
       headers: {

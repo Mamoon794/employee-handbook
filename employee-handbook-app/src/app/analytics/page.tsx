@@ -11,9 +11,11 @@ import {
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import {
-  getTotalEmployees,
+  getEmployees,
   getProvinceDistribution,
-  getTotalQuestionsAsked,
+  getActiveUsers,
+  getQuestionsAsked,
+  getDocuments,
   getMonthlyData,
   getAIExplanationForEmployeeDistribution,
   getAIExplanationForEmployeeRegistration,
@@ -35,11 +37,16 @@ export default function Analytics() {
     return new Date().toISOString().split("T")[0]
   })
   const [totalEmployees, setTotalEmployees] = useState(0)
+  const [newEmployees, setNewEmployees] = useState(0)
   const [provinceData, setProvinceData] = useState<
     Array<{ province: string; count: number; percentage: number }>
   >([])
   const [loading, setLoading] = useState(true)
+  const [totalActiveUsers, setTotalActiveUsers] = useState(0)
   const [totalQuestionsAsked, setTotalQuestionsAsked] = useState(0)
+  const [newQuestionsAsked, setNewQuestionsAsked] = useState(0)
+  const [totalDocumentsUploaded, setTotalDocumentsUploaded] = useState(0)
+  const [newDocumentsUploaded, setNewDocumentsUploaded] = useState(0)
   const [monthlyChartData, setMonthlyChartData] = useState<
     Array<{
       month: string
@@ -81,6 +88,13 @@ export default function Analytics() {
   }
 
   useEffect(() => {
+    const companyId = localStorage.getItem("companyId") || ""
+    if (!companyId) {
+      alert("Error: Company ID not found. Please log in again.")
+      console.error("Company ID not found in localStorage")
+      return
+    }
+
     const fetchAnalyticsData = async () => {
       setLoading(true)
       // Set loading states for AI insights when timeline changes
@@ -94,24 +108,33 @@ export default function Analytics() {
 
       try {
         const [
-          employeeCount,
+          { totalEmployees, newEmployees },
           provinceDistribution,
-          questionsAsked,
+          totalActiveUsers,
+          { totalQuestionsAsked, newQuestionsAsked },
+          { totalDocumentsUploaded, newDocumentsUploaded },
           monthlyAnalytics,
         ] = await Promise.all([
-          getTotalEmployees(startDate, endDate),
-          getProvinceDistribution(startDate, endDate),
-          getTotalQuestionsAsked(startDate, endDate),
-          getMonthlyData(startDate, endDate),
+          getEmployees(startDate, endDate, companyId),
+          getProvinceDistribution(startDate, endDate, companyId),
+          getActiveUsers(startDate, endDate, companyId),
+          getQuestionsAsked(startDate, endDate, companyId),
+          getDocuments(startDate, endDate, companyId),
+          getMonthlyData(startDate, endDate, companyId),
         ])
 
-        setTotalEmployees(employeeCount)
+        setTotalEmployees(totalEmployees)
+        setNewEmployees(newEmployees)
         setProvinceData(provinceDistribution)
-        setTotalQuestionsAsked(questionsAsked)
+        setTotalQuestionsAsked(totalQuestionsAsked)
+        setNewQuestionsAsked(newQuestionsAsked)
+        setTotalDocumentsUploaded(totalDocumentsUploaded)
+        setTotalActiveUsers(totalActiveUsers)
+        setNewDocumentsUploaded(newDocumentsUploaded)
         setMonthlyChartData(monthlyAnalytics)
       } catch (error) {
         console.error("Error fetching analytics data:", error)
-        setTotalEmployees(0)
+        setNewEmployees(0)
         setProvinceData([])
         setTotalQuestionsAsked(0)
         setMonthlyChartData([])
@@ -222,7 +245,7 @@ export default function Analytics() {
   ])
 
   const employeeStats = {
-    total: totalEmployees,
+    total: newEmployees,
     active: 231,
     newThisMonth: 18,
     retentionRate: 94.2,
@@ -278,13 +301,13 @@ export default function Analytics() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Total Employees
+                  Company Size
                 </p>
                 <p className="text-3xl font-bold text-gray-900">
-                  {loading ? "..." : employeeStats.total}
+                  {loading ? "..." : totalEmployees}
                 </p>
                 <p className="text-sm text-green-600 mt-1">
-                  +{employeeStats.newThisMonth} this month
+                  +{newEmployees} this period
                 </p>
               </div>
               <div className="p-3 bg-blue-100 rounded-full">
@@ -297,13 +320,16 @@ export default function Analytics() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Retention Rate
+                  Active Users
                 </p>
                 <p className="text-3xl font-bold text-gray-900">
-                  {employeeStats.retentionRate}%
+                  {totalActiveUsers}
                 </p>
                 <p className="text-sm text-green-600 mt-1">
-                  +2.3% vs last period
+                  {totalActiveUsers > 0 && totalEmployees > 0
+                    ? ((totalActiveUsers / totalEmployees) * 100).toFixed(2)
+                    : 0}
+                  % engagement rate
                 </p>
               </div>
               <div className="p-3 bg-purple-100 rounded-full">
@@ -321,7 +347,9 @@ export default function Analytics() {
                 <p className="text-3xl font-bold text-gray-900">
                   {loading ? "..." : totalQuestionsAsked}
                 </p>
-                <p className="text-sm text-orange-600 mt-1">+14% this month</p>
+                <p className="text-sm text-orange-600 mt-1">
+                  +{newQuestionsAsked} this period
+                </p>
               </div>
               <div className="p-3 bg-orange-100 rounded-full">
                 <MessageSquare className="w-6 h-6 text-orange-600" />
@@ -335,8 +363,12 @@ export default function Analytics() {
                 <p className="text-sm font-medium text-gray-600">
                   Documents Uploaded
                 </p>
-                <p className="text-3xl font-bold text-gray-900">38</p>
-                <p className="text-sm text-indigo-600 mt-1">+12 this month</p>
+                <p className="text-3xl font-bold text-gray-900">
+                  {loading ? "..." : totalDocumentsUploaded}
+                </p>
+                <p className="text-sm text-indigo-600 mt-1">
+                  +{newDocumentsUploaded} this period
+                </p>
               </div>
               <div className="p-3 bg-indigo-100 rounded-full">
                 <FileText className="w-6 h-6 text-indigo-600" />

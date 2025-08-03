@@ -8,7 +8,7 @@ export async function GET(request: Request) {
     const startDate = searchParams.get("startDate")
     const endDate = searchParams.get("endDate")
     const companyId = searchParams.get("companyId")
-    if (!companyId) {
+    if (!companyId || !startDate || !endDate) {
       return NextResponse.json(
         { error: "Company ID is required", success: false },
         { status: 400 }
@@ -21,40 +21,33 @@ export async function GET(request: Request) {
       .get()
     const employeeIds = employeeSnapshot.docs.map((doc: DocumentData) => doc.id)
 
+    const startTimestamp = new Date(startDate)
+    const endTimestamp = new Date(endDate)
+
     const chatsRef = db.collection("chats")
     const chatsSnapshot = await chatsRef
       .where("userId", "in", employeeIds)
       .get()
+
     // console.log('Employee Chats:', chatsSnapshot.docs.map((doc: QueryDocumentSnapshot<DocumentData>) => ({ id: doc.id, ...doc.data() })));
-    let newQuestionsAsked = 0
-    let totalQuestionsAsked = 0
+
+    const userIds = new Set<string>()
 
     for (const chatDoc of chatsSnapshot.docs) {
       const chatData = chatDoc.data()
-      const messages = chatData.messages || []
-      for (const messageData of messages) {
-        if (messageData.isFromUser) {
-          totalQuestionsAsked++
-          if (startDate && endDate) {
-            const createdAt =
-              messageData.createdAt?.toDate?.() ||
-              new Date(messageData.createdAt)
-            const startTimestamp = new Date(startDate)
-            const endTimestamp = new Date(endDate)
-            endTimestamp.setHours(23, 59, 59, 999)
-            if (createdAt >= startTimestamp && createdAt <= endTimestamp) {
-              newQuestionsAsked++
-            }
-          } else {
-            newQuestionsAsked++
-          }
-        }
+      const updatedAt =
+        chatData.updatedAt?.toDate?.() || new Date(chatData.updatedAt)
+
+      endTimestamp.setHours(23, 59, 59, 999)
+      if (updatedAt >= startTimestamp && updatedAt <= endTimestamp) {
+        userIds.add(chatData.userId)
       }
     }
 
+    let totalActiveUsers = userIds.size
+
     return NextResponse.json({
-      totalQuestionsAsked,
-      newQuestionsAsked,
+      totalActiveUsers,
       success: true,
     })
   } catch (error) {
