@@ -34,21 +34,26 @@
    - Response: Returns the user object.
 
 3. **POST /api/users**
+
    - Description: Creates a new user.
    - Body: The user object to create.
    - Example Body:
+
      ```json
-     clerkUserId: string; // references Clerk user ID
-     firstName: "Test",
-     lastName: "User",
-     primaryEmail: "test@company.com",
-     userType: "Employee",
-     isSubscribed: true,
-     province: "ON",
-     companyId: "",
-     createdAt: new Date(),
-     updatedAt: new Date()
+     {
+       "clerkUserId": "clerk123",
+       "firstName": "Test",
+       "lastName": "User",
+       "primaryEmail": "test@company.com",
+       "userType": "Employee",
+       "isSubscribed": true,
+       "province": "ON",
+       "companyId": "",
+       "createdAt": "2025-08-03T00:00:00.000Z",
+       "updatedAt": "2025-08-03T00:00:00.000Z"
+     }
      ```
+
    - Response: Returns the created user object.
 
 ---
@@ -57,11 +62,14 @@
 
    - Description: Saves a chat message with the userID.
    - Body: Create a new chat with no messages:
+   - Example Body:
      ```json
-       userId: string;
-       companyId?: string;
-       createdAt: Date;
-       updatedAt: Date;
+     {
+       "userId": "abc123",
+       "companyId": "company456",
+       "createdAt": "2025-08-03T00:00:00.000Z",
+       "updatedAt": "2025-08-03T12:34:56.000Z"
+     }
      ```
    - Response: Returns the created chat id.
 
@@ -86,12 +94,17 @@
      - `chatID`: The ID of the chat to which the message will be added.
    - Body: Create a new message with the chatID and messageData:
 
-     ```json
-     chatID: string;
-     messageData:
-     	content: string;
-     	isFromUser: boolean;
-     	sources?: string[]; // for any cited sources
+     ```plaintext
+      {
+        "chatID": string,           // The ID of the chat
+        "messageData": [
+          {
+          "content": string,        // The message text
+          "isFromUser": boolean,    // Indicates if the message is from the user
+          "sources": [string]       // Optional array of cited sources
+          }
+        ]
+      }
 
      ```
 
@@ -104,7 +117,7 @@
    - Description: Creates a new company.
    - Body: The company object to create.
    - Example Body:
-     ```json
+     ```plaintext
      name: string;
      ownerId: string; // references user
      createdAt: Date;
@@ -112,13 +125,17 @@
      ```
      - Response: Returns the created company object.
 
+---
+
 9. **POST /api/ai-summary/bullet-points**
 
    - Description: Generates bullet points from the provided summary message. Each bullet point starts with "- " and appears on a new line in the response.
    - Body: A JSON object containing the "summary" string to be converted into bullet points.
    - Example Body:
      ```json
-     summary: string;
+     {
+       "summary": "This is a summary."
+     }
      ```
    - Response: A string with bullet points, each starting with - and separated by new lines.
 
@@ -192,6 +209,8 @@
       }
       ```
     - Response: A plain-text, concise summary paragraph highlighting the main trends in the questions asked.
+
+---
 
 **POST /api/vectordb-documents**
 
