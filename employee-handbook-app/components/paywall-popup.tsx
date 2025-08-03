@@ -6,7 +6,7 @@ import { useUser, useClerk } from "@clerk/nextjs";
 import axios from 'axios';
 
 const pricingTiers = [
-  { min: 0, max: 9, price: 1.00 },
+  { min: 1, max: 9, price: 1.00 },
   { min: 10, max: 49, price: 0.90 },
   { min: 50, max: 99, price: 0.80 },
   { min: 100, max: 499, price: 0.70 },
@@ -122,7 +122,7 @@ export default function PaywallModal() {
                       {tier.min.toLocaleString()}-{tier.max.toLocaleString()} employees
                     </span>
                     <span className={`${isCurrentTier ? 'font-bold text-blue-800' : 'font-bold text-blue-800'}`}>
-                      ${tier.price}/month per employee
+                      ${tier.price.toFixed(2)}/month per employee
                     </span>
                   </div>
                 );
