@@ -262,3 +262,42 @@
   }
   ```
 - Response: Returns the file URL, namespace (company) and a status indicating success or failure.
+
+---
+
+**POST /api/stripe/checkout**
+
+   - Description: Creates a Stripe checkout session for premium access to employee handbook features. Requires user authentication and creates a payment session for $9.99 USD.
+   - Authentication: Required (Clerk authentication)
+   - Body: None required
+   - Response: Returns a checkout URL to redirect the user to Stripe's payment page.
+   - Example Response:
+     ```json
+     {
+       "url": "https://checkout.stripe.com/pay/cs_test_..."
+     }
+     ```
+   - Error Responses:
+     - `401 Unauthorized`: User is not authenticated
+     - `500 Internal Server Error`: Failed to create checkout session
+
+**POST /api/stripe/webhook**
+
+   - Description: Handles Stripe webhook events to process payment confirmations and update user subscription status. Verifies webhook signature for security and processes `checkout.session.completed` and `payment_intent.succeeded` events.
+   - Authentication: Webhook signature verification required
+   - Body: Raw Stripe webhook event data (handled internally by Stripe)
+   - Headers Required:
+     - `stripe-signature`: Stripe webhook signature for verification
+   - Supported Events:
+     - `checkout.session.completed`: Updates user subscription status when payment is completed
+     - `payment_intent.succeeded`: Handles successful payment intent events
+   - Response: Returns confirmation that the webhook was received.
+   - Example Response:
+     ```json
+     {
+       "received": true
+     }
+     ```
+   - Error Responses:
+     - `400 Bad Request`: Invalid webhook signature
+     - `500 Internal Server Error`: Webhook handler failed
