@@ -35,6 +35,7 @@ const mockSignedOutAuth = {
   has: jest.fn().mockReturnValue(false),
   debug: jest.fn(),
   toAuth: jest.fn(),
+  isSignedIn: false,
 } as const;
 
 const mockSignedInAuth = {
@@ -61,6 +62,7 @@ const mockSignedInAuth = {
   has: jest.fn().mockReturnValue(true),
   debug: jest.fn(),
   toAuth: jest.fn(),
+  isSignedIn: true,
 } as const;
 
 jest.mock('@clerk/nextjs/server', () => ({
@@ -115,7 +117,12 @@ describe('GET /api/accept-invitation', () => {
 
   it('should redirect to login when unauthenticated', async () => {
     const request = new NextRequest('http://localhost/api/accept-invitation?invitationId=123');
-    (getInvitation as jest.Mock).mockResolvedValue({ status: 'pending' });
+    (getInvitation as jest.Mock).mockResolvedValue({ 
+      status: 'pending',
+      email: 'test@example.com',
+      companyId: 'company1',
+      companyName: 'TestCo'
+    });
     mockGetAuth.mockReturnValue(mockSignedOutAuth as any);
     
     const response = await acceptHandler(request);

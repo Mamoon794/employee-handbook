@@ -20,6 +20,7 @@ const mockSignedOutAuth = {
   has: jest.fn().mockReturnValue(false),
   debug: jest.fn(),
   toAuth: jest.fn(),
+  isSignedIn: false,
 } as const;
 
 const mockSignedInAuth = {
@@ -46,6 +47,7 @@ const mockSignedInAuth = {
   has: jest.fn().mockReturnValue(true),
   debug: jest.fn(),
   toAuth: jest.fn(),
+  isSignedIn: true,
 } as const;
 
 jest.mock('@clerk/nextjs/server', () => ({
@@ -59,6 +61,10 @@ jest.mock('@/models/dbOperations', () => ({
 const mockGetAuth = getAuth as jest.MockedFunction<typeof getAuth>;
 
 describe('GET /api/getCompanyInfo', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should return 401 when unauthenticated', async () => {
     const request = new NextRequest('http://localhost/api/getCompanyInfo');
     mockGetAuth.mockReturnValue(mockSignedOutAuth as any);
