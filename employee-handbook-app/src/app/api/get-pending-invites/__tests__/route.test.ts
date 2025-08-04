@@ -1,4 +1,5 @@
 import { GET as getPendingHandler } from '../route';
+import { getPendingInvitationsByCompany } from '@/models/dbOperations';
 
 jest.mock('@/models/dbOperations', () => ({
   getPendingInvitationsByCompany: jest.fn(),
@@ -15,8 +16,7 @@ describe('GET /api/get-pending-invites', () => {
   });
 
   it('should return pending invites', async () => {
-    const { getPendingInvitationsByCompany } = require('@/models/dbOperations');
-    getPendingInvitationsByCompany.mockResolvedValue([{ id: 'invite1' }]);
+    (getPendingInvitationsByCompany as jest.Mock).mockResolvedValue([{ id: 'invite1' }]);
 
     const request = new Request('http://localhost/api/get-pending-invites?companyId=comp123');
     const response = await getPendingHandler(request);

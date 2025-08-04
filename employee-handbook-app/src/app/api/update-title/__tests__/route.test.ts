@@ -1,22 +1,21 @@
 import { POST as updateHandler } from '../route';
+import { updateChatTitle } from '@/models/dbOperations';
 
 jest.mock('@/models/dbOperations', () => ({
   updateChatTitle: jest.fn(),
 }));
 
 describe('POST /api/update-title', () => {
+  beforeEach(() => {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
 
-    beforeEach(() => {
-        jest.spyOn(console, 'error').mockImplementation(() => {});
-    });
-
-    afterEach(() => {
-        jest.restoreAllMocks();
-    });
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
 
   it('should update chat title successfully', async () => {
-    const { updateChatTitle } = require('@/models/dbOperations');
-    updateChatTitle.mockResolvedValue(true);
+    (updateChatTitle as jest.Mock).mockResolvedValue(true);
 
     const request = new Request('http://localhost/api/update-title', {
       method: 'POST',
@@ -35,8 +34,7 @@ describe('POST /api/update-title', () => {
   });
 
   it('should handle update errors', async () => {
-    const { updateChatTitle } = require('@/models/dbOperations');
-    updateChatTitle.mockRejectedValue(new Error('DB error'));
+    (updateChatTitle as jest.Mock).mockRejectedValue(new Error('DB error'));
 
     const request = new Request('http://localhost/api/update-title', {
       method: 'POST',

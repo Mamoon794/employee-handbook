@@ -1,4 +1,5 @@
 import { GET as getAcceptedHandler } from '../route';
+import { getAcceptedInvitationsByCompany } from '@/models/dbOperations';
 
 jest.mock('@/models/dbOperations', () => ({
   getAcceptedInvitationsByCompany: jest.fn(),
@@ -15,8 +16,7 @@ describe('GET /api/get-accepted-invites', () => {
   });
 
   it('should return accepted invites', async () => {
-    const { getAcceptedInvitationsByCompany } = require('@/models/dbOperations');
-    getAcceptedInvitationsByCompany.mockResolvedValue([{ id: 'invite1' }]);
+    (getAcceptedInvitationsByCompany as jest.Mock).mockResolvedValue([{ id: 'invite1' }]);
 
     const request = new Request('http://localhost/api/get-accepted-invites?companyId=comp123');
     const response = await getAcceptedHandler(request);

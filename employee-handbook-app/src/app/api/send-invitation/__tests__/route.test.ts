@@ -1,5 +1,7 @@
 import { POST as sendHandler } from '../route';
 import { NextRequest } from 'next/server';
+import { createInvitation, getUserByEmail } from '@/models/dbOperations';
+import { sendInvitationEmail } from '@/lib/email';
 
 jest.mock('@/models/dbOperations', () => ({
   createInvitation: jest.fn(),
@@ -11,14 +13,13 @@ jest.mock('@/lib/email', () => ({
 }));
 
 describe('POST /api/send-invitation', () => {
+  beforeEach(() => {
+    jest.spyOn(console, 'log').mockImplementation(() => {});
+  });
 
-    beforeEach(() => {
-        jest.spyOn(console, 'log').mockImplementation(() => {});
-    });
-
-    afterEach(() => {
-        jest.restoreAllMocks();
-    });
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
 
   it('should require authentication', async () => {
     const request = new NextRequest('http://localhost/api/send-invitation', {
@@ -34,15 +35,12 @@ describe('POST /api/send-invitation', () => {
   });
 
   it('should send invitation successfully', async () => {
-    const { createInvitation, getUserByEmail } = require('@/models/dbOperations');
-    const { sendInvitationEmail } = require('@/lib/email');
-    
-    getUserByEmail.mockResolvedValue({ 
+    (getUserByEmail as jest.Mock).mockResolvedValue({ 
       email: 'test@example.com', 
       companyId: null 
     });
     
-    createInvitation.mockResolvedValue({ id: 'invite123' });
+    (createInvitation as jest.Mock).mockResolvedValue({ id: 'invite123' });
 
     const request = new NextRequest('http://localhost/api/send-invitation', {
       method: 'POST',

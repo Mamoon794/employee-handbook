@@ -1,4 +1,5 @@
 import { POST as expireHandler } from '../route';
+import { expireInvitation } from '@/models/dbOperations';
 
 jest.mock('@/models/dbOperations', () => ({
   expireInvitation: jest.fn(),
@@ -19,8 +20,7 @@ describe('POST /api/expire-invite', () => {
   });
 
   it('should expire invitation successfully', async () => {
-    const { expireInvitation } = require('@/models/dbOperations');
-    expireInvitation.mockResolvedValue(true);
+    (expireInvitation as jest.Mock).mockResolvedValue(true);
 
     const request = new Request('http://localhost/api/expire-invite', {
       method: 'POST',

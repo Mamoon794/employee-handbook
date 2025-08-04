@@ -1,22 +1,30 @@
 import { POST as generateHandler } from '../route';
+import { updateChatTitle } from '@/models/dbOperations';
 
 global.fetch = jest.fn();
 
-jest.mock('@/dbConfig/firebaseConfig', () => {
-  return {
-    db: {
-      collection: jest.fn().mockReturnThis(),
-      doc: jest.fn().mockReturnThis(),
-      get: jest.fn(),
-      set: jest.fn(),
-    },
-    serviceAccount: {
-      project_id: 'test-project',
-      private_key: 'test-key',
-      client_email: 'test@example.com',
-    }
-  };
+beforeEach(() => {
+  jest.spyOn(console, 'log').mockImplementation(() => {});
+  jest.spyOn(console, 'error').mockImplementation(() => {});
 });
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
+
+jest.mock('@/dbConfig/firebaseConfig', () => ({
+  db: {
+    collection: jest.fn().mockReturnThis(),
+    doc: jest.fn().mockReturnThis(),
+    get: jest.fn(),
+    set: jest.fn(),
+  },
+  serviceAccount: {
+    project_id: 'test-project',
+    private_key: 'test-key',
+    client_email: 'test@example.com',
+  }
+}));
 
 jest.mock('firebase-admin', () => ({
   apps: [],
@@ -50,8 +58,7 @@ describe('POST /api/generate-title', () => {
       json: () => Promise.resolve({ title: 'Generated Title' }),
     });
 
-    const { updateChatTitle } = require('@/models/dbOperations');
-    updateChatTitle.mockResolvedValue(true);
+    (updateChatTitle as jest.Mock).mockResolvedValue(true);
 
     const request = new Request('http://localhost/api/generate-title', {
       method: 'POST',
@@ -70,6 +77,7 @@ describe('POST /api/generate-title', () => {
     
     expect(data.title).toBe('Generated Title');
     expect(updateChatTitle).toHaveBeenCalled();
+    expect(console.log).toHaveBeenCalledWith('URL', 'http://ai-service'); 
   });
 
   it('should return default title on failure', async () => {
@@ -94,5 +102,6 @@ describe('POST /api/generate-title', () => {
     
     expect(data.title).toBe('New Chat');
     expect(data.error).toContain('Failed');
+    expect(console.error).toHaveBeenCalled();
   });
 });
