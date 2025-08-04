@@ -1,4 +1,4 @@
-> ⚙️ Are you a developer? See [README_DEV.md](./README_DEV.md) for setup and technical details.
+<img width="1886" height="957" alt="image" src="https://github.com/user-attachments/assets/2fe91e7a-41f6-4178-9d43-9ef203cb66e3" />> ⚙️ Are you a developer? See [README_DEV.md](./README_DEV.md) for setup and technical details.
 
 # Employee Handbook App
 
@@ -40,11 +40,18 @@ If you don't have an account, you can sign up using the **Sign Up** button. You 
 If you choose to sign up as an employee, you will be taken to the sign up page by Clerk, where you can enter your email and password to create an account. As of now, sign up only works when using email. Sign up with Google needs a bit more work to be done.
 ![Employee Sign Up](deliverables/D2/images/employee_signup.png)
 
-If you choose to sign up as an employer, you will see the same page but upon completion, you will be taken to the dashboard which allows you to upload documents, view analytics and more. In the future, you will be able to upload your company policies and documents.
+If you choose to sign up as an employer, you will see the same page but upon completion, you will be taken to the dashboard which allows you to upload documents, view analytics and more. 
 ![Employer Sign Up](deliverables/D2/images/employee_signup.png)
 
 As an employer, you can upload your company policies and documents, add employees, view finances, view analytics and access the chatbot. Some functionality will be implemented in the future, but you can already upload documents.
 ![Employer Dashboard](deliverables/D2/images/employer_dashboard.png)
+
+Owners can then add employees to their company by sending invites through email. They can view pending, expired and accepted invitations. Additionally, they have the option to delete a pending invitation, effectively making it expired.
+<img width="1851" height="877" alt="image" src="https://github.com/user-attachments/assets/aae8773d-1cf7-4d5d-a3ba-1de4250db794" />
+
+Invited employees will recieve an email in which clicking the provided link allows them to join the company.
+<img width="1574" height="819" alt="image" src="https://github.com/user-attachments/assets/4140b06a-846f-46eb-8570-414139822bcd" />
+![Welcome](https://github.com/user-attachments/assets/0aefd6d6-1c70-4865-8127-ca31bbe95557)
 
 The analytics page will show you the number of employees, total questions asked and more.
 ![Analytics](deliverables/D2/images/analytics.png)
@@ -52,6 +59,10 @@ The analytics page will show you the number of employees, total questions asked 
 ## Chat History
 - All users (public or logged-in) can view their recent chat history.
 - A maximum of 8 recent chats are stored per user.
+
+## Add Employee Feature
+
+To allow owners to give their employees access to their policy documents, owners are able to add employees to their company through the dashboard. Here, owners can send an invite using the invitee's email, and the email will be sent through EmailJS. There are a few checks that take place just to ensure the employee is not already in a company, that they have not already recieved an email by the sender, and that they exist in our database. These invites expire within 7 days if not accepted by the employee, or if they are cancelled by the sender. Upon such circumstances, the invite will redirect to an invalid or expired invitation page. Once accepted, the employee will view a welcome message and now see their company's name on the chat page and will have access to company-specific policies.
 
 ## Stripe Payment Integration
 
