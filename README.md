@@ -1,4 +1,4 @@
->> ⚙️ Are you a developer? See [README_DEV.md](./README_DEV.md) for setup and technical details.
+> ⚙️ Are you a developer? See [README_DEV.md](./README_DEV.md) for setup and technical details.
 
 # Employee Handbook App
 
