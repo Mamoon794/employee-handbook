@@ -70,11 +70,11 @@ To load documents into Pinecone, run the following in a new terminal:
 
 ```bash
 cd AIService
-python scrapeAllData.py   # Scrapes links from providedDocSample.json and saves data to a pickle file
-python setup.py           # Uploads data from the pickle file to Pinecone
+python scrapeAllProvinces.py   # Scrapes links from providedDocSample.json and saves data to a pickle file
+python setupProvinces.py       # Uploads data from the pickle file to Pinecone
 ```
 
-**Note:** These commands should only be run if `providedDocSample.json` has been updated, as they can take a long time to complete.
+**Note:** These commands should only be run if `providedDoc.json` has been updated, as they can take a long time to complete.
 
 **Requirements:**
 
