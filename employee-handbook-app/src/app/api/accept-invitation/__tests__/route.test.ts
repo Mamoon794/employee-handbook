@@ -92,8 +92,6 @@ jest.mock('@/dbConfig/firebaseConfig', () => ({
   }
 }));
 
-const mockGetAuth = getAuth as jest.MockedFunction<typeof getAuth>;
-
 describe('GET /api/accept-invitation', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -125,7 +123,7 @@ describe('GET /api/accept-invitation', () => {
       companyId: 'company1',
       companyName: 'TestCo'
     });
-    mockGetAuth.mockReturnValue(mockSignedOutAuth as any);
+    (getAuth as jest.Mock).mockReturnValue(mockSignedOutAuth);
     
     const response = await acceptHandler(request);
     expect(response.status).toBe(307);
@@ -142,7 +140,7 @@ describe('GET /api/accept-invitation', () => {
       companyName: 'TestCo'
     });
     
-    mockGetAuth.mockReturnValue(mockSignedInAuth as any);
+    (getAuth as jest.Mock).mockReturnValue(mockSignedInAuth);
     (getClerkUser as jest.Mock).mockResolvedValue([{ 
       id: 'user123', 
       email: 'test@example.com' 

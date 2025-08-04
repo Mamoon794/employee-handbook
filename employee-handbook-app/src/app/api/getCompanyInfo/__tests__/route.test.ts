@@ -60,8 +60,6 @@ jest.mock('@/models/dbOperations', () => ({
   getClerkUser: jest.fn(),
 }));
 
-const mockGetAuth = getAuth as jest.MockedFunction<typeof getAuth>;
-
 describe('GET /api/getCompanyInfo', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -69,7 +67,7 @@ describe('GET /api/getCompanyInfo', () => {
 
   it('should return 401 when unauthenticated', async () => {
     const request = new NextRequest('http://localhost/api/getCompanyInfo');
-    mockGetAuth.mockReturnValue(mockSignedOutAuth as any);
+    (getAuth as jest.Mock).mockReturnValue(mockSignedOutAuth);
     
     const response = await companyInfoHandler(request);
     const data = await response.json();
@@ -80,7 +78,7 @@ describe('GET /api/getCompanyInfo', () => {
 
   it('should return company info', async () => {
     const request = new NextRequest('http://localhost/api/getCompanyInfo');
-    mockGetAuth.mockReturnValue(mockSignedInAuth as any);
+    (getAuth as jest.Mock).mockReturnValue(mockSignedInAuth);
     
     (getClerkUser as jest.Mock).mockResolvedValue([{ 
       companyId: 'comp123', 
