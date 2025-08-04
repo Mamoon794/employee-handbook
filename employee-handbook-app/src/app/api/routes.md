@@ -213,6 +213,71 @@
 
 ---
 
+**GET /api/analytics/active-users**
+
+- Description: Returns the total number of unique active users (employees) in a company who have participated in chats within the specified date range. An active user is identified by having at least one chat updated within the range.
+- Query Parameters:
+  - companyId: (string) – Required. The unique ID of the company.
+  - startDate: (string) – Required. Start of the date range in YYYY-MM-DD format.
+  - endDate: (string) – Required. End of the date range in YYYY-MM-DD format.
+- Response: A JSON object containing the total number of active users and the status.
+
+**GET /api/analytics/documents**
+
+- Description: Returns the total number of documents uploaded by a company and how many were newly uploaded within the specified date range.
+- Query Parameters:
+  - companyId: (string) – Required. The unique ID of the company.
+  - startDate: (string) – Required. Start of the date range in YYYY-MM-DD format.
+  - endDate: (string) – Required. End of the date range in YYYY-MM-DD format.
+- Response: A JSON object containing the total number of uploaded documents and how many were newly uploaded within the specified date range.
+
+**GET /api/analytics/monthly**
+
+- Description: Returns time-based analytics (either daily or monthly) on the number of employees added, questions asked, and documents uploaded by a company within a given date range.
+- Query Parameters:
+  - companyId: (string) – Required. The unique ID of the company.
+  - startDate: (string) – Required. Start of the date range in YYYY-MM-DD format.
+  - endDate: (string) – Required. End of the date range in YYYY-MM-DD format.
+- Response: A JSON object containing a list of time periods and the counts for each.
+
+**GET /api/analytics/popular-questions**
+
+- Description: Retrieves the most popular (top) questions asked within a company over a specified date range. Results are filtered by the company name and the createdAt timestamp.
+- Query Parameters:
+  - companyId: (string) – Required. The unique ID of the company.
+  - startDate: (string) – Required. Start of the date range in YYYY-MM-DD format.
+  - endDate: (string) – Required. End of the date range in YYYY-MM-DD format.
+- Response: A JSON object containing a list of top questions within the specified period.
+
+**GET /api/analytics/provinces**
+
+- Description: Returns the total number of employees in a company and their distribution by province, optionally filtered by a date range.
+- Query Parameters:
+  - companyId: (string) – Required. The unique ID of the company.
+  - startDate: (string) – Required. Start of the date range in YYYY-MM-DD format.
+  - endDate: (string) – Required. End of the date range in YYYY-MM-DD format.
+- Response: A JSON object containing the total number of employees and their distribution by province.
+
+**GET /api/analytics/questions**
+
+- Description: Returns the total number of questions asked by employees in a company, as well as how many of those were asked within a specified date range.
+- Query Parameters:
+  - companyId: (string) – Required. The unique ID of the company.
+  - startDate: (string) – Required. Start of the date range in YYYY-MM-DD format.
+  - endDate: (string) – Required. End of the date range in YYYY-MM-DD format.
+- Response: A JSON object with the total number of questions and how many were newly asked within the given time frame.
+
+**GET /api/analytics/users**
+
+- Description: Returns the total number of members (including owners, adminstrators, financers, employees) in a company and the number of new members added within a given date range (if provided).
+- Query Parameters:
+  - companyId: (string) – Required. The unique ID of the company.
+  - startDate: (string) – Required. Start of the date range in YYYY-MM-DD format.
+  - endDate: (string) – Required. End of the date range in YYYY-MM-DD format.
+- Response: A JSON object with total members and new members within the date range.
+
+---
+
 **POST /api/messages/public**
 
 - Description: Handles incoming messages from public users by forwarding them to the AI service for a response. Maintains conversation context using a thread ID.
