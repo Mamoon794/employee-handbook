@@ -1,22 +1,18 @@
 import shutil
 import uuid
-from dotenv import load_dotenv
 import os
 import re
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from faster_whisper import WhisperModel
 from pydantic import BaseModel
-from setupProvinces import graph, llm, process_docs, index_company_documents, delete_document_from_vector_db, delete_company_documents_from_vector_db, store_user_message_to_vector_store
-from processCompanyDocs import crawl_company_docs
-from kmeans import find_popular_questions_from_vector_db
+from config import llm
+from rag_graph import graph
+from setupProvinces import process_docs
+from utils import store_user_message_to_vector_store, find_popular_questions_from_vector_db
+from processCompanyDocs import crawl_company_docs, index_company_documents, delete_document_from_vector_db, delete_company_documents_from_vector_db
 import traceback
 
-from pinecone import Pinecone
-from langchain.chat_models import init_chat_model
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
-from langchain_community.document_loaders import WebBaseLoader, PyPDFLoader
-from langchain_pinecone import PineconeVectorStore
 from langchain_core.messages import ToolMessage
 from langchain_core.documents import Document
 
