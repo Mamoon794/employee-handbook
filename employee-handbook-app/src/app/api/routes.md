@@ -1,30 +1,6 @@
 ### The routes defined for the API
 
-1. **POST /api/public/message**
-   - Description: Sends a public user's question, province, and thread ID to the AI service. The service returns a contextual response with relevant citations. The API returns citations including the original URL, a URL with a fragment identifier or text fragment, and the title.
-   - Example Body:
-     ```json
-     {
-       "province": "Ontario",
-       "query": "What is the minimum wage?",
-       "threadId": "1719337314562"
-     }
-     ```
-   - Example Response:
-     ```json
-     {
-       "response": "As of 2025, the minimum wage in Ontario is $16.55 per hour.",
-       "citations": [
-         {
-           "originalUrl": "https://www.cfib-fcei.ca/en/tools-resources/minimum-wage-rates-overtime-rules-canada",
-           "fragmentUrl": "https://www.cfib-fcei.ca/en/tools-resources/minimum-wage-rates-overtime-rules-canada",
-           "title": "Minimum wage rates and overtime rules in Canada"
-         }
-       ]
-     }
-     ```
-
-1. **POST /api/messages/private**
+**POST /api/messages/private**
    - Description: Sends a public user's question, province, thread ID, and company to the AI service. The service returns two types of responses, one based on public documentation, and another based on private company documentation, each with relevant citations. The API returns the public and private responses, as well as their citations, each including the original URL, a URL with a fragment identifier or text fragment, and the title.
    - Example Body:
      ```json
@@ -77,21 +53,26 @@
    - Response: Returns the user object.
 
 3. **POST /api/users**
+
    - Description: Creates a new user.
    - Body: The user object to create.
    - Example Body:
+
      ```json
-     clerkUserId: string; // references Clerk user ID
-     firstName: "Test",
-     lastName: "User",
-     primaryEmail: "test@company.com",
-     userType: "Employee",
-     isSubscribed: true,
-     province: "ON",
-     companyId: "",
-     createdAt: new Date(),
-     updatedAt: new Date()
+     {
+       "clerkUserId": "clerk123",
+       "firstName": "Test",
+       "lastName": "User",
+       "primaryEmail": "test@company.com",
+       "userType": "Employee",
+       "isSubscribed": true,
+       "province": "ON",
+       "companyId": "",
+       "createdAt": "2025-08-03T00:00:00.000Z",
+       "updatedAt": "2025-08-03T00:00:00.000Z"
+     }
      ```
+
    - Response: Returns the created user object.
 
 ---
@@ -100,11 +81,14 @@
 
    - Description: Saves a chat message with the userID.
    - Body: Create a new chat with no messages:
+   - Example Body:
      ```json
-       userId: string;
-       companyId?: string;
-       createdAt: Date;
-       updatedAt: Date;
+     {
+       "userId": "abc123",
+       "companyId": "company456",
+       "createdAt": "2025-08-03T00:00:00.000Z",
+       "updatedAt": "2025-08-03T12:34:56.000Z"
+     }
      ```
    - Response: Returns the created chat id.
 
@@ -130,12 +114,16 @@
    - Body: Create a new message with the chatID and messageData:
 
      ```json
-     chatID: string;
-     messageData:
-     	content: string;
-     	isFromUser: boolean;
-     	sources?: string[]; // for any cited sources
-
+     {
+       "chatID": "string",
+       "messageData": [
+         {
+           "content": "string",
+           "isFromUser": false,
+           "sources": ["string"]
+         }
+       ]
+     }
      ```
 
    - Response: Returns the created message object.
@@ -148,12 +136,16 @@
    - Body: The company object to create.
    - Example Body:
      ```json
-     name: string;
-     ownerId: string; // references user
-     createdAt: Date;
-     updatedAt: Date;
+     {
+       "name": "string",
+       "ownerId": "string",
+       "createdAt": "2025-08-04T15:30:00Z",
+       "updatedAt": "2025-08-04T15:30:00Z"
+     }
      ```
-     - Response: Returns the created company object.
+   - Response: Returns the created company object.
+
+---
 
 9. **POST /api/ai-summary/bullet-points**
 
@@ -161,7 +153,9 @@
    - Body: A JSON object containing the "summary" string to be converted into bullet points.
    - Example Body:
      ```json
-     summary: string;
+     {
+       "summary": "This is a summary."
+     }
      ```
    - Response: A string with bullet points, each starting with - and separated by new lines.
 
@@ -236,9 +230,7 @@
       ```
     - Response: A plain-text, concise summary paragraph highlighting the main trends in the questions asked.
 
----
-
-12. **GET /api/popular-questions/job**
+**GET /api/popular-questions/job**
     - Description: Cron job which calls the FastAPI GET /popular-questions endpoint and gets all popular questions, with 3 popular questions for each scope (i.e. gets popular questions for all province/company combinations). These documents are saved to Firestore in the popular_questions collection. This job would run every Friday at 12:00am.
     - Response: Returns whether the job was a success and the number of popular questions saved to the database.
     - Example Response:
@@ -249,7 +241,7 @@
     }
     ```
 
-12. **POST /api/popular-questions**
+**POST /api/popular-questions**
     - Description: Fetches popular questions for the user's province/company from Firestore.
     - Body: A JSON object containing the user's company and province. If the user is public, company is an empty string.
     - Example Body:
@@ -268,3 +260,157 @@
       "What guidelines should an employer follow?"
     ]
     ```
+
+**GET /api/analytics/active-users**
+
+- Description: Returns the total number of unique active users (employees) in a company who have participated in chats within the specified date range. An active user is identified by having at least one chat updated within the range.
+- Query Parameters:
+  - companyId: (string) – Required. The unique ID of the company.
+  - startDate: (string) – Required. Start of the date range in YYYY-MM-DD format.
+  - endDate: (string) – Required. End of the date range in YYYY-MM-DD format.
+- Response: A JSON object containing the total number of active users and the status.
+
+**GET /api/analytics/documents**
+
+- Description: Returns the total number of documents uploaded by a company and how many were newly uploaded within the specified date range.
+- Query Parameters:
+  - companyId: (string) – Required. The unique ID of the company.
+  - startDate: (string) – Required. Start of the date range in YYYY-MM-DD format.
+  - endDate: (string) – Required. End of the date range in YYYY-MM-DD format.
+- Response: A JSON object containing the total number of uploaded documents and how many were newly uploaded within the specified date range.
+
+**GET /api/analytics/monthly**
+
+- Description: Returns time-based analytics (either daily or monthly) on the number of employees added, questions asked, and documents uploaded by a company within a given date range.
+- Query Parameters:
+  - companyId: (string) – Required. The unique ID of the company.
+  - startDate: (string) – Required. Start of the date range in YYYY-MM-DD format.
+  - endDate: (string) – Required. End of the date range in YYYY-MM-DD format.
+- Response: A JSON object containing a list of time periods and the counts for each.
+
+**GET /api/analytics/popular-questions**
+
+- Description: Retrieves the most popular (top) questions asked within a company over a specified date range. Results are filtered by the company name and the createdAt timestamp.
+- Query Parameters:
+  - companyId: (string) – Required. The unique ID of the company.
+  - startDate: (string) – Required. Start of the date range in YYYY-MM-DD format.
+  - endDate: (string) – Required. End of the date range in YYYY-MM-DD format.
+- Response: A JSON object containing a list of top questions within the specified period.
+
+**GET /api/analytics/provinces**
+
+- Description: Returns the total number of employees in a company and their distribution by province, optionally filtered by a date range.
+- Query Parameters:
+  - companyId: (string) – Required. The unique ID of the company.
+  - startDate: (string) – Required. Start of the date range in YYYY-MM-DD format.
+  - endDate: (string) – Required. End of the date range in YYYY-MM-DD format.
+- Response: A JSON object containing the total number of employees and their distribution by province.
+
+**GET /api/analytics/questions**
+
+- Description: Returns the total number of questions asked by employees in a company, as well as how many of those were asked within a specified date range.
+- Query Parameters:
+  - companyId: (string) – Required. The unique ID of the company.
+  - startDate: (string) – Required. Start of the date range in YYYY-MM-DD format.
+  - endDate: (string) – Required. End of the date range in YYYY-MM-DD format.
+- Response: A JSON object with the total number of questions and how many were newly asked within the given time frame.
+
+**GET /api/analytics/users**
+
+- Description: Returns the total number of members (including owners, adminstrators, financers, employees) in a company and the number of new members added within a given date range (if provided).
+- Query Parameters:
+  - companyId: (string) – Required. The unique ID of the company.
+  - startDate: (string) – Required. Start of the date range in YYYY-MM-DD format.
+  - endDate: (string) – Required. End of the date range in YYYY-MM-DD format.
+- Response: A JSON object with total members and new members within the date range.
+
+---
+
+**POST /api/messages/public**
+
+- Description: Handles incoming messages from public users by forwarding them to the AI service for a response. Maintains conversation context using a thread ID.
+- Example Body:
+  ```json
+  {
+    "province": "string",
+    "query": "string",
+    "threadId": "string"
+  }
+  ```
+- Response: Returns the AI-generated response.
+
+---
+
+**POST /api/vectordb-documents**
+
+- Description: Uploads a file to the vector database (Pinecone). The file is fetched from the provided URL and stored under the specified namespace after being chunked into smaller document segments.
+- Example Body:
+  ```json
+  {
+    "fileurl": "https://www.thewednesdaychef.com/files/plain-vanilla-cake-1.pdf",
+    "namespace": "IsaCompany"
+  }
+  ```
+- Response: Returns the file URL, namespace (company), number of document chunks stored in the vector DB, and a status indicating success or failure.
+
+**PATCH /api/vectordb-documents**
+
+- Description: Deletes all documents stored under the specified company (namespace) from the vector database.
+- Example Body:
+  ```json
+  {
+    "namespace": "IsaCompany"
+  }
+  ```
+- Response: Returns the namespace (company) and a status indicating success or failure.
+
+**PATCH /api/vectordb-documents/source**
+
+- Description: Deletes a specific document (identified by the file URL) from the vector database under the specified company (namespace).
+- Example Body:
+  ```json
+  {
+    "fileurl": "https://www.thewednesdaychef.com/files/plain-vanilla-cake-1.pdf",
+    "namespace": "IsaCompany"
+  }
+  ```
+- Response: Returns the file URL, namespace (company) and a status indicating success or failure.
+
+---
+
+**POST /api/stripe/checkout**
+
+   - Description: Creates a Stripe checkout session for premium access to employee handbook features. Requires user authentication and creates a payment session for $9.99 USD.
+   - Authentication: Required (Clerk authentication)
+   - Body: None required
+   - Response: Returns a checkout URL to redirect the user to Stripe's payment page.
+   - Example Response:
+     ```json
+     {
+       "url": "https://checkout.stripe.com/pay/cs_test_..."
+     }
+     ```
+   - Error Responses:
+     - `401 Unauthorized`: User is not authenticated
+     - `500 Internal Server Error`: Failed to create checkout session
+
+**POST /api/stripe/webhook**
+
+   - Description: Handles Stripe webhook events to process payment confirmations and update user subscription status. Verifies webhook signature for security and processes `checkout.session.completed` and `payment_intent.succeeded` events.
+   - Authentication: Webhook signature verification required
+   - Body: Raw Stripe webhook event data (handled internally by Stripe)
+   - Headers Required:
+     - `stripe-signature`: Stripe webhook signature for verification
+   - Supported Events:
+     - `checkout.session.completed`: Updates user subscription status when payment is completed
+     - `payment_intent.succeeded`: Handles successful payment intent events
+   - Response: Returns confirmation that the webhook was received.
+   - Example Response:
+     ```json
+     {
+       "received": true
+     }
+     ```
+   - Error Responses:
+     - `400 Bad Request`: Invalid webhook signature
+     - `500 Internal Server Error`: Webhook handler failed
