@@ -98,7 +98,7 @@ function ChatContent() {
   }, [isSignedIn, router]);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined" || typeof URLSearchParams === "undefined") return;
 
     const params = new URLSearchParams(window.location.search);
     const welcomeParam = params.get("welcome");
