@@ -41,7 +41,7 @@ If you choose to sign up as an employee, you will be taken to the sign up page b
 ![Employee Sign Up](deliverables/D2/images/employee_signup.png)
 
 If you choose to sign up as an employer, you will see the same page but upon completion, you will be taken to the dashboard which allows you to upload documents, view analytics and more. 
-![Employer Sign Up](deliverables/D2/images/employee_signup.png)
+<img width="1824" height="862" alt="image" src="https://github.com/user-attachments/assets/81009b0e-a410-4d68-b4fd-c89cd269e872" />
 
 As an employer, you can upload your company policies and documents, add employees, view finances, view analytics and access the chatbot. Some functionality will be implemented in the future, but you can already upload documents.
 ![Employer Dashboard](deliverables/D2/images/employer_dashboard.png)
