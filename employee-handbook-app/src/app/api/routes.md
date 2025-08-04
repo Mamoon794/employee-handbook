@@ -94,18 +94,17 @@
      - `chatID`: The ID of the chat to which the message will be added.
    - Body: Create a new message with the chatID and messageData:
 
-     ```plaintext
-      {
-        "chatID": string,           // The ID of the chat
-        "messageData": [
-          {
-          "content": string,        // The message text
-          "isFromUser": boolean,    // Indicates if the message is from the user
-          "sources": [string]       // Optional array of cited sources
-          }
-        ]
-      }
-
+     ```json
+     {
+       "chatID": "string", // The ID of the chat
+       "messageData": [
+         {
+           "content": "string", // The message text
+           "isFromUser": false, // Indicates if the message is from the user
+           "sources": ["string"] // Optional array of cited sources
+         }
+       ]
+     }
      ```
 
    - Response: Returns the created message object.
@@ -117,13 +116,15 @@
    - Description: Creates a new company.
    - Body: The company object to create.
    - Example Body:
-     ```plaintext
-     name: string;
-     ownerId: string; // references user
-     createdAt: Date;
-     updatedAt: Date;
+     ```json
+     {
+       "name": "string",
+       "ownerId": "string",
+       "createdAt": "2025-08-04T15:30:00Z",
+       "updatedAt": "2025-08-04T15:30:00Z"
+     }
      ```
-     - Response: Returns the created company object.
+   - Response: Returns the created company object.
 
 ---
 
@@ -209,6 +210,21 @@
       }
       ```
     - Response: A plain-text, concise summary paragraph highlighting the main trends in the questions asked.
+
+---
+
+**POST /api/messages/public**
+
+- Description: Handles incoming messages from public users by forwarding them to the AI service for a response. Maintains conversation context using a thread ID.
+- Example Body:
+  ```json
+  {
+    "province": "string", // User's selected province
+    "query": "string", // User's message or question
+    "threadId": "string" // Unique ID for the conversation thread
+  }
+  ```
+- Response: Returns the AI-generated response.
 
 ---
 
