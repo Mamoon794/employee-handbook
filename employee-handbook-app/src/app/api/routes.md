@@ -34,21 +34,26 @@
    - Response: Returns the user object.
 
 3. **POST /api/users**
+
    - Description: Creates a new user.
    - Body: The user object to create.
    - Example Body:
+
      ```json
-     clerkUserId: string; // references Clerk user ID
-     firstName: "Test",
-     lastName: "User",
-     primaryEmail: "test@company.com",
-     userType: "Employee",
-     isSubscribed: true,
-     province: "ON",
-     companyId: "",
-     createdAt: new Date(),
-     updatedAt: new Date()
+     {
+       "clerkUserId": "clerk123",
+       "firstName": "Test",
+       "lastName": "User",
+       "primaryEmail": "test@company.com",
+       "userType": "Employee",
+       "isSubscribed": true,
+       "province": "ON",
+       "companyId": "",
+       "createdAt": "2025-08-03T00:00:00.000Z",
+       "updatedAt": "2025-08-03T00:00:00.000Z"
+     }
      ```
+
    - Response: Returns the created user object.
 
 ---
@@ -57,11 +62,14 @@
 
    - Description: Saves a chat message with the userID.
    - Body: Create a new chat with no messages:
+   - Example Body:
      ```json
-       userId: string;
-       companyId?: string;
-       createdAt: Date;
-       updatedAt: Date;
+     {
+       "userId": "abc123",
+       "companyId": "company456",
+       "createdAt": "2025-08-03T00:00:00.000Z",
+       "updatedAt": "2025-08-03T12:34:56.000Z"
+     }
      ```
    - Response: Returns the created chat id.
 
@@ -87,12 +95,16 @@
    - Body: Create a new message with the chatID and messageData:
 
      ```json
-     chatID: string;
-     messageData:
-     	content: string;
-     	isFromUser: boolean;
-     	sources?: string[]; // for any cited sources
-
+     {
+       "chatID": "string", // The ID of the chat
+       "messageData": [
+         {
+           "content": "string", // The message text
+           "isFromUser": false, // Indicates if the message is from the user
+           "sources": ["string"] // Optional array of cited sources
+         }
+       ]
+     }
      ```
 
    - Response: Returns the created message object.
@@ -105,12 +117,16 @@
    - Body: The company object to create.
    - Example Body:
      ```json
-     name: string;
-     ownerId: string; // references user
-     createdAt: Date;
-     updatedAt: Date;
+     {
+       "name": "string",
+       "ownerId": "string",
+       "createdAt": "2025-08-04T15:30:00Z",
+       "updatedAt": "2025-08-04T15:30:00Z"
+     }
      ```
-     - Response: Returns the created company object.
+   - Response: Returns the created company object.
+
+---
 
 9. **POST /api/ai-summary/bullet-points**
 
@@ -118,7 +134,9 @@
    - Body: A JSON object containing the "summary" string to be converted into bullet points.
    - Example Body:
      ```json
-     summary: string;
+     {
+       "summary": "This is a summary."
+     }
      ```
    - Response: A string with bullet points, each starting with - and separated by new lines.
 
@@ -192,3 +210,55 @@
       }
       ```
     - Response: A plain-text, concise summary paragraph highlighting the main trends in the questions asked.
+
+---
+
+**POST /api/messages/public**
+
+- Description: Handles incoming messages from public users by forwarding them to the AI service for a response. Maintains conversation context using a thread ID.
+- Example Body:
+  ```json
+  {
+    "province": "string", // User's selected province
+    "query": "string", // User's message or question
+    "threadId": "string" // Unique ID for the conversation thread
+  }
+  ```
+- Response: Returns the AI-generated response.
+
+---
+
+**POST /api/vectordb-documents**
+
+- Description: Uploads a file to the vector database (Pinecone). The file is fetched from the provided URL and stored under the specified namespace after being chunked into smaller document segments.
+- Example Body:
+  ```json
+  {
+    "fileurl": "https://www.thewednesdaychef.com/files/plain-vanilla-cake-1.pdf",
+    "namespace": "IsaCompany"
+  }
+  ```
+- Response: Returns the file URL, namespace (company), number of document chunks stored in the vector DB, and a status indicating success or failure.
+
+**PATCH /api/vectordb-documents**
+
+- Description: Deletes all documents stored under the specified company (namespace) from the vector database.
+- Example Body:
+  ```json
+  {
+    "namespace": "IsaCompany"
+  }
+  ```
+- Response: Returns the namespace (company) and a status indicating success or failure.
+
+**PATCH /api/vectordb-documents/source**
+
+- Description: Deletes a specific document (identified by the file URL) from the vector database under the specified company (namespace).
+- Example Body:
+  ```json
+  {
+    "fileurl": "https://www.thewednesdaychef.com/files/plain-vanilla-cake-1.pdf",
+    "namespace": "IsaCompany"
+  }
+  ```
+- Response: Returns the file URL, namespace (company) and a status indicating success or failure.
