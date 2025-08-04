@@ -6,7 +6,7 @@ from langchain_community.document_loaders import WebBaseLoader, PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 import fitz # PyMuPDF for PDF handling
 import io
-
+from config import vector_store, index
 
 TARGET_KEYWORDS = [
     "employment", "labour", "wage", "overtime", "termination",
@@ -140,3 +140,31 @@ def crawl_company_docs(url, company, namespace="General", depth=0, max_depth=MAX
     except Exception as e:
         print(f"Failed on {url}: {e}")
         return []
+    
+# Convert the Document objects to emmbeddings and upload to Pinecone vector store
+def batch_add_company_documents(vector_store, documents, company=None, batch_size=100):
+    for i in range(0, len(documents), batch_size):
+        batch = documents[i:i + batch_size]
+        for doc in batch:
+            doc.metadata.update({
+                "company": company,
+            })
+        try:
+            vector_store.add_documents(batch, namespace=company)
+        except Exception as e:
+            print(f"Failed to upload batch {i // batch_size + 1}: {e}")
+
+def index_company_documents(splits, company):
+    batch_add_company_documents(vector_store, splits, company=company, batch_size=50)
+
+def delete_company_documents_from_vector_db(company):
+    """
+    Deletes all documents in the vector store for the specified company.
+    """
+    index.delete(delete_all=True, namespace=company)
+
+def delete_document_from_vector_db(url, company):
+    """
+    Deletes a document from the vector store based on the provided URL and company.
+    """
+    index.delete(filter={"source": {"$eq": url}}, namespace=company)

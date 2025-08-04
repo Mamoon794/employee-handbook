@@ -2,8 +2,8 @@ import time
 from collections import defaultdict
 from sklearn.cluster import KMeans
 import numpy as np
-from setupProvinces import index, vector_store_dimension
-
+from langchain_core.documents import Document
+from config import index, vector_store_dimension, llm, vector_store
 
 def find_popular_questions_from_vector_db():
     seven_days_ago = time.time() - 7 * 24 * 60 * 60
@@ -70,3 +70,55 @@ def find_popular_questions_from_vector_db():
                 "text": closest_question["text"],
             })
     return popular_questions
+
+def returnQuestion(user_message: str) -> bool:
+    """
+    Check if the user message is a question, and if so, return it with corrected grammar and without personal information.
+    If it is not a question, rewrite it as a single concise question.
+    """
+    try:
+        prompt = f"""
+        You are given a user message. Your task is to:
+        1. Determine if it is a question.
+        2. If it is a question, return it with corrected grammar and remove any personal information.
+        3. If it is not a question, rewrite it as a single concise question.
+        Return only the final question, nothing else.
+
+        User message: "{user_message}"
+        """
+        # call Gemini using LangChain llm.invoke() method
+        # input is a list of messages 
+        response = llm.invoke([{"role": "user", "content": prompt}])
+
+        if hasattr(response, "content"):
+            question = response.content.strip()
+        else:
+            question = str(response).strip()
+
+        return {"question": question}
+    except Exception as e:
+        # if anything goes wrong, return an empty string
+        print(f"Error checking question: {e}")
+        return {"question": ""}
+
+def store_user_message_to_vector_store(user_message: str, province: str, company: str):
+    """Filter out those that are not questions. Then, store them in the vector store."""
+    try:
+        validQuestion = returnQuestion(user_message)["question"]
+        if not validQuestion:
+            # Not a question, not storing.
+            return
+        # print("Storing user question to vector store:", user_message)
+        doc = Document(
+            page_content=validQuestion,
+            metadata={
+                "created_at": time.time(),
+                "province": province,
+                "company": company,
+                "namespace": "UserQuestions",
+            }
+        )
+        print("The document that is being stored:", doc)
+        vector_store.add_documents([doc], namespace="UserQuestions")
+    except Exception as e:
+        print(f"Error storing user message to vector store: {e}")
