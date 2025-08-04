@@ -24,6 +24,49 @@
      }
      ```
 
+1. **POST /api/messages/private**
+   - Description: Sends a public user's question, province, thread ID, and company to the AI service. The service returns two types of responses, one based on public documentation, and another based on private company documentation, each with relevant citations. The API returns the public and private responses, as well as their citations, each including the original URL, a URL with a fragment identifier or text fragment, and the title.
+   - Example Body:
+     ```json
+     {
+       "province": "Ontario",
+       "query": "What is the minimum wage?",
+       "threadId": "1719337314562",
+       "company": "MyCompany"
+     }
+     ```
+   - Example Response:
+     ```json
+    {
+      "publicResponse": "According to relevant legal guidance, the minimum hourly rate in Canada is $15.",
+      "publicSources": [
+        {
+          "originalUrl": "https://novascotia.ca/lae/employmentrights/docs/LabourStandardsCodeGuide.pdf",
+          "fragmentUrl": "https://novascotia.ca/lae/employmentrights/docs/LabourStandardsCodeGuide.pdf#page=7",
+          "title": ""
+        },
+        {
+          "originalUrl": "https://novascotia.ca/lae/employmentrights/minimumwage.asp",
+          "fragmentUrl": "https://novascotia.ca/lae/employmentrights/minimumwage.asp#:~:text=30)%20each%20week.%20If%20the%20employer%20takes%20%2425%20off%20the",
+          "title": "Minimum Wage | novascotia.ca"
+        },
+        {
+          "originalUrl": "https://laws-lois.justice.gc.ca/PDF/L-2.pdf",
+          "fragmentUrl": "https://laws-lois.justice.gc.ca/PDF/L-2.pdf#page=202",
+          "title": ""
+        }
+      ],
+      "privateResponse": "Based on the employee manual, there is no information about minimum wage.",
+      "privateSources": [
+        {
+          "originalUrl": "https://employee-handbook-app.s3.us-east-2.amazonaws.com/1754240707501-cyikl7l62ym",
+          "fragmentUrl": "https://employee-handbook-app.s3.us-east-2.amazonaws.com/1754240707501-cyikl7l62ym#page=2",
+          "title": "Course Syllabus"
+        }
+      ]
+    }
+     ```
+
 ---
 
 2. **GET /api/users/[userID]**
@@ -192,3 +235,36 @@
       }
       ```
     - Response: A plain-text, concise summary paragraph highlighting the main trends in the questions asked.
+
+---
+
+12. **GET /api/popular-questions/job**
+    - Description: Cron job which calls the FastAPI GET /popular-questions endpoint and gets all popular questions, with 3 popular questions for each scope (i.e. gets popular questions for all province/company combinations). These documents are saved to Firestore in the popular_questions collection. This job would run every Friday at 12:00am.
+    - Response: Returns whether the job was a success and the number of popular questions saved to the database.
+    - Example Response:
+    ```json
+    { 
+      "success": true, 
+      "count": 10
+    }
+    ```
+
+12. **POST /api/popular-questions**
+    - Description: Fetches popular questions for the user's province/company from Firestore.
+    - Body: A JSON object containing the user's company and province. If the user is public, company is an empty string.
+    - Example Body:
+      ```json
+      {
+        "company": "MyCompany",
+        "province": "Ontario"
+      }
+      ```
+    - Response: A list of popular questions.
+    - Example Response:
+    ```json
+    [
+      "What guidelines should a worker follow?",
+      "What are the rights of employees?",
+      "What guidelines should an employer follow?"
+    ]
+    ```
