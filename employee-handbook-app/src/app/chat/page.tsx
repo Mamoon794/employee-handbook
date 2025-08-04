@@ -1,6 +1,6 @@
-'use client';
+"use client"
 
-import { useEffect, useState, Suspense } from 'react';
+import { useEffect, useState, Suspense } from "react"
 import {
   PrivateChatSideBar,
   MessageThread,
@@ -10,103 +10,121 @@ import {
   Disclaimer,
   PopularQuestions,
   ERROR_MESSAGE,
-} from '../global_components';
-import { Message } from '../../models/schema';
-import { useUser } from '@clerk/nextjs';
-import { useRouter } from 'next/navigation';
-import confetti from 'canvas-confetti';
-import { mapCitationsToLinks } from '../MessageInput';
+} from "../global_components"
+import { Link, Message } from "../../models/schema"
+import { useUser } from "@clerk/nextjs"
+import { useRouter } from "next/navigation"
+import confetti from "canvas-confetti"
+import { Citation } from "@/types/ai"
+// import { mapCitationsToLinks } from '../MessageInput';
 
 export default function ChatPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="animate-pulse text-blue-800 text-lg">Loading chat interface...</div>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-white">
+          <div className="animate-pulse text-blue-800 text-lg">
+            Loading chat interface...
+          </div>
+        </div>
+      }
+    >
       <ChatContent />
     </Suspense>
-  );
+  )
 }
 
 function ChatContent() {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [chats, setChats] = useState<Chat[]>([]);
+  function mapCitationsToLinks(citations: Citation[]): Link[] {
+    return citations.map((citation) => ({
+      title: citation.title,
+      url: citation.fragmentUrl || citation.originalUrl, // Use fragmentUrl if available, fallback to originalUrl
+    }))
+  }
+  const [messages, setMessages] = useState<Message[]>([])
+  const [chats, setChats] = useState<Chat[]>([])
   const [error, setError] = useState<{ message: string; chatId: string }>({
     message: "",
     chatId: "",
-  });
-  const [currChatId, setCurrChatId] = useState("");
-  const [province, setProvince] = useState("");
-  const [inputValue, setInputValue] = useState("");
-  const router = useRouter();
-  const { isSignedIn } = useUser();
-  const [titleLoading, setTitleLoading] = useState(false);
-  const [totalChatsLength, setTotalChatsLength] = useState(0);
-  const [showWelcome, setShowWelcome] = useState(false);
-  const [welcomeCompany, setWelcomeCompany] = useState("");
+  })
+  const [currChatId, setCurrChatId] = useState("")
+  const [province, setProvince] = useState("")
+  const [inputValue, setInputValue] = useState("")
+  const router = useRouter()
+  const { isSignedIn } = useUser()
+  const [titleLoading, setTitleLoading] = useState(false)
+  const [totalChatsLength, setTotalChatsLength] = useState(0)
+  const [showWelcome, setShowWelcome] = useState(false)
+  const [welcomeCompany, setWelcomeCompany] = useState("")
 
   const handleRetry = async () => {
-    setError({ message: "", chatId: "" });
+    setError({ message: "", chatId: "" })
 
-    const lastUserMessage = [...messages].reverse().find((msg) => msg.isFromUser === true);
-    if (!lastUserMessage) return;
+    const lastUserMessage = [...messages]
+      .reverse()
+      .find((msg) => msg.isFromUser === true)
+    if (!lastUserMessage) return
 
-    setMessages((prev) => [...prev, lastUserMessage]);
+    setMessages((prev) => [...prev, lastUserMessage])
 
     try {
-      const endpoint = "/api/messages/private";
-      const currProvince =  province;
+      const endpoint = "/api/messages/private"
+      const currProvince = province
       const sendBody = {
         province: currProvince,
         query: lastUserMessage.content,
         threadId: currChatId,
         company: localStorage.getItem("companyName") || "",
-      };
+      }
 
       const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(sendBody),
-      });
+      })
 
-      if (!res.ok) throw new Error("Network response was not ok");
+      if (!res.ok) throw new Error("Network response was not ok")
 
-      const data = await res.json();
+      const data = await res.json()
       if (data.privateResponse) {
         const botMessage = {
           isFromUser: false, //createdAt?
           publicResponse: data.publicResponse,
           privateResponse: data.privateResponse,
-          publicSources: data.publicSources ? mapCitationsToLinks(data.publicSources) : [],
-          privateSources: data.privateSources ? mapCitationsToLinks(data.privateSources) : []
+          publicSources: data.publicSources
+            ? mapCitationsToLinks(data.publicSources)
+            : [],
+          privateSources: data.privateSources
+            ? mapCitationsToLinks(data.privateSources)
+            : [],
         }
         setMessages((prevMessages) => [...prevMessages, botMessage as Message])
       } else {
-        setError({ message: ERROR_MESSAGE, chatId: currChatId });
+        setError({ message: ERROR_MESSAGE, chatId: currChatId })
       }
     } catch (err) {
-      console.error(err);
-      setError({ message: ERROR_MESSAGE, chatId: currChatId });
+      console.error(err)
+      setError({ message: ERROR_MESSAGE, chatId: currChatId })
     }
-  };
+  }
 
   useEffect(() => {
     if (!isSignedIn && isSignedIn !== undefined) {
-      router.push("/");
+      router.push("/")
     }
-  }, [isSignedIn, router]);
+  }, [isSignedIn, router])
 
   useEffect(() => {
-    if (typeof window === "undefined" || typeof URLSearchParams === "undefined") return;
+    if (typeof window === "undefined" || typeof URLSearchParams === "undefined")
+      return
 
-    const params = new URLSearchParams(window.location.search);
-    const welcomeParam = params.get("welcome");
-    const companyParam = params.get("company");
-    
+    const params = new URLSearchParams(window.location.search)
+    const welcomeParam = params.get("welcome")
+    const companyParam = params.get("company")
+
     if (welcomeParam === "true" && companyParam) {
-      setShowWelcome(true);
-      setWelcomeCompany(decodeURIComponent(companyParam));
+      setShowWelcome(true)
+      setWelcomeCompany(decodeURIComponent(companyParam))
 
       const triggerConfetti = () => {
         confetti({
@@ -114,13 +132,13 @@ function ChatContent() {
           spread: 70,
           origin: { y: 0.6 },
           colors: ["#242267", "#294494", "#3a7bd5"],
-        });
-      };
+        })
+      }
 
-      setTimeout(triggerConfetti, 100);
-      window.history.replaceState({}, "", window.location.pathname);
+      setTimeout(triggerConfetti, 100)
+      window.history.replaceState({}, "", window.location.pathname)
     }
-  }, []);
+  }, [])
 
   return (
     <div className="min-h-screen flex bg-white flex-row">
@@ -132,9 +150,10 @@ function ChatContent() {
               Welcome to {welcomeCompany}!
             </h2>
             <p className="text-gray-600 mb-6">
-              You can now ask questions specific to your company&apos;s policies.
+              You can now ask questions specific to your company&apos;s
+              policies.
             </p>
-            <button 
+            <button
               onClick={() => setShowWelcome(false)}
               className="bg-blue-800 text-white font-semibold px-6 py-3 rounded-md hover:bg-blue-700 transition-colors mx-auto shadow-md"
             >
@@ -201,5 +220,5 @@ function ChatContent() {
         </main>
       </div>
     </div>
-  );
+  )
 }
