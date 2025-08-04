@@ -703,11 +703,11 @@ function MessageThread({
       style={{ maxHeight: "calc(100vh - 130px)" }}
     >
       {messageList.length === 0 ? (
-        <div className="flex flex-col justify-center items-center text-center pt-70">
-          <h2 className="text-5xl font-bold text-blue-800 mb-2">
+        <div className="flex flex-col justify-center items-center text-center flex-1">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-blue-800 mb-2">
             Welcome to Gail!
           </h2>
-          <h3 className="text-xl font-medium text-blue-800">
+          <h3 className="text-lg sm:text-xl font-medium text-blue-800">
             Your workplace rights & regulations chatbot
           </h3>
         </div>
@@ -871,20 +871,20 @@ function Header({
 
   return (
     <header className="flex justify-between items-center px-4 sm:px-6 py-3 sm:py-4">
-      <div className="flex items-center gap-2 sm:gap-4">
+      <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
         {!isSignedIn || !canSeeDashboard ? (
-          <h1 className="text-xl sm:text-2xl font-extrabold italic text-blue-800 cursor-pointer">
+          <h1 className="text-xl sm:text-2xl font-extrabold italic text-blue-800 cursor-pointer flex-shrink-0">
             Gail
           </h1>
         ) : (
           <Link href="/dashboard">
-            <h1 className="text-xl sm:text-2xl font-extrabold italic text-blue-800 cursor-pointer">
+            <h1 className="text-xl sm:text-2xl font-extrabold italic text-blue-800 cursor-pointer flex-shrink-0">
               Gail
             </h1>
           </Link>
         )}
         {companyName && (
-          <span className="text-sm sm:text-lg font-medium text-black hidden sm:block">
+          <span className="text-sm sm:text-lg font-medium text-black hidden sm:block truncate">
             | {companyName}
           </span>
         )}
@@ -902,7 +902,7 @@ function Header({
         )}
         {isSignedIn && isOnDashboard && (
           <button
-            className="px-3 sm:px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-900 transition-colors shadow-sm"
+            className="px-2 sm:px-3 lg:px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-900 transition-colors shadow-sm"
             onClick={() => router.push("/chat")}
           >
             Ask a Question
@@ -911,24 +911,24 @@ function Header({
         {(isFinance || canSeeDashboard) && isSignedIn && (
           <>
             <button
-              className="px-3 sm:px-5 py-2 bg-blue-800 text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-900 transition-colors shadow-sm hidden sm:block"
+              className="px-2 sm:px-3 lg:px-5 py-2 bg-blue-800 text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-900 transition-colors shadow-sm hidden md:block"
               onClick={() => router.push("/finances")}
             >
               View Finances
             </button>
             <button
               onClick={() => router.push("/analytics")}
-              className="px-3 sm:px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-900 transition-colors shadow-sm hidden sm:block"
+              className="px-2 sm:px-3 lg:px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-900 transition-colors shadow-sm hidden md:block"
             >
               Analytics
             </button>
           </>
         )}
 
-        <div className="flex gap-3 items-center">
+        <div className="flex gap-2 sm:gap-3 items-center">
           {!isSignedIn ? (
             <>
-              <span className="px-4">
+              <span className="px-2 sm:px-4">
                 <ProvinceDropdown
                   province={province}
                   setProvince={setProvince}
@@ -939,7 +939,7 @@ function Header({
             </>
           ) : (
             <div className="flex items-center">
-              <span className="px-4">
+              <span className="px-2 sm:px-4">
                 <ProvinceDropdown
                   province={province}
                   setProvince={setProvince}
@@ -964,7 +964,7 @@ export function LogIn() {
   return (
     <button
       onClick={handleLogin}
-      className="bg-blue-800 text-white font-semibold px-6 py-2 rounded-md hover:bg-blue-600 transition-colors"
+      className="bg-blue-800 text-white font-semibold px-3 sm:px-6 py-2 rounded-md hover:bg-blue-600 transition-colors text-xs sm:text-sm"
     >
       Log in
     </button>
@@ -981,7 +981,7 @@ function SignUp() {
   return (
     <button
       onClick={handleSignUp}
-      className="border border-gray-300 text-gray-700 font-semibold px-6 py-2 rounded-md hover:bg-gray-200 transition-colors"
+      className="border border-gray-300 text-gray-700 font-semibold px-3 sm:px-6 py-2 rounded-md hover:bg-gray-200 transition-colors text-xs sm:text-sm"
     >
       Sign up
     </button>
@@ -1016,12 +1016,12 @@ function ProvinceDropdown({
       <div className="relative inline-block">
         <Label className="sr-only">Change province or territory</Label>
 
-        <ListboxButton className="w-[290px] px-4 py-2 flex items-center rounded-md bg-white font-semibold border border-gray-300 text-gray-700 hover:bg-gray-200 transition-colors">
+        <ListboxButton className="w-[200px] sm:w-[250px] lg:w-[290px] px-3 sm:px-4 py-2 flex items-center rounded-md bg-white font-semibold border border-gray-300 text-gray-700 hover:bg-gray-200 transition-colors text-xs sm:text-sm">
           Change your province/territory
-          <ChevronDown className="ml-auto h-4 w-4 shrink-0" />
+          <ChevronDown className="ml-auto h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
         </ListboxButton>
 
-        <ListboxOptions className="absolute z-10 mt-1 max-h-60 w-[270px] overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black/10">
+        <ListboxOptions className="absolute z-10 mt-1 max-h-60 w-[180px] sm:w-[230px] lg:w-[270px] overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black/10">
           {provinces.map((p) => (
             <ListboxOption key={p} value={p} as={Fragment}>
               {({
@@ -1033,12 +1033,12 @@ function ProvinceDropdown({
               }) => (
                 <li
                   className={
-                    `flex cursor-pointer select-none items-center gap-2 px-4 py-2 text-sm ` +
+                    `flex cursor-pointer select-none items-center gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm ` +
                     (active ? "bg-blue-100 text-blue-900" : "text-gray-900")
                   }
                 >
                   <span className="flex-1">{p}</span>
-                  {selected && <Check className="h-4 w-4" />}
+                  {selected && <Check className="h-3 w-3 sm:h-4 sm:w-4" />}
                 </li>
               )}
             </ListboxOption>

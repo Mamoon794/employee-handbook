@@ -68,7 +68,7 @@ export interface Invitation {
   companyId: string;
   companyName: string;
   inviterId: string; // owner that sent the invite
-  status: "pending" | "accepted" | "rejected";
+  status: "pending" | "accepted" | "expired";
   createdAt: Date;
   updatedAt: Date;
 }

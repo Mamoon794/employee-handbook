@@ -1,91 +1,116 @@
 /* eslint-disable */
 
+// Allows owners to add employees, now with the ability to sort through pending, accepted, and expired
+// invites. Owners can also 'cancel' a pending invite and it will appear as expired, so they can resend.
+
 "use client"
 
 import { useState, useEffect, Suspense } from "react"
 import { useRouter } from "next/navigation"
-import { FaEnvelope } from "react-icons/fa"
+import { FaEnvelope, FaCheckCircle, FaTrashAlt } from "react-icons/fa"
 import { Header } from "../global_components"
 
 interface PendingInvite {
   id: string
   email: string
-  createdAt: string
+  createdAt: Date
+  status: "pending" | "expired" | "accepted"
 }
 
 interface ApiInvite {
   id: string
   email: string
-  createdAt?: {
-    toDate?: () => Date
-  }
+  status?: "pending" | "expired" | "accepted"
+  createdAt?: Date | { toDate?: () => Date } | string
 }
+
+type InvitationTab = 'pending' | 'expired' | 'accepted';
 
 function AddEmployeeContent() {
   const router = useRouter()
-  const [searchParams, setSearchParams] = useState({
-    companyId: "",
-    companyName: "Your Company",
-  })
-
+  const [activeTab, setActiveTab] = useState<InvitationTab>('pending');
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [confirmedEmail, setConfirmedEmail] = useState("")
   const [formData, setFormData] = useState({ email: "" })
   const [error, setError] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [pendingInvites, setPendingInvites] = useState<PendingInvite[]>([])
+  const [acceptedInvites, setAcceptedInvites] = useState<PendingInvite[]>([])
   const [isLoadingInvites, setIsLoadingInvites] = useState(true)
   const [companyId, setCompanyId] = useState<string | null>(null)
   const [companyName, setCompanyName] = useState<string | null>(null)
   const [province, setProvince] = useState<string>("")
 
-
-
-
   useEffect(() => {
-
     const storedCompanyId = localStorage.getItem("companyId")
     const storedCompanyName = localStorage.getItem("companyName")
     if (storedCompanyId || storedCompanyName) {
-      
       setCompanyId(storedCompanyId)
       setCompanyName(storedCompanyName)
     }
   }, [])
 
+  const parseInviteDate = (dateInput: Date | { toDate?: () => Date } | string | undefined): Date => {
+    if (!dateInput) return new Date()
+    
+    if (dateInput instanceof Date) {
+      return dateInput
+    }
+
+    if (typeof dateInput === 'string') {
+      const parsedDate = new Date(dateInput)
+      return isNaN(parsedDate.getTime()) ? new Date() : parsedDate
+    }
+
+    if (typeof dateInput === 'object' && 'toDate' in dateInput && typeof dateInput.toDate === 'function') {
+      return dateInput.toDate()
+    }
+
+    return new Date()
+  }
 
   useEffect(() => {
     if (!companyId) return
 
-    const fetchPendingInvites = async () => {
+    const fetchAllInvites = async () => {
       try {
-        const response = await fetch(
-          `/api/get-pending-invites?companyId=${companyId}`
-        )
-        if (!response.ok) throw new Error("Failed to fetch invites")
-
-        const data = await response.json()
-        const formattedData = data.map((invite: ApiInvite) => ({
-          ...invite,
-          createdAt:
-            invite.createdAt?.toDate?.()?.toISOString() ||
-            new Date().toISOString(),
+        setIsLoadingInvites(true)
+        
+        const pendingResponse = await fetch(`/api/get-pending-invites?companyId=${companyId}`)
+        if (!pendingResponse.ok) throw new Error("Failed to fetch pending invites")
+        const pendingData = await pendingResponse.json()
+        const pendingFormatted = pendingData.map((invite: ApiInvite) => ({
+          id: invite.id,
+          email: invite.email,
+          status: invite.status || "pending",
+          createdAt: parseInviteDate(invite.createdAt)
         }))
-        setPendingInvites(formattedData)
+        
+        const acceptedResponse = await fetch(`/api/get-accepted-invites?companyId=${companyId}`)
+        if (!acceptedResponse.ok) throw new Error("Failed to fetch accepted invites")
+        const acceptedData = await acceptedResponse.json()
+        const acceptedFormatted = acceptedData.map((invite: ApiInvite) => ({
+          id: invite.id,
+          email: invite.email,
+          status: "accepted",
+          createdAt: parseInviteDate(invite.createdAt)
+        }))
+        
+        setPendingInvites(pendingFormatted)
+        setAcceptedInvites(acceptedFormatted)
       } catch (error) {
-        console.error("Error fetching pending invites:", error)
-        setError("Failed to load pending invites")
+        console.error("Error fetching invites:", error)
+        setError("Failed to load invites")
       } finally {
         setIsLoadingInvites(false)
       }
     }
 
-    fetchPendingInvites()
+    fetchAllInvites()
   }, [companyId])
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (date: Date) => {
     try {
-      const date = new Date(dateString)
       return isNaN(date.getTime())
         ? "Date unavailable"
         : date.toLocaleDateString("en-US", {
@@ -99,8 +124,12 @@ function AddEmployeeContent() {
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
-    setError("")
+    const { name, value } = e.target;
+    setFormData({ 
+      ...formData, 
+      [name]: value.toLowerCase() 
+    });
+    setError("");
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -111,7 +140,7 @@ function AddEmployeeContent() {
     }
 
     const isAlreadyInvited = pendingInvites.some(
-      (invite) => invite.email.toLowerCase() === formData.email.toLowerCase()
+      (invite) => invite.email.toLowerCase() === formData.email.toLowerCase() && invite.status === "pending"
     )
 
     if (isAlreadyInvited) {
@@ -126,9 +155,7 @@ function AddEmployeeContent() {
       const user = localStorage.getItem("userId")
       const response = await fetch("/api/send-invitation", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: formData.email,
           companyId: companyId,
@@ -139,32 +166,65 @@ function AddEmployeeContent() {
 
       const data = await response.json()
 
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to send invitation")
-      }
+      if (!response.ok) throw new Error(data.error || "Failed to send invitation")
 
       setConfirmedEmail(formData.email)
       setShowConfirmation(true)
       setFormData({ email: "" })
-      setIsSubmitting(false)
+      
+      // refresh 
+      const pendingResponse = await fetch(`/api/get-pending-invites?companyId=${companyId}`)
+      if (pendingResponse.ok) {
+        const pendingData = await pendingResponse.json()
+        setPendingInvites(pendingData.map((invite: ApiInvite) => ({
+          id: invite.id,
+          email: invite.email,
+          status: invite.status || "pending",
+          createdAt: parseInviteDate(invite.createdAt)
+        })))
+      }
 
-      const invitesResponse = await fetch(
-        `/api/get-pending-invites?companyId=${companyId}`
-      )
-      if (invitesResponse.ok) {
-        const updatedInvites = (await invitesResponse.json()) as ApiInvite[]
-        setPendingInvites(
-          updatedInvites.map((invite) => ({
-            ...invite,
-            createdAt:
-              invite.createdAt?.toDate?.()?.toISOString() ||
-              new Date().toISOString(),
-          }))
-        )
+      const acceptedResponse = await fetch(`/api/get-accepted-invites?companyId=${companyId}`)
+      if (acceptedResponse.ok) {
+        const acceptedData = await acceptedResponse.json()
+        setAcceptedInvites(acceptedData.map((invite: ApiInvite) => ({
+          id: invite.id,
+          email: invite.email,
+          status: "accepted",
+          createdAt: parseInviteDate(invite.createdAt)
+        })))
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "An unknown error occurred")
+    } finally {
       setIsSubmitting(false)
+    }
+  }
+
+  const handleDeleteInvite = async (inviteId: string) => {
+    try {
+      const response = await fetch('/api/expire-invite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ invitationId: inviteId }),
+      })
+
+      if (!response.ok) throw new Error('Failed to delete invitation')
+
+      // refresh
+      const pendingResponse = await fetch(`/api/get-pending-invites?companyId=${companyId}`)
+      if (pendingResponse.ok) {
+        const pendingData = await pendingResponse.json()
+        setPendingInvites(pendingData.map((invite: ApiInvite) => ({
+          id: invite.id,
+          email: invite.email,
+          status: invite.status || "pending",
+          createdAt: parseInviteDate(invite.createdAt)
+        })))
+      }
+    } catch (error) {
+      console.error('Error deleting invitation:', error)
+      setError('Failed to delete invitation')
     }
   }
 
@@ -175,6 +235,15 @@ function AddEmployeeContent() {
   }
 
   const handleCancel = () => router.push("/dashboard")
+
+  const filteredInvites = () => {
+    switch (activeTab) {
+      case 'pending': return pendingInvites.filter(invite => invite.status === 'pending')
+      case 'expired': return pendingInvites.filter(invite => invite.status === 'expired')
+      case 'accepted': return acceptedInvites
+      default: return []
+    }
+  }
 
   return (
     <div className="min-h-screen bg-white flex flex-col font-sans">
@@ -189,10 +258,8 @@ function AddEmployeeContent() {
               </h2>
               <p className="mb-4 sm:mb-6 text-sm sm:text-base text-gray-700">
                 An invitation has been sent to{" "}
-                <span className="font-bold text-blue-800">
-                  {confirmedEmail}
-                </span>
-                . They&apos;ll need to accept it before joining your company.
+                <span className="font-bold text-blue-800">{confirmedEmail}</span>.
+                They'll need to accept it before joining your company.
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-3">
                 <button
@@ -258,47 +325,111 @@ function AddEmployeeContent() {
           )}
 
           <div className="bg-[#f5f7fb] p-4 sm:p-6 rounded-2xl shadow-sm">
-            <h3 className="text-base sm:text-lg font-bold mb-3 sm:mb-4 text-gray-800 text-center">
-              <span className="flex items-center justify-center gap-2">
-                <FaEnvelope className="text-blue-600" />
-                Pending Invitations
-              </span>
-            </h3>
-
-            {isLoadingInvites ? (
-              <div className="text-center py-2 text-gray-500 text-sm">
-                Loading pending invites...
-              </div>
-            ) : pendingInvites.length === 0 ? (
-              <div className="text-center py-2 text-gray-500 text-sm">
-                No pending invitations
-              </div>
-            ) : (
-              <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
-                {pendingInvites.map((invite) => (
-                  <div
-                    key={invite.id}
-                    className="p-3 bg-white rounded-lg border border-gray-200"
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
+              <h3 className="text-base sm:text-lg font-bold text-gray-800">
+                <span className="flex items-center gap-2">
+                  <FaEnvelope className="text-blue-600" />
+                  Invitations
+                </span>
+              </h3>
+              <div className="flex border border-gray-300 rounded-lg overflow-hidden">
+                {(['pending', 'expired', 'accepted'] as InvitationTab[]).map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`px-3 py-1 text-sm font-medium ${
+                      activeTab === tab
+                        ? 'bg-blue-800 text-white'
+                        : 'bg-white text-gray-700 hover:bg-gray-50'
+                    }`}
                   >
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <p className="font-medium text-gray-800 text-sm">
-                          {invite.email}
-                        </p>
-                        <p className="text-xs text-gray-500 mt-1">
-                          Sent: {formatDate(invite.createdAt)}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                  </button>
                 ))}
               </div>
-            )}
+            </div>
+
+            <div className="h-[calc(100vh-500px)] min-h-[200px] max-h-[400px] overflow-y-auto border border-gray-200 rounded-lg bg-white flex flex-col">
+              {isLoadingInvites ? (
+                <div className="flex-1 flex items-center justify-center text-gray-500 text-sm">
+                  Loading invitations...
+                </div>
+              ) : filteredInvites().length === 0 ? (
+                <div className="flex-1 flex items-center justify-center text-gray-500 text-sm">
+                  No {activeTab} invitations
+                </div>
+              ) : (
+                <div className="space-y-2 p-2">
+                  {filteredInvites().map((invite) => (
+                    <div
+                      key={invite.id}
+                      className={`p-3 rounded-lg border ${
+                        invite.status === "expired"
+                          ? "bg-gray-100 border-gray-300"
+                          : invite.status === "accepted"
+                          ? "bg-green-50 border-green-200"
+                          : "bg-white border-gray-200"
+                      }`}
+                    >
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <p className={`font-medium text-sm ${
+                            invite.status === "expired" 
+                              ? "text-gray-600" 
+                              : invite.status === "accepted"
+                              ? "text-green-800"
+                              : "text-gray-800"
+                          }`}>
+                            {invite.email}
+                          </p>
+                          <p className={`text-xs mt-1 ${
+                            invite.status === "expired" 
+                              ? "text-gray-400" 
+                              : invite.status === "accepted"
+                              ? "text-green-600"
+                              : "text-gray-500"
+                          }`}>
+                            Sent: {formatDate(invite.createdAt)}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {invite.status === "expired" ? (
+                            <span className="bg-gray-200 text-gray-600 text-xs px-2 py-1 rounded-full">
+                              EXPIRED
+                            </span>
+                          ) : invite.status === "accepted" ? (
+                            <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                              <FaCheckCircle className="text-green-600" />
+                              ACCEPTED
+                            </span>
+                          ) : (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteInvite(invite.id);
+                              }}
+                              className="text-gray-500 hover:text-red-500 transition-colors"
+                              title="Delete invitation"
+                            >
+                              <FaTrashAlt className="text-sm" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </main>
 
-      <footer className="w-full h-24 bg-[#294494] mt-auto" />
+      <footer className="w-full h-24 bg-[#294494] mt-auto flex items-center justify-center px-4">
+        <p className="text-center text-sm text-white">
+          © Copyright 2025, Analana Inc. All rights reserved. GAIL can make mistakes, please verify your results.
+        </p>
+      </footer>
     </div>
   )
 }
