@@ -96,12 +96,12 @@
 
      ```json
      {
-       "chatID": "string", // The ID of the chat
+       "chatID": "string",
        "messageData": [
          {
-           "content": "string", // The message text
-           "isFromUser": false, // Indicates if the message is from the user
-           "sources": ["string"] // Optional array of cited sources
+           "content": "string",
+           "isFromUser": false,
+           "sources": ["string"]
          }
        ]
      }
@@ -284,9 +284,9 @@
 - Example Body:
   ```json
   {
-    "province": "string", // User's selected province
-    "query": "string", // User's message or question
-    "threadId": "string" // Unique ID for the conversation thread
+    "province": "string",
+    "query": "string",
+    "threadId": "string"
   }
   ```
 - Response: Returns the AI-generated response.
