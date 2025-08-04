@@ -192,3 +192,124 @@
       }
       ```
     - Response: A plain-text, concise summary paragraph highlighting the main trends in the questions asked.
+
+13. **GET /api/accept-invitation**
+    - Description: Takes care of accepting invitations by verifying it, checking user auth, updating respective company information, and redirecting the user to chat upon success. Redirects to login if user can't be authenticated. Redirects to invalid-invitation if invitation is no longer pending or email doesn't match.
+    - Parameters:
+      - invitationId: The ID of the invitation to accept (query parameter)
+    - Response: Redirect responses to various pages depending on validation
+
+14. **POST /api/clerk-webhook**
+    - Description: Allows for syncing of Clerk user data with Firestore database
+    - Events handled:
+      - user.created: creates user in database
+      - user.updated: updates user in database
+      - user.deleted: deletes user from database
+    - Headers Required:
+      - svix-id
+      - svix-timestamp
+      - svix-signature
+    - Response:
+      - Success: { message: "Webhook processed" }
+      - Error: { error: "Error message" }
+
+15. **POST /api/expire-invite**
+    - Description: Makes an invitation expire by status update.
+    - Body: The invitation id of the given invitation
+    - Example Body:
+      ```json
+      {
+        "invitationId": "kEvXJJuA8OaYsOA5IBTh"
+      }
+      ```
+    - Response:
+      - Success: { success: true }
+      - Error: { error: "Error message" }
+
+16. **POST /api/generate-title**
+    - Description: uses the first message in a chat to generate a title
+    - Body: The message, chatId and userId
+      ```json
+      {
+        "message": "string",
+        "chatId": "string",
+        "userId": "string"
+      }
+      ```
+    - Example Body:
+      ```json
+      {
+        "message": "I'm not feeling well. How many sick days do I have?",
+        "chatId": "8KLCEctC9jsk0eDkFkmd",
+        "userId": "ereLwj40wKa5DqRb16Z3"
+      }
+      ```
+    - Example Response: 
+      ```json
+      {
+        "title": "Sick Days Request"
+      }
+      ```
+
+17. **GET /api/get-accepted-invites**
+    - Description: Retrieves the accepted invites from a single company
+    - Parameters:
+      - companyId: the ID of the company (query parameter)
+    - Response: Array of the accepted invitation objects
+    - Error Message: { error: "Error message" } occurs if companyId is not provided/query fails
+
+18. **GET /api/get-pending-invites**
+    - Description: Retrieves all the pending invites for a given company
+    - Parameters:
+      - companyId: the ID of the company (query parameter)
+    - Response: Array of the accepted invitation objects
+    - Error Message: { error: "Error message" } occurs if companyId is not provided/query fails
+
+19. **GET /api/getCompanyInfo**
+    - Description: Retrieves company information for the authenticated user
+    - Authentication: Required Clerk (user) authentication
+    - Response:
+      ```json
+      {
+        "companyId": "string",
+        "companyName": "string"
+      }
+      ```
+    - Errors:
+      - 401: User unauthenticated
+      - 404: Company not found
+      - 500: Server error
+
+20. **POST /api/send-invitation**
+    - Description: Sends an invitation for joining the company
+    - Authentication: Required Clerk (user) authentication
+    - Body:
+      ```json
+      {
+        "email": "string",
+        "companyId": "string",
+        "companyName": "string",
+        "userId": "string"
+      }
+      ```
+    - Validations:
+      - Check for if email has an account
+      - Check for if user already belongs to a company
+    - Response:
+      - Success: { success: true, invitationId: "string" }
+      - Errors:
+          - 400: Email not found/User already in company
+          - 500: Server error
+
+21. **POST /api/update-title**
+    - Description: Updates chat title
+    - Body:
+      ```json
+      {
+        "chatId": "string",
+        "title": "string"
+      }
+      ```
+    - Response: 
+      - Success: { success: true }
+      - Error: { error: "Error message" } (on failure)
