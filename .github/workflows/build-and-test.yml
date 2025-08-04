@@ -12,7 +12,7 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest    
+    runs-on: ubuntu-latest
 
     env:
       FIREBASE_TYPE: ${{ secrets.FIREBASE_TYPE }}
@@ -30,6 +30,9 @@ jobs:
       STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
       NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
       STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+      GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+      PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+      PINECONE_INDEX_NAME: ${{ secrets.PINECONE_INDEX_NAME }}
 
     steps:
       - name: Checkout repository
@@ -40,7 +43,7 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install dependencies
+      - name: Install JS dependencies
         working-directory: employee-handbook-app
         run: npm ci
 
@@ -48,9 +51,22 @@ jobs:
         working-directory: employee-handbook-app
         run: npm run lint
 
-      - name: Run tests
+      - name: Run JS tests
         working-directory: employee-handbook-app
         run: npm test
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install Python dependencies
+        working-directory: AIService
+        run: pip install -r requirements.txt
+
+      - name: Run Python tests
+        working-directory: AIService
+        run: PYTHONPATH=. pytest tests/
 
       - name: Build
         working-directory: employee-handbook-app
