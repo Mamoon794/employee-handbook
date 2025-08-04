@@ -260,6 +260,7 @@ export function MessageInput({
 
     try {
       console.log("public province", province)
+      
       const res = await fetch("/api/messages/public", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
