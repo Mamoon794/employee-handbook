@@ -172,7 +172,7 @@ function ChatContent() {
             onRetry={handleRetry}
           />
 
-          <div className="absolute bottom-6 left-0 right-0 mx-10">
+          <div className="mt-4 sm:mt-6 lg:mt-8">
             {messages.length === 0 && (
               <PopularQuestions
                 setInputValue={setInputValue}

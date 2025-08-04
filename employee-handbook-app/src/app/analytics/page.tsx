@@ -302,7 +302,7 @@ export default function Analytics() {
         </div>
       </header>
 
-      <main className="flex-1 max-w-7xl mx-auto px-6 py-8 w-full">
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 w-full">
         {/* Key Metrics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-xl shadow-sm p-6 border">

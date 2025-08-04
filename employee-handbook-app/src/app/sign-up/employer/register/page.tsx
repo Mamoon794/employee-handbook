@@ -90,7 +90,7 @@ export default function EmployerRegistrationForm() {
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      <header className="w-full max-w-7xl mx-auto px-6 py-4 flex items-center">
+      <header className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center">
         <button
           onClick={() => router.back()}
           className="p-2 rounded-full hover:bg-gray-100 mr-2"
@@ -98,23 +98,23 @@ export default function EmployerRegistrationForm() {
         >
           <ArrowLeft className="w-5 h-5 text-gray-600" />
         </button>
-        <h1 className="text-2xl font-extrabold italic text-blue-800">Gail</h1>
+        <h1 className="text-xl sm:text-2xl font-extrabold italic text-blue-800">Gail</h1>
       </header>
 
-      <main className="flex-1 flex items-center justify-center p-6">
-        <div className="max-w-4xl w-full flex flex-col md:flex-row gap-12">
+      <main className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8">
+        <div className="max-w-4xl w-full flex flex-col lg:flex-row gap-8 lg:gap-12">
          
-          <div className="md:w-1/2">
-            <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-gray-900">Account Information</h2>
-              <div className="p-6 bg-gray-50 rounded-lg space-y-4">
+          <div className="lg:w-1/2 w-full">
+            <div className="space-y-4 sm:space-y-6">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Account Information</h2>
+              <div className="p-4 sm:p-6 bg-gray-50 rounded-lg space-y-3 sm:space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
                   <input
                     type="text"
                     value={clerkUser.firstName || ''}
                     readOnly
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 cursor-not-allowed text-gray-900"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 cursor-not-allowed text-gray-900 text-sm sm:text-base"
                   />
                 </div>
                 <div>
@@ -123,7 +123,7 @@ export default function EmployerRegistrationForm() {
                     type="text"
                     value={clerkUser.lastName || ''}
                     readOnly
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 cursor-not-allowed text-gray-900"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 cursor-not-allowed text-gray-900 text-sm sm:text-base"
                   />
                 </div>
                 <div>
@@ -132,16 +132,16 @@ export default function EmployerRegistrationForm() {
                     type="email"
                     value={clerkUser.primaryEmailAddress?.emailAddress || ''}
                     readOnly
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 cursor-not-allowed text-gray-900"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 cursor-not-allowed text-gray-900 text-sm sm:text-base"
                   />
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="md:w-1/2">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <h2 className="text-2xl font-bold text-gray-900">Just a few more details</h2>
+          <div className="lg:w-1/2 w-full">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Just a few more details</h2>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -151,7 +151,7 @@ export default function EmployerRegistrationForm() {
                   type="text"
                   value={formData.companyName}
                   onChange={(e) => setFormData({...formData, companyName: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900 text-sm sm:text-base"
                   required
                   minLength={2}
                   placeholder="Your company legal name"
@@ -165,7 +165,7 @@ export default function EmployerRegistrationForm() {
                 <select
                   value={formData.province}
                   onChange={(e) => setFormData({...formData, province: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900 text-sm sm:text-base"
                   required
                 >
                   <option value="AB">Alberta</option>
@@ -185,7 +185,7 @@ export default function EmployerRegistrationForm() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-blue-800 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-blue-800 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                 >
                   {isSubmitting ? (
                     <span className="inline-flex items-center">
