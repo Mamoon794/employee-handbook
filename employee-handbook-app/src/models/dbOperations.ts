@@ -1,6 +1,7 @@
 import { db } from "../dbConfig/firebaseConfig"
 import { Timestamp } from "firebase-admin/firestore"
 import { firestore } from "firebase-admin"
+import { FieldValue } from "firebase-admin/firestore"
 import {
   User,
   Company,
@@ -76,6 +77,20 @@ export const deleteUser = async (userId: string) => {
   }
   const userDoc = querySnapshot.docs[0]
   await userDoc.ref.delete()
+  return true
+}
+
+export const removeUserFromCompany = async (userId: string) => {
+  const query = usersRef.where("clerkUserId", "==", userId).limit(1)
+  const querySnapshot = await query.get()
+  if (querySnapshot.empty) {
+    return false
+  }
+  const userDoc = querySnapshot.docs[0]
+  await userDoc.ref.update({
+    companyId: FieldValue.delete(),
+    companyName: FieldValue.delete(),
+  })
   return true
 }
 
@@ -268,7 +283,7 @@ export const getPendingInvitationsByCompany = async (
 ): Promise<Invitation[]> => {
   const theQuery = invitationsRef
     .where("companyId", "==", companyId)
-    .where("status", "in", ["pending", "expired"]);
+    .where("status", "in", ["pending", "expired"])
   const querySnapshot = await theQuery.get()
   const now = new Date()
   const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
@@ -276,14 +291,14 @@ export const getPendingInvitationsByCompany = async (
   const invitations = querySnapshot.docs.map(
     (doc: firestore.QueryDocumentSnapshot<firestore.DocumentData>) => {
       const data = doc.data()
-      const createdAt = data.createdAt.toDate();
-      
+      const createdAt = data.createdAt.toDate()
+
       if (data.status === "pending" && createdAt < sevenDaysAgo) {
         doc.ref.update({
           status: "expired",
-          updatedAt: new Date()
-        });
-        
+          updatedAt: new Date(),
+        })
+
         return {
           id: doc.id,
           email: data.email,
@@ -291,11 +306,11 @@ export const getPendingInvitationsByCompany = async (
           companyId: data.companyId,
           companyName: data.companyName,
           inviterId: data.inviterId,
-          status: "expired", 
+          status: "expired",
           updatedAt: new Date(),
-        } as Invitation;
+        } as Invitation
       }
-      
+
       return {
         id: doc.id,
         email: data.email,
@@ -308,7 +323,7 @@ export const getPendingInvitationsByCompany = async (
       } as Invitation
     }
   )
-  
+
   return invitations
 }
 
@@ -318,9 +333,9 @@ export const getAcceptedInvitationsByCompany = async (
   const theQuery = invitationsRef
     .where("companyId", "==", companyId)
     .where("status", "==", "accepted")
-  
+
   const querySnapshot = await theQuery.get()
-  
+
   return querySnapshot.docs.map(
     (doc: firestore.QueryDocumentSnapshot<firestore.DocumentData>) => {
       const data = doc.data()
@@ -341,8 +356,8 @@ export const getAcceptedInvitationsByCompany = async (
 export const expireInvitation = async (invitationId: string): Promise<void> => {
   await invitationsRef.doc(invitationId).update({
     status: "expired",
-    updatedAt: new Date()
-  });
+    updatedAt: new Date(),
+  })
 }
 
 export const getUserByEmail = async (email: string): Promise<User | null> => {
