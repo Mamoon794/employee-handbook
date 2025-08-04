@@ -1,4 +1,4 @@
-<img width="1886" height="957" alt="image" src="https://github.com/user-attachments/assets/2fe91e7a-41f6-4178-9d43-9ef203cb66e3" />> ⚙️ Are you a developer? See [README_DEV.md](./README_DEV.md) for setup and technical details.
+>> ⚙️ Are you a developer? See [README_DEV.md](./README_DEV.md) for setup and technical details.
 
 # Employee Handbook App
 
