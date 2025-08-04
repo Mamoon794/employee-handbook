@@ -46,7 +46,7 @@ def test_response_real_dependencies(test_doc):
     assert isinstance(data["publicMetadata"], list)
     assert isinstance(data["privateMetadata"], list)
 
-    # assert data["privateFound"] is True #
+    # assert data["privateFound"] is True
     # print("privateResponse: ", data["privateResponse"])
 
 
