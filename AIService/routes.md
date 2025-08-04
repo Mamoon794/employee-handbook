@@ -30,10 +30,26 @@
   {
     "publicResponse": "...",
     "publicFound": true,
-    "publicMetadata": [...],
+    "publicMetadata": [
+      {
+        "source": "https://laws-lois.justice.gc.ca/PDF/L-2.pdf",
+        "type": "pdf",
+        "title": "...",
+        "page": 356,
+        "content": "..."
+      }
+    ],
     "privateResponse": "...",
     "privateFound": false,
-    "privateMetadata": [...]
+    "privateMetadata": [
+      {
+        "source": "[company-doc-url]",
+        "type": "pdf",
+        "title": "...",
+        "page": 10,
+        "content": "..."
+      }
+    ]
   }
   ```
 
