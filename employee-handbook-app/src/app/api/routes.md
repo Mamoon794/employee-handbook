@@ -201,7 +201,7 @@ contentType: "application/pdf"
 **Response:**  
 Returns the status of the upload and the URL if successful.
 
-13. ## **POST /api/s3/new-bucket**
+13. **POST /api/s3/new-bucket**
 
 **Description:**  
 Creates a new S3 bucket with the specified `bucketName`.
