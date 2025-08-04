@@ -1,13 +1,13 @@
-const nextJest = require('next/jest')
+const nextJest = require('next/jest');
 
 const createJestConfig = nextJest({
   dir: './',
-})
+});
 
 const customJestConfig = {
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   testEnvironment: 'node',
-  testMatch: ['**/test/**/*.test.ts', '**/test/**/*.test.tsx'],
+  testMatch: ['**/__tests__/**/*.test.ts'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
@@ -17,6 +17,12 @@ const customJestConfig = {
     '!src/**/*.stories.{js,jsx,ts,tsx}',
   ],
   modulePathIgnorePatterns: ['<rootDir>/node_modules/'],
-}
+  preset: 'ts-jest',
+  globals: {
+    'ts-jest': {
+      tsconfig: 'tsconfig.json',
+    },
+  },
+};
 
-module.exports = createJestConfig(customJestConfig) 
+module.exports = createJestConfig(customJestConfig);
