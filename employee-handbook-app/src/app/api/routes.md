@@ -112,7 +112,7 @@
      ```
      - Response: Returns the created company object.
     
-9. ## **PUT** `/api/company/docs`
+9.  **PUT /api/company/docs**
 
 **Description:**  
 Adds current company documents by providing a `companyId` and a list of documents to be added.
@@ -127,7 +127,7 @@ documents: list[Document]
 Returns whether the update was successful.
 
 
-10. ## **DELETE** `/api/company/docs`
+10. **DELETE /api/company/docs**
 
 **Description:**  
 Removes a specific document from a company's record by providing the `companyId` and the index of the document.
@@ -147,7 +147,7 @@ index: 1
 **Response:**  
 Returns whether the deletion was successful.
 
-11. ## **GET** `/api/company/docs/{companyId}`
+11. **GET /api/company/docs/{companyId}**
 
 **Description:**  
 Retrieves the list of documents associated with a specific company.
@@ -181,7 +181,7 @@ GET /api/company/docs/12345
 }
 ```
 
-12. ## **POST** `/api/s3/upload`
+12.  **POST /api/s3/upload**
 
 **Description:**  
 Uploads a document to an S3 bucket using the provided `formData`, `bucketName`, and `contentType`.
@@ -201,7 +201,7 @@ contentType: "application/pdf"
 **Response:**  
 Returns the status of the upload and the URL if successful.
 
-13. ## **POST** `/api/s3/new-bucket`
+13. ## **POST /api/s3/new-bucket**
 
 **Description:**  
 Creates a new S3 bucket with the specified `bucketName`.
