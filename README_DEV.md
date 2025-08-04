@@ -38,21 +38,26 @@ A web-based AI chatbot platform built to help Canadian workers understand employ
 This project consists of two parts:
 
 - **Next.js App** — handles most endpoints and the user interface
-- **AI Service** — powers the AI chatbot through a separate Python backend
+- **AI Service** — powers the AI chatbot and AI features through a separate Python backend
+
+## Local Setup
 
 ### 1. Next.js App
 
-To start the main app:
+To start the frontend:
 
 ```bash
 cd employee-handbook-app
 npm install
 npm run dev
 ```
-To deploy the frontend, connect your GitHub repo to Vercel at https://vercel.com/new. Be sure to add environment variables in the Vercel dashboard.
 
+* Runs at `http://localhost:3000`
+* Ensure `.env` exists in `employee-handbook-app/` with required variables (see **Environment Variables** below)
 
-### 2. AI Service (for chatbot only)
+---
+
+### 2. AI Service (FastAPI)
 
 To start the AI backend:
 
@@ -61,20 +66,63 @@ cd AIService
 pip install -r requirements.txt
 uvicorn main:app --reload
 ```
-If deploying the AI backend to Railway, make sure to:
-- Connect the `AIService/` directory as a Railway project
-- Set environment variables in the Railway dashboard
-- Expose the service URL and add it as `AI_SERVICE_URL` in the frontend `.env`
 
-To load documents into Pinecone, run the following in a new terminal:
+* Runs at `http://localhost:8000`
+* Ensure `.env` exists in `AIService/` with the following:
+
+```env
+# Gemini
+GOOGLE_API_KEY=<your_google_api_key>
+
+# Pinecone
+PINECONE_API_KEY=<your_pinecone_api_key>
+PINECONE_INDEX_NAME=<your_pinecone_index_name>
+```
+
+---
+
+### 3. Load Documents into Pinecone (Optional)
+
+Only run this if you've updated `providedDoc.json`, as it can take a while:
 
 ```bash
 cd AIService
-python scrapeAllProvinces.py   # Scrapes links from providedDocSample.json and saves data to a pickle file
-python setupProvinces.py       # Uploads data from the pickle file to Pinecone
+python scrapeAllProvinces.py   # Scrapes and pickles data
+python setupProvinces.py       # Uploads data to Pinecone
 ```
 
-**Note:** These commands should only be run if `providedDoc.json` has been updated, as they can take a long time to complete.
+---
+
+## Deployment Instructions
+
+### Frontend (Vercel)
+
+1. Push `employee-handbook-app/` to GitHub.
+2. Go to [https://vercel.com/new](https://vercel.com/new) and import your repo.
+3. In the Vercel dashboard, add required environment variables (see **Environment Variables** below)
+
+---
+
+### Backend (Railway)
+
+1. Create a new Railway project and connect the `AIService/` directory.
+2. Add the following environment variables in the Railway dashboard:
+
+```env
+GOOGLE_API_KEY=<your_google_api_key>
+PINECONE_API_KEY=<your_pinecone_api_key>
+PINECONE_INDEX_NAME=<your_pinecone_index_name>
+NEXT_PUBLIC_SENTRY_DSN=<your_sentry_dsn>
+FIRESTORE_API_KEY=<your_firestore_api_key>
+FIRESTORE_APP_ID=<your_firestore_app_id>
+FIRESTORE_AUTH_DOMAIN=<your_firestore_auth_domain>
+FIRESTORE_MEASUREMENT_ID=<your_firestore_measurement_id>
+FIRESTORE_MESSAGING_SENDER_ID=<your_firestore_messaging_sender_id>
+FIRESTORE_PROJECT_ID=<your_firestore_project_id>
+FIRESTORE_STORAGE_BUCKET=<your_firestore_storage_bucket>
+```
+
+3. Railway will give you a public URL — copy it and add it to your Vercel project as `AI_SERVICE_URL`.
 
 **Requirements:**
 
@@ -88,7 +136,7 @@ Create a `.env` file and put the following keys:
 ```
 # AI + Hosting
 AI_SERVICE_URL=<your_AI_service_public_url>
-NEXT_PUBLIC_BASE_URL=<your_base_url> # e.g., http://localhost:3000 or your Vercel link
+NEXT_PUBLIC_BASE_URL=<your_base_url> # e.g., http://localhost:3000 (local) or your Vercel URL when deployed
 
 # Sentry
 NEXT_PUBLIC_SENTRY_DSN=<your_sentry_dsn>
@@ -124,7 +172,7 @@ FIREBASE_AUTH_PROVIDER_CERT_URL=<your_firebase_auth_provider_cert_url>
 FIREBASE_CLIENT_CERT_URL=<your_firebase_client_cert_url>
 FIREBASE_UNIVERSE_DOMAIN=<your_firebase_universe_domain>
 
-# Google
+# Gemini
 GOOGLE_API_KEY=<your_google_api_key>
 
 # Pinecone

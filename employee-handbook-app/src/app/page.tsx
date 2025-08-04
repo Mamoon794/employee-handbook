@@ -181,7 +181,7 @@ export default function Home() {
       <div className="flex-1 flex flex-col min-h-screen">
         <Header province={province} setProvince={setProvince} />
 
-        <main className="flex-1 flex flex-col justify-between px-6 pb-6 relative">
+        <main className="flex-1 flex flex-col justify-between px-4 sm:px-6 pb-6 relative">
           {!isSignedIn && !province && (
             <ProvincePopup onSave={(prov) => setProvince(prov)} />
           )}
@@ -192,7 +192,7 @@ export default function Home() {
             chatId={currChatId}
             onRetry={handleRetry}
           />
-          <div className="absolute bottom-6 left-0 right-0 mx-10">
+          <div className="mt-4 sm:mt-6 lg:mt-8">
             {messages.length === 0 && (
               <PopularQuestions
                 setInputValue={setInputValue}

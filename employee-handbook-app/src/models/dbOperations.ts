@@ -262,20 +262,44 @@ export const updateInvitationStatus = async (
   })
 }
 
+// also expires invitations over 7 days
 export const getPendingInvitationsByCompany = async (
   companyId: string
 ): Promise<Invitation[]> => {
   const theQuery = invitationsRef
     .where("companyId", "==", companyId)
-    .where("status", "==", "pending")
+    .where("status", "in", ["pending", "expired"]);
   const querySnapshot = await theQuery.get()
-  return querySnapshot.docs.map(
+  const now = new Date()
+  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+
+  const invitations = querySnapshot.docs.map(
     (doc: firestore.QueryDocumentSnapshot<firestore.DocumentData>) => {
       const data = doc.data()
+      const createdAt = data.createdAt.toDate();
+      
+      if (data.status === "pending" && createdAt < sevenDaysAgo) {
+        doc.ref.update({
+          status: "expired",
+          updatedAt: new Date()
+        });
+        
+        return {
+          id: doc.id,
+          email: data.email,
+          createdAt,
+          companyId: data.companyId,
+          companyName: data.companyName,
+          inviterId: data.inviterId,
+          status: "expired", 
+          updatedAt: new Date(),
+        } as Invitation;
+      }
+      
       return {
         id: doc.id,
         email: data.email,
-        createdAt: data.createdAt.toDate(), // firestore to JS
+        createdAt,
         companyId: data.companyId,
         companyName: data.companyName,
         inviterId: data.inviterId,
@@ -284,6 +308,41 @@ export const getPendingInvitationsByCompany = async (
       } as Invitation
     }
   )
+  
+  return invitations
+}
+
+export const getAcceptedInvitationsByCompany = async (
+  companyId: string
+): Promise<Invitation[]> => {
+  const theQuery = invitationsRef
+    .where("companyId", "==", companyId)
+    .where("status", "==", "accepted")
+  
+  const querySnapshot = await theQuery.get()
+  
+  return querySnapshot.docs.map(
+    (doc: firestore.QueryDocumentSnapshot<firestore.DocumentData>) => {
+      const data = doc.data()
+      return {
+        id: doc.id,
+        email: data.email,
+        createdAt: data.createdAt.toDate(),
+        companyId: data.companyId,
+        companyName: data.companyName,
+        inviterId: data.inviterId,
+        status: data.status,
+        updatedAt: data.updatedAt.toDate(),
+      } as Invitation
+    }
+  )
+}
+
+export const expireInvitation = async (invitationId: string): Promise<void> => {
+  await invitationsRef.doc(invitationId).update({
+    status: "expired",
+    updatedAt: new Date()
+  });
 }
 
 export const getUserByEmail = async (email: string): Promise<User | null> => {
