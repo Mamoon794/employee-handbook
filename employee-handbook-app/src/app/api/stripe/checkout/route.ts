@@ -20,6 +20,7 @@ const pricingTiers = [
   { min: 50000, max: 99999, price: 0.25 },
 ];
 
+
 const getPricingForEmployeeCount = (count: number) => {
   const tier = pricingTiers.find(tier => count >= tier.min && count <= tier.max);
   return tier ? tier.price : pricingTiers[pricingTiers.length - 1].price;
