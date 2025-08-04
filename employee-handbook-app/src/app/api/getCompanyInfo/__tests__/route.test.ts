@@ -21,7 +21,8 @@ const mockSignedOutAuth = {
   debug: jest.fn(),
   toAuth: jest.fn(),
   isSignedIn: false,
-} as const;
+  isAuthenticated: false,
+};
 
 const mockSignedInAuth = {
   userId: 'user123',
@@ -48,7 +49,8 @@ const mockSignedInAuth = {
   debug: jest.fn(),
   toAuth: jest.fn(),
   isSignedIn: true,
-} as const;
+  isAuthenticated: true,
+};
 
 jest.mock('@clerk/nextjs/server', () => ({
   getAuth: jest.fn(),
