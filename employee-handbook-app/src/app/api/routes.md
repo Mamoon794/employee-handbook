@@ -111,8 +111,112 @@
      updatedAt: Date;
      ```
      - Response: Returns the created company object.
+    
+9. ## **PUT** `/api/company/docs`
 
-9. **POST /api/ai-summary/bullet-points**
+**Description:**  
+Adds current company documents by providing a `companyId` and a list of documents to be added.
+
+**Request Body:**
+```json
+companyId: string
+documents: list[Document]
+```
+
+**Response:**  
+Returns whether the update was successful.
+
+
+10. ## **DELETE** `/api/company/docs`
+
+**Description:**  
+Removes a specific document from a company's record by providing the `companyId` and the index of the document.
+
+**Request Body:**
+```json
+companyId: string
+index: integer
+```
+
+**Example:**
+```json
+companyId: "12345"
+index: 1
+```
+
+**Response:**  
+Returns whether the deletion was successful.
+
+11. ## **GET** `/api/company/docs/{companyId}`
+
+**Description:**  
+Retrieves the list of documents associated with a specific company.
+
+**Path Parameters:**
+- `companyId` (string): Unique identifier of the company.
+
+**Example Request:**
+```
+GET /api/company/docs/12345
+```
+
+**Example Response:**
+```json
+{
+  "companyId": "12345",
+  "documents": [
+    {
+      "documentId": "doc1",
+      "name": "Document Name 1",
+      "type": "pdf",
+      "createdDate": "2023-01-01"
+    },
+    {
+      "documentId": "doc2",
+      "name": "Document Name 2",
+      "type": "docx",
+      "createdDate": "2023-02-15"
+    }
+  ]
+}
+```
+
+12. ## **POST** `/api/s3/upload`
+
+**Description:**  
+Uploads a document to an S3 bucket using the provided `formData`, `bucketName`, and `contentType`.
+
+**Request Body:**
+- `formData`: The binary data of the document (multipart/form-data)
+- `bucketName`: Name of the S3 bucket
+- `contentType`: MIME type (e.g., `application/pdf`, `image/jpeg`)
+
+**Example (form fields):**
+```
+formData: (binary)
+bucketName: "my-s3-bucket"
+contentType: "application/pdf"
+```
+
+**Response:**  
+Returns the status of the upload and the URL if successful.
+
+13. ## **POST** `/api/s3/new-bucket`
+
+**Description:**  
+Creates a new S3 bucket with the specified `bucketName`.
+
+**Request Body:**
+```json
+{
+  "bucketName": "new-s3-bucket"
+}
+```
+
+**Response:**  
+Returns the status of the bucket creation operation, including a success message if successful.
+
+14. **POST /api/ai-summary/bullet-points**
 
    - Description: Generates bullet points from the provided summary message. Each bullet point starts with "- " and appears on a new line in the response.
    - Body: A JSON object containing the "summary" string to be converted into bullet points.
@@ -122,7 +226,7 @@
      ```
    - Response: A string with bullet points, each starting with - and separated by new lines.
 
-10. **POST /api/ai-summary/employee-distribution**
+15. **POST /api/ai-summary/employee-distribution**
 
     - Description: Generates a concise textual explanation of employee distribution across provinces using the provided data.
     - Body: A JSON object containing an array of province entries. Each entry should include:
@@ -148,7 +252,7 @@
       ```
     - Response: A plain-text summary paragraph, suitable for screen reader users. The explanation is concise, uses full province names, and highlights meaningful comparisons or trends.
 
-11. **POST /api/ai-summary/employee-registration**
+16. **POST /api/ai-summary/employee-registration**
 
     - Description: Generates a concise textual explanation of employee registration across months/days using the provided data.
     - Body: A JSON object containing an array of entries, each with:
@@ -171,7 +275,7 @@
       ```
     - Response: A plain-text, concise summary paragraph describing registration trends.
 
-12. **POST /api/ai-summary/questions-asked**
+17. **POST /api/ai-summary/questions-asked**
     - Description: Creates a brief summary explaining the trends in the number of questions asked over months or days based on the provided data.
     - Body: A JSON object containing an array of entries, each with:
       - time: a month (e.g., "April") or a day (e.g., "Monday")
@@ -193,7 +297,7 @@
       ```
     - Response: A plain-text, concise summary paragraph highlighting the main trends in the questions asked.
 
-13. **GET /api/accept-invitation**
+18. **GET /api/accept-invitation**
     - Description: Takes care of accepting invitations by verifying it, checking user auth, updating respective company information, and redirecting the user to chat upon success. Redirects to login if user can't be authenticated. Redirects to invalid-invitation if invitation is no longer pending or email doesn't match.
     - Parameters:
       - invitationId: The ID of the invitation to accept (query parameter)
@@ -213,7 +317,7 @@
       - Success: { message: "Webhook processed" }
       - Error: { error: "Error message" }
 
-15. **POST /api/expire-invite**
+19. **POST /api/expire-invite**
     - Description: Makes an invitation expire by status update.
     - Body: The invitation id of the given invitation
     - Example Body:
@@ -226,7 +330,7 @@
       - Success: { success: true }
       - Error: { error: "Error message" }
 
-16. **POST /api/generate-title**
+20. **POST /api/generate-title**
     - Description: uses the first message in a chat to generate a title
     - Body: The message, chatId and userId
       ```json
@@ -251,7 +355,7 @@
       }
       ```
 
-17. **GET /api/get-accepted-invites**
+21. **GET /api/get-accepted-invites**
     - Description: Retrieves the accepted invites from a single company
     - Parameters:
       - companyId: the ID of the company (query parameter)
@@ -280,7 +384,7 @@
       - 404: Company not found
       - 500: Server error
 
-20. **POST /api/send-invitation**
+22. **POST /api/send-invitation**
     - Description: Sends an invitation for joining the company
     - Authentication: Required Clerk (user) authentication
     - Body:
@@ -301,7 +405,7 @@
           - 400: Email not found/User already in company
           - 500: Server error
 
-21. **POST /api/update-title**
+23. **POST /api/update-title**
     - Description: Updates chat title
     - Body:
       ```json
