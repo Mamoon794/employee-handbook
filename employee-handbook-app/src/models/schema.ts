@@ -40,10 +40,21 @@ export interface Chat {
 
 export interface Message {
   id?: string;
-  content: string;
   isFromUser: boolean;
-  sources?: Link[]; // for any cited sources
   createdAt: Date;
+
+  // for user messages and (legacy) storing bot messages
+  content?: string;
+
+  // bot responses and sources (new)
+  publicResponse?: string;
+  privateResponse?: string;
+
+  publicSources?: Link[]
+  privateSources?: Link[]
+
+  // bot sources (legacy)
+  sources?: Link[];
 }
 
 export interface Document {

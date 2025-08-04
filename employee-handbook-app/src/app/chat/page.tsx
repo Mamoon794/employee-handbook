@@ -15,6 +15,7 @@ import { Message } from '../../models/schema';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import confetti from 'canvas-confetti';
+import { mapCitationsToLinks } from '../MessageInput';
 
 export default function ChatPage() {
   return (
@@ -72,17 +73,15 @@ function ChatContent() {
       if (!res.ok) throw new Error("Network response was not ok");
 
       const data = await res.json();
-      if (data.response) {
-        const botMessage: Message = {
-          content: data.response,
-          isFromUser: false,
-          createdAt: new Date(),
-          sources: data.citations?.map((citation: { title: string; fragmentUrl?: string; originalUrl?: string }) => ({
-            title: citation.title,
-            url: citation.fragmentUrl || citation.originalUrl || "",
-          })),
-        };
-        setMessages((prev) => [...prev, botMessage]);
+      if (data.privateResponse) {
+        const botMessage = {
+          isFromUser: false, //createdAt?
+          publicResponse: data.publicResponse,
+          privateResponse: data.privateResponse,
+          publicSources: data.publicSources ? mapCitationsToLinks(data.publicSources) : [],
+          privateSources: data.privateSources ? mapCitationsToLinks(data.privateSources) : []
+        }
+        setMessages((prevMessages) => [...prevMessages, botMessage as Message])
       } else {
         setError({ message: ERROR_MESSAGE, chatId: currChatId });
       }

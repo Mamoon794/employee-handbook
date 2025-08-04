@@ -15,6 +15,13 @@ interface Chat {
   messages?: Message[]
 }
 
+export function mapCitationsToLinks(citations: Citation[]): Link[] {
+  return citations.map((citation) => ({
+    title: citation.title,
+    url: citation.fragmentUrl || citation.originalUrl, // Use fragmentUrl if available, fallback to originalUrl
+  }))
+}
+
 export function MessageInput({
   inputValue,
   setInputValue,
@@ -214,13 +221,6 @@ export function MessageInput({
     }
   }
 
-  function mapCitationsToLinks(citations: Citation[]): Link[] {
-    return citations.map((citation) => ({
-      title: citation.title,
-      url: citation.fragmentUrl || citation.originalUrl, // Use fragmentUrl if available, fallback to originalUrl
-    }))
-  }
-
   const handlePrivateChat = async (newChatId: string, message: string) => {
     const full_province = province;
     console.log("private province", province)
@@ -237,11 +237,13 @@ export function MessageInput({
     }
 
     const data = res.data
-    if (data.response) {
+    if (data.privateResponse) {
       const botMessage = {
-        content: data.response,
         isFromUser: false,
-        sources: mapCitationsToLinks(data.citations),
+        publicResponse: data.publicResponse,
+        privateResponse: data.privateResponse,
+        publicSources: data.publicSources ? mapCitationsToLinks(data.publicSources) : [],
+        privateSources: data.privateSources ? mapCitationsToLinks(data.privateSources) : []
       }
       setMessages((prevMessages) => [...prevMessages, botMessage as Message])
       axiosInstance.put(`/api/chat/${newChatId}/add-message`, {
@@ -273,12 +275,12 @@ export function MessageInput({
       }
 
       const data = await res.json()
-      if (data.response) {
+      if (data.publicResponse) {
         const botMessage = {
-          content: data.response,
           isFromUser: false,
           createdAt: new Date(),
-          sources: mapCitationsToLinks(data.citations),
+          publicResponse: data.publicResponse,
+          publicSources: data.publicSources ? mapCitationsToLinks(data.publicSources) : []
         }
         setMessages((prevMessages) => {
           const updated = [...prevMessages, botMessage as Message]

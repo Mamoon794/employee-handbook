@@ -18,6 +18,7 @@ import axiosInstance from "./axios_config"
 import ProvincePopup from "../../components/province"
 import { Message } from "@/models/schema"
 import { Chat, ERROR_MESSAGE } from "./global_components"
+import { mapCitationsToLinks } from "./MessageInput"
 
 export default function Home() {
   const { isSignedIn, user } = useUser()
@@ -141,23 +142,22 @@ export default function Home() {
       if (!res.ok) throw new Error("Network response was not ok")
 
       const data = await res.json()
-      if (data.response) {
-        const botMessage: Message = {
-          content: data.response,
+      if (data.publicResponse) {
+        const botMessage = {
           isFromUser: false,
           createdAt: new Date(),
-          sources: data.citations?.map(
-            (citation: {
-              title: string
-              fragmentUrl?: string
-              originalUrl?: string
-            }) => ({
-              title: citation.title,
-              url: citation.fragmentUrl || citation.originalUrl,
-            })
-          ),
+          publicResponse: data.publicResponse,
+          publicSources: data.publicSources ? mapCitationsToLinks(data.publicSources) : []
         }
-        setMessages((prev) => [...prev, botMessage])
+        setMessages((prevMessages) => {
+          const updated = [...prevMessages, botMessage as Message]
+          setChats(prevChats => {
+            return prevChats.map(c =>
+              c.id === currChatId ? { ...c, messages: updated } : c
+            )
+          });
+          return updated;
+        });
       } else {
         setError({ message: ERROR_MESSAGE, chatId: currChatId })
       }

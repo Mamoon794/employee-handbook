@@ -712,57 +712,176 @@ function MessageThread({
           </h3>
         </div>
       ) : (
-        messageList.map((message, index) => (
+        messageList.map((message, index) => { 
+          const publicCount = message.publicSources?.length ?? 0;
+          return (
           <div key={index} className="flex flex-col">
             {message.isFromUser ? (
               <div className="self-end bg-blue-100 text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm text-lg">
-                {message.content
-                  .split("\n")
+                {message.content ? (
+                  message.content.split("\n")
                   .map((line, idx) =>
                     line === "" ? <br key={idx} /> : <p key={idx}>{line}</p>
-                  )}
+                  )
+                ) : null}
               </div>
             ) : (
               <div className="self-start bg-gray-100 text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm">
-                {(() => {
-                  const { cards, remainingContent } = parseCarouselCards(
-                    message.content
-                  )
-                  return (
-                    <>
-                      {remainingContent.trim() && (
-                        <div
-                          className="text-lg"
-                          dangerouslySetInnerHTML={{
-                            __html: markdownListToTable(remainingContent),
-                          }}
-                        />
-                      )}
-                      {cards.length > 0 && <CarouselCards cards={cards} />}
-                    </>
-                  )
-                })()}
-                {message.sources && message.sources.length > 0 && (
-                  <div className="mt-2 flex flex-col gap-2">
-                    {message.sources
-                      .filter((link) => link.url)
-                      .map((link, linkIndex) => (
-                        <a
-                          key={`${index}-${linkIndex}`}
-                          href={link.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-800 underline font-medium hover:text-blue-600 transition w-fit"
-                        >
-                          {link.title?.trim() || "View PDF Source"}
-                        </a>
-                      ))}
-                  </div>
+                {message.content ? (
+                  // ── Legacy path: continue to parse `message.content` + `message.sources` ──
+                  <>
+                    {(() => {
+                      const { cards, remainingContent } = parseCarouselCards(
+                        message.content!
+                      );
+                      let html = markdownListToTable(remainingContent);
+                      if (message.sources?.length) {
+                        const supTags = message.sources
+                          .map((_, i) => `<sup>[${i + 1}] </sup>`)
+                          .join("");
+                        html = html.replace(/<\/p>\s*$/, `${supTags}</p>`);
+                      }
+                      return (
+                        <>
+                          {remainingContent.trim() && (
+                            <div
+                              className="text-lg"
+                              dangerouslySetInnerHTML={{
+                                __html: markdownListToTable(html),
+                              }}
+                            />
+                          )}
+                          {cards.length > 0 && <CarouselCards cards={cards} />}
+                        </>
+                      );
+                    })()}
+
+                    {message.sources && message.sources.length > 0 && (
+                      <div className="mt-2 flex flex-col gap-2">
+                        {message.sources!
+                          .filter((l) => l.url)
+                          .map((l, i) => (
+                            <a
+                              key={`legacy-${i}`}
+                              href={l.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-800 underline font-medium hover:text-blue-600 transition w-fit"
+                            >
+                              <sup>[{i + 1}]</sup> {l.title?.trim() || "View PDF Source"}
+                            </a>
+                          ))}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  // ── New path: render publicResponse + publicSources, then privateResponse + privateSources ──
+                  <>
+                    {/* PUBLIC RESPONSE */}
+                    {message.publicResponse && (
+                      <>
+                        {(() => {
+                          const { cards, remainingContent } = parseCarouselCards(
+                            message.publicResponse!
+                          );
+                          let html = markdownListToTable(remainingContent);
+                          if (message.publicSources?.length) {
+                            const supTags = message.publicSources
+                              .map((_, i) => `<sup>[${i + 1}] </sup>`)
+                              .join("");
+                            html = html.replace(/<\/p>\s*$/, `${supTags}</p>`);
+                          }
+                          return (
+                            <>
+                              {remainingContent.trim() && (
+                                <div
+                                  className="text-lg"
+                                  dangerouslySetInnerHTML={{
+                                    __html: markdownListToTable(html),
+                                  }}
+                                />
+                              )}
+                              {cards.length > 0 && <CarouselCards cards={cards} />}
+                            </>
+                          );
+                        })()}
+
+                        {message.publicSources && message.publicSources.length > 0 && (
+                          <div className="mt-2 flex flex-col gap-2">
+                            {message.publicSources!.map((l, i) => (
+                              <a
+                                key={`pub-${i}`}
+                                href={l.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-800 underline font-medium hover:text-blue-600 transition w-fit"
+                              >
+                                <sup>[{i + 1}]</sup> {l.title?.trim() || "View PDF Source"}
+                              </a>
+                            ))}
+                          </div>
+                        )}
+                      </>
+                    )}
+
+                    {/* separate public and private responses */}
+                    {message.publicResponse && message.privateResponse && (
+                      <hr className="my-4 border-gray-300" />
+                    )}
+
+                    {/* PRIVATE RESPONSE */}
+                    {message.privateResponse && (
+                      <>
+                        {(() => {
+                          const { cards, remainingContent } = parseCarouselCards(
+                            message.privateResponse!
+                          );
+                          let html = markdownListToTable(remainingContent);
+
+                          if (message.privateSources?.length) {
+                            const supTags = message.privateSources
+                              .map((_, i) => `<sup>[${publicCount + i + 1}] </sup>`)
+                              .join("");
+                            html = html.replace(/<\/p>\s*$/, `${supTags}</p>`);
+                          }
+                          return (
+                            <>
+                              {remainingContent.trim() && (
+                                <div
+                                  className="text-lg"
+                                  dangerouslySetInnerHTML={{
+                                    __html: markdownListToTable(html),
+                                  }}
+                                />
+                              )}
+                              {cards.length > 0 && <CarouselCards cards={cards} />}
+                            </>
+                          );
+                        })()}
+
+                        {message.privateSources && message.privateSources.length > 0 && (
+                          <div className="mt-2 flex flex-col gap-2">
+                            {message.privateSources!.map((l, i) => (
+                              <a
+                                key={`priv-${i}`}
+                                href={l.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-800 underline font-medium hover:text-blue-600 transition w-fit"
+                              >
+                                <sup>[{i + 1 + publicCount}]</sup> {l.title?.trim() || "View PDF Source"}
+                              </a>
+                            ))}
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </>
                 )}
               </div>
             )}
           </div>
-        ))
+        )})
       )}
 
       {error.message && error.chatId === chatId && (
@@ -995,7 +1114,7 @@ function ProvinceDropdown({
   province: string
   setProvince: (prov: string) => void
 }) {
-  const provinces = [
+  const provincesList = [
     "Alberta",
     "British Columbia",
     "Manitoba",
@@ -1011,8 +1130,31 @@ function ProvinceDropdown({
     "Yukon",
   ] as const
 
+  const provincesMap = {
+    AB: "Alberta",
+    BC: "British Columbia",
+    MB: "Manitoba",
+    NB: "New Brunswick",
+    NL: "Newfoundland and Labrador",
+    NT: "Northwest Territories",
+    NS: "Nova Scotia",
+    NU: "Nunavut",
+    ON: "Ontario",
+    PE: "Prince Edward Island",
+    QC: "Quebec",
+    SK: "Saskatchewan",
+    YT: "Yukon",
+  };  
+
   return (
-    <Listbox value={province} onChange={setProvince}>
+    <Listbox
+      value={
+        province.length === 2 && (province in provincesMap)
+          ? provincesMap[province as keyof typeof provincesMap]
+          : province
+      }
+      onChange={setProvince}
+    >
       <div className="relative inline-block">
         <Label className="sr-only">Change province or territory</Label>
 
@@ -1022,7 +1164,7 @@ function ProvinceDropdown({
         </ListboxButton>
 
         <ListboxOptions className="absolute z-10 mt-1 max-h-60 w-[270px] overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black/10">
-          {provinces.map((p) => (
+          {provincesList.map((p) => (
             <ListboxOption key={p} value={p} as={Fragment}>
               {({
                 active,
