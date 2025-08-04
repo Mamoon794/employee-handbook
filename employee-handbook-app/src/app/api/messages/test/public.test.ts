@@ -4,6 +4,7 @@ jest.mock("@/services/messageService", () => ({
 
 import { POST } from "@/app/api/messages/public/route" // adjust this import to your actual route path
 import { handlePublicMessage } from "@/services/messageService"
+import { NextRequest } from "next/server"
 
 describe("POST /api/messages/public", () => {
   it("returns 400 for invalid JSON body", async () => {
@@ -12,7 +13,7 @@ describe("POST /api/messages/public", () => {
       body: "not-json", // invalid JSON
     })
 
-    const response = await POST(request as any)
+    const response = await POST(request as NextRequest)
     const result = await response.json()
 
     expect(response.status).toBe(400)
@@ -25,7 +26,7 @@ describe("POST /api/messages/public", () => {
       body: JSON.stringify({ province: "ON", query: "   ", threadId: "" }),
     })
 
-    const response = await POST(request as any)
+    const response = await POST(request as NextRequest)
     const result = await response.json()
 
     expect(response.status).toBe(400)
@@ -45,7 +46,7 @@ describe("POST /api/messages/public", () => {
       }),
     })
 
-    const response = await POST(request as any)
+    const response = await POST(request as NextRequest)
     const result = await response.json()
 
     expect(handlePublicMessage).toHaveBeenCalledWith(
@@ -71,7 +72,7 @@ describe("POST /api/messages/public", () => {
       }),
     })
 
-    const response = await POST(request as any)
+    const response = await POST(request as NextRequest)
     const result = await response.json()
 
     expect(response.status).toBe(500)
