@@ -34,6 +34,7 @@ export default function Home() {
   })
   const [currChatId, setCurrChatId] = useState<string>("")
   const [titleLoading, setTitleLoading] = useState(false)
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     const storedChats = localStorage.getItem("publicChats")
@@ -47,14 +48,20 @@ export default function Home() {
 
     const storedChatId = localStorage.getItem("currPublicChatId")
     if (storedChatId) setCurrChatId(storedChatId)
+
+    setHydrated(true);
   }, [])
 
   useEffect(() => {
-    localStorage.setItem("publicChats", JSON.stringify(chats))
+    if (hydrated) { // to prevent publicChats from resetting to [] when logging out of a private account
+      localStorage.setItem("publicChats", JSON.stringify(chats))
+    }
   }, [chats])
 
   useEffect(() => {
-    localStorage.setItem("currPublicChatId", currChatId)
+    if (hydrated) {
+      localStorage.setItem("currPublicChatId", currChatId)
+    }
   }, [currChatId])
 
   useEffect(() => {
