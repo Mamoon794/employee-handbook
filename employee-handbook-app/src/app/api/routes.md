@@ -33,6 +33,8 @@
      - `userID`: The ID of the user to fetch.
    - Response: Returns the user object.
 
+---
+
 3. **POST /api/users**
 
    - Description: Creates a new user.
@@ -73,6 +75,8 @@
      ```
    - Response: Returns the created chat id.
 
+---
+
 5. **GET /api/chat/[chatID]**
 
    - Description: Fetches all the chats for a user by the userID
@@ -80,12 +84,16 @@
      - `userID`: The ID of the user to fetch chats for.
    - Response: Returns an array of chat objects.
 
+---
+
 6. **DELETE /api/chat/[chatID]**
 
    - Description: Deletes a chat by its ID.
    - Parameters:
      - `chatID`: The ID of the chat to delete.
    - Response: Returns a success message or confirmation of deletion.
+
+---
 
 7. **POST /api/chat/[chatID]/add-message**
 
