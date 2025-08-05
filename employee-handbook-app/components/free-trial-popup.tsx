@@ -1,6 +1,4 @@
 import { Dispatch, SetStateAction } from "react";
-import { useRouter } from "next/navigation";
-import { useClerk } from "@clerk/nextjs";
 
 interface FreeTrialModalProps {
   trialEndsAt: string;
