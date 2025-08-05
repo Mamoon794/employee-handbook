@@ -32,7 +32,7 @@ You can also choose to log in or sign up using the buttons at the top right. Upo
 ![Login](deliverables/D2/images/login.png)
 
 After logging in, you will be able to create new chats, see your chat history and your messages will be stored.
-![Chat History](deliverables/D2/images/chat_history.png)
+<img width="1440" height="900" alt="Screenshot 2025-08-05 at 5 00 27 PM" src="https://github.com/user-attachments/assets/82f21692-655c-441b-9048-1d2f9749c4e2" />
 
 If you don't have an account, you can sign up using the **Sign Up** button. You will be asked whether you want to continue as an employee or an employer.
 ![Sign Up](deliverables/D2/images/signup.png)
