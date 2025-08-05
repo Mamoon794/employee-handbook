@@ -6,6 +6,7 @@ import axiosInstance from "./axios_config"
 import { Message } from "../models/schema"
 import { useAudioRecorder } from "react-use-audio-recorder"
 import { generateThreadId, mapCitationsToLinks } from "./global_components"
+import { Filter } from 'bad-words'
 
 interface Chat {
   id: string
@@ -126,8 +127,11 @@ export function MessageInput({
   };
 
   const submitUserMessage = async () => {
-    const messageContent = inputValue.trim();
+    let messageContent = inputValue.trim();
     if (!messageContent) return;
+
+    const filter = new Filter()
+    messageContent = filter.clean(messageContent)
 
     const userMessage: Omit<Message, "createdAt"> = {
       isFromUser: true,
