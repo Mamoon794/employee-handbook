@@ -603,8 +603,7 @@
     "userType": "string"
   }
   ```
-
-  - Note that userType is one of ["Employee", "Owner", "Administrator", "Financer"]
+  NOTE: `userType` is one of: `"Employee"`, `"Owner"`, `"Administrator"`, `"Financer"` 
   - Responses: 
     - Success: 
       - Body: The updated user object.
