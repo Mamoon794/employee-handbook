@@ -271,17 +271,17 @@ function PublicChatSideBar({
       {!isCollapsed && (
         <>
           <div className="px-4 text-sm text-gray-300 mb-2">Today</div>
-          <div className="flex flex-col mb-20 space-y-2">
+          <div className="flex flex-col mb-20 space-y-2 overflow-hidden">
             {chats.slice(0, 8).map((chat, index) => (
               <button
                 key={`${chat.id}-${index}`}
-                className={`bg-[#343769] text-white text-left px-4 py-2 mx-4 rounded-lg hover:bg-[#45488f] ${
+                className={`bg-[#343769] text-white text-left px-4 py-2 mx-4 rounded-lg hover:bg-[#45488f] overflow-hidden ${
                   currChatId === chat.id ? "border border-blue-300" : ""
                 }`}
                 onClick={() => selectChat(chat)}
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-medium break-words">
+                  <span className="font-medium break-words overflow-hidden">
                     {titleLoading && currChatId === chat.id
                       ? "Generating Title..."
                       : chat.title}
