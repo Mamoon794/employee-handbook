@@ -777,7 +777,7 @@ function MessageThread({
                 {message.content ? (
                   message.content.split("\n")
                   .map((line, idx) =>
-                    line === "" ? <br key={idx} /> : <p key={idx}>{line}</p>
+                    line === "" ? <br key={idx} /> : <p className="wrap-anywhere" key={idx}>{line}</p>
                   )
                 ) : null}
               </div>
