@@ -730,14 +730,15 @@ function MessageThread({
                   )
                   return (
                     <>
-                      {remainingContent.trim() && (
-                        <div
-                          className="text-lg"
-                          dangerouslySetInnerHTML={{
-                            __html: markdownListToTable(remainingContent),
-                          }}
-                        />
-                      )}
+                      {typeof remainingContent === "string" &&
+                        remainingContent.trim() && (
+                          <div
+                            className="text-lg"
+                            dangerouslySetInnerHTML={{
+                              __html: markdownListToTable(remainingContent),
+                            }}
+                          />
+                        )}
                       {cards.length > 0 && <CarouselCards cards={cards} />}
                     </>
                   )
