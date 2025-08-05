@@ -85,6 +85,11 @@ On the Paywall Page:
 - After successful payment, **Stripe triggers a webhook**, which updates the employer’s subscription status in **Firebase**.
 - Once Firebase reflects the updated status, the employer gains full access to premium features via the Dashboard.
 
+The demo is as follows:
+
+
+https://github.com/user-attachments/assets/69b32d97-e35e-4fc9-ae34-767261e2a50e
+
 
 ## Target Users
 
