@@ -2,7 +2,7 @@
 
 "use client"
 
-import { useEffect, useState, Dispatch, SetStateAction, useRef } from "react"
+import { useEffect, useState, Dispatch, SetStateAction, useRef, useMemo } from "react"
 import NextLink from "next/link"
 import { Plus, Menu, Trash2 } from "lucide-react"
 import axiosInstance from "./axios_config"
@@ -257,8 +257,8 @@ function PublicChatSideBar({
   return (
     <aside
       className={`${
-        isCollapsed ? "w-16" : "w-64"
-      } h-screen bg-[#1F2251] text-white flex flex-col min-h-screen relative transition-all duration-300`}
+        isCollapsed ? "w-16" : "w-[120px] md:w-64"
+      } h-screen bg-[#1F2251] text-white flex flex-col min-h-screen relative transition-all duration-300 overflow-y-auto`}
     >
       <div className="relative flex p-5 w-full">
         <button
@@ -282,14 +282,14 @@ function PublicChatSideBar({
                 onClick={() => selectChat(chat)}
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-medium">
+                  <span className="font-medium wrap-anywhere">
                     {titleLoading && currChatId === chat.id
                       ? "Generating Title..."
                       : chat.title}
                   </span>
                   {currChatId === chat.id && (
                     <Trash2
-                      className="text-gray-400"
+                      className="text-gray-400 min-w-3"
                       onClick={(e) => {
                         e.stopPropagation()
                         handleDelete(chat.id)
@@ -494,8 +494,8 @@ function PrivateChatSideBar({
   return (
     <aside
       className={`${
-        isCollapsed ? "w-16" : "w-64"
-      } bg-[#1F2251] text-white flex flex-col min-h-screen relative transition-all duration-300`}
+        isCollapsed ? "w-16" : "w-[30px] md:w-64"
+      } bg-[#1F2251] text-white flex flex-col min-h-screen relative transition-all duration-300 overflow-y-auto`}
     >
       <div className="relative flex p-5 w-full">
         <button
@@ -526,7 +526,7 @@ function PrivateChatSideBar({
                   </span>
                   {selectedChat?.id === chat.id && (
                     <Trash2
-                      className="text-gray-400"
+                      className="text-gray-400 min-w-3"
                       onClick={() => {
                         axiosInstance
                           .delete(`/api/chat/${chat.id}`)
@@ -1082,24 +1082,52 @@ function ProvinceDropdown({
     YT: "Yukon",
   };  
 
+  const fullToAbbr = useMemo(
+    () =>
+      Object.entries(provincesMap).reduce<Record<string, string>>(
+        (acc, [code, full]) => {
+          acc[full] = code
+          return acc
+        },
+        {}
+      ),
+    []
+  )
+
+  const fullName = 
+    province.length === 2
+      ? provincesMap[province as keyof typeof provincesMap]
+      : province
+  
+  const abbr =
+    province.length === 2
+      ? province
+      : fullToAbbr[province]
+
   return (
     <Listbox
-      value={
-        province.length === 2 && (province in provincesMap)
-          ? provincesMap[province as keyof typeof provincesMap]
-          : province
-      }
+      value={fullName}
       onChange={setProvince}
     >
       <div className="relative inline-block">
         <Label className="sr-only">Change province or territory</Label>
 
-        <ListboxButton className="w-[200px] sm:w-[250px] lg:w-[290px] px-3 sm:px-4 py-2 flex items-center rounded-md bg-white font-semibold border border-gray-300 text-gray-700 hover:bg-gray-200 transition-colors text-xs sm:text-sm">
-          Change your province/territory
+        <ListboxButton className="sm:w-[100px] md:w-[200px] lg:w-[290px] px-3 sm:px-4 py-2 flex items-center rounded-md bg-white font-semibold border border-gray-300 text-gray-700 hover:bg-gray-200 transition-colors text-xs sm:text-sm">
+          <span className="md:hidden">{abbr}</span>
+          <span className="hidden md:inline">Change your province/territory</span>
           <ChevronDown className="ml-auto h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
         </ListboxButton>
 
-        <ListboxOptions className="absolute z-10 mt-1 max-h-60 w-[180px] sm:w-[230px] lg:w-[270px] overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black/10">
+        <ListboxOptions className="absolute z-10 mt-1 max-h-60 sm:w-[80px] md:w-[180px] lg:w-[270px] overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black/10">
+        <ListboxOption
+          value=""
+          disabled
+          as="li"
+          className="md:hidden flex items-center px-3 sm:px-4 py-2 text-xs text-gray-500 cursor-not-allowed"
+        >
+          Change your province/territory
+        </ListboxOption>
+
           {provincesList.map((p) => (
             <ListboxOption key={p} value={p} as={Fragment}>
               {({
