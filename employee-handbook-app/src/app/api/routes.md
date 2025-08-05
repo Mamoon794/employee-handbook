@@ -134,10 +134,12 @@
 Adds current company documents by providing a `companyId` and a list of documents to be added.
 
 **Request Body:**
-```json
-companyId: string
-documents: list[Document]
-```
+   ```json
+   {
+      "companyId": "string",
+      "documents": "list[Document]"
+   }
+   ```
 
 **Response:**  
 Returns whether the update was successful.
@@ -150,14 +152,18 @@ Removes a specific document from a company's record by providing the `companyId`
 
 **Request Body:**
 ```json
-companyId: string
-index: integer
+{
+   "companyId": "string",
+   "index": "integer"
+}
 ```
 
 **Example:**
 ```json
-companyId: "12345"
-index: 1
+{
+   "companyId": "12345",
+   "index": 1
+}
 ```
 
 **Response:**  
