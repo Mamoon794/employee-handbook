@@ -24,3 +24,24 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.transition-width {
+  transition-property: width;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.flex-stable {
+  flex-shrink: 0;
+}
+
+.no-layout-shift {
+  contain: layout;
+}
+
+.header-stable {
+  contain: layout style;
+  will-change: auto;
+}

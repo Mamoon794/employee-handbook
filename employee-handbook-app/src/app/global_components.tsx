@@ -191,7 +191,6 @@ function PublicChatSideBar({
   setChats: Dispatch<SetStateAction<PublicChat[]>>
   titleLoading: boolean
 }) {
-  // Add collapsed state
   const [isCollapsed, setIsCollapsed] = useState(false)
 
   const [showPopup, setShowPopup] = useState(false)
@@ -282,7 +281,7 @@ function PublicChatSideBar({
                 onClick={() => selectChat(chat)}
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-medium wrap-anywhere">
+                  <span className="font-medium break-words">
                     {titleLoading && currChatId === chat.id
                       ? "Generating Title..."
                       : chat.title}
@@ -381,26 +380,6 @@ function PrivateChatSideBar({
   }, [])
 
   useEffect(() => {
-    const localUserId = localStorage.getItem("userId")
-    if (localUserId) {
-      axiosInstance
-        .get(`/api/chat/${localUserId}?isUserID=true`)
-        .then((response) => {
-          const chatData = response.data.map((chat: any) => ({
-            id: chat.id,
-            title: chat.title,
-            needsTitleUpdate: chat.title && chat.title.startsWith("Chat - "),
-          }))
-          setChats(chatData.slice(0, 8)) // Limit to 8 chats
-          setTotalChatsLength(chatData.length)
-          setSelectedChat(
-            chatData.find((chat: PrivateChat) => chat.id === currChatId) || null
-          )
-        })
-    }
-  }, [currChatId])
-
-  useEffect(() => {
     async function fetchChats() {
       const localUserId = localStorage.getItem("userId")
       setUserId(localUserId)
@@ -444,7 +423,7 @@ function PrivateChatSideBar({
       }`,
       userId: userId,
       messages: [] as Message[],
-      needsTitleUpdate: true, // <-- add this flag
+      needsTitleUpdate: true, 
     }
 
     try {
@@ -462,7 +441,6 @@ function PrivateChatSideBar({
       })
       setMessages(newChat.messages || [])
       setCurrChatId(createdChat.id)
-      // Removed AI title generation here; will be handled after first message in InputMessage
     } catch (error) {
       console.error("Error creating new chat:", error)
     }
@@ -494,8 +472,8 @@ function PrivateChatSideBar({
   return (
     <aside
       className={`${
-        isCollapsed ? "w-16" : "w-[30px] md:w-64"
-      } bg-[#1F2251] text-white flex flex-col min-h-screen relative transition-all duration-300 overflow-y-auto`}
+        isCollapsed ? "w-16" : "w-[120px] md:w-64"
+      } h-screen bg-[#1F2251] text-white flex flex-col min-h-screen relative transition-all duration-300 overflow-y-auto`}
     >
       <div className="relative flex p-5 w-full">
         <button
@@ -513,13 +491,15 @@ function PrivateChatSideBar({
             {chats.map((chat, index) => (
               <button
                 key={`${chat.id}-${index}`}
-                className="bg-[#343769] text-white text-left px-4 py-2 mx-4 rounded-lg hover:bg-[#45488f] text-sm sm:text-base"
+                className={`bg-[#343769] text-white text-left px-4 py-2 mx-4 rounded-lg hover:bg-[#45488f] ${
+                  selectedChat?.id === chat.id ? "border border-blue-300" : ""
+                }`}
                 onClick={() => {
                   handleChatChange(chat)
                 }}
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-medium">
+                  <span className="font-medium break-words">
                     {titleLoading && selectedChat?.id === chat.id
                       ? "Generating Title..."
                       : chat.title}
@@ -925,7 +905,7 @@ function Header({
   }
 
   return (
-    <header className="flex justify-between items-center px-4 sm:px-6 py-3 sm:py-4">
+    <header className="flex justify-between items-center px-4 sm:px-6 py-3 sm:py-4 bg-white min-h-[60px] header-stable">
       <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
         {!isSignedIn || !canSeeDashboard ? (
           <h1 className="text-xl sm:text-2xl font-extrabold italic text-blue-800 cursor-pointer flex-shrink-0">
@@ -944,20 +924,18 @@ function Header({
           </span>
         )}
       </div>
-      <div className="flex gap-2 sm:gap-4 items-center">
+      <div className="flex gap-2 sm:gap-4 items-center flex-shrink-0 min-w-0">
         {canSeeDashboard && !isOnDashboard && isSignedIn && (
-          <>
-            <button
-              className="px-3 sm:px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-900 transition-colors shadow-sm"
-              onClick={() => router.push("/dashboard")}
-            >
-              Dashboard
-            </button>
-          </>
+          <button
+            className="px-3 sm:px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"
+            onClick={() => router.push("/dashboard")}
+          >
+            Dashboard
+          </button>
         )}
         {isSignedIn && isOnDashboard && (
           <button
-            className="px-2 sm:px-3 lg:px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-900 transition-colors shadow-sm"
+            className="px-3 sm:px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"
             onClick={() => router.push("/chat")}
           >
             Ask a Question
@@ -966,24 +944,24 @@ function Header({
         {(isFinance || canSeeDashboard) && isSignedIn && (
           <>
             <button
-              className="px-2 sm:px-3 lg:px-5 py-2 bg-blue-800 text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-900 transition-colors shadow-sm hidden md:block"
+              className="px-3 sm:px-5 py-2 bg-blue-800 text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm hidden md:block"
               onClick={() => router.push("/finances")}
             >
               View Finances
             </button>
             <button
               onClick={() => router.push("/analytics")}
-              className="px-2 sm:px-3 lg:px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-900 transition-colors shadow-sm hidden md:block"
+              className="px-3 sm:px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm hidden md:block"
             >
               Analytics
             </button>
           </>
         )}
 
-        <div className="flex gap-2 sm:gap-3 items-center">
+        <div className="flex gap-2 sm:gap-3 items-center flex-shrink-0">
           {!isSignedIn ? (
             <>
-              <span className="px-2 sm:px-4">
+              <span className="px-2 sm:px-4 flex-shrink-0">
                 <ProvinceDropdown
                   province={province}
                   setProvince={setProvince}
@@ -993,8 +971,8 @@ function Header({
               <SignUp />
             </>
           ) : (
-            <div className="flex items-center">
-              <span className="px-2 sm:px-4">
+            <div className="flex items-center flex-shrink-0">
+              <span className="px-2 sm:px-4 flex-shrink-0">
                 <ProvinceDropdown
                   province={province}
                   setProvince={setProvince}
@@ -1019,7 +997,7 @@ export function LogIn() {
   return (
     <button
       onClick={handleLogin}
-      className="bg-blue-800 text-white font-semibold px-3 sm:px-6 py-2 rounded-md hover:bg-blue-600 transition-colors text-xs sm:text-sm"
+      className="bg-blue-800 text-white font-semibold px-3 sm:px-6 py-2 rounded-md hover:bg-blue-600 transition-colors text-sm"
     >
       Log in
     </button>
@@ -1112,18 +1090,18 @@ function ProvinceDropdown({
       <div className="relative inline-block">
         <Label className="sr-only">Change province or territory</Label>
 
-        <ListboxButton className="sm:w-[100px] md:w-[200px] lg:w-[290px] px-3 sm:px-4 py-2 flex items-center rounded-md bg-white font-semibold border border-gray-300 text-gray-700 hover:bg-gray-200 transition-colors text-xs sm:text-sm">
+        <ListboxButton className="w-[100px] md:w-[200px] px-3 sm:px-4 py-2 flex items-center rounded-md bg-white font-semibold border border-gray-300 text-gray-700 hover:bg-gray-200 transition-colors text-sm">
           <span className="md:hidden">{abbr}</span>
           <span className="hidden md:inline">Change your province/territory</span>
           <ChevronDown className="ml-auto h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
         </ListboxButton>
 
-        <ListboxOptions className="absolute z-10 mt-1 max-h-60 sm:w-[80px] md:w-[180px] lg:w-[270px] overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black/10">
+        <ListboxOptions className="absolute z-10 mt-1 max-h-60 w-[80px] md:w-[180px] overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black/10">
         <ListboxOption
           value=""
           disabled
           as="li"
-          className="md:hidden flex items-center px-3 sm:px-4 py-2 text-xs text-gray-500 cursor-not-allowed"
+          className="md:hidden flex items-center px-3 sm:px-4 py-2 text-sm text-gray-500 cursor-not-allowed"
         >
           Change your province/territory
         </ListboxOption>
@@ -1139,7 +1117,7 @@ function ProvinceDropdown({
               }) => (
                 <li
                   className={
-                    `flex cursor-pointer select-none items-center gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm ` +
+                    `flex cursor-pointer select-none items-center gap-2 px-3 sm:px-4 py-2 text-sm ` +
                     (active ? "bg-blue-100 text-blue-900" : "text-gray-900")
                   }
                 >
