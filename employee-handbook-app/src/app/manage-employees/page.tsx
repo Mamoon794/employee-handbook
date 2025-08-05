@@ -56,8 +56,10 @@ export default function ManageEmployees() {
   }, [companyId])
 
   const deleteEmployee = async (userId: string) => {
-    const response = await axiosInstance.delete(`/api/users/${userId}`)
-    if (response.status === 204) {
+    const response = await axiosInstance.patch(
+      `/api/company/${companyId}/users/${userId}`
+    )
+    if (response.status === 200) {
       // setDeletedPopup(true)
       fetchEmployees()
     } else {
@@ -85,7 +87,9 @@ export default function ManageEmployees() {
     <div className="min-h-screen bg-white flex flex-col font-sans">
       <header className="flex justify-between items-center px-4 sm:px-6 lg:px-8 py-4 sm:py-6 bg-white shadow-sm">
         <Link href="/dashboard">
-          <h1 className="text-xl sm:text-2xl font-extrabold italic text-blue-800">Gail</h1>
+          <h1 className="text-xl sm:text-2xl font-extrabold italic text-blue-800">
+            Gail
+          </h1>
         </Link>
         <div className="flex gap-2 sm:gap-4 items-center">
           <button
@@ -108,7 +112,9 @@ export default function ManageEmployees() {
           >
             Analytics
           </button>
-          <UserButton appearance={{ elements: { avatarBox: "w-8 h-8 sm:w-10 sm:h-10" } }} />
+          <UserButton
+            appearance={{ elements: { avatarBox: "w-8 h-8 sm:w-10 sm:h-10" } }}
+          />
         </div>
       </header>
 
