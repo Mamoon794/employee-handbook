@@ -704,6 +704,55 @@ function MessageThread({
     if (onRetry) onRetry()
   }
 
+  const renderResponse = (content: string, offset: number, sources?: Link[]) => {
+    const { cards, remainingContent } = parseCarouselCards(
+      content
+    );
+    let html = markdownListToTable(remainingContent);
+    if (sources?.length) {
+      const supTags = sources
+        .map((_, i) => `<sup>[${i + 1 + offset}]</sup>`)
+        .join(" ");
+      html = html.replace(/<\/p>\s*$/, `${supTags}</p>`);
+    }
+    return (
+      <>
+        {remainingContent.trim() && (
+          <div
+            className="text-lg"
+            dangerouslySetInnerHTML={{
+              __html: markdownListToTable(html),
+            }}
+          />
+        )}
+        {cards.length > 0 && <CarouselCards cards={cards} />}
+      </>
+    );
+  }
+
+  const renderSources = (offset: number, sources?: Link[]) => {
+    if (!sources?.length) {
+      return null
+    }
+
+    return (
+      <div className="mt-2 flex flex-col gap-2">
+        {sources
+          .map((l, i) => (
+            <a
+              key={`legacy-${i}`}
+              href={l.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-800 underline font-medium hover:text-blue-600 transition w-fit"
+            >
+              <sup>[{i + 1 + offset}]</sup> {l.title?.trim() || "View PDF Source"}
+            </a>
+          ))}
+      </div>
+    )
+  }
+
   return (
     <div
       className="flex flex-1 flex-col gap-6 py-6 px-1 overflow-y-auto"
@@ -737,49 +786,8 @@ function MessageThread({
                 {message.content ? (
                   // ── Legacy path: continue to parse `message.content` + `message.sources` ──
                   <>
-                    {(() => {
-                      const { cards, remainingContent } = parseCarouselCards(
-                        message.content!
-                      );
-                      let html = markdownListToTable(remainingContent);
-                      if (message.sources?.length) {
-                        const supTags = message.sources
-                          .map((_, i) => `<sup>[${i + 1}] </sup>`)
-                          .join("");
-                        html = html.replace(/<\/p>\s*$/, `${supTags}</p>`);
-                      }
-                      return (
-                        <>
-                          {remainingContent.trim() && (
-                            <div
-                              className="text-lg"
-                              dangerouslySetInnerHTML={{
-                                __html: markdownListToTable(html),
-                              }}
-                            />
-                          )}
-                          {cards.length > 0 && <CarouselCards cards={cards} />}
-                        </>
-                      );
-                    })()}
-
-                    {message.sources && message.sources.length > 0 && (
-                      <div className="mt-2 flex flex-col gap-2">
-                        {message.sources!
-                          .filter((l) => l.url)
-                          .map((l, i) => (
-                            <a
-                              key={`legacy-${i}`}
-                              href={l.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-blue-800 underline font-medium hover:text-blue-600 transition w-fit"
-                            >
-                              <sup>[{i + 1}]</sup> {l.title?.trim() || "View PDF Source"}
-                            </a>
-                          ))}
-                      </div>
-                    )}
+                    {renderResponse(message.content, 0, message.sources)}
+                    {renderSources(0, message.sources)}
                   </>
                 ) : (
                   // ── New path: render publicResponse + publicSources, then privateResponse + privateSources ──
@@ -787,47 +795,8 @@ function MessageThread({
                     {/* PUBLIC RESPONSE */}
                     {message.publicResponse && (
                       <>
-                        {(() => {
-                          const { cards, remainingContent } = parseCarouselCards(
-                            message.publicResponse!
-                          );
-                          let html = markdownListToTable(remainingContent);
-                          if (message.publicSources?.length) {
-                            const supTags = message.publicSources
-                              .map((_, i) => `<sup>[${i + 1}] </sup>`)
-                              .join("");
-                            html = html.replace(/<\/p>\s*$/, `${supTags}</p>`);
-                          }
-                          return (
-                            <>
-                              {remainingContent.trim() && (
-                                <div
-                                  className="text-lg"
-                                  dangerouslySetInnerHTML={{
-                                    __html: markdownListToTable(html),
-                                  }}
-                                />
-                              )}
-                              {cards.length > 0 && <CarouselCards cards={cards} />}
-                            </>
-                          );
-                        })()}
-
-                        {message.publicSources && message.publicSources.length > 0 && (
-                          <div className="mt-2 flex flex-col gap-2">
-                            {message.publicSources!.map((l, i) => (
-                              <a
-                                key={`pub-${i}`}
-                                href={l.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-800 underline font-medium hover:text-blue-600 transition w-fit"
-                              >
-                                <sup>[{i + 1}]</sup> {l.title?.trim() || "View PDF Source"}
-                              </a>
-                            ))}
-                          </div>
-                        )}
+                        {renderResponse(message.publicResponse, 0, message.publicSources)}
+                        {renderSources(0, message.publicSources)}
                       </>
                     )}
 
@@ -839,48 +808,8 @@ function MessageThread({
                     {/* PRIVATE RESPONSE */}
                     {message.privateResponse && (
                       <>
-                        {(() => {
-                          const { cards, remainingContent } = parseCarouselCards(
-                            message.privateResponse!
-                          );
-                          let html = markdownListToTable(remainingContent);
-
-                          if (message.privateSources?.length) {
-                            const supTags = message.privateSources
-                              .map((_, i) => `<sup>[${publicCount + i + 1}] </sup>`)
-                              .join("");
-                            html = html.replace(/<\/p>\s*$/, `${supTags}</p>`);
-                          }
-                          return (
-                            <>
-                              {remainingContent.trim() && (
-                                <div
-                                  className="text-lg"
-                                  dangerouslySetInnerHTML={{
-                                    __html: markdownListToTable(html),
-                                  }}
-                                />
-                              )}
-                              {cards.length > 0 && <CarouselCards cards={cards} />}
-                            </>
-                          );
-                        })()}
-
-                        {message.privateSources && message.privateSources.length > 0 && (
-                          <div className="mt-2 flex flex-col gap-2">
-                            {message.privateSources!.map((l, i) => (
-                              <a
-                                key={`priv-${i}`}
-                                href={l.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-800 underline font-medium hover:text-blue-600 transition w-fit"
-                              >
-                                <sup>[{i + 1 + publicCount}]</sup> {l.title?.trim() || "View PDF Source"}
-                              </a>
-                            ))}
-                          </div>
-                        )}
+                        {renderResponse(message.privateResponse, publicCount, message.privateSources)}
+                        {renderSources(publicCount, message.privateSources)}
                       </>
                     )}
                   </>
