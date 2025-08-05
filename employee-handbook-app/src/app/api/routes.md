@@ -52,6 +52,8 @@
      - `userID`: The ID of the user to fetch.
    - Response: Returns the user object.
 
+---
+
 3. **POST /api/users**
 
    - Description: Creates a new user.
@@ -92,6 +94,8 @@
      ```
    - Response: Returns the created chat id.
 
+---
+
 5. **GET /api/chat/[chatID]**
 
    - Description: Fetches all the chats for a user by the userID
@@ -99,12 +103,16 @@
      - `userID`: The ID of the user to fetch chats for.
    - Response: Returns an array of chat objects.
 
+---
+
 6. **DELETE /api/chat/[chatID]**
 
    - Description: Deletes a chat by its ID.
    - Parameters:
      - `chatID`: The ID of the chat to delete.
    - Response: Returns a success message or confirmation of deletion.
+
+---
 
 7. **POST /api/chat/[chatID]/add-message**
 
@@ -147,7 +155,126 @@
 
 ---
 
-9. **POST /api/ai-summary/bullet-points**
+9. **PUT /api/company/docs**
+
+**Description:**  
+Adds current company documents by providing a `companyId` and a list of documents to be added.
+
+**Request Body:**
+   ```json
+   {
+      "companyId": "string",
+      "documents": "list[Document]"
+   }
+   ```
+
+**Response:**  
+Returns whether the update was successful.
+
+---
+
+10. **DELETE /api/company/docs**
+
+**Description:**  
+Removes a specific document from a company's record by providing the `companyId` and the index of the document.
+
+**Request Body:**
+```json
+{
+   "companyId": "string",
+   "index": "integer"
+}
+```
+
+**Example:**
+```json
+{
+   "companyId": "12345",
+   "index": 1
+}
+```
+
+**Response:**  
+Returns whether the deletion was successful.
+
+---
+
+11. **GET /api/company/docs/{companyId}**
+
+**Description:**  
+Retrieves the list of documents associated with a specific company.
+
+**Path Parameters:**
+- `companyId` (string): Unique identifier of the company.
+
+**Example Request:**
+```
+GET /api/company/docs/12345
+```
+
+**Example Response:**
+```json
+{
+  "companyId": "12345",
+  "documents": [
+    {
+      "documentId": "doc1",
+      "name": "Document Name 1",
+      "type": "pdf",
+      "createdDate": "2023-01-01"
+    },
+    {
+      "documentId": "doc2",
+      "name": "Document Name 2",
+      "type": "docx",
+      "createdDate": "2023-02-15"
+    }
+  ]
+}
+```
+
+---
+
+12.  **POST /api/s3/upload**
+
+**Description:**  
+Uploads a document to an S3 bucket using the provided `formData`, `bucketName`, and `contentType`.
+
+**Request Body:**
+- `formData`: The binary data of the document (multipart/form-data)
+- `bucketName`: Name of the S3 bucket
+- `contentType`: MIME type (e.g., `application/pdf`, `image/jpeg`)
+
+**Example (form fields):**
+```
+formData: (binary)
+bucketName: "my-s3-bucket"
+contentType: "application/pdf"
+```
+
+**Response:**  
+Returns the status of the upload and the URL if successful.
+
+---
+
+13. **POST /api/s3/new-bucket**
+
+**Description:**  
+Creates a new S3 bucket with the specified `bucketName`.
+
+**Request Body:**
+```json
+{
+  "bucketName": "new-s3-bucket"
+}
+```
+
+**Response:**  
+Returns the status of the bucket creation operation, including a success message if successful.
+
+---
+
+14. **POST /api/ai-summary/bullet-points**
 
    - Description: Generates bullet points from the provided summary message. Each bullet point starts with "- " and appears on a new line in the response.
    - Body: A JSON object containing the "summary" string to be converted into bullet points.
@@ -159,7 +286,9 @@
      ```
    - Response: A string with bullet points, each starting with - and separated by new lines.
 
-10. **POST /api/ai-summary/employee-distribution**
+---
+
+15. **POST /api/ai-summary/employee-distribution**
 
     - Description: Generates a concise textual explanation of employee distribution across provinces using the provided data.
     - Body: A JSON object containing an array of province entries. Each entry should include:
@@ -185,7 +314,9 @@
       ```
     - Response: A plain-text summary paragraph, suitable for screen reader users. The explanation is concise, uses full province names, and highlights meaningful comparisons or trends.
 
-11. **POST /api/ai-summary/employee-registration**
+---
+
+16. **POST /api/ai-summary/employee-registration**
 
     - Description: Generates a concise textual explanation of employee registration across months/days using the provided data.
     - Body: A JSON object containing an array of entries, each with:
@@ -208,7 +339,9 @@
       ```
     - Response: A plain-text, concise summary paragraph describing registration trends.
 
-12. **POST /api/ai-summary/questions-asked**
+---
+
+17. **POST /api/ai-summary/questions-asked**
     - Description: Creates a brief summary explaining the trends in the number of questions asked over months or days based on the provided data.
     - Body: A JSON object containing an array of entries, each with:
       - time: a month (e.g., "April") or a day (e.g., "Monday")
@@ -261,7 +394,7 @@
     ]
     ```
 
-**GET /api/analytics/active-users**
+18. **GET /api/analytics/active-users**
 
 - Description: Returns the total number of unique active users (employees) in a company who have participated in chats within the specified date range. An active user is identified by having at least one chat updated within the range.
 - Query Parameters:
@@ -270,7 +403,9 @@
   - endDate: (string) – Required. End of the date range in YYYY-MM-DD format.
 - Response: A JSON object containing the total number of active users and the status.
 
-**GET /api/analytics/documents**
+---
+
+19. **GET /api/analytics/documents**
 
 - Description: Returns the total number of documents uploaded by a company and how many were newly uploaded within the specified date range.
 - Query Parameters:
@@ -279,7 +414,9 @@
   - endDate: (string) – Required. End of the date range in YYYY-MM-DD format.
 - Response: A JSON object containing the total number of uploaded documents and how many were newly uploaded within the specified date range.
 
-**GET /api/analytics/monthly**
+---
+
+20. **GET /api/analytics/monthly**
 
 - Description: Returns time-based analytics (either daily or monthly) on the number of employees added, questions asked, and documents uploaded by a company within a given date range.
 - Query Parameters:
@@ -288,7 +425,9 @@
   - endDate: (string) – Required. End of the date range in YYYY-MM-DD format.
 - Response: A JSON object containing a list of time periods and the counts for each.
 
-**GET /api/analytics/popular-questions**
+---
+
+21. **GET /api/analytics/popular-questions**
 
 - Description: Retrieves the most popular (top) questions asked within a company over a specified date range. Results are filtered by the company name and the createdAt timestamp.
 - Query Parameters:
@@ -297,7 +436,9 @@
   - endDate: (string) – Required. End of the date range in YYYY-MM-DD format.
 - Response: A JSON object containing a list of top questions within the specified period.
 
-**GET /api/analytics/provinces**
+---
+
+22. **GET /api/analytics/provinces**
 
 - Description: Returns the total number of employees in a company and their distribution by province, optionally filtered by a date range.
 - Query Parameters:
@@ -306,7 +447,9 @@
   - endDate: (string) – Required. End of the date range in YYYY-MM-DD format.
 - Response: A JSON object containing the total number of employees and their distribution by province.
 
-**GET /api/analytics/questions**
+---
+
+23. **GET /api/analytics/questions**
 
 - Description: Returns the total number of questions asked by employees in a company, as well as how many of those were asked within a specified date range.
 - Query Parameters:
@@ -315,7 +458,9 @@
   - endDate: (string) – Required. End of the date range in YYYY-MM-DD format.
 - Response: A JSON object with the total number of questions and how many were newly asked within the given time frame.
 
-**GET /api/analytics/users**
+---
+
+24. **GET /api/analytics/users**
 
 - Description: Returns the total number of members (including owners, adminstrators, financers, employees) in a company and the number of new members added within a given date range (if provided).
 - Query Parameters:
@@ -326,7 +471,7 @@
 
 ---
 
-**POST /api/messages/public**
+25. **POST /api/messages/public**
 
 - Description: Handles incoming messages from public users by forwarding them to the AI service for a response. Maintains conversation context using a thread ID.
 - Example Body:
@@ -341,7 +486,7 @@
 
 ---
 
-**POST /api/vectordb-documents**
+26. **POST /api/vectordb-documents**
 
 - Description: Uploads a file to the vector database (Pinecone). The file is fetched from the provided URL and stored under the specified namespace after being chunked into smaller document segments.
 - Example Body:
@@ -353,7 +498,9 @@
   ```
 - Response: Returns the file URL, namespace (company), number of document chunks stored in the vector DB, and a status indicating success or failure.
 
-**PATCH /api/vectordb-documents**
+---
+
+27. **PATCH /api/vectordb-documents**
 
 - Description: Deletes all documents stored under the specified company (namespace) from the vector database.
 - Example Body:
@@ -364,7 +511,9 @@
   ```
 - Response: Returns the namespace (company) and a status indicating success or failure.
 
-**PATCH /api/vectordb-documents/source**
+---
+
+28. **PATCH /api/vectordb-documents/source**
 
 - Description: Deletes a specific document (identified by the file URL) from the vector database under the specified company (namespace).
 - Example Body:
@@ -378,7 +527,7 @@
 
 ---
 
-**POST /api/stripe/checkout**
+29. **POST /api/stripe/checkout**
 
    - Description: Creates a Stripe checkout session for premium access to employee handbook features. Requires user authentication and creates a payment session for $9.99 USD.
    - Authentication: Required (Clerk authentication)
@@ -394,7 +543,9 @@
      - `401 Unauthorized`: User is not authenticated
      - `500 Internal Server Error`: Failed to create checkout session
 
-**POST /api/stripe/webhook**
+---
+
+30. **POST /api/stripe/webhook**
 
    - Description: Handles Stripe webhook events to process payment confirmations and update user subscription status. Verifies webhook signature for security and processes `checkout.session.completed` and `payment_intent.succeeded` events.
    - Authentication: Webhook signature verification required
@@ -415,13 +566,17 @@
      - `400 Bad Request`: Invalid webhook signature
      - `500 Internal Server Error`: Webhook handler failed
 
-13. **GET /api/accept-invitation**
+---
+
+31. **GET /api/accept-invitation**
     - Description: Takes care of accepting invitations by verifying it, checking user auth, updating respective company information, and redirecting the user to chat upon success. Redirects to login if user can't be authenticated. Redirects to invalid-invitation if invitation is no longer pending or email doesn't match.
     - Parameters:
       - invitationId: The ID of the invitation to accept (query parameter)
     - Response: Redirect responses to various pages depending on validation
 
-14. **POST /api/clerk-webhook**
+---
+
+32. **POST /api/clerk-webhook**
     - Description: Allows for syncing of Clerk user data with Firestore database
     - Events handled:
       - user.created: creates user in database
@@ -435,7 +590,9 @@
       - Success: { message: "Webhook processed" }
       - Error: { error: "Error message" }
 
-15. **POST /api/expire-invite**
+---
+
+33. **POST /api/expire-invite**
     - Description: Makes an invitation expire by status update.
     - Body: The invitation id of the given invitation
     - Example Body:
@@ -448,7 +605,9 @@
       - Success: { success: true }
       - Error: { error: "Error message" }
 
-16. **POST /api/generate-title**
+---
+
+34. **POST /api/generate-title**
     - Description: uses the first message in a chat to generate a title
     - Body: The message, chatId and userId
       ```json
@@ -473,21 +632,27 @@
       }
       ```
 
-17. **GET /api/get-accepted-invites**
+---
+
+35. **GET /api/get-accepted-invites**
     - Description: Retrieves the accepted invites from a single company
     - Parameters:
       - companyId: the ID of the company (query parameter)
     - Response: Array of the accepted invitation objects
     - Error Message: { error: "Error message" } occurs if companyId is not provided/query fails
 
-18. **GET /api/get-pending-invites**
+---
+
+36. **GET /api/get-pending-invites**
     - Description: Retrieves all the pending invites for a given company
     - Parameters:
       - companyId: the ID of the company (query parameter)
     - Response: Array of the accepted invitation objects
     - Error Message: { error: "Error message" } occurs if companyId is not provided/query fails
 
-19. **GET /api/getCompanyInfo**
+---
+
+37. **GET /api/getCompanyInfo**
     - Description: Retrieves company information for the authenticated user
     - Authentication: Required Clerk (user) authentication
     - Response:
@@ -502,7 +667,9 @@
       - 404: Company not found
       - 500: Server error
 
-20. **POST /api/send-invitation**
+---
+
+38. **POST /api/send-invitation**
     - Description: Sends an invitation for joining the company
     - Authentication: Required Clerk (user) authentication
     - Body:
@@ -523,7 +690,9 @@
           - 400: Email not found/User already in company
           - 500: Server error
 
-21. **POST /api/update-title**
+---
+
+39. **POST /api/update-title**
     - Description: Updates chat title
     - Body:
       ```json

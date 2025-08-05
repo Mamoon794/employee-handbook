@@ -34,17 +34,24 @@ You can also choose to log in or sign up using the buttons at the top right. Upo
 After logging in, you will be able to create new chats, see your chat history and your messages will be stored.
 ![Chat History](deliverables/D2/images/chat_history.png)
 
-If you don't have an account, you can sign up using the **Sign Up** button. You will be asked whether you want to continue as an employee or an employer. As of now, sign up only works when using email. Sign up with Google needs a bit more work to be done.
+If you don't have an account, you can sign up using the **Sign Up** button. You will be asked whether you want to continue as an employee or an employer.
 ![Sign Up](deliverables/D2/images/signup.png)
 
-If you choose to sign up as an employee, you will be taken to the sign up page by Clerk, where you can enter your email and password to create an account. As of now, sign up only works when using email. Sign up with Google needs a bit more work to be done.
+If you choose to sign up as an employee, you will be taken to the sign up page by Clerk, where you can enter your email and password to create an account or use Google sign in.
 ![Employee Sign Up](deliverables/D2/images/employee_signup.png)
 
-If you choose to sign up as an employer, you will see the same page but upon completion, you will be taken to the dashboard which allows you to upload documents, view analytics and more. In the future, you will be able to upload your company policies and documents.
-![Employer Sign Up](deliverables/D2/images/employee_signup.png)
+If you choose to sign up as an employer, you will see the same page but upon completion, you will be taken to the dashboard which allows you to upload documents, view analytics and more. 
+<img width="1824" height="862" alt="image" src="https://github.com/user-attachments/assets/81009b0e-a410-4d68-b4fd-c89cd269e872" />
 
 As an employer, you can upload your company policies and documents, add employees, view finances, view analytics and access the chatbot. Some functionality will be implemented in the future, but you can already upload documents.
 ![Employer Dashboard](deliverables/D2/images/employer_dashboard.png)
+
+Owners can then add employees to their company by sending invites through email. They can view pending, expired and accepted invitations. Additionally, they have the option to delete a pending invitation, effectively making it expired.
+<img width="1851" height="877" alt="image" src="https://github.com/user-attachments/assets/aae8773d-1cf7-4d5d-a3ba-1de4250db794" />
+
+Invited employees will recieve an email in which clicking the provided link allows them to join the company.
+<img width="1574" height="819" alt="image" src="https://github.com/user-attachments/assets/4140b06a-846f-46eb-8570-414139822bcd" />
+![Welcome](https://github.com/user-attachments/assets/0aefd6d6-1c70-4865-8127-ca31bbe95557)
 
 The analytics page will show you the number of employees, total questions asked and more.
 ![Analytics](deliverables/D2/images/analytics.png)
@@ -52,6 +59,10 @@ The analytics page will show you the number of employees, total questions asked 
 ## Chat History
 - All users (public or logged-in) can view their recent chat history.
 - A maximum of 8 recent chats are stored per user.
+
+## Add Employee Feature
+
+To allow owners to give their employees access to their policy documents, owners are able to add employees to their company through the dashboard. Here, owners can send an invite using the invitee's email, and the email will be sent through EmailJS. There are a few checks that take place just to ensure the employee is not already in a company, that they have not already recieved an email by the sender, and that they exist in our database. These invites expire within 7 days if not accepted by the employee, or if they are cancelled by the sender. Upon such circumstances, the invite will redirect to an invalid or expired invitation page. Once accepted, the employee will view a welcome message, see their company's name on the chat page and will have access to company-specific policies.
 
 ## Stripe Payment Integration
 
