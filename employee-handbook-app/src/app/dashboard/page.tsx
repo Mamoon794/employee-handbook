@@ -88,6 +88,10 @@ export default function Dashboard() {
   const [savedFiles, setSavedFiles] = useState<pdfFile[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [province, setProvince] = useState<string>("")
+  const [seenFreeTrialPopup, setSeenFreeTrialPopup] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem("seenFreeTrialPopup") === "true";
+  });
   const [trialInfo, setTrialInfo] = useState<{
     isTrialPeriod?: boolean
     trialEndsAt?: string
@@ -174,7 +178,7 @@ export default function Dashboard() {
     }
 
     checkSubscriptionStatus()
-  }, [user])
+  }, [user, isFirstLogin])
 
   async function uploadDocuments(event: React.ChangeEvent<HTMLInputElement>) {
     const companyId = localStorage.getItem("companyId") || ""
@@ -249,7 +253,7 @@ export default function Dashboard() {
       <Header province={province} setProvince={setProvince} />
       
       {/* Trial Banner */}
-      {trialInfo?.isTrialPeriod && !isFirstLogin && user?.unsafeMetadata?.userType !== 'Employee' && (
+      {trialInfo?.isTrialPeriod && ((isFirstLogin && seenFreeTrialPopup) || !isFirstLogin) && user?.unsafeMetadata?.userType !== 'Employee' && (
         <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white px-8 py-4">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
             <div className="flex items-center space-x-3">
@@ -354,7 +358,18 @@ export default function Dashboard() {
       {showPaywall && <PaywallModal />}
 
       {/* Free Trial Modal */}
-      {showFreeTrialPopup && <FreeTrialModal trialEndsAt={trialInfo?.trialEndsAt} onClose={() => setShowFreeTrialPopup(false)}/>}
+      {
+        showFreeTrialPopup &&
+        trialInfo?.isTrialPeriod &&
+        !seenFreeTrialPopup &&
+        isFirstLogin && (
+          <FreeTrialModal
+            trialEndsAt={trialInfo.trialEndsAt!}
+            onClose={() => setShowFreeTrialPopup(false)}
+            setSeenFreeTrialPopup={setSeenFreeTrialPopup}
+          />
+        )
+      }
     </div>
   )
 }

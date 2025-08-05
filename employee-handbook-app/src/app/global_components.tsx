@@ -860,6 +860,7 @@ function Header({
       localStorage.removeItem("userId")
       localStorage.removeItem("companyId")
       localStorage.removeItem("companyName")
+      localStorage.removeItem("seenFreeTrialPopup")
       checkAuthentication(false, false)
       setCompanyName(null)
     }

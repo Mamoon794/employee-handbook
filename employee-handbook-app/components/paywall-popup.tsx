@@ -142,7 +142,7 @@ export default function PaywallModal() {
           onClick={() => signOut(() => router.push('/'))}
           className="w-full mt-3 bg-gray-200 text-gray-700 font-medium py-2 sm:py-3 rounded-xl text-sm sm:text-base hover:bg-gray-300 transition-colors shadow-sm"
         >
-          Logout
+          Sign Out
         </button>
         
         {error && <p className="text-red-500 mt-3 sm:mt-4 text-center text-xs sm:text-sm">{error}</p>}
