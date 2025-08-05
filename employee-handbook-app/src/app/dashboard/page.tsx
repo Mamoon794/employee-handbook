@@ -2,13 +2,14 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { useUser } from "@clerk/nextjs"
+import { useUser, useAuth, useSessionList } from "@clerk/nextjs"
 import { useEffect, useState, useCallback } from "react"
 import axiosInstance from "../axios_config"
 import PaywallModal from "../../../components/paywall-popup"
 import { Header } from "../global_components"
 import { CircularProgress } from "@mui/material"
 import { TrashIcon } from "lucide-react"
+import FreeTrialModal from "@/components/free-trial-popup"
 
 type pdfFile = {
   name: string
@@ -77,9 +78,13 @@ const FilePreview: React.FC<CustProps> = ({ files, setFiles }) => {
 
 export default function Dashboard() {
   const router = useRouter()
-  const { user } = useUser()
+  const { user, isLoaded } = useUser()
+  const { sessionId } = useAuth()
+  const { sessions } = useSessionList()
   const firstName = user?.firstName || "there"
   const [showPaywall, setShowPaywall] = useState(false)
+  const [showFreeTrialPopup, setShowFreeTrialPopup] = useState(false)
+  const [isFirstLogin, setIsFirstLogin] = useState(false)
   const [savedFiles, setSavedFiles] = useState<pdfFile[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [province, setProvince] = useState<string>("")
@@ -112,6 +117,24 @@ export default function Dashboard() {
   }, [fetchCompanyDocs])
 
   useEffect(() => {
+    // no user or no session info yet
+    if (!isLoaded || !user || !sessions || !sessionId) return
+    
+    const userCreatedAt = user.createdAt;
+    if (!userCreatedAt) return;
+
+    const current = sessions.find(s => s.id === sessionId);
+    const sessionCreatedAt = current?.createdAt;
+    if (!sessionCreatedAt) return;
+
+    const userTs = userCreatedAt.getTime();
+    const sessionTs = sessionCreatedAt.getTime();
+    
+    // treat as “first login” if signup and login are within one minute
+    setIsFirstLogin(Math.abs(sessionTs - userTs) < 60 * 1000);
+  }, [isLoaded, user, sessions, sessionId])
+
+  useEffect(() => {
     const checkSubscriptionStatus = async () => {
       if (!user) {
         setIsLoading(false)
@@ -122,6 +145,7 @@ export default function Dashboard() {
 
       if (userType === "Employee") {
         setShowPaywall(false)
+        setShowFreeTrialPopup(false)
         setIsLoading(false)
         return
       }
@@ -133,9 +157,13 @@ export default function Dashboard() {
         // Store trial information if user is in trial period
         if (isTrialPeriod) {
           setTrialInfo({ isTrialPeriod, trialEndsAt });
+          if (isFirstLogin) {
+            setShowFreeTrialPopup(true)
+          }
+        } else {
+          setShowPaywall(!subscribed);
         }
         
-        setShowPaywall(!subscribed);
         setIsLoading(false);
       } catch (error) {
         console.error("Error checking subscription status:", error)
@@ -221,7 +249,7 @@ export default function Dashboard() {
       <Header province={province} setProvince={setProvince} />
       
       {/* Trial Banner */}
-      {trialInfo?.isTrialPeriod && user?.unsafeMetadata?.userType !== 'Employee' && (
+      {trialInfo?.isTrialPeriod && !isFirstLogin && user?.unsafeMetadata?.userType !== 'Employee' && (
         <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white px-8 py-4">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
             <div className="flex items-center space-x-3">
@@ -324,6 +352,9 @@ export default function Dashboard() {
 
       {/* Paywall Modal */}
       {showPaywall && <PaywallModal />}
+
+      {/* Free Trial Modal */}
+      {showFreeTrialPopup && <FreeTrialModal trialEndsAt={trialInfo?.trialEndsAt} onClose={() => setShowFreeTrialPopup(false)}/>}
     </div>
   )
 }
