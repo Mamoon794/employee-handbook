@@ -128,7 +128,7 @@
 
 ---
 
-9.  **PUT /api/company/docs**
+9. **PUT /api/company/docs**
 
 **Description:**  
 Adds current company documents by providing a `companyId` and a list of documents to be added.
