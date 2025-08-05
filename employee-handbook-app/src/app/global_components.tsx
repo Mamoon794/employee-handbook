@@ -2,13 +2,13 @@
 
 "use client"
 
-import { useEffect, useState, Dispatch, SetStateAction, useRef } from "react"
-import Link from "next/link"
+import { useEffect, useState, Dispatch, SetStateAction, useRef, useMemo } from "react"
+import NextLink from "next/link"
 import { Plus, Menu, Trash2 } from "lucide-react"
 import axiosInstance from "./axios_config"
 import { useRouter } from "next/navigation"
 import { useUser, UserButton } from "@clerk/nextjs"
-import { Message } from "../models/schema"
+import { Link, Message } from "../models/schema"
 import { marked } from "marked"
 import { Fragment } from "react"
 import {
@@ -19,7 +19,7 @@ import {
   ListboxOptions,
 } from "@headlessui/react"
 import { CarouselCards } from "@/components/carousel-cards"
-import type { CarouselCard } from "@/types/ai"
+import type { CarouselCard, Citation } from "@/types/ai"
 import { ChevronDown, Check } from "lucide-react"
 import dynamic from "next/dynamic"
 
@@ -51,6 +51,13 @@ export const provinceMap: { [key: string]: string } = {
 
 function generateThreadId(): string {
   return Date.now().toString()
+}
+
+function mapCitationsToLinks(citations: Citation[]): Link[] {
+  return citations.map((citation) => ({
+    title: citation.title,
+    url: citation.fragmentUrl || citation.originalUrl, // Use fragmentUrl if available, fallback to originalUrl
+  }))
 }
 
 export interface Chat {
@@ -250,8 +257,8 @@ function PublicChatSideBar({
   return (
     <aside
       className={`${
-        isCollapsed ? "w-16" : "w-64"
-      } h-screen bg-[#1F2251] text-white flex flex-col min-h-screen relative transition-all duration-300`}
+        isCollapsed ? "w-16" : "w-[120px] md:w-64"
+      } h-screen bg-[#1F2251] text-white flex flex-col min-h-screen relative transition-all duration-300 overflow-y-auto`}
     >
       <div className="relative flex p-5 w-full">
         <button
@@ -275,14 +282,14 @@ function PublicChatSideBar({
                 onClick={() => selectChat(chat)}
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-medium">
+                  <span className="font-medium wrap-anywhere">
                     {titleLoading && currChatId === chat.id
                       ? "Generating Title..."
                       : chat.title}
                   </span>
                   {currChatId === chat.id && (
                     <Trash2
-                      className="text-gray-400"
+                      className="text-gray-400 min-w-3"
                       onClick={(e) => {
                         e.stopPropagation()
                         handleDelete(chat.id)
@@ -487,8 +494,8 @@ function PrivateChatSideBar({
   return (
     <aside
       className={`${
-        isCollapsed ? "w-16" : "w-64"
-      } bg-[#1F2251] text-white flex flex-col min-h-screen relative transition-all duration-300`}
+        isCollapsed ? "w-16" : "w-[30px] md:w-64"
+      } bg-[#1F2251] text-white flex flex-col min-h-screen relative transition-all duration-300 overflow-y-auto`}
     >
       <div className="relative flex p-5 w-full">
         <button
@@ -519,7 +526,7 @@ function PrivateChatSideBar({
                   </span>
                   {selectedChat?.id === chat.id && (
                     <Trash2
-                      className="text-gray-400"
+                      className="text-gray-400 min-w-3"
                       onClick={() => {
                         axiosInstance
                           .delete(`/api/chat/${chat.id}`)
@@ -697,6 +704,55 @@ function MessageThread({
     if (onRetry) onRetry()
   }
 
+  const renderResponse = (content: string, offset: number, sources?: Link[]) => {
+    const { cards, remainingContent } = parseCarouselCards(
+      content
+    );
+    let html = markdownListToTable(remainingContent);
+    if (sources?.length) {
+      const supTags = sources
+        .map((_, i) => `<sup>[${i + 1 + offset}]</sup>`)
+        .join(" ");
+      html = html.replace(/<\/p>\s*$/, `${supTags}</p>`);
+    }
+    return (
+      <>
+        {remainingContent.trim() && (
+          <div
+            className="text-lg"
+            dangerouslySetInnerHTML={{
+              __html: markdownListToTable(html),
+            }}
+          />
+        )}
+        {cards.length > 0 && <CarouselCards cards={cards} />}
+      </>
+    );
+  }
+
+  const renderSources = (offset: number, sources?: Link[]) => {
+    if (!sources?.length) {
+      return null
+    }
+
+    return (
+      <div className="mt-2 flex flex-col gap-2">
+        {sources
+          .map((l, i) => (
+            <a
+              key={`legacy-${i}`}
+              href={l.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-800 underline font-medium hover:text-blue-600 transition w-fit"
+            >
+              <sup>[{i + 1 + offset}]</sup> {l.title?.trim() || "View PDF Source"}
+            </a>
+          ))}
+      </div>
+    )
+  }
+
   return (
     <div
       className="flex flex-1 flex-col gap-6 py-6 px-1 overflow-y-auto"
@@ -712,58 +768,56 @@ function MessageThread({
           </h3>
         </div>
       ) : (
-        messageList.map((message, index) => (
+        messageList.map((message, index) => { 
+          const publicCount = message.publicSources?.length ?? 0;
+          return (
           <div key={index} className="flex flex-col">
             {message.isFromUser ? (
               <div className="self-end bg-blue-100 text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm text-lg">
-                {message.content
-                  .split("\n")
+                {message.content ? (
+                  message.content.split("\n")
                   .map((line, idx) =>
-                    line === "" ? <br key={idx} /> : <p key={idx}>{line}</p>
-                  )}
+                    line === "" ? <br key={idx} /> : <p className="wrap-anywhere" key={idx}>{line}</p>
+                  )
+                ) : null}
               </div>
             ) : (
               <div className="self-start bg-gray-100 text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm">
-                {(() => {
-                  const { cards, remainingContent } = parseCarouselCards(
-                    message.content
-                  )
-                  return (
-                    <>
-                      {typeof remainingContent === "string" &&
-                        remainingContent.trim() && (
-                          <div
-                            className="text-lg"
-                            dangerouslySetInnerHTML={{
-                              __html: markdownListToTable(remainingContent),
-                            }}
-                          />
-                        )}
-                      {cards.length > 0 && <CarouselCards cards={cards} />}
-                    </>
-                  )
-                })()}
-                {message.sources && message.sources.length > 0 && (
-                  <div className="mt-2 flex flex-col gap-2">
-                    {message.sources
-                      .filter((link) => link.url)
-                      .map((link, linkIndex) => (
-                        <a
-                          key={`${index}-${linkIndex}`}
-                          href={link.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-800 underline font-medium hover:text-blue-600 transition w-fit"
-                        >
-                          {link.title?.trim() || "View PDF Source"}
-                        </a>
-                      ))}
-                  </div>
+                {message.content ? (
+                  // ── Legacy path: continue to parse `message.content` + `message.sources` ──
+                  <>
+                    {renderResponse(message.content, 0, message.sources)}
+                    {renderSources(0, message.sources)}
+                  </>
+                ) : (
+                  // ── New path: render publicResponse + publicSources, then privateResponse + privateSources ──
+                  <>
+                    {/* PUBLIC RESPONSE */}
+                    {message.publicResponse && (
+                      <>
+                        {renderResponse(message.publicResponse, 0, message.publicSources)}
+                        {renderSources(0, message.publicSources)}
+                      </>
+                    )}
+
+                    {/* separate public and private responses */}
+                    {message.publicResponse && message.privateResponse && (
+                      <hr className="my-4 border-gray-300" />
+                    )}
+
+                    {/* PRIVATE RESPONSE */}
+                    {message.privateResponse && (
+                      <>
+                        {renderResponse(message.privateResponse, publicCount, message.privateSources)}
+                        {renderSources(publicCount, message.privateSources)}
+                      </>
+                    )}
+                  </>
                 )}
               </div>
             )}
           </div>
-        ))
+        )})
       )}
 
       {error.message && error.chatId === chatId && (
@@ -878,11 +932,11 @@ function Header({
             Gail
           </h1>
         ) : (
-          <Link href="/dashboard">
+          <NextLink href="/dashboard">
             <h1 className="text-xl sm:text-2xl font-extrabold italic text-blue-800 cursor-pointer flex-shrink-0">
               Gail
             </h1>
-          </Link>
+          </NextLink>
         )}
         {companyName && (
           <span className="text-sm sm:text-lg font-medium text-black hidden sm:block truncate">
@@ -996,7 +1050,7 @@ function ProvinceDropdown({
   province: string
   setProvince: (prov: string) => void
 }) {
-  const provinces = [
+  const provincesList = [
     "Alberta",
     "British Columbia",
     "Manitoba",
@@ -1012,18 +1066,69 @@ function ProvinceDropdown({
     "Yukon",
   ] as const
 
+  const provincesMap = {
+    AB: "Alberta",
+    BC: "British Columbia",
+    MB: "Manitoba",
+    NB: "New Brunswick",
+    NL: "Newfoundland and Labrador",
+    NT: "Northwest Territories",
+    NS: "Nova Scotia",
+    NU: "Nunavut",
+    ON: "Ontario",
+    PE: "Prince Edward Island",
+    QC: "Quebec",
+    SK: "Saskatchewan",
+    YT: "Yukon",
+  };  
+
+  const fullToAbbr = useMemo(
+    () =>
+      Object.entries(provincesMap).reduce<Record<string, string>>(
+        (acc, [code, full]) => {
+          acc[full] = code
+          return acc
+        },
+        {}
+      ),
+    []
+  )
+
+  const fullName = 
+    province.length === 2
+      ? provincesMap[province as keyof typeof provincesMap]
+      : province
+  
+  const abbr =
+    province.length === 2
+      ? province
+      : fullToAbbr[province]
+
   return (
-    <Listbox value={province} onChange={setProvince}>
+    <Listbox
+      value={fullName}
+      onChange={setProvince}
+    >
       <div className="relative inline-block">
         <Label className="sr-only">Change province or territory</Label>
 
-        <ListboxButton className="w-[200px] sm:w-[250px] lg:w-[290px] px-3 sm:px-4 py-2 flex items-center rounded-md bg-white font-semibold border border-gray-300 text-gray-700 hover:bg-gray-200 transition-colors text-xs sm:text-sm">
-          Change your province/territory
+        <ListboxButton className="sm:w-[100px] md:w-[200px] lg:w-[290px] px-3 sm:px-4 py-2 flex items-center rounded-md bg-white font-semibold border border-gray-300 text-gray-700 hover:bg-gray-200 transition-colors text-xs sm:text-sm">
+          <span className="md:hidden">{abbr}</span>
+          <span className="hidden md:inline">Change your province/territory</span>
           <ChevronDown className="ml-auto h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
         </ListboxButton>
 
-        <ListboxOptions className="absolute z-10 mt-1 max-h-60 w-[180px] sm:w-[230px] lg:w-[270px] overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black/10">
-          {provinces.map((p) => (
+        <ListboxOptions className="absolute z-10 mt-1 max-h-60 sm:w-[80px] md:w-[180px] lg:w-[270px] overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black/10">
+        <ListboxOption
+          value=""
+          disabled
+          as="li"
+          className="md:hidden flex items-center px-3 sm:px-4 py-2 text-xs text-gray-500 cursor-not-allowed"
+        >
+          Change your province/territory
+        </ListboxOption>
+
+          {provincesList.map((p) => (
             <ListboxOption key={p} value={p} as={Fragment}>
               {({
                 active,
@@ -1068,5 +1173,6 @@ export {
   Header,
   Disclaimer,
   generateThreadId,
+  mapCitationsToLinks,
   ERROR_MESSAGE,
 }

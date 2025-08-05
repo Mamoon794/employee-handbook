@@ -39,6 +39,7 @@
     "@mui/material": "^7.2.0",
     "@sentry/nextjs": "^8",
     "axios": "^1.10.0",
+    "bad-words": "^4.0.0",
     "canvas-confetti": "^1.9.3",
     "dompurify": "^3.2.6",
     "firebase": "^11.9.1",

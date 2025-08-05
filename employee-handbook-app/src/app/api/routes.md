@@ -1,28 +1,47 @@
 ### The routes defined for the API
 
-1. **POST /api/public/message**
-   - Description: Sends a public user's question, province, and thread ID to the AI service. The service returns a contextual response with relevant citations. The API returns citations including the original URL, a URL with a fragment identifier or text fragment, and the title.
-   - Example Body:
-     ```json
-     {
-       "province": "Ontario",
-       "query": "What is the minimum wage?",
-       "threadId": "1719337314562"
-     }
-     ```
-   - Example Response:
-     ```json
-     {
-       "response": "As of 2025, the minimum wage in Ontario is $16.55 per hour.",
-       "citations": [
-         {
-           "originalUrl": "https://www.cfib-fcei.ca/en/tools-resources/minimum-wage-rates-overtime-rules-canada",
-           "fragmentUrl": "https://www.cfib-fcei.ca/en/tools-resources/minimum-wage-rates-overtime-rules-canada",
-           "title": "Minimum wage rates and overtime rules in Canada"
-         }
-       ]
-     }
-     ```
+**POST /api/messages/private**
+  - Description: Sends a public user's question, province, thread ID, and company to the AI service. The service returns two types of responses, one based on public documentation, and another based on private company documentation, each with relevant citations. The API returns the public and private responses, as well as their citations, each including the original URL, a URL with a fragment identifier or text fragment, and the title.
+  - Example Body:
+    ```json
+    {
+      "province": "Ontario",
+      "query": "What is the minimum wage?",
+      "threadId": "1719337314562",
+      "company": "MyCompany"
+    }
+    ```
+  - Example Response:
+    ```json
+    {
+      "publicResponse": "According to relevant legal guidance, the minimum hourly rate in Canada is $15.",
+      "publicSources": [
+        {
+          "originalUrl": "https://novascotia.ca/lae/employmentrights/docs/LabourStandardsCodeGuide.pdf",
+          "fragmentUrl": "https://novascotia.ca/lae/employmentrights/docs/LabourStandardsCodeGuide.pdf#page=7",
+          "title": ""
+        },
+        {
+          "originalUrl": "https://novascotia.ca/lae/employmentrights/minimumwage.asp",
+          "fragmentUrl": "https://novascotia.ca/lae/employmentrights/minimumwage.asp#:~:text=30)%20each%20week.%20If%20the%20employer%20takes%20%2425%20off%20the",
+          "title": "Minimum Wage | novascotia.ca"
+        },
+        {
+          "originalUrl": "https://laws-lois.justice.gc.ca/PDF/L-2.pdf",
+          "fragmentUrl": "https://laws-lois.justice.gc.ca/PDF/L-2.pdf#page=202",
+          "title": ""
+        }
+      ],
+      "privateResponse": "Based on the employee manual, there is no information about minimum wage.",
+      "privateSources": [
+        {
+          "originalUrl": "https://employee-handbook-app.s3.us-east-2.amazonaws.com/1754240707501-cyikl7l62ym",
+          "fragmentUrl": "https://employee-handbook-app.s3.us-east-2.amazonaws.com/1754240707501-cyikl7l62ym#page=2",
+          "title": "Course Syllabus"
+        }
+      ]
+    }
+    ```
 
 ---
 
@@ -211,7 +230,36 @@
       ```
     - Response: A plain-text, concise summary paragraph highlighting the main trends in the questions asked.
 
----
+**GET /api/popular-questions/job**
+    - Description: Cron job which calls the FastAPI GET /popular-questions endpoint and gets all popular questions, with 3 popular questions for each scope (i.e. gets popular questions for all province/company combinations). These documents are saved to Firestore in the popular_questions collection. This job would run every Friday at 12:00am.
+    - Response: Returns whether the job was a success and the number of popular questions saved to the database.
+    - Example Response:
+    ```json
+    { 
+      "success": true, 
+      "count": 10
+    }
+    ```
+
+**POST /api/popular-questions**
+    - Description: Fetches popular questions for the user's province/company from Firestore.
+    - Body: A JSON object containing the user's company and province. If the user is public, company is an empty string.
+    - Example Body:
+      ```json
+      {
+        "company": "MyCompany",
+        "province": "Ontario"
+      }
+      ```
+    - Response: A list of popular questions.
+    - Example Response:
+    ```json
+    [
+      "What guidelines should a worker follow?",
+      "What are the rights of employees?",
+      "What guidelines should an employer follow?"
+    ]
+    ```
 
 **GET /api/analytics/active-users**
 
@@ -487,3 +535,111 @@
     - Response: 
       - Success: { success: true }
       - Error: { error: "Error message" } (on failure)
+
+**GET /api/company/[companyId]/users**
+  - Description: Retrieve all users for a given company, optionally sorted by a valid field.
+  - Path Parameters: `companyId`: string
+  - Query Parameters: `sort`: string (optional, default: `firstName`)
+  - Responses
+    - Success: 
+      - Body: An array of user objects, sorted by the requested field.
+      - Example Response Body:
+        ```json
+        [
+          {
+            "id": "cEOUOOKZ0ZAzIUUuvBQe",
+            "clerkUserId": "user_2zciIWhb6yWg0XzKXIuTXJ3o0k9",
+            "firstName": "Harris",
+            "lastName": "Brown",
+            "email": "harrisbrown@gmail.com",
+            "userType": "Owner",
+            "province": "ON",
+            "companyId": "XLY33b01OQAnvCcNbyTn",
+            "companyName": "COMPANY",
+            "createdAt": {
+              "_seconds": 1752036831,
+              "_nanoseconds": 700000000
+            },
+            "updatedAt": {
+              "_seconds": 1752036831,
+              "_nanoseconds": 700000000
+            },
+            "isSubscribed": true
+          },
+          {
+            "id": "7jRkhN29TNKeqkFWQ7TP",
+            "clerkUserId": "user_309Z5ytm6c4U87yHTIHLD1rnRJQ",
+            "firstName": "Sally",
+            "lastName": "Smith",
+            "email": "sallysmith@gmail.com",
+            "userType": "Employee",
+            "province": "ON",
+            "createdAt": {
+              "_seconds": 1753041617,
+              "_nanoseconds": 568000000
+            },
+            "isSubscribed": false,
+            "companyId": "XLY33b01OQAnvCcNbyTn",
+            "companyName": "COMPANY",
+            "updatedAt": {
+              "_seconds": 1754255226,
+              "_nanoseconds": 912000000
+            }
+          }
+        ]  
+        ```
+    - Errors:
+      - 400 Bad Request: Invalid sort parameter
+      - 404 Not Found: No users found
+      - 500 Internal Server Error: Failed to fetch users
+
+
+**PATCH /api/users/[userID]**
+  - Description: Update a user's role.
+  - Path Parameters: `userID`: string
+  - Body:
+  ```json
+  {
+    "userType": "string"
+  }
+  ```
+  NOTE: `userType` is one of: `"Employee"`, `"Owner"`, `"Administrator"`, `"Financer"` 
+  - Responses: 
+    - Success: 
+      - Body: The updated user object.
+      - Example Response Body:
+        ```json
+        {
+          "id": "SwC8fwoggbgujB5McVac",
+          "firstName": "john",
+          "isSubscribed": false,
+          "lastName": "doe",
+          "province": "ON",
+          "createdAt": {
+            "_seconds": 1749166116,
+            "_nanoseconds": 81000000
+          },
+          "twoFactorEnabled": false,
+          "primaryEmail": "johndoe@gmail.com",
+          "clerkUserId": "user_2ykuGII1PGZufUIt4HQgvTAllIE",
+          "companyId": "0Y21icelkWSLi86TcTa5",
+          "userType": "Administrator",
+          "updatedAt": {
+            "_seconds": 1754424363,
+            "_nanoseconds": 487000000
+          }
+        }
+        ```
+    - Errors:
+      - 400 Bad Request: Invalid user type
+      - 404 Not Found: User not found
+      - 500 Internal Server Error: Failed to update user
+
+**DELETE /api/users/[userID]**
+  - Description: Delete a user.
+  - Path Parameters: `userID`: string
+  - Responses
+    - Success: 204 No Content
+    - Errors:
+      - 404 Not Found: User not found
+      - 500 Internal Server Error: Failed to delete user

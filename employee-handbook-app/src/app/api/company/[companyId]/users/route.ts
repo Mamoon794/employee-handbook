@@ -36,8 +36,8 @@ export async function GET(
       })
     }
   } catch (error) {
-    console.error("Error updating user:", error)
-    return new Response(JSON.stringify({ error: "Failed to update user" }), {
+    console.error("Error fetching users:", error)
+    return new Response(JSON.stringify({ error: "Failed to fetch users" }), {
       status: 500,
     })
   }
