@@ -1,18 +1,18 @@
 ### The routes defined for the API
 
 **POST /api/messages/private**
-   - Description: Sends a public user's question, province, thread ID, and company to the AI service. The service returns two types of responses, one based on public documentation, and another based on private company documentation, each with relevant citations. The API returns the public and private responses, as well as their citations, each including the original URL, a URL with a fragment identifier or text fragment, and the title.
-   - Example Body:
-     ```json
-     {
-       "province": "Ontario",
-       "query": "What is the minimum wage?",
-       "threadId": "1719337314562",
-       "company": "MyCompany"
-     }
-     ```
-   - Example Response:
-     ```json
+  - Description: Sends a public user's question, province, thread ID, and company to the AI service. The service returns two types of responses, one based on public documentation, and another based on private company documentation, each with relevant citations. The API returns the public and private responses, as well as their citations, each including the original URL, a URL with a fragment identifier or text fragment, and the title.
+  - Example Body:
+    ```json
+    {
+      "province": "Ontario",
+      "query": "What is the minimum wage?",
+      "threadId": "1719337314562",
+      "company": "MyCompany"
+    }
+    ```
+  - Example Response:
+    ```json
     {
       "publicResponse": "According to relevant legal guidance, the minimum hourly rate in Canada is $15.",
       "publicSources": [
@@ -41,7 +41,7 @@
         }
       ]
     }
-     ```
+    ```
 
 ---
 
@@ -535,3 +535,112 @@
     - Response: 
       - Success: { success: true }
       - Error: { error: "Error message" } (on failure)
+
+**GET /api/company/[companyId]/users**
+  - Description: Retrieve all users for a given company, optionally sorted by a valid field.
+  - Path Parameters: `companyId`: string
+  - Query Parameters: `sort`: string (optional, default: `firstName`)
+  - Responses
+    - Success: 
+      - Body: An array of user objects, sorted by the requested field.
+      - Example Response Body:
+        ```json
+        [
+          {
+            "id": "cEOUOOKZ0ZAzIUUuvBQe",
+            "clerkUserId": "user_2zciIWhb6yWg0XzKXIuTXJ3o0k9",
+            "firstName": "Harris",
+            "lastName": "Brown",
+            "email": "harrisbrown@gmail.com",
+            "userType": "Owner",
+            "province": "ON",
+            "companyId": "XLY33b01OQAnvCcNbyTn",
+            "companyName": "COMPANY",
+            "createdAt": {
+              "_seconds": 1752036831,
+              "_nanoseconds": 700000000
+            },
+            "updatedAt": {
+              "_seconds": 1752036831,
+              "_nanoseconds": 700000000
+            },
+            "isSubscribed": true
+          },
+          {
+            "id": "7jRkhN29TNKeqkFWQ7TP",
+            "clerkUserId": "user_309Z5ytm6c4U87yHTIHLD1rnRJQ",
+            "firstName": "Sally",
+            "lastName": "Smith",
+            "email": "sallysmith@gmail.com",
+            "userType": "Employee",
+            "province": "ON",
+            "createdAt": {
+              "_seconds": 1753041617,
+              "_nanoseconds": 568000000
+            },
+            "isSubscribed": false,
+            "companyId": "XLY33b01OQAnvCcNbyTn",
+            "companyName": "COMPANY",
+            "updatedAt": {
+              "_seconds": 1754255226,
+              "_nanoseconds": 912000000
+            }
+          }
+        ]  
+        ```
+    - Errors:
+      - 400 Bad Request: Invalid sort parameter
+      - 404 Not Found: No users found
+      - 500 Internal Server Error: Failed to fetch users
+
+
+**PATCH /api/users/[userID]**
+  - Description: Update a user's role.
+  - Path Parameters: `userID`: string
+  - Body:
+  ```json
+  {
+    "userType": "string"
+  }
+  ```
+
+  - Note that userType is one of ["Employee", "Owner", "Administrator", "Financer"]
+  - Responses: 
+    - Success: 
+      - Body: The updated user object.
+      - Example Response Body:
+        ```json
+        {
+          "id": "SwC8fwoggbgujB5McVac",
+          "firstName": "john",
+          "isSubscribed": false,
+          "lastName": "doe",
+          "province": "ON",
+          "createdAt": {
+            "_seconds": 1749166116,
+            "_nanoseconds": 81000000
+          },
+          "twoFactorEnabled": false,
+          "primaryEmail": "johndoe@gmail.com",
+          "clerkUserId": "user_2ykuGII1PGZufUIt4HQgvTAllIE",
+          "companyId": "0Y21icelkWSLi86TcTa5",
+          "userType": "Administrator",
+          "updatedAt": {
+            "_seconds": 1754424363,
+            "_nanoseconds": 487000000
+          }
+        }
+        ```
+    - Errors:
+      - 400 Bad Request: Invalid user type
+      - 404 Not Found: User not found
+      - 500 Internal Server Error: Failed to update user
+
+**DELETE /api/users/[userID]**
+  - Description: Delete a user.
+  - Path Parameters: `userID`: string
+  - Responses
+    - Success: 204 No Content
+    - Errors:
+      - 404 Not Found: User not found
+      - 500 Internal Server Error: Failed to delete user
