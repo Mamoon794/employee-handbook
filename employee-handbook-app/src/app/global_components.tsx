@@ -3,12 +3,12 @@
 "use client"
 
 import { useEffect, useState, Dispatch, SetStateAction, useRef } from "react"
-import Link from "next/link"
+import NextLink from "next/link"
 import { Plus, Menu, Trash2 } from "lucide-react"
 import axiosInstance from "./axios_config"
 import { useRouter } from "next/navigation"
 import { useUser, UserButton } from "@clerk/nextjs"
-import { Message } from "../models/schema"
+import { Link, Message } from "../models/schema"
 import { marked } from "marked"
 import { Fragment } from "react"
 import {
@@ -19,7 +19,7 @@ import {
   ListboxOptions,
 } from "@headlessui/react"
 import { CarouselCards } from "@/components/carousel-cards"
-import type { CarouselCard } from "@/types/ai"
+import type { CarouselCard, Citation } from "@/types/ai"
 import { ChevronDown, Check } from "lucide-react"
 import dynamic from "next/dynamic"
 
@@ -51,6 +51,13 @@ export const provinceMap: { [key: string]: string } = {
 
 function generateThreadId(): string {
   return Date.now().toString()
+}
+
+function mapCitationsToLinks(citations: Citation[]): Link[] {
+  return citations.map((citation) => ({
+    title: citation.title,
+    url: citation.fragmentUrl || citation.originalUrl, // Use fragmentUrl if available, fallback to originalUrl
+  }))
 }
 
 export interface Chat {
@@ -996,11 +1003,11 @@ function Header({
             Gail
           </h1>
         ) : (
-          <Link href="/dashboard">
+          <NextLink href="/dashboard">
             <h1 className="text-xl sm:text-2xl font-extrabold italic text-blue-800 cursor-pointer flex-shrink-0">
               Gail
             </h1>
-          </Link>
+          </NextLink>
         )}
         {companyName && (
           <span className="text-sm sm:text-lg font-medium text-black hidden sm:block truncate">
@@ -1209,5 +1216,6 @@ export {
   Header,
   Disclaimer,
   generateThreadId,
+  mapCitationsToLinks,
   ERROR_MESSAGE,
 }

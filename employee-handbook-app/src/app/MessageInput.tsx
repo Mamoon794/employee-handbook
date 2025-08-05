@@ -3,23 +3,15 @@
 import { useEffect, useState, Dispatch, SetStateAction, useRef } from "react"
 import { Search, Mic, Loader2 } from "lucide-react"
 import axiosInstance from "./axios_config"
-import { Link, Message } from "../models/schema"
-import { Citation } from "@/types/ai"
+import { Message } from "../models/schema"
 import { useAudioRecorder } from "react-use-audio-recorder"
-import { generateThreadId } from "./global_components"
+import { generateThreadId, mapCitationsToLinks } from "./global_components"
 
 interface Chat {
   id: string
   title: string
   needsTitleUpdate?: boolean
   messages?: Message[]
-}
-
-export function mapCitationsToLinks(citations: Citation[]): Link[] {
-  return citations.map((citation) => ({
-    title: citation.title,
-    url: citation.fragmentUrl || citation.originalUrl, // Use fragmentUrl if available, fallback to originalUrl
-  }))
 }
 
 export function MessageInput({

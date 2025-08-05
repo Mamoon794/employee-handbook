@@ -11,25 +11,16 @@ import {
   PublicChatSideBar,
   Disclaimer,
   PopularQuestions,
+  mapCitationsToLinks,
 } from "./global_components"
 import { useRouter } from "next/navigation"
 import axiosInstance from "./axios_config"
 
 import ProvincePopup from "../../components/province"
-import { Link, Message } from "@/models/schema"
+import { Message } from "@/models/schema"
 import { Chat, ERROR_MESSAGE } from "./global_components"
-import { Citation } from "@/types/ai"
-
-// import { mapCitationsToLinks } from "./MessageInput"
 
 export default function Home() {
-  function mapCitationsToLinks(citations: Citation[]): Link[] {
-    return citations.map((citation) => ({
-      title: citation.title,
-      url: citation.fragmentUrl || citation.originalUrl, // Use fragmentUrl if available, fallback to originalUrl
-    }))
-  }
-
   const { isSignedIn, user } = useUser()
   const router = useRouter()
 

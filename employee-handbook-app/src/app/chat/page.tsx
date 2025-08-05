@@ -9,14 +9,13 @@ import {
   Chat,
   Disclaimer,
   PopularQuestions,
+  mapCitationsToLinks,
   ERROR_MESSAGE,
 } from "../global_components"
-import { Link, Message } from "../../models/schema"
+import { Message } from "../../models/schema"
 import { useUser } from "@clerk/nextjs"
 import { useRouter } from "next/navigation"
 import confetti from "canvas-confetti"
-import { Citation } from "@/types/ai"
-// import { mapCitationsToLinks } from '../MessageInput';
 
 export default function ChatPage() {
   return (
@@ -35,12 +34,6 @@ export default function ChatPage() {
 }
 
 function ChatContent() {
-  function mapCitationsToLinks(citations: Citation[]): Link[] {
-    return citations.map((citation) => ({
-      title: citation.title,
-      url: citation.fragmentUrl || citation.originalUrl, // Use fragmentUrl if available, fallback to originalUrl
-    }))
-  }
   const [messages, setMessages] = useState<Message[]>([])
   const [chats, setChats] = useState<Chat[]>([])
   const [error, setError] = useState<{ message: string; chatId: string }>({
