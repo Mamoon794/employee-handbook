@@ -15,7 +15,7 @@ export default function EmployeeRegistrationForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState("")
   const [formData, setFormData] = useState({
-    province: "ON",
+    province: "Ontario",
     isSubscribed: false,
   })
 
