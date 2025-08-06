@@ -378,6 +378,8 @@ Returns the status of the bucket creation operation, including a success message
       ```
     - Response: A plain-text, concise summary paragraph highlighting the main trends in the questions asked.
 
+---
+
 19. **GET /api/popular-questions/job**
     - Description: Cron job which calls the FastAPI GET /popular-questions endpoint and gets all popular questions, with 3 popular questions for each scope (i.e. gets popular questions for all province/company combinations). These documents are saved to Firestore in the popular_questions collection. This job would run every Friday at 12:00am.
     - Response: Returns whether the job was a success and the number of popular questions saved to the database.
@@ -388,6 +390,8 @@ Returns the status of the bucket creation operation, including a success message
       "count": 10
     }
     ```
+
+---
 
 20. **POST /api/popular-questions**
     - Description: Fetches popular questions for the user's province/company from Firestore.
@@ -408,6 +412,8 @@ Returns the status of the bucket creation operation, including a success message
       "What guidelines should an employer follow?"
     ]
     ```
+
+---
 
 21. **GET /api/analytics/active-users**
 
