@@ -21,7 +21,7 @@ function PostLoginRedirectInner() {
         await axiosInstance
         .get(`/api/users/${user.id}?isClerkID=true`)
         .then((response) => {
-          let userId = response.data[0].id
+          const userId = response.data[0].id
           localStorage.setItem("userId", userId)
           localStorage.setItem("companyId", response.data[0].companyId || "")
           localStorage.setItem(
