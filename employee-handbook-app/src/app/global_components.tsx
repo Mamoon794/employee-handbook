@@ -931,7 +931,7 @@ function Header({
       <div className="flex gap-1 sm:gap-2 md:gap-4 items-center flex-shrink-0 min-w-0 overflow-visible">
         {canSeeDashboard && !isOnDashboard && isSignedIn && (
           <button
-            className="px-2 sm:px-3 md:px-5 py-1.5 sm:py-2 bg-[#242267] text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-900 transition-colors shadow-sm"
+            className="px-1.5 sm:px-2 md:px-3 lg:px-5 py-1 sm:py-1.5 md:py-2 bg-[#242267] text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-900 transition-colors shadow-sm"
             onClick={() => router.push("/dashboard")}
           >
             Dashboard
@@ -939,7 +939,7 @@ function Header({
         )}
         {isSignedIn && isOnDashboard && (
           <button
-            className="px-2 sm:px-3 md:px-5 py-1.5 sm:py-2 bg-[#242267] text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-900 transition-colors shadow-sm"
+            className="px-1.5 sm:px-2 md:px-3 lg:px-5 py-1 sm:py-1.5 md:py-2 bg-[#242267] text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-900 transition-colors shadow-sm"
             onClick={() => router.push("/chat")}
           >
             Ask a Question
@@ -948,24 +948,24 @@ function Header({
         {(isFinance || canSeeDashboard) && isSignedIn && (
           <>
             <button
-              className="px-2 sm:px-3 md:px-5 py-1.5 sm:py-2 bg-blue-800 text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-900 transition-colors shadow-sm"
+              className="px-1.5 sm:px-2 md:px-3 lg:px-5 py-1 sm:py-1.5 md:py-2 bg-blue-800 text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-900 transition-colors shadow-sm"
               onClick={() => router.push("/finances")}
             >
               View Finances
             </button>
             <button
               onClick={() => router.push("/analytics")}
-              className="px-2 sm:px-3 md:px-5 py-1.5 sm:py-2 bg-[#242267] text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-900 transition-colors shadow-sm"
+              className="px-1.5 sm:px-2 md:px-3 lg:px-5 py-1 sm:py-1.5 md:py-2 bg-[#242267] text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-900 transition-colors shadow-sm"
             >
               Analytics
             </button>
           </>
         )}
 
-        <div className="flex gap-2 sm:gap-3 items-center flex-shrink-0">
+        <div className="flex gap-1 sm:gap-2 md:gap-3 items-center flex-shrink-0 min-w-0">
           {!isSignedIn ? (
             <>
-              <span className="px-2 sm:px-4 flex-shrink-0">
+              <span className="px-1 sm:px-2 md:px-4 flex-shrink-0">
                 <ProvinceDropdown
                   province={province}
                   setProvince={setProvince}
@@ -975,8 +975,8 @@ function Header({
               <SignUp />
             </>
           ) : (
-            <div className="flex items-center flex-shrink-0">
-              <span className="px-2 sm:px-4 flex-shrink-0">
+            <div className="flex items-center flex-shrink-0 min-w-0">
+              <span className="px-1 sm:px-2 md:px-4 flex-shrink-0">
                 <ProvinceDropdown
                   province={province}
                   setProvince={setProvince}
