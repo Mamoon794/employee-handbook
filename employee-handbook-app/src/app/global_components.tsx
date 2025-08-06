@@ -813,6 +813,8 @@ function Header({
     } else if (pathname === "/finances") {
       if (!isSignedIn) {
         router.push("/")
+      } else if (!isFinance && !canSeeDashboard) { // this is an employee - cannot see finances page
+        router.push("/chat")
       }
     } else if (pathname === "/analytics") {
       if (!isSignedIn) {
@@ -841,16 +843,16 @@ function Header({
           )
           setCompanyName(response.data[0].companyName || null)
           setProvince(response.data[0].province || "")
-          setIsFinance(response.data[0].userType == "Financer")
+          setIsFinance(response.data[0].userType === "Financer")
           setCanSeeDashboard(
-            response.data[0].userType == "Owner" ||
-              response.data[0].userType == "Administrator"
+            response.data[0].userType === "Owner" ||
+              response.data[0].userType === "Administrator"
           )
 
           checkAuthentication(
             true,
-            response.data[0].userType == "Owner" ||
-              response.data[0].userType == "Administrator"
+            response.data[0].userType === "Owner" ||
+            response.data[0].userType === "Administrator"
           )
         })
         .catch((error) => {
