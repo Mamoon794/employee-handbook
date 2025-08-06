@@ -181,6 +181,10 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex bg-white flex-row">
+      {!isSignedIn && !province && (
+        <ProvincePopup onSave={(prov) => setProvince(prov)} />
+      )}
+      
       <PublicChatSideBar
         setCurrChatId={setCurrChatId}
         currChatId={currChatId}
@@ -193,10 +197,7 @@ export default function Home() {
       <div className="flex-1 flex flex-col min-h-screen">
         <Header province={province} setProvince={setProvince} />
 
-        <main className="flex-1 flex flex-col justify-between px-4 sm:px-6 pb-6 relative">
-          {!isSignedIn && !province && (
-            <ProvincePopup onSave={(prov) => setProvince(prov)} />
-          )}
+        <main className="flex-1 flex flex-col justify-between px-4 sm:px-6 pb-6 relative z-0">
 
           <MessageThread
             messageList={messages}
