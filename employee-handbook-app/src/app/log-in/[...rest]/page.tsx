@@ -1,14 +1,10 @@
 'use client';
-import { SignIn, useUser } from '@clerk/nextjs';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
+import { SignIn } from '@clerk/nextjs';
+import { useSearchParams } from 'next/navigation';
 
 export default function EmployeeLogin() {
-  const router = useRouter();
-  const { isSignedIn, user } = useUser();
   const searchParams = useSearchParams();
   const invitationId = searchParams.get('invitationId');
-  const redirectUrl = searchParams.get('redirect_url') || '/chat';
 
 
   return (
