@@ -166,6 +166,10 @@ export default function EmployeeRegistrationForm() {
                   <option value="Prince Edward Island">Prince Edward Island</option>
                   <option value="Quebec">Quebec</option>
                   <option value="Saskatchewan">Saskatchewan</option>
+                  <option value="Yukon">Yukon</option>
+                  <option value="Northwest Territories">Northwest Territories</option>
+                  <option value="Nunavut">Nunavut</option>
+                  <option value="Saskatchewan">Saskatchewan</option>
                 </select>
               </div>
 
