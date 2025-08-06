@@ -2,6 +2,7 @@
 import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
+import axiosInstance from "@/app/axios_config";
 
 export default function PostLoginRedirect() {
   const router = useRouter();
@@ -16,6 +17,17 @@ export default function PostLoginRedirect() {
       try {
         // Check user type from metadata
         const userType = user.unsafeMetadata?.userType as string;
+        await axiosInstance
+        .get(`/api/users/${user.id}?isClerkID=true`)
+        .then((response) => {
+          let userId = response.data[0].id
+          localStorage.setItem("userId", userId)
+          localStorage.setItem("companyId", response.data[0].companyId || "")
+          localStorage.setItem(
+            "companyName",
+            response.data[0].companyName || ""
+          )
+        });
         
         if (userType === 'Employee') {
           // Employees go directly to chat

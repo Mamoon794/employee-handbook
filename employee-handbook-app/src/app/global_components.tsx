@@ -888,7 +888,6 @@ function Header({
       axiosInstance
         .get(`/api/users/${user.id}?isClerkID=true`)
         .then((response) => {
-          console.log("response.data in header: ", response.data)
           let userId = response.data[0].id
           localStorage.setItem("userId", userId)
           localStorage.setItem("companyId", response.data[0].companyId || "")
