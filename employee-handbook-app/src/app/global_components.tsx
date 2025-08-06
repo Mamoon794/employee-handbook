@@ -702,7 +702,7 @@ function MessageThread({
           <div
             className="text-sm sm:text-base"
             dangerouslySetInnerHTML={{
-              __html: markdownListToTable(html),
+              __html: html
             }}
           />
         )}
