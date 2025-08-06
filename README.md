@@ -32,7 +32,7 @@ You can also choose to log in or sign up using the buttons at the top right. Upo
 ![Login](deliverables/D2/images/login.png)
 
 After logging in, you will be able to create new chats, see your chat history and your messages will be stored.
-<img width="1440" height="778" alt="Screenshot 2025-08-05 at 8 01 27 PM" src="https://github.com/user-attachments/assets/3a1ed61d-d46a-4934-a3f6-04a96e6562ac" />
+<img width="1440" height="777" alt="Screenshot 2025-08-05 at 8 18 00 PM" src="https://github.com/user-attachments/assets/3f8a5e6c-05b3-492b-a9e8-4f5098f0246b" />
 
 If you don't have an account, you can sign up using the **Sign Up** button. You will be asked whether you want to continue as an employee or an employer.
 ![Sign Up](deliverables/D2/images/signup.png)
@@ -43,8 +43,8 @@ If you choose to sign up as an employee, you will be taken to the sign up page b
 If you choose to sign up as an employer, you will see the same page but upon completion, you will be taken to the dashboard which allows you to upload documents, view analytics and more. 
 <img width="1824" height="862" alt="image" src="https://github.com/user-attachments/assets/81009b0e-a410-4d68-b4fd-c89cd269e872" />
 
-As an employer, you can upload your company policies and documents, add employees, view finances, view analytics and access the chatbot. Some functionality will be implemented in the future, but you can already upload documents.
-<img width="1440" height="778" alt="Screenshot 2025-08-05 at 8 02 20 PM" src="https://github.com/user-attachments/assets/af2df7ee-ce48-42a9-961e-20bd0b028d51" />
+As an employer, you can upload your company policies and documents, add employees, view finances, view analytics and access the chatbot.
+<img width="1440" height="900" alt="Screenshot 2025-08-05 at 8 16 19 PM" src="https://github.com/user-attachments/assets/d0adaaf0-3dbb-426f-a5fb-1a987f9cdc71" />
 
 Owners can then add employees to their company by sending invites through email. They can view pending, expired and accepted invitations. Additionally, they have the option to delete a pending invitation, effectively making it expired.
 <img width="1851" height="877" alt="image" src="https://github.com/user-attachments/assets/aae8773d-1cf7-4d5d-a3ba-1de4250db794" />
