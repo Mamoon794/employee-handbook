@@ -34,7 +34,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ us
     const { userType } = await request.json();
 
     if (!VALID_USER_TYPES.includes(userType)) {
-        return new Response(JSON.stringify({ "error": "Invalid user type" }), { status: 404 });
+        return new Response(JSON.stringify({ "error": "Invalid user type" }), { status: 400 });
     }
 
     try {
