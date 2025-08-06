@@ -46,7 +46,6 @@ body {
   will-change: auto;
 }
 
-/* Ensure dropdown appears above all content */
 .dropdown-above-all {
   position: relative;
   z-index: 99999;

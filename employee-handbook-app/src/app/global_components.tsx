@@ -275,7 +275,7 @@ function PublicChatSideBar({
             {chats.slice(0, 8).map((chat, index) => (
               <button
                 key={`${chat.id}-${index}`}
-                className={`bg-[#343769] text-white text-left px-4 py-2 mx-4 rounded-lg hover:bg-[#45488f] overflow-hidden min-w-0 ${
+                className={`bg-[#343769] text-white text-left px-3 py-2 mx-2 rounded-lg hover:bg-[#45488f] overflow-hidden min-w-0 ${
                   currChatId === chat.id ? "border border-blue-300" : ""
                 }`}
                 onClick={() => selectChat(chat)}
@@ -621,8 +621,6 @@ function PopularQuestions({
           popularQuestions = popularQuestions.slice(0, 3)
         }
 
-        // if fewer than 3 popular questions are returned, fill the list by
-        // adding default questions until there are 3
         const merged = [...popularQuestions]
         let i = 0
         while (merged.length < 3) {
