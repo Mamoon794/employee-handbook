@@ -169,7 +169,6 @@ export default function EmployeeRegistrationForm() {
                   <option value="Yukon">Yukon</option>
                   <option value="Northwest Territories">Northwest Territories</option>
                   <option value="Nunavut">Nunavut</option>
-                  <option value="Saskatchewan">Saskatchewan</option>
                 </select>
               </div>
 
