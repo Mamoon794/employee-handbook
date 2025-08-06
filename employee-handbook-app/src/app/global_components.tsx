@@ -735,7 +735,7 @@ function MessageThread({
 
   return (
     <div
-      className="flex flex-1 flex-col gap-6 py-6 px-1 overflow-y-auto"
+      className="flex flex-1 flex-col gap-6 py-6 px-1 overflow-y-auto relative z-0"
       style={{ maxHeight: "calc(100vh - 130px)" }}
     >
       {messageList.length === 0 ? (
@@ -905,7 +905,7 @@ function Header({
   }
 
   return (
-    <header className="flex justify-between items-center px-4 sm:px-6 py-3 sm:py-4 bg-white min-h-[60px] header-stable">
+    <header className="flex justify-between items-center px-4 sm:px-6 py-3 sm:py-4 bg-white min-h-[60px] header-stable relative z-10">
       <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
         {!isSignedIn || !canSeeDashboard ? (
           <h1 className="text-xl sm:text-2xl font-extrabold italic text-blue-800 cursor-pointer flex-shrink-0">
@@ -1087,7 +1087,7 @@ function ProvinceDropdown({
       value={fullName}
       onChange={setProvince}
     >
-      <div className="relative inline-block">
+      <div className="relative inline-block z-[99999] dropdown-above-all">
         <Label className="sr-only">Change province or territory</Label>
 
         <ListboxButton className="w-[100px] md:w-[200px] px-3 sm:px-4 py-2 flex items-center rounded-md bg-white font-semibold border border-gray-300 text-gray-700 hover:bg-gray-200 transition-colors text-sm">
@@ -1096,7 +1096,7 @@ function ProvinceDropdown({
           <ChevronDown className="ml-auto h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
         </ListboxButton>
 
-        <ListboxOptions className="absolute z-10 mt-1 max-h-60 w-[80px] md:w-[180px] overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black/10">
+        <ListboxOptions className="absolute z-[9999] mt-1 max-h-60 w-[80px] md:w-[180px] overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black/10">
         <ListboxOption
           value=""
           disabled

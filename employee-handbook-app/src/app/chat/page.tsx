@@ -169,12 +169,12 @@ function ChatContent() {
       />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-h-screen overflow-hidden flex-stable">
+      <div className="flex-1 flex flex-col min-h-screen flex-stable">
         {/* Header */}
         <Header province={province} setProvince={setProvince} />
 
         {/* Chat Area */}
-        <main className="flex-1 flex flex-col justify-between px-4 sm:px-6 pb-6 relative">
+        <main className="flex-1 flex flex-col justify-between px-4 sm:px-6 pb-6 relative z-0">
           {/* Message Thread */}
           <MessageThread
             messageList={messages}
