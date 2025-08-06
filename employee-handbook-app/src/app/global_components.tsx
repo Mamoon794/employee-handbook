@@ -694,7 +694,15 @@ function MessageThread({
       const supTags = sources
         .map((_, i) => `<sup>[${i + 1 + offset}]</sup>`)
         .join(" ");
-      html = html.replace(/<\/p>\s*$/, `${supTags}</p>`);
+      
+      // if </p> at the end, inject there
+      if (/<\/p>\s*$/.test(html)) {
+        html = html.replace(/<\/p>\s*$/, `${supTags}</p>`);
+      }
+      // if </div> at the end, inject after that
+      else {
+        html = html + supTags;
+      }
     }
     return (
       <>
@@ -702,7 +710,7 @@ function MessageThread({
           <div
             className="text-sm sm:text-base"
             dangerouslySetInnerHTML={{
-              __html: markdownListToTable(html),
+              __html: html
             }}
           />
         )}
