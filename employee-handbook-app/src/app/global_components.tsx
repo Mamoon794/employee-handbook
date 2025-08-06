@@ -473,7 +473,7 @@ function PrivateChatSideBar({
     <aside
       className={`${
         isCollapsed ? "w-16" : "w-[120px] md:w-64"
-      } h-screen bg-[#1F2251] text-white flex flex-col min-h-screen relative transition-all duration-300 overflow-y-auto`}
+      } h-screen bg-[#1F2251] text-white flex flex-col min-h-screen relative transition-all duration-300 overflow-y-auto flex-shrink-0`}
     >
       <div className="relative flex p-5 w-full">
         <button
@@ -487,7 +487,7 @@ function PrivateChatSideBar({
       {!isCollapsed && (
         <>
           <div className="px-4 text-sm text-gray-300 mb-2">Today</div>
-          <div className="flex flex-col mb-20 space-y-2">
+          <div className="flex flex-col mb-20 space-y-2 overflow-hidden">
             {chats.map((chat, index) => (
               <button
                 key={`${chat.id}-${index}`}

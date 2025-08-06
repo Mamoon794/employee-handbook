@@ -216,7 +216,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col font-[family-name:var(--font-geist-sans)]">
+    <div className="min-h-screen bg-white flex flex-col font-[family-name:var(--font-geist-sans)] overflow-hidden no-layout-shift">
       {/* Header */}
       <Header province={province} setProvince={setProvince} />
       
@@ -264,7 +264,7 @@ export default function Dashboard() {
       )}
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-24 px-4 sm:px-6 lg:px-8 py-8 lg:py-16 w-full max-w-7xl mx-auto">
+      <main className="flex-1 flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-24 px-4 sm:px-6 lg:px-8 py-8 lg:py-16 w-full max-w-7xl mx-auto flex-stable">
         <div className="flex-1 flex flex-col items-center justify-center w-full max-w-md lg:max-w-none">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-blue-800 mb-6 lg:mb-8 text-center px-4">
             Welcome, {firstName}!
