@@ -621,6 +621,9 @@ function PopularQuestions({
           popularQuestions = popularQuestions.slice(0, 3)
         }
 
+        // if fewer than 3 popular questions are returned, fill the list by
+        // adding default questions until there are 3
+
         const merged = [...popularQuestions]
         let i = 0
         while (merged.length < 3) {
