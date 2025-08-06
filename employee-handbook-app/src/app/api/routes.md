@@ -1,6 +1,6 @@
 ### The routes defined for the API
 
-**POST /api/messages/private**
+1. **POST /api/messages/private**
   - Description: Sends a public user's question, province, thread ID, and company to the AI service. The service returns two types of responses, one based on public documentation, and another based on private company documentation, each with relevant citations. The API returns the public and private responses, as well as their citations, each including the original URL, a URL with a fragment identifier or text fragment, and the title.
   - Example Body:
     ```json
@@ -45,7 +45,22 @@
 
 ---
 
-2. **GET /api/users/[userID]**
+2. **POST /api/messages/public**
+
+- Description: Handles incoming messages from public users by forwarding them to the AI service for a response. Maintains conversation context using a thread ID.
+- Example Body:
+  ```json
+  {
+    "province": "string",
+    "query": "string",
+    "threadId": "string"
+  }
+  ```
+- Response: Returns the AI-generated response.
+
+---
+
+3. **GET /api/users/[userID]**
 
    - Description: Fetches a user by their ID.
    - Parameters:
@@ -54,7 +69,7 @@
 
 ---
 
-3. **POST /api/users**
+4. **POST /api/users**
 
    - Description: Creates a new user.
    - Body: The user object to create.
@@ -79,7 +94,7 @@
 
 ---
 
-4. **POST /api/chat**
+5. **POST /api/chat**
 
    - Description: Saves a chat message with the userID.
    - Body: Create a new chat with no messages:
@@ -96,7 +111,7 @@
 
 ---
 
-5. **GET /api/chat/[chatID]**
+6. **GET /api/chat/[chatID]**
 
    - Description: Fetches all the chats for a user by the userID
    - Parameters:
@@ -105,7 +120,7 @@
 
 ---
 
-6. **DELETE /api/chat/[chatID]**
+7. **DELETE /api/chat/[chatID]**
 
    - Description: Deletes a chat by its ID.
    - Parameters:
@@ -114,7 +129,7 @@
 
 ---
 
-7. **POST /api/chat/[chatID]/add-message**
+8. **POST /api/chat/[chatID]/add-message**
 
    - Description: Adds a new message to an existing chat.
    - Parameters:
@@ -138,7 +153,7 @@
 
 ---
 
-8. **POST /api/company**
+9. **POST /api/company**
 
    - Description: Creates a new company.
    - Body: The company object to create.
@@ -155,7 +170,7 @@
 
 ---
 
-9. **PUT /api/company/docs**
+10. **PUT /api/company/docs**
 
 **Description:**  
 Adds current company documents by providing a `companyId` and a list of documents to be added.
@@ -173,7 +188,7 @@ Returns whether the update was successful.
 
 ---
 
-10. **DELETE /api/company/docs**
+11. **DELETE /api/company/docs**
 
 **Description:**  
 Removes a specific document from a company's record by providing the `companyId` and the index of the document.
@@ -199,7 +214,7 @@ Returns whether the deletion was successful.
 
 ---
 
-11. **GET /api/company/docs/{companyId}**
+12. **GET /api/company/docs/{companyId}**
 
 **Description:**  
 Retrieves the list of documents associated with a specific company.
@@ -235,7 +250,7 @@ GET /api/company/docs/12345
 
 ---
 
-12.  **POST /api/s3/upload**
+13.  **POST /api/s3/upload**
 
 **Description:**  
 Uploads a document to an S3 bucket using the provided `formData`, `bucketName`, and `contentType`.
@@ -257,7 +272,7 @@ Returns the status of the upload and the URL if successful.
 
 ---
 
-13. **POST /api/s3/new-bucket**
+14. **POST /api/s3/new-bucket**
 
 **Description:**  
 Creates a new S3 bucket with the specified `bucketName`.
@@ -274,7 +289,7 @@ Returns the status of the bucket creation operation, including a success message
 
 ---
 
-14. **POST /api/ai-summary/bullet-points**
+15. **POST /api/ai-summary/bullet-points**
 
    - Description: Generates bullet points from the provided summary message. Each bullet point starts with "- " and appears on a new line in the response.
    - Body: A JSON object containing the "summary" string to be converted into bullet points.
@@ -288,7 +303,7 @@ Returns the status of the bucket creation operation, including a success message
 
 ---
 
-15. **POST /api/ai-summary/employee-distribution**
+16. **POST /api/ai-summary/employee-distribution**
 
     - Description: Generates a concise textual explanation of employee distribution across provinces using the provided data.
     - Body: A JSON object containing an array of province entries. Each entry should include:
@@ -316,7 +331,7 @@ Returns the status of the bucket creation operation, including a success message
 
 ---
 
-16. **POST /api/ai-summary/employee-registration**
+17. **POST /api/ai-summary/employee-registration**
 
     - Description: Generates a concise textual explanation of employee registration across months/days using the provided data.
     - Body: A JSON object containing an array of entries, each with:
@@ -341,7 +356,7 @@ Returns the status of the bucket creation operation, including a success message
 
 ---
 
-17. **POST /api/ai-summary/questions-asked**
+18. **POST /api/ai-summary/questions-asked**
     - Description: Creates a brief summary explaining the trends in the number of questions asked over months or days based on the provided data.
     - Body: A JSON object containing an array of entries, each with:
       - time: a month (e.g., "April") or a day (e.g., "Monday")
@@ -363,7 +378,7 @@ Returns the status of the bucket creation operation, including a success message
       ```
     - Response: A plain-text, concise summary paragraph highlighting the main trends in the questions asked.
 
-**GET /api/popular-questions/job**
+19. **GET /api/popular-questions/job**
     - Description: Cron job which calls the FastAPI GET /popular-questions endpoint and gets all popular questions, with 3 popular questions for each scope (i.e. gets popular questions for all province/company combinations). These documents are saved to Firestore in the popular_questions collection. This job would run every Friday at 12:00am.
     - Response: Returns whether the job was a success and the number of popular questions saved to the database.
     - Example Response:
@@ -374,7 +389,7 @@ Returns the status of the bucket creation operation, including a success message
     }
     ```
 
-**POST /api/popular-questions**
+20. **POST /api/popular-questions**
     - Description: Fetches popular questions for the user's province/company from Firestore.
     - Body: A JSON object containing the user's company and province. If the user is public, company is an empty string.
     - Example Body:
@@ -394,7 +409,7 @@ Returns the status of the bucket creation operation, including a success message
     ]
     ```
 
-18. **GET /api/analytics/active-users**
+21. **GET /api/analytics/active-users**
 
 - Description: Returns the total number of unique active users (employees) in a company who have participated in chats within the specified date range. An active user is identified by having at least one chat updated within the range.
 - Query Parameters:
@@ -405,7 +420,7 @@ Returns the status of the bucket creation operation, including a success message
 
 ---
 
-19. **GET /api/analytics/documents**
+22. **GET /api/analytics/documents**
 
 - Description: Returns the total number of documents uploaded by a company and how many were newly uploaded within the specified date range.
 - Query Parameters:
@@ -416,7 +431,7 @@ Returns the status of the bucket creation operation, including a success message
 
 ---
 
-20. **GET /api/analytics/monthly**
+23. **GET /api/analytics/monthly**
 
 - Description: Returns time-based analytics (either daily or monthly) on the number of employees added, questions asked, and documents uploaded by a company within a given date range.
 - Query Parameters:
@@ -427,7 +442,7 @@ Returns the status of the bucket creation operation, including a success message
 
 ---
 
-21. **GET /api/analytics/popular-questions**
+24. **GET /api/analytics/popular-questions**
 
 - Description: Retrieves the most popular (top) questions asked within a company over a specified date range. Results are filtered by the company name and the createdAt timestamp.
 - Query Parameters:
@@ -438,7 +453,7 @@ Returns the status of the bucket creation operation, including a success message
 
 ---
 
-22. **GET /api/analytics/provinces**
+25. **GET /api/analytics/provinces**
 
 - Description: Returns the total number of employees in a company and their distribution by province, optionally filtered by a date range.
 - Query Parameters:
@@ -449,7 +464,7 @@ Returns the status of the bucket creation operation, including a success message
 
 ---
 
-23. **GET /api/analytics/questions**
+26. **GET /api/analytics/questions**
 
 - Description: Returns the total number of questions asked by employees in a company, as well as how many of those were asked within a specified date range.
 - Query Parameters:
@@ -460,7 +475,7 @@ Returns the status of the bucket creation operation, including a success message
 
 ---
 
-24. **GET /api/analytics/users**
+27. **GET /api/analytics/users**
 
 - Description: Returns the total number of members (including owners, adminstrators, financers, employees) in a company and the number of new members added within a given date range (if provided).
 - Query Parameters:
@@ -471,22 +486,7 @@ Returns the status of the bucket creation operation, including a success message
 
 ---
 
-25. **POST /api/messages/public**
-
-- Description: Handles incoming messages from public users by forwarding them to the AI service for a response. Maintains conversation context using a thread ID.
-- Example Body:
-  ```json
-  {
-    "province": "string",
-    "query": "string",
-    "threadId": "string"
-  }
-  ```
-- Response: Returns the AI-generated response.
-
----
-
-26. **POST /api/vectordb-documents**
+28. **POST /api/vectordb-documents**
 
 - Description: Uploads a file to the vector database (Pinecone). The file is fetched from the provided URL and stored under the specified namespace after being chunked into smaller document segments.
 - Example Body:
@@ -500,7 +500,7 @@ Returns the status of the bucket creation operation, including a success message
 
 ---
 
-27. **PATCH /api/vectordb-documents**
+29. **PATCH /api/vectordb-documents**
 
 - Description: Deletes all documents stored under the specified company (namespace) from the vector database.
 - Example Body:
@@ -513,7 +513,7 @@ Returns the status of the bucket creation operation, including a success message
 
 ---
 
-28. **PATCH /api/vectordb-documents/source**
+30. **PATCH /api/vectordb-documents/source**
 
 - Description: Deletes a specific document (identified by the file URL) from the vector database under the specified company (namespace).
 - Example Body:
@@ -527,7 +527,7 @@ Returns the status of the bucket creation operation, including a success message
 
 ---
 
-29. **POST /api/stripe/checkout**
+31. **POST /api/stripe/checkout**
 
    - Description: Creates a Stripe checkout session for premium access to employee handbook features. Requires user authentication and creates a payment session for $9.99 USD.
    - Authentication: Required (Clerk authentication)
@@ -545,7 +545,7 @@ Returns the status of the bucket creation operation, including a success message
 
 ---
 
-30. **POST /api/stripe/webhook**
+32. **POST /api/stripe/webhook**
 
    - Description: Handles Stripe webhook events to process payment confirmations and update user subscription status. Verifies webhook signature for security and processes `checkout.session.completed` and `payment_intent.succeeded` events.
    - Authentication: Webhook signature verification required
@@ -568,7 +568,7 @@ Returns the status of the bucket creation operation, including a success message
 
 ---
 
-31. **GET /api/accept-invitation**
+33. **GET /api/accept-invitation**
     - Description: Takes care of accepting invitations by verifying it, checking user auth, updating respective company information, and redirecting the user to chat upon success. Redirects to login if user can't be authenticated. Redirects to invalid-invitation if invitation is no longer pending or email doesn't match.
     - Parameters:
       - invitationId: The ID of the invitation to accept (query parameter)
@@ -576,7 +576,7 @@ Returns the status of the bucket creation operation, including a success message
 
 ---
 
-32. **POST /api/clerk-webhook**
+34. **POST /api/clerk-webhook**
     - Description: Allows for syncing of Clerk user data with Firestore database
     - Events handled:
       - user.created: creates user in database
@@ -592,7 +592,7 @@ Returns the status of the bucket creation operation, including a success message
 
 ---
 
-33. **POST /api/expire-invite**
+35. **POST /api/expire-invite**
     - Description: Makes an invitation expire by status update.
     - Body: The invitation id of the given invitation
     - Example Body:
@@ -607,7 +607,7 @@ Returns the status of the bucket creation operation, including a success message
 
 ---
 
-34. **POST /api/generate-title**
+36. **POST /api/generate-title**
     - Description: uses the first message in a chat to generate a title
     - Body: The message, chatId and userId
       ```json
@@ -634,7 +634,7 @@ Returns the status of the bucket creation operation, including a success message
 
 ---
 
-35. **GET /api/get-accepted-invites**
+37. **GET /api/get-accepted-invites**
     - Description: Retrieves the accepted invites from a single company
     - Parameters:
       - companyId: the ID of the company (query parameter)
@@ -643,7 +643,7 @@ Returns the status of the bucket creation operation, including a success message
 
 ---
 
-36. **GET /api/get-pending-invites**
+38. **GET /api/get-pending-invites**
     - Description: Retrieves all the pending invites for a given company
     - Parameters:
       - companyId: the ID of the company (query parameter)
@@ -652,7 +652,7 @@ Returns the status of the bucket creation operation, including a success message
 
 ---
 
-37. **GET /api/getCompanyInfo**
+39. **GET /api/getCompanyInfo**
     - Description: Retrieves company information for the authenticated user
     - Authentication: Required Clerk (user) authentication
     - Response:
@@ -669,7 +669,7 @@ Returns the status of the bucket creation operation, including a success message
 
 ---
 
-38. **POST /api/send-invitation**
+40. **POST /api/send-invitation**
     - Description: Sends an invitation for joining the company
     - Authentication: Required Clerk (user) authentication
     - Body:
@@ -692,7 +692,7 @@ Returns the status of the bucket creation operation, including a success message
 
 ---
 
-39. **POST /api/update-title**
+41. **POST /api/update-title**
     - Description: Updates chat title
     - Body:
       ```json
@@ -705,7 +705,9 @@ Returns the status of the bucket creation operation, including a success message
       - Success: { success: true }
       - Error: { error: "Error message" } (on failure)
 
-**GET /api/company/[companyId]/users**
+---
+
+42. **GET /api/company/[companyId]/users**
   - Description: Retrieve all users for a given company, optionally sorted by a valid field.
   - Path Parameters: `companyId`: string
   - Query Parameters: `sort`: string (optional, default: `firstName`)
@@ -762,8 +764,9 @@ Returns the status of the bucket creation operation, including a success message
       - 404 Not Found: No users found
       - 500 Internal Server Error: Failed to fetch users
 
+---
 
-**PATCH /api/users/[userID]**
+43. **PATCH /api/users/[userID]**
   - Description: Update a user's role.
   - Path Parameters: `userID`: string
   - Body:
@@ -804,7 +807,9 @@ Returns the status of the bucket creation operation, including a success message
       - 404 Not Found: User not found
       - 500 Internal Server Error: Failed to update user
 
-**DELETE /api/users/[userID]**
+---
+
+44. **DELETE /api/users/[userID]**
   - Description: Delete a user.
   - Path Parameters: `userID`: string
   - Responses
