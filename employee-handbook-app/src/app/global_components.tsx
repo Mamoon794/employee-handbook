@@ -191,7 +191,6 @@ function PublicChatSideBar({
   setChats: Dispatch<SetStateAction<PublicChat[]>>
   titleLoading: boolean
 }) {
-  // Add collapsed state
   const [isCollapsed, setIsCollapsed] = useState(false)
 
   const [showPopup, setShowPopup] = useState(false)
@@ -272,24 +271,24 @@ function PublicChatSideBar({
       {!isCollapsed && (
         <>
           <div className="px-4 text-sm text-gray-300 mb-2">Today</div>
-          <div className="flex flex-col mb-20 space-y-2">
+          <div className="flex flex-col mb-20 space-y-2 overflow-hidden">
             {chats.slice(0, 8).map((chat, index) => (
               <button
                 key={`${chat.id}-${index}`}
-                className={`bg-[#343769] text-white text-left px-4 py-2 mx-4 rounded-lg hover:bg-[#45488f] ${
+                className={`bg-[#343769] text-white text-left px-3 py-2 mx-2 rounded-lg hover:bg-[#45488f] overflow-hidden min-w-0 ${
                   currChatId === chat.id ? "border border-blue-300" : ""
                 }`}
                 onClick={() => selectChat(chat)}
               >
-                <div className="flex items-center justify-between">
-                  <span className="font-medium wrap-anywhere">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-medium truncate flex-1 min-w-0 text-xs sm:text-sm">
                     {titleLoading && currChatId === chat.id
                       ? "Generating Title..."
                       : chat.title}
                   </span>
                   {currChatId === chat.id && (
                     <Trash2
-                      className="text-gray-400 min-w-3"
+                      className="text-gray-400 flex-shrink-0 w-3 h-3 sm:w-4 sm:h-4"
                       onClick={(e) => {
                         e.stopPropagation()
                         handleDelete(chat.id)
@@ -381,26 +380,6 @@ function PrivateChatSideBar({
   }, [])
 
   useEffect(() => {
-    const localUserId = localStorage.getItem("userId")
-    if (localUserId) {
-      axiosInstance
-        .get(`/api/chat/${localUserId}?isUserID=true`)
-        .then((response) => {
-          const chatData = response.data.map((chat: any) => ({
-            id: chat.id,
-            title: chat.title,
-            needsTitleUpdate: chat.title && chat.title.startsWith("Chat - "),
-          }))
-          setChats(chatData.slice(0, 8)) // Limit to 8 chats
-          setTotalChatsLength(chatData.length)
-          setSelectedChat(
-            chatData.find((chat: PrivateChat) => chat.id === currChatId) || null
-          )
-        })
-    }
-  }, [currChatId])
-
-  useEffect(() => {
     async function fetchChats() {
       const localUserId = localStorage.getItem("userId")
       setUserId(localUserId)
@@ -444,7 +423,7 @@ function PrivateChatSideBar({
       }`,
       userId: userId,
       messages: [] as Message[],
-      needsTitleUpdate: true, // <-- add this flag
+      needsTitleUpdate: true, 
     }
 
     try {
@@ -462,7 +441,6 @@ function PrivateChatSideBar({
       })
       setMessages(newChat.messages || [])
       setCurrChatId(createdChat.id)
-      // Removed AI title generation here; will be handled after first message in InputMessage
     } catch (error) {
       console.error("Error creating new chat:", error)
     }
@@ -494,8 +472,8 @@ function PrivateChatSideBar({
   return (
     <aside
       className={`${
-        isCollapsed ? "w-16" : "w-[30px] md:w-64"
-      } bg-[#1F2251] text-white flex flex-col min-h-screen relative transition-all duration-300 overflow-y-auto`}
+        isCollapsed ? "w-16" : "w-[120px] md:w-64"
+      } h-screen bg-[#1F2251] text-white flex flex-col min-h-screen relative transition-all duration-300 overflow-y-auto`}
     >
       <div className="relative flex p-5 w-full">
         <button
@@ -509,24 +487,26 @@ function PrivateChatSideBar({
       {!isCollapsed && (
         <>
           <div className="px-4 text-sm text-gray-300 mb-2">Today</div>
-          <div className="flex flex-col mb-20 space-y-2">
+          <div className="flex flex-col mb-20 space-y-2 overflow-hidden">
             {chats.map((chat, index) => (
               <button
                 key={`${chat.id}-${index}`}
-                className="bg-[#343769] text-white text-left px-4 py-2 mx-4 rounded-lg hover:bg-[#45488f] text-sm sm:text-base"
+                className={`bg-[#343769] text-white text-left px-4 py-2 mx-4 rounded-lg hover:bg-[#45488f] overflow-hidden min-w-0 ${
+                  selectedChat?.id === chat.id ? "border border-blue-300" : ""
+                }`}
                 onClick={() => {
                   handleChatChange(chat)
                 }}
               >
-                <div className="flex items-center justify-between">
-                  <span className="font-medium">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-medium truncate flex-1 min-w-0 text-xs sm:text-sm">
                     {titleLoading && selectedChat?.id === chat.id
                       ? "Generating Title..."
                       : chat.title}
                   </span>
                   {selectedChat?.id === chat.id && (
                     <Trash2
-                      className="text-gray-400 min-w-3"
+                      className="text-gray-400 flex-shrink-0 w-3 h-3 sm:w-4 sm:h-4"
                       onClick={() => {
                         axiosInstance
                           .delete(`/api/chat/${chat.id}`)
@@ -643,6 +623,7 @@ function PopularQuestions({
 
         // if fewer than 3 popular questions are returned, fill the list by
         // adding default questions until there are 3
+
         const merged = [...popularQuestions]
         let i = 0
         while (merged.length < 3) {
@@ -668,13 +649,13 @@ function PopularQuestions({
   }, [province, chatId])
 
   return (
-    <div className="flex flex-col sm:flex-row justify-center gap-4 pb-4">
+    <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-4 pb-2 sm:pb-4">
       {JSON.stringify(questions) !== JSON.stringify(empty) && // only display questions after its updated with popular questions
         questions.map((q, i) => (
           <button
             key={i}
             onClick={() => setInputValue(q)}
-            className="bg-blue-800 text-white font-semibold px-6 py-2 rounded-md hover:bg-blue-600 transition-colors"
+            className="bg-blue-800 text-white font-semibold px-3 sm:px-6 py-1.5 sm:py-2 rounded-md hover:bg-blue-600 transition-colors text-xs sm:text-sm"
           >
             {q}
           </button>
@@ -719,7 +700,7 @@ function MessageThread({
       <>
         {remainingContent.trim() && (
           <div
-            className="text-lg"
+            className="text-sm sm:text-base"
             dangerouslySetInnerHTML={{
               __html: markdownListToTable(html),
             }}
@@ -755,11 +736,11 @@ function MessageThread({
 
   return (
     <div
-      className="flex flex-1 flex-col gap-6 py-6 px-1 overflow-y-auto"
+      className="flex flex-1 flex-col gap-6 py-6 px-1 overflow-y-auto relative z-0"
       style={{ maxHeight: "calc(100vh - 130px)" }}
     >
       {messageList.length === 0 ? (
-        <div className="flex flex-col justify-center items-center text-center flex-1">
+        <div className="flex flex-col justify-center items-center text-center flex-1 relative z-10">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-blue-800 mb-2">
             Welcome to Gail!
           </h2>
@@ -773,7 +754,7 @@ function MessageThread({
           return (
           <div key={index} className="flex flex-col">
             {message.isFromUser ? (
-              <div className="self-end bg-blue-100 text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm text-lg">
+              <div className="self-end bg-blue-100 text-gray-800 p-3 sm:p-4 rounded-md max-w-[85%] sm:max-w-[70%] shadow-sm text-sm sm:text-base">
                 {message.content ? (
                   message.content.split("\n")
                   .map((line, idx) =>
@@ -782,7 +763,7 @@ function MessageThread({
                 ) : null}
               </div>
             ) : (
-              <div className="self-start bg-gray-100 text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm">
+              <div className="self-start bg-gray-100 text-gray-800 p-3 sm:p-4 rounded-md max-w-[85%] sm:max-w-[70%] shadow-sm text-sm sm:text-base">
                 {message.content ? (
                   // ── Legacy path: continue to parse `message.content` + `message.sources` ──
                   <>
@@ -868,6 +849,8 @@ function Header({
     } else if (pathname === "/finances") {
       if (!isSignedIn) {
         router.push("/")
+      } else if (!isFinance && !canSeeDashboard) { // this is an employee - cannot see finances page
+        router.push("/chat")
       }
     } else if (pathname === "/analytics") {
       if (!isSignedIn) {
@@ -886,7 +869,6 @@ function Header({
       axiosInstance
         .get(`/api/users/${user.id}?isClerkID=true`)
         .then((response) => {
-          console.log("response.data in header: ", response.data)
           let userId = response.data[0].id
           localStorage.setItem("userId", userId)
           localStorage.setItem("companyId", response.data[0].companyId || "")
@@ -896,16 +878,16 @@ function Header({
           )
           setCompanyName(response.data[0].companyName || null)
           setProvince(response.data[0].province || "")
-          setIsFinance(response.data[0].userType == "Financer")
+          setIsFinance(response.data[0].userType === "Financer")
           setCanSeeDashboard(
-            response.data[0].userType == "Owner" ||
-              response.data[0].userType == "Administrator"
+            response.data[0].userType === "Owner" ||
+              response.data[0].userType === "Administrator"
           )
 
           checkAuthentication(
             true,
-            response.data[0].userType == "Owner" ||
-              response.data[0].userType == "Administrator"
+            response.data[0].userType === "Owner" ||
+            response.data[0].userType === "Administrator"
           )
         })
         .catch((error) => {
@@ -915,6 +897,7 @@ function Header({
       localStorage.removeItem("userId")
       localStorage.removeItem("companyId")
       localStorage.removeItem("companyName")
+      localStorage.removeItem("seenFreeTrialPopup")
       checkAuthentication(false, false)
       setCompanyName(null)
     }
@@ -925,15 +908,15 @@ function Header({
   }
 
   return (
-    <header className="flex justify-between items-center px-4 sm:px-6 py-3 sm:py-4">
+    <header className="flex justify-between items-center px-4 sm:px-6 py-3 sm:py-4 bg-white min-h-[60px] header-stable relative z-10">
       <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
         {!isSignedIn || !canSeeDashboard ? (
-          <h1 className="text-xl sm:text-2xl font-extrabold italic text-blue-800 cursor-pointer flex-shrink-0">
+          <h1 className="text-lg sm:text-xl md:text-2xl font-extrabold italic text-blue-800 cursor-pointer flex-shrink-0 hidden sm:block">
             Gail
           </h1>
         ) : (
           <NextLink href="/dashboard">
-            <h1 className="text-xl sm:text-2xl font-extrabold italic text-blue-800 cursor-pointer flex-shrink-0">
+            <h1 className="text-lg sm:text-xl md:text-2xl font-extrabold italic text-blue-800 cursor-pointer flex-shrink-0 hidden sm:block">
               Gail
             </h1>
           </NextLink>
@@ -944,20 +927,18 @@ function Header({
           </span>
         )}
       </div>
-      <div className="flex gap-2 sm:gap-4 items-center">
+      <div className="flex gap-2 sm:gap-4 items-center flex-shrink-0 min-w-0 overflow-visible">
         {canSeeDashboard && !isOnDashboard && isSignedIn && (
-          <>
-            <button
-              className="px-3 sm:px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-900 transition-colors shadow-sm"
-              onClick={() => router.push("/dashboard")}
-            >
-              Dashboard
-            </button>
-          </>
+          <button
+            className="px-3 sm:px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"
+            onClick={() => router.push("/dashboard")}
+          >
+            Dashboard
+          </button>
         )}
         {isSignedIn && isOnDashboard && (
           <button
-            className="px-2 sm:px-3 lg:px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-900 transition-colors shadow-sm"
+            className="px-3 sm:px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"
             onClick={() => router.push("/chat")}
           >
             Ask a Question
@@ -966,24 +947,24 @@ function Header({
         {(isFinance || canSeeDashboard) && isSignedIn && (
           <>
             <button
-              className="px-2 sm:px-3 lg:px-5 py-2 bg-blue-800 text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-900 transition-colors shadow-sm hidden md:block"
+              className="px-3 sm:px-5 py-2 bg-blue-800 text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm hidden xl:block"
               onClick={() => router.push("/finances")}
             >
               View Finances
             </button>
             <button
               onClick={() => router.push("/analytics")}
-              className="px-2 sm:px-3 lg:px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-900 transition-colors shadow-sm hidden md:block"
+              className="px-3 sm:px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm hidden xl:block"
             >
               Analytics
             </button>
           </>
         )}
 
-        <div className="flex gap-2 sm:gap-3 items-center">
+        <div className="flex gap-2 sm:gap-3 items-center flex-shrink-0">
           {!isSignedIn ? (
             <>
-              <span className="px-2 sm:px-4">
+              <span className="px-2 sm:px-4 flex-shrink-0">
                 <ProvinceDropdown
                   province={province}
                   setProvince={setProvince}
@@ -993,8 +974,8 @@ function Header({
               <SignUp />
             </>
           ) : (
-            <div className="flex items-center">
-              <span className="px-2 sm:px-4">
+            <div className="flex items-center flex-shrink-0">
+              <span className="px-2 sm:px-4 flex-shrink-0">
                 <ProvinceDropdown
                   province={province}
                   setProvince={setProvince}
@@ -1019,7 +1000,7 @@ export function LogIn() {
   return (
     <button
       onClick={handleLogin}
-      className="bg-blue-800 text-white font-semibold px-3 sm:px-6 py-2 rounded-md hover:bg-blue-600 transition-colors text-xs sm:text-sm"
+      className="bg-blue-800 text-white font-semibold px-3 sm:px-6 py-2 rounded-md hover:bg-blue-600 transition-colors text-sm"
     >
       Log in
     </button>
@@ -1109,21 +1090,21 @@ function ProvinceDropdown({
       value={fullName}
       onChange={setProvince}
     >
-      <div className="relative inline-block">
+      <div className="relative inline-block z-[99999] dropdown-above-all">
         <Label className="sr-only">Change province or territory</Label>
 
-        <ListboxButton className="sm:w-[100px] md:w-[200px] lg:w-[290px] px-3 sm:px-4 py-2 flex items-center rounded-md bg-white font-semibold border border-gray-300 text-gray-700 hover:bg-gray-200 transition-colors text-xs sm:text-sm">
+        <ListboxButton className="w-[100px] md:w-[200px] px-3 sm:px-4 py-2 flex items-center rounded-md bg-white font-semibold border border-gray-300 text-gray-700 hover:bg-gray-200 transition-colors text-sm">
           <span className="md:hidden">{abbr}</span>
           <span className="hidden md:inline">Change your province/territory</span>
           <ChevronDown className="ml-auto h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
         </ListboxButton>
 
-        <ListboxOptions className="absolute z-10 mt-1 max-h-60 sm:w-[80px] md:w-[180px] lg:w-[270px] overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black/10">
+        <ListboxOptions className="absolute z-[9999] mt-1 max-h-60 w-[80px] md:w-[180px] overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black/10">
         <ListboxOption
           value=""
           disabled
           as="li"
-          className="md:hidden flex items-center px-3 sm:px-4 py-2 text-xs text-gray-500 cursor-not-allowed"
+          className="md:hidden flex items-center px-3 sm:px-4 py-2 text-sm text-gray-500 cursor-not-allowed"
         >
           Change your province/territory
         </ListboxOption>
@@ -1139,7 +1120,7 @@ function ProvinceDropdown({
               }) => (
                 <li
                   className={
-                    `flex cursor-pointer select-none items-center gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm ` +
+                    `flex cursor-pointer select-none items-center gap-2 px-3 sm:px-4 py-2 text-sm ` +
                     (active ? "bg-blue-100 text-blue-900" : "text-gray-900")
                   }
                 >
@@ -1157,7 +1138,7 @@ function ProvinceDropdown({
 
 function Disclaimer() {
   return (
-    <p className="text-center text-sm text-gray-500 mt-4">
+    <p className="text-center text-xs sm:text-sm text-gray-500 mt-2 sm:mt-4">
       © Copyright 2025, Analana Inc. All rights reserved. GAIL can make
       mistakes, please verify your results.
     </p>

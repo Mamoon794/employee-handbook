@@ -1,38 +1,11 @@
 'use client';
-import { SignIn, useUser } from '@clerk/nextjs';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
+import { SignIn } from '@clerk/nextjs';
+import { useSearchParams } from 'next/navigation';
 
 export default function EmployeeLogin() {
-  const router = useRouter();
-  const { isSignedIn, user } = useUser();
   const searchParams = useSearchParams();
   const invitationId = searchParams.get('invitationId');
-  const redirectUrl = searchParams.get('redirect_url') || '/chat';
 
-  useEffect(() => {
-    const handlePostLogin = async () => {
-      if (!isSignedIn || !user) return;
-      
-      try {
-        // Check user type from metadata
-        const userType = user.unsafeMetadata?.userType as string;
-        
-        if (userType === 'Employee') {
-          // Employees go directly to chat
-          router.push(redirectUrl);
-        } else {
-          // Employers/Owners go to dashboard which will handle trial/paywall logic
-          router.push('/dashboard');
-        }
-      } catch (err) {
-        console.error('Post-login redirect failed:', err);
-        // Default to dashboard on error
-        router.push('/dashboard');
-      }
-    };
-    handlePostLogin();
-  }, [isSignedIn, user, router, redirectUrl]);
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -84,7 +57,7 @@ export default function EmployeeLogin() {
             <SignIn 
               routing="path"
               path="/log-in/[...rest]"
-              afterSignInUrl={redirectUrl}
+              afterSignInUrl="/log-in/post-redirect"
               afterSignUpUrl="/onboarding"
               signUpUrl="/sign-up"
               appearance={{

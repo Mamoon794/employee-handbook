@@ -13,13 +13,19 @@ prompt = hub.pull("rlm/rag-prompt", api_url="https://api.smith.langchain.com")
 @tool(response_format="content_and_artifact")
 def retrieve(query: str, province: str, company: str = ""):
     """
-    Retrieve employment-related information by searching indexed documents 
-    within the specified province. If no province is given, it defaults to "General". 
-    If a company name is provided, it filters documents accordingly.
+    Retrieve relevant employment-related information in response to the user's question.
+    Always include general employment standards. If a province is specified, also include
+    province-specific documents. If a company name is specified, also include company-specific
+    documents. The tool does not prioritize one over the other; all available sources are
+    retrieved independently based on the input.
 
-    Use this tool only when the user is asking a factual or research-based question 
-    related to employment policies or company-specific matters. Do not use this tool for small talk, 
-    greetings, or general conversational questions.
+    Use this tool when the user asks any factual or informational question related to work,
+    employment, or a specific company — including questions about employment standards,
+    benefits, workplace policies, organizational details, or entitlements. This includes
+    casually phrased questions such as “how many people work there,” “what's the vacation policy,”
+    or “do they offer sick leave.”
+
+    Avoid using this tool for greetings, small talk, or non-employment-related topics.
 
     Parameters:
     - query: the user's question.

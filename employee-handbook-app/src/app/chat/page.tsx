@@ -134,11 +134,11 @@ function ChatContent() {
   }, [])
 
   return (
-    <div className="min-h-screen flex bg-white flex-row">
-      {/* Welcome Modal */}
+    <div className="min-h-screen flex bg-white flex-row overflow-hidden no-layout-shift">
+    
       {showWelcome && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-lg shadow-xl p-8 w-[95%] max-w-md text-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm pointer-events-auto">
+          <div className="bg-white rounded-lg shadow-xl p-8 w-[95%] max-w-md text-center transform-none">
             <h2 className="text-2xl font-bold mb-6 text-gray-800">
               Welcome to {welcomeCompany}!
             </h2>
@@ -169,12 +169,12 @@ function ChatContent() {
       />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-h-screen">
+      <div className="flex-1 flex flex-col min-h-screen min-w-0">
         {/* Header */}
         <Header province={province} setProvince={setProvince} />
 
         {/* Chat Area */}
-        <main className="flex-1 flex flex-col justify-between px-6 pb-6 relative">
+        <main className="flex-1 flex flex-col justify-between px-4 sm:px-6 pb-6 relative z-0">
           {/* Message Thread */}
           <MessageThread
             messageList={messages}
@@ -183,7 +183,7 @@ function ChatContent() {
             onRetry={handleRetry}
           />
 
-          <div className="absolute bottom-6 left-0 right-0 mx-10">
+          <div className="absolute bottom-6 left-0 right-0 mx-10 pointer-events-auto">
             {messages.length === 0 && (
               <PopularQuestions
                 setInputValue={setInputValue}
