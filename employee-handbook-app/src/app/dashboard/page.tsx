@@ -87,6 +87,7 @@ export default function Dashboard() {
     isTrialPeriod?: boolean
     trialEndsAt?: string
   } | null>(null)
+  const [employeeCount, setEmployeeCount] = useState<number>(0)
 
   const fetchCompanyDocs = useCallback(async () => {
     const companyId = localStorage.getItem("companyId")
@@ -105,11 +106,24 @@ export default function Dashboard() {
     setSavedFiles(get_files)
   }, [])
 
+  const fetchEmployeeCount = useCallback(async () => {
+    const companyId = localStorage.getItem("companyId")
+    if (!companyId) return
+    try {
+      const response = await axiosInstance.get(`/api/company/${companyId}/users`)
+      setEmployeeCount(response.data.length - 1)
+    } catch (error) {
+      console.error("Error fetching employee count:", error)
+      setEmployeeCount(0)
+    }
+  }, [])
+
   useEffect(() => {
     if (localStorage.getItem("companyId")) {
       fetchCompanyDocs()
+      fetchEmployeeCount()
     }
-  }, [fetchCompanyDocs])
+  }, [fetchCompanyDocs, fetchEmployeeCount])
 
   useEffect(() => {
     const checkSubscriptionStatus = async () => {
@@ -246,19 +260,33 @@ export default function Dashboard() {
                 </p>
               </div>
             </div>
-            <button
-              onClick={async () => {
-                try {
-                  const res = await axiosInstance.post('/api/stripe/checkout');
-                  router.push(res.data.url);
-                } catch (err) {
-                  console.error('Failed to start checkout session:', err);
-                }
-              }}
-              className="bg-white text-blue-800 px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
-            >
-              Upgrade Now
-            </button>
+            <div className="relative group">
+              <button
+                onClick={async () => {
+                  if (employeeCount === 0) return;
+                  try {
+                    const res = await axiosInstance.post('/api/stripe/checkout');
+                    router.push(res.data.url);
+                  } catch (err) {
+                    console.error('Failed to start checkout session:', err);
+                  }
+                }}
+                disabled={employeeCount === 0}
+                className={`px-6 py-2 rounded-lg font-semibold transition-colors ${
+                  employeeCount === 0
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    : 'bg-white text-blue-800 hover:bg-gray-100'
+                }`}
+              >
+                Upgrade Now
+              </button>
+              {employeeCount === 0 && (
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
+                  Add employees first to enable premium features
+                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-gray-800"></div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
