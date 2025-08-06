@@ -11,6 +11,7 @@ import {
   PublicChatSideBar,
   Disclaimer,
   PopularQuestions,
+  mapCitationsToLinks,
 } from "./global_components"
 import { useRouter } from "next/navigation"
 import axiosInstance from "./axios_config"
@@ -33,6 +34,7 @@ export default function Home() {
   })
   const [currChatId, setCurrChatId] = useState<string>("")
   const [titleLoading, setTitleLoading] = useState(false)
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     const storedChats = localStorage.getItem("publicChats")
@@ -46,14 +48,20 @@ export default function Home() {
 
     const storedChatId = localStorage.getItem("currPublicChatId")
     if (storedChatId) setCurrChatId(storedChatId)
+
+    setHydrated(true);
   }, [])
 
   useEffect(() => {
-    localStorage.setItem("publicChats", JSON.stringify(chats))
+    if (hydrated) { // to prevent publicChats from resetting to [] when logging out of a private account
+      localStorage.setItem("publicChats", JSON.stringify(chats))
+    }
   }, [chats])
 
   useEffect(() => {
-    localStorage.setItem("currPublicChatId", currChatId)
+    if (hydrated) {
+      localStorage.setItem("currPublicChatId", currChatId)
+    }
   }, [currChatId])
 
   useEffect(() => {
@@ -67,24 +75,27 @@ export default function Home() {
 
   useEffect(() => {
     if (isSignedIn && user) {
-      axiosInstance.get(`/api/users/${user.id}?isClerkID=true`)
-        .then(async response => {
-          const userData = response.data[0];
+      axiosInstance
+        .get(`/api/users/${user.id}?isClerkID=true`)
+        .then(async (response) => {
+          const userData = response.data[0]
           if (userData) {
             if (userData.userType === "Employee") {
               // Employees get free access to chat
-              router.push('/chat');
-            } else if (userData.userType === 'Owner') {
+              router.push("/chat")
+            } else if (userData.userType === "Owner") {
               // Check subscription status using the API that considers trial period
               try {
-                const subscriptionResponse = await axiosInstance.get('/api/check-subscription');
-                const { subscribed } = subscriptionResponse.data;
-                
+                const subscriptionResponse = await axiosInstance.get(
+                  "/api/check-subscription"
+                )
+                const { subscribed } = subscriptionResponse.data
+
                 // Always redirect to dashboard - it will handle showing paywall if needed
-                router.push('/dashboard');
+                router.push("/dashboard")
               } catch (error) {
-                console.error('Error checking subscription:', error);
-                router.push('/dashboard');
+                console.error("Error checking subscription:", error)
+                router.push("/dashboard")
               }
             } else {
               router.push("/chat")
@@ -141,23 +152,24 @@ export default function Home() {
       if (!res.ok) throw new Error("Network response was not ok")
 
       const data = await res.json()
-      if (data.response) {
-        const botMessage: Message = {
-          content: data.response,
+      if (data.publicResponse) {
+        const botMessage = {
           isFromUser: false,
           createdAt: new Date(),
-          sources: data.citations?.map(
-            (citation: {
-              title: string
-              fragmentUrl?: string
-              originalUrl?: string
-            }) => ({
-              title: citation.title,
-              url: citation.fragmentUrl || citation.originalUrl,
-            })
-          ),
+          publicResponse: data.publicResponse,
+          publicSources: data.publicSources
+            ? mapCitationsToLinks(data.publicSources)
+            : [],
         }
-        setMessages((prev) => [...prev, botMessage])
+        setMessages((prevMessages) => {
+          const updated = [...prevMessages, botMessage as Message]
+          setChats((prevChats) => {
+            return prevChats.map((c) =>
+              c.id === currChatId ? { ...c, messages: updated } : c
+            )
+          })
+          return updated
+        })
       } else {
         setError({ message: ERROR_MESSAGE, chatId: currChatId })
       }
@@ -192,7 +204,7 @@ export default function Home() {
             chatId={currChatId}
             onRetry={handleRetry}
           />
-          <div className="mt-4 sm:mt-6 lg:mt-8">
+          <div className="absolute bottom-6 left-0 right-0 mx-10">
             {messages.length === 0 && (
               <PopularQuestions
                 setInputValue={setInputValue}

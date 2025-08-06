@@ -12,7 +12,7 @@ import type { PrivateMessageRequest } from "@/types/ai"
  * - threadId: the user's thread ID enabling continuous conversation
  * - company: company name
  *
- * Returns the AI-generated response.
+ * Returns the AI-generated response and citations.
  */
 export async function POST(req: NextRequest) {
   let payload: PrivateMessageRequest

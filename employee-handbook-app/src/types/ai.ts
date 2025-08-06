@@ -34,8 +34,10 @@ export interface Document {
 
 // Minimal payload needed by FE
 export interface UserMessageResponse {
-  response: string
-  citations: Citation[]
+  publicResponse: string
+  publicSources: Citation[]
+  privateResponse?: string
+  privateSources?: Citation[]
 }
 
 export interface Citation {

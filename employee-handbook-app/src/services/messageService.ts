@@ -16,7 +16,6 @@ export async function handlePublicMessage(
 
   const seen = new Set<string>()
   const citations: Citation[] = []
-  const titleNum: Record<string, number> = {}
 
   for (const doc of aiResult.publicMetadata) {
     const originalUrl = String(doc.source)
@@ -27,32 +26,27 @@ export async function handlePublicMessage(
     if (doc.type === "pdf") {
       fragmentUrl = `${originalUrl}#page=${doc.page}`
     } else if (doc.type === "html") {
-      // Use text fragment for HTML -> this is unreliable
+      // Use text fragment for HTML -> this may be unreliable
       let firstWords = doc.content.split("\n")[0].trim()
       firstWords = firstWords.split(" ").slice(0, 10).join(" ")
       const fragment = encodeURIComponent(firstWords)
       fragmentUrl = `${originalUrl}#:~:text=${fragment}`
     }
-    if (!(doc.title in titleNum)) {
-      titleNum[doc.title] = 1
-    } else {
-      titleNum[doc.title] += 1
-    }
 
     citations.push({
       originalUrl,
       fragmentUrl,
-      title: `${doc.title} (${titleNum[doc.title]})`,
+      title: doc.title,
     })
 
     if (citations.length >= 3) break
   }
 
-  console.log(citations)
+  // console.log(citations)
 
   return {
-    response: aiResult.publicResponse,
-    citations,
+    publicResponse: aiResult.publicResponse,
+    publicSources: citations
   }
 }
 
@@ -78,10 +72,11 @@ export async function handlePrivateMessage(
     if (doc.type === "pdf") {
       fragmentUrl = `${originalUrl}#page=${doc.page}`
     } else if (doc.type === "html") {
-      // Use text fragment for HTML -> this is unreliable
-      // const firstWords = doc.content.split(" ").slice(0, 10).join(" ");
-      // const fragment = encodeURIComponent(firstWords);
-      // fragmentUrl = `${originalUrl}#:~:text=${fragment}`;
+      // Use text fragment for HTML -> this may be unreliable
+      let firstWords = doc.content.split("\n")[0].trim()
+      firstWords = firstWords.split(" ").slice(0, 10).join(" ")
+      const fragment = encodeURIComponent(firstWords)
+      fragmentUrl = `${originalUrl}#:~:text=${fragment}`
     }
 
     publicCitations.push({
@@ -102,10 +97,11 @@ export async function handlePrivateMessage(
     if (doc.type === "pdf") {
       fragmentUrl = `${originalUrl}#page=${doc.page}`
     } else if (doc.type === "html") {
-      // Use text fragment for HTML -> this is unreliable
-      // const firstWords = doc.content.split(" ").slice(0, 10).join(" ");
-      // const fragment = encodeURIComponent(firstWords);
-      // fragmentUrl = `${originalUrl}#:~:text=${fragment}`;
+      // Use text fragment for HTML -> this may be unreliable
+      let firstWords = doc.content.split("\n")[0].trim()
+      firstWords = firstWords.split(" ").slice(0, 10).join(" ")
+      const fragment = encodeURIComponent(firstWords)
+      fragmentUrl = `${originalUrl}#:~:text=${fragment}`
     }
 
     privateCitations.push({
@@ -117,21 +113,22 @@ export async function handlePrivateMessage(
     if (privateCitations.length >= 3) break
   }
 
-  if (aiResult.publicFound) {
-    citations.push(...publicCitations)
-  }
-  citations.push(...privateCitations)
-
-  let response: string
+  let publicResponse = ""
+  let privateResponse = ""
+  // When the AI is unable to differentiate the public and private response, aiResult.publicResponse and 
+  // aiResult.privateResponse are the same value. In this case, return the string in private response only.
   if (aiResult.publicResponse == aiResult.privateResponse) {
-    response = aiResult.publicResponse
+    privateResponse = aiResult.privateResponse
   } else {
-    response = aiResult.publicResponse + "<br><br>" + aiResult.privateResponse
+    publicResponse = aiResult.publicResponse
+    privateResponse = aiResult.privateResponse
   }
 
   console.log("citations:", citations)
   return {
-    response,
-    citations,
+    publicResponse,
+    publicSources: publicCitations,
+    privateResponse,
+    privateSources: privateCitations
   }
 }

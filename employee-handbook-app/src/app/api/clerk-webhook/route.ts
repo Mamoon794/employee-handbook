@@ -7,8 +7,6 @@ import { db } from '@/dbConfig/firebaseConfig';
 import type { UserType, User } from '@/models/schema';
 import type { DocumentData, QueryDocumentSnapshot } from 'firebase-admin/firestore';
 
-const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET || '';
-
 // Define Clerk event types at the top level of the file
 interface ClerkWebhookEvent {
   type: string;
@@ -32,6 +30,8 @@ interface ClerkUserData {
 }
 
 export async function POST(req: NextRequest) {
+  const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET || '';
+
   try {
     if (!WEBHOOK_SECRET) {
       throw new Error('CLERK_WEBHOOK_SECRET is not set');
