@@ -355,8 +355,8 @@ export function MessageInput({
         onKeyDown={handleKeyDown}
         disabled={transcribing}
         placeholder="Ask anything"
-        className={`bg-white resize-none w-full px-13 py-4 border border-gray-300 rounded-md 
-          text-lg text-black placeholder-gray-400 overflow-y-auto ${ atMaxHeight ? 'overflow-y-auto' : 'overflow-y-hidden'}`}
+        className={`bg-white resize-none w-full px-13 py-2 sm:py-4 border border-gray-300 rounded-md 
+          text-sm sm:text-lg text-black placeholder-gray-400 overflow-y-auto ${ atMaxHeight ? 'overflow-y-auto' : 'overflow-y-hidden'}`}
         style={{ minHeight: lineHeight, maxHeight: maxHeight }}
       />
 
@@ -374,7 +374,7 @@ export function MessageInput({
                       }`}
           title={listening ? "Stop recording" : "Speak your question"}
         >
-          <Mic className="w-6 h-6" />
+          <Mic className="w-5 h-5 sm:w-6 sm:h-6" />
         </button>
       )}
 
@@ -389,7 +389,7 @@ export function MessageInput({
                       : "hover:text-gray-600 transition-colors"
                   }`}
       >
-        <Search className="w-6 h-6" />
+        <Search className="w-5 h-5 sm:w-6 sm:h-6" />
       </button>
     </div>
   )

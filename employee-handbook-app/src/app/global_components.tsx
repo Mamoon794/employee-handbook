@@ -281,7 +281,7 @@ function PublicChatSideBar({
                 onClick={() => selectChat(chat)}
               >
                 <div className="flex items-center justify-between gap-2">
-                  <span className="font-medium break-words overflow-hidden flex-1 min-w-0">
+                  <span className="font-medium truncate flex-1 min-w-0">
                     {titleLoading && currChatId === chat.id
                       ? "Generating Title..."
                       : chat.title}
@@ -499,7 +499,7 @@ function PrivateChatSideBar({
                 }}
               >
                 <div className="flex items-center justify-between gap-2">
-                  <span className="font-medium break-words flex-1 min-w-0">
+                  <span className="font-medium truncate flex-1 min-w-0">
                     {titleLoading && selectedChat?.id === chat.id
                       ? "Generating Title..."
                       : chat.title}
@@ -648,13 +648,13 @@ function PopularQuestions({
   }, [province, chatId])
 
   return (
-    <div className="flex flex-col sm:flex-row justify-center gap-4 pb-4">
+    <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-4 pb-2 sm:pb-4">
       {JSON.stringify(questions) !== JSON.stringify(empty) && // only display questions after its updated with popular questions
         questions.map((q, i) => (
           <button
             key={i}
             onClick={() => setInputValue(q)}
-            className="bg-blue-800 text-white font-semibold px-6 py-2 rounded-md hover:bg-blue-600 transition-colors"
+            className="bg-blue-800 text-white font-semibold px-3 sm:px-6 py-1.5 sm:py-2 rounded-md hover:bg-blue-600 transition-colors text-xs sm:text-sm"
           >
             {q}
           </button>
@@ -739,7 +739,7 @@ function MessageThread({
       style={{ maxHeight: "calc(100vh - 130px)" }}
     >
       {messageList.length === 0 ? (
-        <div className="flex flex-col justify-center items-center text-center flex-1">
+        <div className="flex flex-col justify-center items-center text-center flex-1 relative z-10">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-blue-800 mb-2">
             Welcome to Gail!
           </h2>
@@ -1135,7 +1135,7 @@ function ProvinceDropdown({
 
 function Disclaimer() {
   return (
-    <p className="text-center text-sm text-gray-500 mt-4">
+    <p className="text-center text-xs sm:text-sm text-gray-500 mt-2 sm:mt-4">
       © Copyright 2025, Analana Inc. All rights reserved. GAIL can make
       mistakes, please verify your results.
     </p>
