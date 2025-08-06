@@ -169,7 +169,7 @@ function ChatContent() {
       />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-h-screen flex-stable">
+      <div className="flex-1 flex flex-col min-h-screen min-w-0">
         {/* Header */}
         <Header province={province} setProvince={setProvince} />
 

@@ -473,7 +473,7 @@ function PrivateChatSideBar({
     <aside
       className={`${
         isCollapsed ? "w-16" : "w-[120px] md:w-64"
-      } h-screen bg-[#1F2251] text-white flex flex-col min-h-screen relative transition-all duration-300 overflow-y-auto flex-shrink-0`}
+      } h-screen bg-[#1F2251] text-white flex flex-col min-h-screen relative transition-all duration-300 overflow-y-auto`}
     >
       <div className="relative flex p-5 w-full">
         <button
@@ -924,7 +924,7 @@ function Header({
           </span>
         )}
       </div>
-      <div className="flex gap-2 sm:gap-4 items-center flex-shrink-0 min-w-0">
+      <div className="flex gap-2 sm:gap-4 items-center flex-shrink-0 min-w-0 overflow-visible">
         {canSeeDashboard && !isOnDashboard && isSignedIn && (
           <button
             className="px-3 sm:px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"
@@ -944,14 +944,14 @@ function Header({
         {(isFinance || canSeeDashboard) && isSignedIn && (
           <>
             <button
-              className="px-3 sm:px-5 py-2 bg-blue-800 text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm hidden md:block"
+              className="px-3 sm:px-5 py-2 bg-blue-800 text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm hidden xl:block"
               onClick={() => router.push("/finances")}
             >
               View Finances
             </button>
             <button
               onClick={() => router.push("/analytics")}
-              className="px-3 sm:px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm hidden md:block"
+              className="px-3 sm:px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm hidden xl:block"
             >
               Analytics
             </button>
