@@ -699,7 +699,7 @@ function MessageThread({
       <>
         {remainingContent.trim() && (
           <div
-            className="text-lg"
+            className="text-sm sm:text-base"
             dangerouslySetInnerHTML={{
               __html: markdownListToTable(html),
             }}
@@ -753,7 +753,7 @@ function MessageThread({
           return (
           <div key={index} className="flex flex-col">
             {message.isFromUser ? (
-              <div className="self-end bg-blue-100 text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm text-lg">
+              <div className="self-end bg-blue-100 text-gray-800 p-3 sm:p-4 rounded-md max-w-[85%] sm:max-w-[70%] shadow-sm text-sm sm:text-base">
                 {message.content ? (
                   message.content.split("\n")
                   .map((line, idx) =>
@@ -762,7 +762,7 @@ function MessageThread({
                 ) : null}
               </div>
             ) : (
-              <div className="self-start bg-gray-100 text-gray-800 p-4 rounded-md max-w-[70%] shadow-sm">
+              <div className="self-start bg-gray-100 text-gray-800 p-3 sm:p-4 rounded-md max-w-[85%] sm:max-w-[70%] shadow-sm text-sm sm:text-base">
                 {message.content ? (
                   // ── Legacy path: continue to parse `message.content` + `message.sources` ──
                   <>
@@ -908,12 +908,12 @@ function Header({
     <header className="flex justify-between items-center px-4 sm:px-6 py-3 sm:py-4 bg-white min-h-[60px] header-stable relative z-10">
       <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
         {!isSignedIn || !canSeeDashboard ? (
-          <h1 className="text-xl sm:text-2xl font-extrabold italic text-blue-800 cursor-pointer flex-shrink-0">
+          <h1 className="text-lg sm:text-xl md:text-2xl font-extrabold italic text-blue-800 cursor-pointer flex-shrink-0 hidden sm:block">
             Gail
           </h1>
         ) : (
           <NextLink href="/dashboard">
-            <h1 className="text-xl sm:text-2xl font-extrabold italic text-blue-800 cursor-pointer flex-shrink-0">
+            <h1 className="text-lg sm:text-xl md:text-2xl font-extrabold italic text-blue-800 cursor-pointer flex-shrink-0 hidden sm:block">
               Gail
             </h1>
           </NextLink>
