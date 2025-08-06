@@ -54,29 +54,29 @@ Invited employees will recieve an email in which clicking the provided link allo
 ![Welcome](https://github.com/user-attachments/assets/0aefd6d6-1c70-4865-8127-ca31bbe95557)
 
 The analytics page will show you the number of employees, total questions asked and more.
-<img width="1440" height="778" alt="Screenshot 2025-08-05 at 8 05 55 PM" src="https://github.com/user-attachments/assets/2e9ea415-47f4-4705-b58e-8022af0e5145" />
+<img width="1440" height="778" alt="Screenshot 2025-08-05 at 8 31 58 PM" src="https://github.com/user-attachments/assets/cf2fd3ad-6067-4194-b08a-d22abc10dd08" />
 
 The finance page will show the current subscription status, billing details, and pricing tiers.
 <img width="1440" height="777" alt="Screenshot 2025-08-05 at 8 08 05 PM" src="https://github.com/user-attachments/assets/1770835f-1e73-4222-b8e7-dba27e8dbbd0" />
 
-
-## Chat History
+## Things to Know
+### Chat History
 - All users (public or logged-in) can view their recent chat history.
 - A maximum of 8 recent chats are stored per user.
 
-## Add Employee Feature
+### Add Employee Feature
 
 To allow owners to give their employees access to their policy documents, owners are able to add employees to their company through the dashboard. Here, owners can send an invite using the invitee's email, and the email will be sent through EmailJS. There are a few checks that take place just to ensure the employee is not already in a company, that they have not already recieved an email by the sender, and that they exist in our database. These invites expire within 7 days if not accepted by the employee, or if they are cancelled by the sender. Upon such circumstances, the invite will redirect to an invalid or expired invitation page. Once accepted, the employee will view a welcome message, see their company's name on the chat page and will have access to company-specific policies.
 
-## Stripe Payment Integration
+### Stripe Payment Integration
 
 To support subscription-based access and control for employer-only features (e.g., uploading company documents, team management, analytics), we integrated Stripe Checkout with a **free 7-day trial** for new employer accounts.
 
-### Free Trial
+#### Free Trial
 
 New employers receive a **1-week free trial** after sign-up to explore the platform, upload documents, and invite employees. Once the trial ends, if no subscription is active, the employer is redirected to the paywall and temporarily loses access to premium features until payment is completed.
 
-### How It Works
+#### How It Works
 
 When an employer visits the Home Page, the app checks their **trial and subscription status** by querying Firebase.
 
