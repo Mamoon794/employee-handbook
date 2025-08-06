@@ -8,6 +8,31 @@ The **Employee Handbook App** is a web-based platform that helps workers underst
 
 Our partner is **Arshad Merali** from Rivvi, a Toronto-based fintech company focused on improving financial health and workplace transparency.
 
+## Target Users
+
+- **Public Users:** Employees across Canada seeking clarification on general work rights
+- **Private Users:** Employees granted access to their employer’s internal policies via secure login
+  - **Employee**
+    Can interact with the chatbot to access company-specific policies.
+
+  - **Financer**
+    Can interact with the chatbot and view the **Finances** and **Analytics** pages.
+
+  - **Administrator**
+    Can:
+
+    * Interact with the chatbot
+    * Upload company policy documents
+    * View Finances and Analytics pages
+    * Manage company members (e.g., change roles)
+
+  - **Owner**
+    Can:
+
+    * Create a company
+    * Subscribe to a paid plan
+    * Access all features available to administrators and financers
+
 ## Access the App
 
 The app can be accessed at https://employee-handbook-app.vercel.app/.
@@ -85,9 +110,9 @@ When an employer visits the Home Page, the app checks their **trial and subscrip
 
 On the Paywall Page:
 
-- Clicking **Subscribe** initiates a **Stripe Checkout session**.
-- After successful payment, **Stripe triggers a webhook**, which updates the employer’s subscription status in **Firebase**.
-- Once Firebase reflects the updated status, the employer gains full access to premium features via the Dashboard.
+- Clicking Subscribe starts the payment process.
+- After payment is completed, the system updates the employer’s account to reflect the new subscription.
+- Once that’s done, they’ll have full access to all premium features on their Dashboard.
 
 The demo is as follows:
 
