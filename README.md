@@ -26,7 +26,7 @@ The chatbot will give you an answer given your selected province/territory and y
 <img width="1440" height="777" alt="Screenshot 2025-08-05 at 7 58 04 PM" src="https://github.com/user-attachments/assets/cc186c21-d7b4-44ac-ae16-3932c2d49c08" />
 
 The province dropdown allows you to change your province. The chatbot will tailor its answers to this province.
-<img width="1440" height="777" alt="Screenshot 2025-08-05 at 7 58 40 PM" src="https://github.com/user-attachments/assets/5687ccef-e3c4-489e-87b3-082717781e54" />
+<img width="1440" height="861" alt="Screenshot 2025-08-05 at 8 28 33 PM" src="https://github.com/user-attachments/assets/24aba4e7-a2ed-45ab-a9e1-0304e628f599" />
 
 You can also choose to log in or sign up using the buttons at the top right. Upon pressing the **Log in** button, you will be redirected to the Clerk login page.
 ![Login](deliverables/D2/images/login.png)
