@@ -281,14 +281,14 @@ function PublicChatSideBar({
                 onClick={() => selectChat(chat)}
               >
                 <div className="flex items-center justify-between gap-2">
-                  <span className="font-medium truncate flex-1 min-w-0">
+                  <span className="font-medium truncate flex-1 min-w-0 text-xs sm:text-sm">
                     {titleLoading && currChatId === chat.id
                       ? "Generating Title..."
                       : chat.title}
                   </span>
                   {currChatId === chat.id && (
                     <Trash2
-                      className="text-gray-400 flex-shrink-0"
+                      className="text-gray-400 flex-shrink-0 w-3 h-3 sm:w-4 sm:h-4"
                       onClick={(e) => {
                         e.stopPropagation()
                         handleDelete(chat.id)
@@ -499,14 +499,14 @@ function PrivateChatSideBar({
                 }}
               >
                 <div className="flex items-center justify-between gap-2">
-                  <span className="font-medium truncate flex-1 min-w-0">
+                  <span className="font-medium truncate flex-1 min-w-0 text-xs sm:text-sm">
                     {titleLoading && selectedChat?.id === chat.id
                       ? "Generating Title..."
                       : chat.title}
                   </span>
                   {selectedChat?.id === chat.id && (
                     <Trash2
-                      className="text-gray-400 flex-shrink-0"
+                      className="text-gray-400 flex-shrink-0 w-3 h-3 sm:w-4 sm:h-4"
                       onClick={() => {
                         axiosInstance
                           .delete(`/api/chat/${chat.id}`)
