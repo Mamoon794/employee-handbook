@@ -275,20 +275,20 @@ function PublicChatSideBar({
             {chats.slice(0, 8).map((chat, index) => (
               <button
                 key={`${chat.id}-${index}`}
-                className={`bg-[#343769] text-white text-left px-4 py-2 mx-4 rounded-lg hover:bg-[#45488f] overflow-hidden ${
+                className={`bg-[#343769] text-white text-left px-4 py-2 mx-4 rounded-lg hover:bg-[#45488f] overflow-hidden min-w-0 ${
                   currChatId === chat.id ? "border border-blue-300" : ""
                 }`}
                 onClick={() => selectChat(chat)}
               >
-                <div className="flex items-center justify-between">
-                  <span className="font-medium break-words overflow-hidden">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-medium break-words overflow-hidden flex-1 min-w-0">
                     {titleLoading && currChatId === chat.id
                       ? "Generating Title..."
                       : chat.title}
                   </span>
                   {currChatId === chat.id && (
                     <Trash2
-                      className="text-gray-400 min-w-3"
+                      className="text-gray-400 flex-shrink-0"
                       onClick={(e) => {
                         e.stopPropagation()
                         handleDelete(chat.id)
@@ -491,22 +491,22 @@ function PrivateChatSideBar({
             {chats.map((chat, index) => (
               <button
                 key={`${chat.id}-${index}`}
-                className={`bg-[#343769] text-white text-left px-4 py-2 mx-4 rounded-lg hover:bg-[#45488f] ${
+                className={`bg-[#343769] text-white text-left px-4 py-2 mx-4 rounded-lg hover:bg-[#45488f] overflow-hidden min-w-0 ${
                   selectedChat?.id === chat.id ? "border border-blue-300" : ""
                 }`}
                 onClick={() => {
                   handleChatChange(chat)
                 }}
               >
-                <div className="flex items-center justify-between">
-                  <span className="font-medium break-words">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-medium break-words flex-1 min-w-0">
                     {titleLoading && selectedChat?.id === chat.id
                       ? "Generating Title..."
                       : chat.title}
                   </span>
                   {selectedChat?.id === chat.id && (
                     <Trash2
-                      className="text-gray-400 min-w-3"
+                      className="text-gray-400 flex-shrink-0"
                       onClick={() => {
                         axiosInstance
                           .delete(`/api/chat/${chat.id}`)
