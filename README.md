@@ -17,22 +17,22 @@ The app can be accessed at https://employee-handbook-app.vercel.app/.
 Access the link above.
 
 On landing, select your province/territory.
-![Popup](deliverables/D2/images/popup.png)
+<img width="1440" height="772" alt="Screenshot 2025-08-05 at 7 56 29 PM" src="https://github.com/user-attachments/assets/21f82ced-f55f-4b57-8b7e-1010224162c3" />
 
 Then, you may select any of the suggested questions, or type in your own question related to workplace rights/regulations.
-![Welcome](deliverables/D2/images/welcome.png)
+<img width="1440" height="777" alt="Screenshot 2025-08-05 at 7 57 15 PM" src="https://github.com/user-attachments/assets/81a72a1b-fab8-488b-8368-a789e89311da" />
 
 The chatbot will give you an answer given your selected province/territory and you can take a closer look at any of the sources by clicking on them.
-![Chat](deliverables/D2/images/chat.png)
+<img width="1440" height="777" alt="Screenshot 2025-08-05 at 7 58 04 PM" src="https://github.com/user-attachments/assets/cc186c21-d7b4-44ac-ae16-3932c2d49c08" />
 
 The province dropdown allows you to change your province. The chatbot will tailor its answers to this province.
-![ProvinceDropdown](deliverables/D2/images/dropdown.gif)
+<img width="1440" height="777" alt="Screenshot 2025-08-05 at 7 58 40 PM" src="https://github.com/user-attachments/assets/5687ccef-e3c4-489e-87b3-082717781e54" />
 
 You can also choose to log in or sign up using the buttons at the top right. Upon pressing the **Log in** button, you will be redirected to the Clerk login page.
 ![Login](deliverables/D2/images/login.png)
 
 After logging in, you will be able to create new chats, see your chat history and your messages will be stored.
-<img width="1440" height="900" alt="Screenshot 2025-08-05 at 5 00 27 PM" src="https://github.com/user-attachments/assets/82f21692-655c-441b-9048-1d2f9749c4e2" />
+<img width="1440" height="778" alt="Screenshot 2025-08-05 at 8 01 27 PM" src="https://github.com/user-attachments/assets/3a1ed61d-d46a-4934-a3f6-04a96e6562ac" />
 
 If you don't have an account, you can sign up using the **Sign Up** button. You will be asked whether you want to continue as an employee or an employer.
 ![Sign Up](deliverables/D2/images/signup.png)
@@ -44,7 +44,7 @@ If you choose to sign up as an employer, you will see the same page but upon com
 <img width="1824" height="862" alt="image" src="https://github.com/user-attachments/assets/81009b0e-a410-4d68-b4fd-c89cd269e872" />
 
 As an employer, you can upload your company policies and documents, add employees, view finances, view analytics and access the chatbot. Some functionality will be implemented in the future, but you can already upload documents.
-![Employer Dashboard](deliverables/D2/images/employer_dashboard.png)
+<img width="1440" height="778" alt="Screenshot 2025-08-05 at 8 02 20 PM" src="https://github.com/user-attachments/assets/af2df7ee-ce48-42a9-961e-20bd0b028d51" />
 
 Owners can then add employees to their company by sending invites through email. They can view pending, expired and accepted invitations. Additionally, they have the option to delete a pending invitation, effectively making it expired.
 <img width="1851" height="877" alt="image" src="https://github.com/user-attachments/assets/aae8773d-1cf7-4d5d-a3ba-1de4250db794" />
@@ -54,7 +54,11 @@ Invited employees will recieve an email in which clicking the provided link allo
 ![Welcome](https://github.com/user-attachments/assets/0aefd6d6-1c70-4865-8127-ca31bbe95557)
 
 The analytics page will show you the number of employees, total questions asked and more.
-![Analytics](deliverables/D2/images/analytics.png)
+<img width="1440" height="778" alt="Screenshot 2025-08-05 at 8 05 55 PM" src="https://github.com/user-attachments/assets/2e9ea415-47f4-4705-b58e-8022af0e5145" />
+
+The finance page will show the current subscription status, billing details, and pricing tiers.
+<img width="1440" height="777" alt="Screenshot 2025-08-05 at 8 08 05 PM" src="https://github.com/user-attachments/assets/1770835f-1e73-4222-b8e7-dba27e8dbbd0" />
+
 
 ## Chat History
 - All users (public or logged-in) can view their recent chat history.
