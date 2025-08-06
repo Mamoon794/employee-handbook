@@ -13,13 +13,13 @@ Our partner is **Arshad Merali** from Rivvi, a Toronto-based fintech company foc
 - **Public Users:** Employees across Canada seeking clarification on general work rights
 - **Private Users:** Employees granted access to their employer’s internal policies via secure login
   - **Employee**
-    Can interact with the chatbot to access company-specific policies.
+    can interact with the chatbot to access company-specific policies.
 
   - **Financer**
-    Can interact with the chatbot and view the **Finances** and **Analytics** pages.
+    can interact with the chatbot and view the **Finances** and **Analytics** pages.
 
   - **Administrator**
-    Can:
+    can:
 
     * Interact with the chatbot
     * Upload company policy documents
@@ -27,7 +27,7 @@ Our partner is **Arshad Merali** from Rivvi, a Toronto-based fintech company foc
     * Manage company members (e.g., change roles)
 
   - **Owner**
-    Can:
+    can:
 
     * Create a company
     * Subscribe to a paid plan
