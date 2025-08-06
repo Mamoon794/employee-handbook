@@ -160,7 +160,7 @@ export default function EmployerRegistrationForm() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Province of Operation *
+                  Province/Territory of Operation *
                 </label>
                 <select
                   value={formData.province}
