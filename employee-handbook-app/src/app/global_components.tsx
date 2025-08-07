@@ -976,13 +976,15 @@ function Header({
             </>
           ) : (
             <div className="flex items-center flex-shrink-0 min-w-0">
-              <span className="px-1 sm:px-2 md:px-4 flex-shrink-0">
+              <span className="px-1 sm:px-2 md:px-4 flex-shrink-0 hidden sm:block">
                 <ProvinceDropdown
                   province={province}
                   setProvince={setProvince}
                 />
               </span>
-              <UserButton afterSignOutUrl="/" />
+              <div className="hidden sm:block">
+                <UserButton afterSignOutUrl="/" />
+              </div>
             </div>
           )}
         </div>
