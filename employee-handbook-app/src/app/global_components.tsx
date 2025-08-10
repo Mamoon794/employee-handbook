@@ -1141,10 +1141,12 @@ function ProvinceDropdown({
 
 function Disclaimer() {
   return (
-    <p className="text-center text-xs sm:text-sm text-gray-500 mt-2 sm:mt-4">
-      © Copyright 2025, Analana Inc. All rights reserved. GAIL can make
-      mistakes, please verify your results.
-    </p>
+    <div className="bg-white py-2 px-4 rounded-lg mt-2 sm:mt-4">
+      <p className="text-center text-xs sm:text-sm text-gray-500">
+        © Copyright 2025, Analana Inc. All rights reserved. GAIL can make
+        mistakes, please verify your results.
+      </p>
+    </div>
   )
 }
 
