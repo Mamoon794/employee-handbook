@@ -97,16 +97,24 @@ python setupProvinces.py       # Uploads data to Pinecone
 
 ### Frontend (Vercel)
 
-1. Push `employee-handbook-app/` to GitHub.
-2. Go to [https://vercel.com/new](https://vercel.com/new) and import your repo.
-3. In the Vercel dashboard, add required environment variables (see **Environment Variables** below)
+1. Go to [https://vercel.com/signup](https://vercel.com/signup) and sign up (or log in).
+2. Authorize Vercel to access your GitHub account.
+3. Go to [https://vercel.com/new](https://vercel.com/new) and import your repo.
+4. Under Root Directory, choose employee-handbook-app/
+5. Leave framework detection as Next.js (Vercel will auto-detect)
+6. In the Vercel dashboard, add required environment variables (see **Environment Variables** below)
+7. Click deploy. 
 
 ---
 
 ### Backend (Railway)
 
-1. Create a new Railway project and connect the `AIService/` directory.
-2. Add the following environment variables in the Railway dashboard:
+1. Go to [https://railway.app](https://railway.app) and sign up (or log in).
+2. Authorize Railway to access your GitHub account.
+3. Click "New Project" -> Deploy from GitHub repo.
+4. When asked for Root Directory, select AIService/
+5. Set deployment environment to Python (FastAPI)
+6. Add the following environment variables in **Project Settings → Variables**:
 
 ```env
 GOOGLE_API_KEY=<your_google_api_key>
