@@ -215,14 +215,14 @@ EMAILJS_TEMPLATE_ID=<your_emailjs_template_id>
 ## Re-deployment Instructions
 
 ### Re-deploying Frontend (Vercel)
-1. Push changes to GitHub: ```bash git push origin main```
+1. Push changes to GitHub: ```git push origin main```
 2. Vercel will auto-deploy.
 3. For Manual redeploy:
    - Go to Vercel Project Deployment
    - Click Redeploy on the latest commit
 
 ### Re-deploying Backend (Railway)
-1. Push backend changes to GitHub: ```bash git push origin main```
+1. Push backend changes to GitHub: ```git push origin main```
 2. Railway will auto-deploy.
 3. For Manual redeploy:
    - Go to your project in Railway Dashboard
