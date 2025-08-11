@@ -221,7 +221,7 @@ export function MessageInput({
     const full_province = province;
     console.log("private province", province)
     const companyName = localStorage.getItem("companyName") || ""
-    const res = await axiosInstance.post(`/api/messages/privatee`, {
+    const res = await axiosInstance.post(`/api/messages/private`, {
       province: full_province,
       query: message,
       threadId: newChatId,
