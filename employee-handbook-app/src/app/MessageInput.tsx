@@ -221,7 +221,7 @@ export function MessageInput({
     const full_province = province;
     console.log("private province", province)
     const companyName = localStorage.getItem("companyName") || ""
-    const res = await axiosInstance.post(`/api/messages/private`, {
+    const res = await axiosInstance.post(`/api/messages/privatee`, {
       province: full_province,
       query: message,
       threadId: newChatId,
@@ -233,7 +233,7 @@ export function MessageInput({
     }
 
     const data = res.data
-    if (data.privateResponse) {
+    if (data.publicResponse || data.privateResponse) {
       const botMessage = {
         isFromUser: false,
         publicResponse: data.publicResponse,
