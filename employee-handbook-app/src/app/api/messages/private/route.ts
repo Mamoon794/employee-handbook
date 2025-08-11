@@ -23,7 +23,8 @@ export async function POST(req: NextRequest) {
   }
 
   const { province, query, threadId, company } = payload
-  if (!province || !query.trim() || !threadId) {
+  // company can be empty/undefined for registered employees who are not associated with a company
+  if (!province || !query?.trim() || !threadId) {
     return NextResponse.json(
       { error: "Missing province, question or threadId" },
       { status: 400 }
