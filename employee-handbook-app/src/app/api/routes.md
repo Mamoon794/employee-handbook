@@ -395,7 +395,7 @@ Returns the status of the bucket creation operation, including a success message
 
 20. **POST /api/popular-questions**
     - Description: Fetches popular questions for the user's province/company from Firestore.
-    - Body: A JSON object containing the user's company and province. If the user is public, company is an empty string.
+    - Body: A JSON object containing the user's company and province. If the user is public, `company` is an empty string. If `province` is an empty string, it returns all popular questions under the company (if it is set).
     - Example Body:
       ```json
       {
