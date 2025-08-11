@@ -427,14 +427,12 @@ export const getPopularQuestions = async (
       .where("company", "==", company)
       .where("expiresAt", ">", firestore.Timestamp.now())
       .orderBy("expiresAt", "desc")
-      .limit(3)
   } else {
     query = popularQuestionsRef
       .where("company", "==", company)
       .where("province", "==", province)
       .where("expiresAt", ">", firestore.Timestamp.now())
       .orderBy("expiresAt", "desc")
-      .limit(3)
   }
 
   const snapshot = await query.get()
