@@ -698,22 +698,7 @@ Returns the status of the bucket creation operation, including a success message
 
 ---
 
-41. **POST /api/update-title**
-    - Description: Updates chat title
-    - Body:
-      ```json
-      {
-        "chatId": "string",
-        "title": "string"
-      }
-      ```
-    - Response: 
-      - Success: { success: true }
-      - Error: { error: "Error message" } (on failure)
-
----
-
-42. **GET /api/company/[companyId]/users**
+41. **GET /api/company/[companyId]/users**
   - Description: Retrieve all users for a given company, optionally sorted by a valid field.
   - Path Parameters: `companyId`: string
   - Query Parameters: `sort`: string (optional, default: `firstName`)
@@ -772,7 +757,7 @@ Returns the status of the bucket creation operation, including a success message
 
 ---
 
-43. **PATCH /api/users/[userID]**
+42. **PATCH /api/users/[userID]**
   - Description: Update a user's role.
   - Path Parameters: `userID`: string
   - Body:
@@ -815,7 +800,7 @@ Returns the status of the bucket creation operation, including a success message
 
 ---
 
-44. **DELETE /api/users/[userID]**
+43. **DELETE /api/users/[userID]**
   - Description: Delete a user.
   - Path Parameters: `userID`: string
   - Responses
