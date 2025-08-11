@@ -1,5 +1,5 @@
 import { PopularQuestion } from "@/models/schema"
-import type { AIResponse } from "@/types/ai"
+import type { AIResponse } from "@/models/ai"
 
 const AI_SERVICE_URL = process.env.AI_SERVICE_URL
 

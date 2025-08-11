@@ -101,7 +101,7 @@ export function MessageInput({
   ) => {
     setTitleLoading(true);
     try {
-      const res = await fetch("/api/generate-title", {
+      const res = await fetch("/api/chat/generate-title", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message, chatId, userId }),
@@ -233,7 +233,7 @@ export function MessageInput({
     }
 
     const data = res.data
-    if (data.privateResponse) {
+    if (data.publicResponse || data.privateResponse) {
       const botMessage = {
         isFromUser: false,
         publicResponse: data.publicResponse,

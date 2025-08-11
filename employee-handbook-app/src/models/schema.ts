@@ -90,4 +90,5 @@ export interface PopularQuestion {
   company: string
   text: string
   createdAt?: Timestamp
+  expiresAt?: Timestamp
 }

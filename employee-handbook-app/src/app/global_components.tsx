@@ -19,7 +19,7 @@ import {
   ListboxOptions,
 } from "@headlessui/react"
 import { CarouselCards } from "@/components/carousel-cards"
-import type { CarouselCard, Citation } from "@/types/ai"
+import type { CarouselCard, Citation } from "@/models/ai"
 import { ChevronDown, Check } from "lucide-react"
 import dynamic from "next/dynamic"
 
