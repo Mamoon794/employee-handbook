@@ -613,7 +613,7 @@ Returns the status of the bucket creation operation, including a success message
 
 ---
 
-36. **POST /api/generate-title**
+36. **POST /api/chat/generate-title**
     - Description: uses the first message in a chat to generate a title
     - Body: The message, chatId and userId
       ```json
