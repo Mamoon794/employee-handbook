@@ -130,7 +130,7 @@ FIRESTORE_PROJECT_ID=<your_firestore_project_id>
 FIRESTORE_STORAGE_BUCKET=<your_firestore_storage_bucket>
 ```
 
-3. Railway will give you a public URL — copy it and add it to your Vercel project as `AI_SERVICE_URL`.
+7. After deploying, Railway will give you a public URL — copy it and use it as the value for the Vercel project's environment variable: `AI_SERVICE_URL`.
 
 **Requirements:**
 
@@ -211,6 +211,45 @@ EMAILJS_TEMPLATE_ID=<your_emailjs_template_id>
 
 
 ```
+
+## Re-deployment Instructions
+
+### Re-deploying Frontend (Vercel)
+1. Push changes to GitHub: git push origin main
+2. Vercel will auto-deploy.
+3. For Manual redeploy:
+   - Go to Vercel Project Deployment
+   - Click Redeploy on the latest commit
+
+### Re-deploying Backend (Railway)
+1. Push backend changes to GitHub: git push origin main
+2. Railway will auto-deploy.
+3. For Manual redeploy:
+   - Go to your project in Railway Dashboard
+   - Click the Deploy button
+  
+## Plan Upgrade Instructions
+
+### Upgrading to Pro -- Vercel
+Since the Hobby (free) tier on Vercel doesn’t allow commercial use, the deployed site has a risk of being taken down from the Stripe integration once payments start being accepted.
+
+1. Go to your project → Settings → Billing
+2. Click Upgrade to Pro
+3. Confirm payment method
+4. Redeploy after upgrading
+- More Details: [https://vercel.com/docs/plans/pro](https://vercel.com/docs/plans/pro)
+
+### Upgrading to Pro -- Railway
+Our backend is currently using ~900MB of RAM, which exceeds the memory limitation on the Free/Hobby plan.
+
+1. Go to Railway Billing Settings
+2. Add or update your payment method
+3. Select the Pro Plan from available options
+4. Go to your project → Settings → Deployments → Resources
+5. Increase Memory Allocation for your backend service to 2 GB
+6. Save settings — the upgrade applies instantly
+- More details: [https://railway.com/pricing]( https://railway.com/pricing)
+
 
 ## Documentation
 
