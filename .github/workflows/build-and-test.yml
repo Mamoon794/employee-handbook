@@ -51,22 +51,22 @@ jobs:
         working-directory: employee-handbook-app
         run: npm run lint
 
-      # - name: Run JS tests
-      #   working-directory: employee-handbook-app
-      #   run: npm test
+      - name: Run JS tests
+        working-directory: employee-handbook-app
+        run: npm test
 
-      # - name: Set up Python
-      #   uses: actions/setup-python@v4
-      #   with:
-      #     python-version: "3.11"
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
 
-      # - name: Install Python dependencies
-      #   working-directory: AIService
-      #   run: pip install -r requirements.txt
+      - name: Install Python dependencies
+        working-directory: AIService
+        run: pip install -r requirements.txt
 
-      # - name: Run Python tests
-      #   working-directory: AIService
-      #   run: PYTHONPATH=. pytest tests/
+      - name: Run Python tests
+        working-directory: AIService
+        run: PYTHONPATH=. pytest tests/
 
       - name: Build
         working-directory: employee-handbook-app

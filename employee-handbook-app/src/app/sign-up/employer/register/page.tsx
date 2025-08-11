@@ -160,7 +160,7 @@ export default function EmployerRegistrationForm() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Province of Operation *
+                  Province/Territory of Operation *
                 </label>
                 <select
                   value={formData.province}
@@ -168,16 +168,19 @@ export default function EmployerRegistrationForm() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900 text-sm sm:text-base"
                   required
                 >
-                  <option value="AB">Alberta</option>
-                  <option value="BC">British Columbia</option>
-                  <option value="MB">Manitoba</option>
-                  <option value="NB">New Brunswick</option>
-                  <option value="NL">Newfoundland and Labrador</option>
-                  <option value="NS">Nova Scotia</option>
-                  <option value="ON">Ontario</option>
-                  <option value="PE">Prince Edward Island</option>
-                  <option value="QC">Quebec</option>
-                  <option value="SK">Saskatchewan</option>
+                  <option value="Alberta">Alberta</option>
+                  <option value="British Columbia">British Columbia</option>
+                  <option value="Manitoba">Manitoba</option>
+                  <option value="New Brunswick">New Brunswick</option>
+                  <option value="Newfoundland and Labrador">Newfoundland and Labrador</option>
+                  <option value="Nova Scotia">Nova Scotia</option>
+                  <option value="Ontario">Ontario</option>
+                  <option value="Prince Edward Island">Prince Edward Island</option>
+                  <option value="Quebec">Quebec</option>
+                  <option value="Saskatchewan">Saskatchewan</option>
+                  <option value="Yukon">Yukon</option>
+                  <option value="Northwest Territories">Northwest Territories</option>
+                  <option value="Nunavut">Nunavut</option>
                 </select>
               </div>
 

@@ -27,7 +27,7 @@ describe('POST /api/stripe/checkout', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     process.env.STRIPE_SECRET_KEY = 'sk_test_123';
-    process.env.NEXT_PUBLIC_APP_URL = 'http://localhost:3000';
+    process.env.NEXT_PUBLIC_BASE_URL = 'http://localhost:3000';
     
     const StripeConstructor = Stripe as unknown as jest.MockedClass<typeof Stripe>;
     mockStripeInstance = new StripeConstructor('test-key', { apiVersion: '2025-07-30.basil' });
@@ -35,7 +35,7 @@ describe('POST /api/stripe/checkout', () => {
 
   afterEach(() => {
     delete process.env.STRIPE_SECRET_KEY;
-    delete process.env.NEXT_PUBLIC_APP_URL;
+    delete process.env.NEXT_PUBLIC_BASE_URL;
   });
 
   it('should return 401 when user is not authenticated', async () => {

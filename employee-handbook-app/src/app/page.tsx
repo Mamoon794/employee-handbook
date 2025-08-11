@@ -83,7 +83,7 @@ export default function Home() {
             if (userData.userType === "Employee") {
               // Employees get free access to chat
               router.push("/chat")
-            } else if (userData.userType === "Owner") {
+            } else if (userData.userType === "Owner" || userData.userType === 'Administrator') {
               // Check subscription status using the API that considers trial period
               try {
                 const subscriptionResponse = await axiosInstance.get(
@@ -97,7 +97,7 @@ export default function Home() {
                 console.error("Error checking subscription:", error)
                 router.push("/dashboard")
               }
-            } else {
+            } else { // financer
               router.push("/chat")
             }
           }

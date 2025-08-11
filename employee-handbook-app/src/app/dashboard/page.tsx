@@ -2,13 +2,14 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { useUser } from "@clerk/nextjs"
+import { useUser, useAuth, useSessionList } from "@clerk/nextjs"
 import { useEffect, useState, useCallback } from "react"
 import axiosInstance from "../axios_config"
 import PaywallModal from "../../../components/paywall-popup"
 import { Header } from "../global_components"
 import { CircularProgress } from "@mui/material"
 import { TrashIcon } from "lucide-react"
+import FreeTrialModal from "@/components/free-trial-popup"
 
 type pdfFile = {
   name: string
@@ -77,16 +78,25 @@ const FilePreview: React.FC<CustProps> = ({ files, setFiles }) => {
 
 export default function Dashboard() {
   const router = useRouter()
-  const { user } = useUser()
+  const { user, isLoaded } = useUser()
+  const { sessionId } = useAuth()
+  const { sessions } = useSessionList()
   const firstName = user?.firstName || "there"
   const [showPaywall, setShowPaywall] = useState(false)
+  const [showFreeTrialPopup, setShowFreeTrialPopup] = useState(false)
+  const [isFirstLogin, setIsFirstLogin] = useState(false)
   const [savedFiles, setSavedFiles] = useState<pdfFile[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [province, setProvince] = useState<string>("")
+  const [seenFreeTrialPopup, setSeenFreeTrialPopup] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem("seenFreeTrialPopup") === "true";
+  });
   const [trialInfo, setTrialInfo] = useState<{
     isTrialPeriod?: boolean
     trialEndsAt?: string
   } | null>(null)
+  const [employeeCount, setEmployeeCount] = useState<number>(0)
 
   const fetchCompanyDocs = useCallback(async () => {
     const companyId = localStorage.getItem("companyId")
@@ -105,11 +115,42 @@ export default function Dashboard() {
     setSavedFiles(get_files)
   }, [])
 
+  const fetchEmployeeCount = useCallback(async () => {
+    const companyId = localStorage.getItem("companyId")
+    if (!companyId) return
+    try {
+      const response = await axiosInstance.get(`/api/company/${companyId}/users`)
+      setEmployeeCount(response.data.length - 1)
+    } catch (error) {
+      console.error("Error fetching employee count:", error)
+      setEmployeeCount(0)
+    }
+  }, [])
+
   useEffect(() => {
     if (localStorage.getItem("companyId")) {
       fetchCompanyDocs()
+      fetchEmployeeCount()
     }
-  }, [fetchCompanyDocs])
+  }, [fetchCompanyDocs, fetchEmployeeCount])
+
+  useEffect(() => {
+    // no user or no session info yet
+    if (!isLoaded || !user || !sessions || !sessionId) return
+    
+    const userCreatedAt = user.createdAt;
+    if (!userCreatedAt) return;
+
+    const current = sessions.find(s => s.id === sessionId);
+    const sessionCreatedAt = current?.createdAt;
+    if (!sessionCreatedAt) return;
+
+    const userTs = userCreatedAt.getTime();
+    const sessionTs = sessionCreatedAt.getTime();
+    
+    // treat as “first login” if signup and login are within one minute
+    setIsFirstLogin(Math.abs(sessionTs - userTs) < 60 * 1000);
+  }, [isLoaded, user, sessions, sessionId])
 
   useEffect(() => {
     const checkSubscriptionStatus = async () => {
@@ -122,6 +163,7 @@ export default function Dashboard() {
 
       if (userType === "Employee") {
         setShowPaywall(false)
+        setShowFreeTrialPopup(false)
         setIsLoading(false)
         return
       }
@@ -133,9 +175,13 @@ export default function Dashboard() {
         // Store trial information if user is in trial period
         if (isTrialPeriod) {
           setTrialInfo({ isTrialPeriod, trialEndsAt });
+          if (isFirstLogin) {
+            setShowFreeTrialPopup(true)
+          }
+        } else {
+          setShowPaywall(!subscribed);
         }
         
-        setShowPaywall(!subscribed);
         setIsLoading(false);
       } catch (error) {
         console.error("Error checking subscription status:", error)
@@ -146,7 +192,7 @@ export default function Dashboard() {
     }
 
     checkSubscriptionStatus()
-  }, [user])
+  }, [user, isFirstLogin])
 
   async function uploadDocuments(event: React.ChangeEvent<HTMLInputElement>) {
     const companyId = localStorage.getItem("companyId") || ""
@@ -221,7 +267,7 @@ export default function Dashboard() {
       <Header province={province} setProvince={setProvince} />
       
       {/* Trial Banner */}
-      {trialInfo?.isTrialPeriod && user?.unsafeMetadata?.userType !== 'Employee' && (
+      {trialInfo?.isTrialPeriod && ((isFirstLogin && seenFreeTrialPopup) || !isFirstLogin) && user?.unsafeMetadata?.userType !== 'Employee' && (
         <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white px-8 py-4">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
             <div className="flex items-center space-x-3">
@@ -246,19 +292,33 @@ export default function Dashboard() {
                 </p>
               </div>
             </div>
-            <button
-              onClick={async () => {
-                try {
-                  const res = await axiosInstance.post('/api/stripe/checkout');
-                  router.push(res.data.url);
-                } catch (err) {
-                  console.error('Failed to start checkout session:', err);
-                }
-              }}
-              className="bg-white text-blue-800 px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
-            >
-              Upgrade Now
-            </button>
+            <div className="relative group">
+              <button
+                onClick={async () => {
+                  if (employeeCount === 0) return;
+                  try {
+                    const res = await axiosInstance.post('/api/stripe/checkout');
+                    router.push(res.data.url);
+                  } catch (err) {
+                    console.error('Failed to start checkout session:', err);
+                  }
+                }}
+                disabled={employeeCount === 0}
+                className={`px-6 py-2 rounded-lg font-semibold transition-colors ${
+                  employeeCount === 0
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    : 'bg-white text-blue-800 hover:bg-gray-100'
+                }`}
+              >
+                Upgrade Now
+              </button>
+              {employeeCount === 0 && (
+                <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50 text-center shadow-lg min-w-[200px] max-w-[280px] break-words">
+                  Add employees first to enable premium features
+                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-b-4 border-l-transparent border-r-transparent border-b-gray-800"></div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
@@ -324,6 +384,20 @@ export default function Dashboard() {
 
       {/* Paywall Modal */}
       {showPaywall && <PaywallModal />}
+
+      {/* Free Trial Modal */}
+      {
+        showFreeTrialPopup &&
+        trialInfo?.isTrialPeriod &&
+        !seenFreeTrialPopup &&
+        isFirstLogin && (
+          <FreeTrialModal
+            trialEndsAt={trialInfo.trialEndsAt!}
+            onClose={() => setShowFreeTrialPopup(false)}
+            setSeenFreeTrialPopup={setSeenFreeTrialPopup}
+          />
+        )
+      }
     </div>
   )
 }

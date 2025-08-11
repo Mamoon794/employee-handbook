@@ -694,7 +694,15 @@ function MessageThread({
       const supTags = sources
         .map((_, i) => `<sup>[${i + 1 + offset}]</sup>`)
         .join(" ");
-      html = html.replace(/<\/p>\s*$/, `${supTags}</p>`);
+      
+      // if </p> at the end, inject there
+      if (/<\/p>\s*$/.test(html)) {
+        html = html.replace(/<\/p>\s*$/, `${supTags}</p>`);
+      }
+      // if </div> at the end, inject after that
+      else {
+        html = html + supTags;
+      }
     }
     return (
       <>
@@ -702,7 +710,7 @@ function MessageThread({
           <div
             className="text-sm sm:text-base"
             dangerouslySetInnerHTML={{
-              __html: markdownListToTable(html),
+              __html: html
             }}
           />
         )}
@@ -849,6 +857,8 @@ function Header({
     } else if (pathname === "/finances") {
       if (!isSignedIn) {
         router.push("/")
+      } else if (!isFinance && !canSeeDashboard) { // this is an employee - cannot see finances page
+        router.push("/chat")
       }
     } else if (pathname === "/analytics") {
       if (!isSignedIn) {
@@ -867,7 +877,6 @@ function Header({
       axiosInstance
         .get(`/api/users/${user.id}?isClerkID=true`)
         .then((response) => {
-          console.log("response.data in header: ", response.data)
           let userId = response.data[0].id
           localStorage.setItem("userId", userId)
           localStorage.setItem("companyId", response.data[0].companyId || "")
@@ -877,16 +886,16 @@ function Header({
           )
           setCompanyName(response.data[0].companyName || null)
           setProvince(response.data[0].province || "")
-          setIsFinance(response.data[0].userType == "Financer")
+          setIsFinance(response.data[0].userType === "Financer")
           setCanSeeDashboard(
-            response.data[0].userType == "Owner" ||
-              response.data[0].userType == "Administrator"
+            response.data[0].userType === "Owner" ||
+              response.data[0].userType === "Administrator"
           )
 
           checkAuthentication(
             true,
-            response.data[0].userType == "Owner" ||
-              response.data[0].userType == "Administrator"
+            response.data[0].userType === "Owner" ||
+            response.data[0].userType === "Administrator"
           )
         })
         .catch((error) => {
@@ -896,6 +905,7 @@ function Header({
       localStorage.removeItem("userId")
       localStorage.removeItem("companyId")
       localStorage.removeItem("companyName")
+      localStorage.removeItem("seenFreeTrialPopup")
       checkAuthentication(false, false)
       setCompanyName(null)
     }
