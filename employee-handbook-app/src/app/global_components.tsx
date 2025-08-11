@@ -917,6 +917,7 @@ function Header({
 
   return (
     <header className="flex justify-between items-center px-4 sm:px-6 py-3 sm:py-4 bg-white min-h-[60px] header-stable relative z-10">
+      {/* Show title and company name only on larger screens for employers */}
       <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
         {!isSignedIn || !canSeeDashboard ? (
           <h1 className="text-lg sm:text-xl md:text-2xl font-extrabold italic text-blue-800 cursor-pointer flex-shrink-0 hidden sm:block">
@@ -935,10 +936,12 @@ function Header({
           </span>
         )}
       </div>
-      <div className="flex gap-2 sm:gap-4 items-center flex-shrink-0 min-w-0 overflow-visible">
+      
+      {/* Navigation buttons */}
+      <div className="flex gap-1 sm:gap-2 md:gap-4 items-center flex-shrink-0 min-w-0 overflow-visible">
         {canSeeDashboard && !isOnDashboard && isSignedIn && (
           <button
-            className="px-3 sm:px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"
+            className="px-1.5 sm:px-2 md:px-3 lg:px-5 py-1 sm:py-1.5 md:py-2 bg-[#242267] text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-900 transition-colors shadow-sm"
             onClick={() => router.push("/dashboard")}
           >
             Dashboard
@@ -946,7 +949,7 @@ function Header({
         )}
         {isSignedIn && isOnDashboard && (
           <button
-            className="px-3 sm:px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm"
+            className="px-1.5 sm:px-2 md:px-3 lg:px-5 py-1 sm:py-1.5 md:py-2 bg-[#242267] text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-900 transition-colors shadow-sm"
             onClick={() => router.push("/chat")}
           >
             Ask a Question
@@ -955,24 +958,24 @@ function Header({
         {(isFinance || canSeeDashboard) && isSignedIn && (
           <>
             <button
-              className="px-3 sm:px-5 py-2 bg-blue-800 text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm hidden xl:block"
+              className="px-1.5 sm:px-2 md:px-3 lg:px-5 py-1 sm:py-1.5 md:py-2 bg-blue-800 text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-900 transition-colors shadow-sm"
               onClick={() => router.push("/finances")}
             >
               View Finances
             </button>
             <button
               onClick={() => router.push("/analytics")}
-              className="px-3 sm:px-5 py-2 bg-[#242267] text-white rounded-xl font-bold text-sm hover:bg-blue-900 transition-colors shadow-sm hidden xl:block"
+              className="px-1.5 sm:px-2 md:px-3 lg:px-5 py-1 sm:py-1.5 md:py-2 bg-[#242267] text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-900 transition-colors shadow-sm"
             >
               Analytics
             </button>
           </>
         )}
 
-        <div className="flex gap-2 sm:gap-3 items-center flex-shrink-0">
+        <div className="flex gap-1 sm:gap-2 md:gap-3 items-center flex-shrink-0 min-w-0">
           {!isSignedIn ? (
             <>
-              <span className="px-2 sm:px-4 flex-shrink-0">
+              <span className="px-1 sm:px-2 md:px-4 flex-shrink-0">
                 <ProvinceDropdown
                   province={province}
                   setProvince={setProvince}
@@ -982,14 +985,16 @@ function Header({
               <SignUp />
             </>
           ) : (
-            <div className="flex items-center flex-shrink-0">
-              <span className="px-2 sm:px-4 flex-shrink-0">
+            <div className="flex items-center flex-shrink-0 min-w-0">
+              <span className="px-1 sm:px-2 md:px-4 flex-shrink-0 hidden sm:block">
                 <ProvinceDropdown
                   province={province}
                   setProvince={setProvince}
                 />
               </span>
-              <UserButton afterSignOutUrl="/" />
+              <div className="hidden sm:block">
+                <UserButton afterSignOutUrl="/" />
+              </div>
             </div>
           )}
         </div>
@@ -1146,10 +1151,12 @@ function ProvinceDropdown({
 
 function Disclaimer() {
   return (
-    <p className="text-center text-xs sm:text-sm text-gray-500 mt-2 sm:mt-4">
-      © Copyright 2025, Analana Inc. All rights reserved. GAIL can make
-      mistakes, please verify your results.
-    </p>
+    <div className="bg-white py-2 px-4 rounded-lg mt-2 sm:mt-4">
+      <p className="text-center text-xs sm:text-sm text-gray-500">
+        © Copyright 2025, Analana Inc. All rights reserved. GAIL can make
+        mistakes, please verify your results.
+      </p>
+    </div>
   )
 }
 

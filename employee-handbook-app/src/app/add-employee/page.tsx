@@ -425,8 +425,8 @@ function AddEmployeeContent() {
         </div>
       </main>
 
-      <footer className="w-full h-24 bg-[#294494] mt-auto flex items-center justify-center px-4">
-        <p className="text-center text-sm text-white">
+      <footer className="w-full h-24 bg-white mt-auto flex items-center justify-center px-4">
+        <p className="text-center text-sm text-black">
           © Copyright 2025, Analana Inc. All rights reserved. GAIL can make mistakes, please verify your results.
         </p>
       </footer>
