@@ -13,7 +13,6 @@
     "lint:check": "eslint . --ext .ts,.tsx",
     "prepare": "node -e \"if (process.env.HUSKY !== '0') { try { const fs = require('fs'); if (fs.existsSync('.git')) { require('child_process').execSync('npx husky install', { stdio: 'inherit' }); } else { console.log('Husky install skipped: not in a Git repository'); } } catch (e) { console.error('Husky install failed:', e); } }\"",
     "pre-commit": "npm run lint",
-    "test:firestore": "tsx src/test-firestore.ts",
     "tsc": "tsc",
     "tsc:test": "tsc -p tsconfig.test.json",
     "test": "jest"

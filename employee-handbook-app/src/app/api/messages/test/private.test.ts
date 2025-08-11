@@ -5,7 +5,7 @@ jest.mock("@/services/messageService", () => ({
 import { POST } from "@/app/api/messages/private/route"
 import { handlePrivateMessage } from "@/services/messageService"
 import { NextRequest } from "next/server"
-import type { UserMessageResponse } from "@/types/ai"
+import type { UserMessageResponse } from "@/models/ai"
 
 describe("POST /api/messages/private", () => {
   beforeEach(() => {

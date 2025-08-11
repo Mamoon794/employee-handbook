@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import type { CarouselCard } from '@/types/ai'
+import type { CarouselCard } from '@/models/ai'
 
 interface CarouselCardsProps {
   cards: CarouselCard[]

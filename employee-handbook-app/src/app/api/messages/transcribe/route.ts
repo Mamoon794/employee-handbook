@@ -1,4 +1,3 @@
-
 import axiosInstance from "@/app/axios_config";
 import { NextRequest, NextResponse } from "next/server";
 const AI_SERVICE_URL = process.env.AI_SERVICE_URL;

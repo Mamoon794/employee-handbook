@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { AIResponse, UserMessageResponse, Citation } from "@/types/ai"
+import type { AIResponse, UserMessageResponse, Citation } from "@/models/ai"
 import { getChatbotResponse } from "@/integrations/aiService"
 
 /**

@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { NextRequest, NextResponse } from "next/server"
 import { handlePrivateMessage } from "@/services/messageService"
-import type { PrivateMessageRequest } from "@/types/ai"
+import type { PrivateMessageRequest } from "@/models/ai"
 
 /**
  * API route to handle messages from private users.
