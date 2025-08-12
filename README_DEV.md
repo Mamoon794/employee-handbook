@@ -401,6 +401,7 @@ The system ensures secure user onboarding while maintaining scalability through 
 ## Add / Manage Employees
 
 ![Adding / Managing Employees Architecture](./images/employees.png)
+
 After signing up, employers can add, manage, or delete employees in their organization. Authentication and access control are managed through Clerk, which assigns roles to both employers and employees. Employee and company data, including profiles, associations, counts, and permissions, is stored in Firebase Firestore.
 
 There are three main parts to the add/manage employees flow:
