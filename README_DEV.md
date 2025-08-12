@@ -355,6 +355,17 @@ The authentication flow includes:
 
 The system ensures secure user onboarding while maintaining scalability through webhook-based event handling and robust payment integration.
 
+## Add / Manage Employees
+![Adding / Managing Employees Architecture](./images/employees.png)
+After signing up, employers can add, manage, or delete employees in their organization. Authentication and access control are managed through Clerk, which assigns roles to both employers and employees. Employee and company data, including profiles, associations, counts, and permissions, is stored in Firebase Firestore.
+
+There are three main parts to the add/manage employees flow:
+1. **Authentication and Role Management:** Users authenticate via Clerk, which assigns roles and triggers a webhook to sync user data with Firebase for authorization and company association.
+2. **Adding New Employees (Invitation Flow):** Employers submit a form with an employee’s details, triggering an invitation email; upon signup via Clerk, the employee is linked to the employer’s company in Firebase.
+3. **Managing & Deleting Employees:** Employers view, update, or delete employees through dashboard actions that call Next.js API routes for CRUD operations on Firebase records scoped by company ID.
+   
+
+
 ## AI Feature: Dynamic Graph Explanations for Accessibility
 
 ### Overview of the Improvment
