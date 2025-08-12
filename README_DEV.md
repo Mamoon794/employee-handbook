@@ -97,16 +97,24 @@ python setupProvinces.py       # Uploads data to Pinecone
 
 ### Frontend (Vercel)
 
-1. Push `employee-handbook-app/` to GitHub.
-2. Go to [https://vercel.com/new](https://vercel.com/new) and import your repo.
-3. In the Vercel dashboard, add required environment variables (see **Environment Variables** below)
+1. Go to [https://vercel.com/signup](https://vercel.com/signup) and sign up (or log in).
+2. Authorize Vercel to access your GitHub account.
+3. Go to [https://vercel.com/new](https://vercel.com/new) and import your repo.
+4. Under Root Directory, choose employee-handbook-app/
+5. Leave framework detection as Next.js (Vercel will auto-detect)
+6. In the Vercel dashboard, add required environment variables (see **Environment Variables** below)
+7. Click deploy. 
 
 ---
 
 ### Backend (Railway)
 
-1. Create a new Railway project and connect the `AIService/` directory.
-2. Add the following environment variables in the Railway dashboard:
+1. Go to [https://railway.app](https://railway.app) and sign up (or log in).
+2. Authorize Railway to access your GitHub account.
+3. Click "New Project" -> Deploy from GitHub repo.
+4. When asked for Root Directory, select AIService/
+5. Set deployment environment to Python (FastAPI)
+6. Add the following environment variables in **Project Settings → Variables**:
 
 ```env
 GOOGLE_API_KEY=<your_google_api_key>
@@ -122,7 +130,7 @@ FIRESTORE_PROJECT_ID=<your_firestore_project_id>
 FIRESTORE_STORAGE_BUCKET=<your_firestore_storage_bucket>
 ```
 
-3. Railway will give you a public URL — copy it and add it to your Vercel project as `AI_SERVICE_URL`.
+7. After deploying, Railway will give you a public URL — copy it and use it as the value for the Vercel project's environment variable: `AI_SERVICE_URL`.
 
 **Requirements:**
 
@@ -203,6 +211,45 @@ EMAILJS_TEMPLATE_ID=<your_emailjs_template_id>
 
 
 ```
+
+## Re-deployment Instructions
+
+### Re-deploying Frontend (Vercel)
+1. Push changes to GitHub: ```git push origin main```
+2. Vercel will auto-deploy.
+3. For Manual redeploy:
+   - Go to Vercel Project Deployment
+   - Click Redeploy on the latest commit
+
+### Re-deploying Backend (Railway)
+1. Push backend changes to GitHub: ```git push origin main```
+2. Railway will auto-deploy.
+3. For Manual redeploy:
+   - Go to your project in Railway Dashboard
+   - Click the Deploy button
+  
+## Plan Upgrade Instructions
+
+### Upgrading to Pro -- Vercel
+Since the Hobby (free) tier on Vercel doesn’t allow commercial use, the deployed site has a risk of being taken down from the Stripe integration once payments start being accepted.
+
+1. Go to your project → Settings → Billing
+2. Click Upgrade to Pro
+3. Confirm payment method
+4. Redeploy after upgrading
+- More Details: [https://vercel.com/docs/plans/pro](https://vercel.com/docs/plans/pro)
+
+### Upgrading to Pro -- Railway
+Our backend is currently using ~900MB of RAM, which exceeds the memory limitation on the Free/Hobby plan.
+
+1. Go to Railway Billing Settings
+2. Add or update your payment method
+3. Select the Pro Plan from available options
+4. Go to your project → Settings → Deployments → Resources
+5. Increase Memory Allocation for your backend service to 2 GB
+6. Save settings — the upgrade applies instantly
+- More details: [https://railway.com/pricing]( https://railway.com/pricing)
+
 
 ## Documentation
 
