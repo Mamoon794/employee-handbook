@@ -51,13 +51,13 @@ No coding experience needed — just follow the steps in order.
 
 1. On the left-hand menu, click **Database** → **Indexes**.
 
-2. In the top-right corner, click **Create Index**.
+2. In the top-right corner (or the top middle if you haven't created any), click **Create Index**.
 
 3. Name it something simple (e.g., `gail-index`).
 
 4. If you see a “Custom setting” option at the top-right, **unselect it**.
 
-5. Under **Metric**, choose:
+5. Under **Configuration**, choose:
 
    - Model: **llama-text-embed-v2**
    - Dimension: **768**
