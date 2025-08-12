@@ -30,6 +30,7 @@ A web-based AI chatbot platform built to help Canadian workers understand employ
 - **Monitoring:** Sentry
 - **Analytics:** Google Analytics
 - **Payment Gateway:** Stripe
+- **Email Service:** EmailJS
 
 ## Tech Architecture
 
@@ -402,7 +403,8 @@ The system ensures secure user onboarding while maintaining scalability through 
 
 ![Adding / Managing Employees Architecture](./images/employees.png)
 
-After signing up, employers can add, manage, or delete employees in their organization. Authentication and access control are managed through Clerk, which assigns roles to both employers and employees. Employee and company data, including profiles, associations, counts, and permissions, is stored in Firebase Firestore.
+After signing up, employers can add, manage, or delete employees in their organization. Authentication and access control are managed through Clerk, which assigns roles to both employers and employees. Employee and company data, including profiles, associations, counts, and permissions, is stored in Firebase Firestore. When inviting employees, an email is sent using EmailJS. Note: the free tier of EmailJS allows for 200 emails to be sent per month.
+
 
 There are three main parts to the add/manage employees flow:
 
