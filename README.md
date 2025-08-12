@@ -95,8 +95,6 @@ The finance page will show the current subscription status, billing details, and
 
 To allow owners to give their employees access to their policy documents, owners are able to add employees to their company through the dashboard. Here, owners can send an invite using the invitee's email, and the email will be sent through EmailJS. There are a few checks that take place just to ensure the employee is not already in a company, that they have not already recieved an email by the sender, and that they exist in our database. These invites expire within 7 days if not accepted by the employee, or if they are cancelled by the sender. Upon such circumstances, the invite will redirect to an invalid or expired invitation page. Once accepted, the employee will view a welcome message, see their company's name on the chat page and will have access to company-specific policies.
 
-Please note that EmailJS's free tier allows for 200 emails to be sent per month.
-
 ### Stripe Payment Integration
 
 To support subscription-based access and control for employer-only features (e.g., uploading company documents, team management, analytics), we integrated Stripe Checkout with a **free 7-day trial** for new employer accounts.
