@@ -335,11 +335,25 @@ The implementation flow starts with the user pressing the microphone button on t
 2. Confidence is how confident, as a percentage, the Whisper model is with the transcription.
 3. Transcript is the actual transcription of the audio. The transcript is sent back to the frontend (as transcription) which is then shown to the user in the textfield.
 
-
 ### Performance Results
 - **Transcription Accuracy** - The small faster-whisper model achieves high accuracy on clear, conversational speech with good handling of various accents.
 - **Response Time** - Transcription typically completes within 5 seconds for short audio clips (under 30 seconds).
 - **Resource Usage** - Running the small faster-whisper model uses minimal system resources, allowing for efficient backend performance.
+
+## Authentication System
+
+![Authentication Architecture](./images/authentication.png)
+The authentication system implements a user management flow using Clerk as the primary authentication service. The process begins with users accessing the frontend where they encounter registration and login pages. Upon successful authentication through Clerk Service, the system integrates with multiple external services to provide a complete user experience.
+
+The authentication flow includes:
+1. **User Registration/Login**: Users interact with the frontend registration and paywall pages
+2. **Clerk Service**: Handles user authentication and session management
+3. **Webhook Integration**: Clerk webhooks notify our system of user events (registration, updates, etc.)
+4. **Payment Processing**: Stripe integration for subscription management through Stripe Checkout and webhooks
+5. **Database Management**: Firebase stores user profiles, company data, and session information
+6. **Dashboard Access**: Authenticated users are directed to their respective dashboards based on their roles and subscription status
+
+The system ensures secure user onboarding while maintaining scalability through webhook-based event handling and robust payment integration.
 
 ## AI Feature: Dynamic Graph Explanations for Accessibility
 
