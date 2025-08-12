@@ -78,10 +78,11 @@ GOOGLE_API_KEY=<your_google_api_key>
 PINECONE_API_KEY=<your_pinecone_api_key>
 PINECONE_INDEX_NAME=<your_pinecone_index_name>
 ```
+For instructions on creating these environment variables, see [Environment_Keys_AI.md](./Environment_Keys_AI.md)
 
 ---
 
-### 3. Load Documents into Pinecone (Optional)
+### 3. Load Documents into Pinecone (Optional; required if no documents are currently loaded into Pinecone)
 
 Only run this if you've updated `providedDoc.json`, as it can take a while:
 
