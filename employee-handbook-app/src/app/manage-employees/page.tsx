@@ -1,7 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { FaTrashAlt } from "react-icons/fa"
+import { FaTrashAlt, FaTimes } from "react-icons/fa"
 import { UserButton, useUser } from "@clerk/nextjs"
 import { useEffect, useState } from "react"
 import { User } from "@/models/schema"
@@ -14,23 +14,19 @@ export default function ManageEmployees() {
   const router = useRouter()
 
   const [employees, setEmployees] = useState<User[]>([])
-  // const [deletedPopup, setDeletedPopup] = useState<boolean>(false)
-  // const [province, setProvince] = useState<string>("")
   const [role, setRole] = useState<string>("")
   const [companyId, setCompanyId] = useState<string>("")
-  // const [companyName, setCompanyName] = useState<string>("")
+  const [selectedUser, setSelectedUser] = useState<User | null>(null)
+  const [showUserModal, setShowUserModal] = useState<boolean>(false)
 
   const { isSignedIn, user } = useUser()
 
   useEffect(() => {
-    // console.log(isSignedIn)
     if (isSignedIn && user) {
       axiosInstance
         .get(`/api/users/${user.id}?isClerkID=true`)
         .then((response) => {
           setCompanyId(response.data[0].companyId || "")
-          // setCompanyName(response.data[0].companyName || "")
-          // setProvince(response.data[0].province || "")
           setRole(response.data[0].userType || "Employee")
         })
         .catch((error) => {
@@ -38,7 +34,6 @@ export default function ManageEmployees() {
         })
     } else {
       setCompanyId("")
-      // setCompanyName("")
     }
   }, [isSignedIn, user])
 
@@ -60,7 +55,6 @@ export default function ManageEmployees() {
       `/api/company/${companyId}/users/${userId}`
     )
     if (response.status === 200) {
-      // setDeletedPopup(true)
       fetchEmployees()
     } else {
       console.log(response.statusText)
@@ -81,6 +75,16 @@ export default function ManageEmployees() {
     } catch (error) {
       console.error("Failed to update role:", error)
     }
+  }
+
+  const openUserModal = (user: User) => {
+    setSelectedUser(user)
+    setShowUserModal(true)
+  }
+
+  const closeUserModal = () => {
+    setSelectedUser(null)
+    setShowUserModal(false)
   }
 
   return (
@@ -147,9 +151,13 @@ export default function ManageEmployees() {
                   </span>
                 )}
                 <div className="w-1/2 flex items-center px-8 py-2 relative">
-                  <span className="text-xl font-bold text-black break-words flex-1 text-center">
+                  <button
+                    className="text-xl font-bold text-black break-words flex-1 text-center hover:text-blue-600 transition-colors cursor-pointer"
+                    onClick={() => openUserModal(emp)}
+                    title="Click to view user details"
+                  >
                     {emp.firstName + " " + emp.lastName}
-                  </span>
+                  </button>
                   {user?.id !== emp.clerkUserId &&
                     (role === "Owner" || role === "Administrator") && (
                       <button
@@ -173,6 +181,71 @@ export default function ManageEmployees() {
           Back to Dashboard
         </button>
       </main>
+
+      {/* User Details Modal */}
+      {showUserModal && selectedUser && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl p-6 sm:p-8 max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-2xl font-bold text-gray-900">User Details</h3>
+              <button
+                onClick={closeUserModal}
+                className="text-gray-500 hover:text-gray-700 transition-colors"
+                title="Close modal"
+              >
+                <FaTimes size={24} />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  First Name
+                </label>
+                <p className="text-lg text-gray-900 bg-gray-50 p-3 rounded-lg">
+                  {selectedUser.firstName}
+                </p>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Last Name
+                </label>
+                <p className="text-lg text-gray-900 bg-gray-50 p-3 rounded-lg">
+                  {selectedUser.lastName}
+                </p>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Email
+                </label>
+                <p className="text-lg text-gray-900 bg-gray-50 p-3 rounded-lg break-all">
+                  {selectedUser.email}
+                </p>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  User Type
+                </label>
+                <p className="text-lg text-gray-900 bg-gray-50 p-3 rounded-lg">
+                  {selectedUser.userType}
+                </p>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Province
+                </label>
+                <p className="text-lg text-gray-900 bg-gray-50 p-3 rounded-lg">
+                  {selectedUser.province}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <footer className="w-full h-24 bg-[#294494] mt-auto" />
     </div>
