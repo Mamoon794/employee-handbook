@@ -108,7 +108,7 @@ python setupProvinces.py       # Uploads data to Pinecone
 4. Under Root Directory, choose employee-handbook-app/
 5. Leave framework detection as Next.js (Vercel will auto-detect)
 6. In the Vercel dashboard, add required environment variables (see **Environment Variables** below)
-7. Click deploy.
+7. Click deploy. 
 
 ---
 
