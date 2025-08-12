@@ -46,7 +46,7 @@ jest.mock('@/models/dbOperations', () => ({
   updateChatTitle: jest.fn(),
 }));
 
-describe('POST /api/generate-title', () => {
+describe('POST /api/chat/generate-title', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     process.env.AI_SERVICE_URL = 'http://ai-service';
@@ -60,7 +60,7 @@ describe('POST /api/generate-title', () => {
 
     (updateChatTitle as jest.Mock).mockResolvedValue(true);
 
-    const request = new Request('http://localhost/api/generate-title', {
+    const request = new Request('http://localhost/api/chat/generate-title', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -85,7 +85,7 @@ describe('POST /api/generate-title', () => {
       ok: false,
     });
 
-    const request = new Request('http://localhost/api/generate-title', {
+    const request = new Request('http://localhost/api/chat/generate-title', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

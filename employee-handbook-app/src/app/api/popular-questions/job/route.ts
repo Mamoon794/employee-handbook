@@ -12,9 +12,11 @@ export async function GET() {
   try {
     // fetch from AI service
     const popularQuestions = await getPopularQuestions();
-
+    
     // persist to Firestore
-    await savePopularQuestions(popularQuestions);
+    if (popularQuestions.length > 0) {
+      await savePopularQuestions(popularQuestions);
+    }
 
     // return success with how many were saved
     return NextResponse.json(

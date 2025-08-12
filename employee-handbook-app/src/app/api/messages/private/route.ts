@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { NextRequest, NextResponse } from "next/server"
 import { handlePrivateMessage } from "@/services/messageService"
-import type { PrivateMessageRequest } from "@/types/ai"
+import type { PrivateMessageRequest } from "@/models/ai"
 
 /**
  * API route to handle messages from private users.
@@ -23,7 +23,8 @@ export async function POST(req: NextRequest) {
   }
 
   const { province, query, threadId, company } = payload
-  if (!province || !query.trim() || !threadId) {
+  // company can be empty/undefined for registered employees who are not associated with a company
+  if (!province || !query?.trim() || !threadId) {
     return NextResponse.json(
       { error: "Missing province, question or threadId" },
       { status: 400 }

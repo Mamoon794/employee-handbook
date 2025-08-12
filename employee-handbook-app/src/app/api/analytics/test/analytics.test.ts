@@ -131,7 +131,7 @@ describe('Analytics Error Handling', () => {
   });
 
   it('should handle empty data gracefully', () => {
-    const emptyData = [];
+    const emptyData: string | any[] = [];
     expect(Array.isArray(emptyData)).toBe(true);
     expect(emptyData.length).toBe(0);
   });

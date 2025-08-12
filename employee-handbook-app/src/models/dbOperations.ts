@@ -384,6 +384,11 @@ export const getUserByEmail = async (email: string): Promise<User | null> => {
 // collection - popular_questions
 const popularQuestionsRef = db.collection("popular_questions")
 
+// ~7 days + 1h overlap
+const ONE_DAY_MS = 24 * 60 * 60 * 1000
+const OVERLAP_MS = 60 * 60 * 1000
+const TTL_MS = 7 * ONE_DAY_MS + OVERLAP_MS
+
 /**
  * Saves an array of popular questions to Firestore `popular_questions` collection in a batch.
  * @param popularQuestions Array of PopularQuestion objects.
@@ -400,6 +405,7 @@ export const savePopularQuestions = async (
       company: q.company,
       text: q.text,
       createdAt: Timestamp.now(),
+      expiresAt: Timestamp.fromDate(new Date(Date.now() + TTL_MS)), // TTL is 7 days + 1 hour
     })
   })
 
@@ -415,20 +421,18 @@ export const getPopularQuestions = async (
   company: string,
   province: string
 ): Promise<PopularQuestion[]> => {
-  const sevenDaysAgo = Timestamp.fromDate(
-    new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-  )
-
   let query
   if (province == "" || province == "General") {
     query = popularQuestionsRef
       .where("company", "==", company)
-      .where("createdAt", ">=", sevenDaysAgo)
+      .where("expiresAt", ">", firestore.Timestamp.now())
+      .orderBy("expiresAt", "desc")
   } else {
     query = popularQuestionsRef
       .where("company", "==", company)
       .where("province", "==", province)
-      .where("createdAt", ">=", sevenDaysAgo)
+      .where("expiresAt", ">", firestore.Timestamp.now())
+      .orderBy("expiresAt", "desc")
   }
 
   const snapshot = await query.get()

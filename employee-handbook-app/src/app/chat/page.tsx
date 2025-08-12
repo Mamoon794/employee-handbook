@@ -16,6 +16,7 @@ import { Message } from "../../models/schema"
 import { useUser } from "@clerk/nextjs"
 import { useRouter } from "next/navigation"
 import confetti from "canvas-confetti"
+import axiosInstance from "../axios_config"
 
 export default function ChatPage() {
   return (
@@ -59,6 +60,9 @@ function ChatContent() {
     if (!lastUserMessage) return
 
     setMessages((prev) => [...prev, lastUserMessage])
+    await axiosInstance.put(`/api/chat/${currChatId}/add-message`, {
+      messageData: lastUserMessage
+    });
 
     try {
       const endpoint = "/api/messages/private"
@@ -79,7 +83,7 @@ function ChatContent() {
       if (!res.ok) throw new Error("Network response was not ok")
 
       const data = await res.json()
-      if (data.privateResponse) {
+      if (data.publicResponse || data.privateResponse) {
         const botMessage = {
           isFromUser: false, //createdAt?
           publicResponse: data.publicResponse,
@@ -92,6 +96,9 @@ function ChatContent() {
             : [],
         }
         setMessages((prevMessages) => [...prevMessages, botMessage as Message])
+        axiosInstance.put(`/api/chat/${currChatId}/add-message`, {
+          messageData: botMessage,
+        });
       } else {
         setError({ message: ERROR_MESSAGE, chatId: currChatId })
       }

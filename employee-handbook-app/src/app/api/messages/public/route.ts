@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { NextRequest, NextResponse } from "next/server"
 import { handlePublicMessage } from "@/services/messageService"
-import type { PublicMessageRequest } from "@/types/ai"
+import type { PublicMessageRequest } from "@/models/ai"
 
 /**
  * API route to handle messages from public users.
@@ -11,7 +11,7 @@ import type { PublicMessageRequest } from "@/types/ai"
  * - query: the user's query
  * - threadId: the user's thread ID enabling continuous conversation
  *
- * Returns the AI-generated response.
+ * Returns the AI-generated response and citations.
  */
 export async function POST(req: NextRequest) {
   let payload: PublicMessageRequest
@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
   }
 
   const { province, query, threadId } = payload
-  if (!province || !query.trim() || !threadId) {
+  if (!province || !query?.trim() || !threadId) {
     return NextResponse.json(
       { error: "Missing province, question, or threadId" },
       { status: 400 }
