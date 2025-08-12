@@ -31,7 +31,7 @@ A web-based AI chatbot platform built to help Canadian workers understand employ
 - **Payment Gateway:** Stripe 
 ## Tech Architecture
 
-<img src="https://github.com/user-attachments/assets/6c2eacb8-838f-4294-88ca-380eca06c24e" width="700" height="500" />
+![Tech Architecture](./images/tech-architecture.png)
 
 ## Setup, Deployment & Maintenance Guide
 
@@ -280,6 +280,14 @@ This feature builds on existing components, as well as incorporates the faster-w
 - **FastAPI** – Hosts the AI service and exposes the `/transcribe` endpoint.
 - **Next.js (Frontend & Backend)** – Frontend sends the audio clip to the backend, which then sends it to the AI service endpoint for transcription.
 
+### Technical Architecture
+![Voice-to-text Architecture](./images/voice-to-text-architecture.png)
+The implementation flow starts with the user pressing the microphone button on the frontend. This starts the recording using the “react-use-audio-recorder” React library. Then, when the user presses the button again, it stops recording and sends the audio blob in a FormData type to our Next.js API route. This then sends a request to our FastAPI Python backend with the form data audio which uses faster-whisper to transcribe the audio to text. We chose Whisper’s small model because it was a good balance of speed (quick to download) and accurate transcription. Once transcribed, it sends three pieces of data back to Next.js: language, confidence and transcript.
+1. Language is the language of the transcription.
+2. Confidence is how confident, as a percentage, the Whisper model is with the transcription.
+3. Transcript is the actual transcription of the audio. The transcript is sent back to the frontend (as transcription) which is then shown to the user in the textfield.
+
+
 ### Performance Results
 - **Transcription Accuracy** - The small faster-whisper model achieves high accuracy on clear, conversational speech with good handling of various accents.
 - **Response Time** - Transcription typically completes within 5 seconds for short audio clips (under 30 seconds).
@@ -316,6 +324,29 @@ There are two ways to check whether this AI feature is working:
 
 Overall, the AI did a good job identifying important trends from the graph and generating the AI summary based on them. The explanation is concise without missing any key information. The bullet points also summarize the explanation very clearly.
 
+## Popular Questions
+### Overview
+When a user is on a new chat, they can see three suggested questions. These suggested questions are popular questions (if they exist) within the user's scope (province for public users; province and company for private users).
+
+### Technical Architecture
+![Popular Questions Architecture](./images/popular-questions.png)
+
+There are three main parts to the popular questions implementation:
+
+1. **Storing questions in Pinecone**
+
+When a user asks a question, the frontend calls a Next.js API route (`POST /api/messages/private` or `POST /api/messages/public`), which sends the question to the FastAPI backend `POST /responses`. If the question triggers a document retrieval, it is stored in Pinecone with namespace `UserQuestions`.
+
+2. **Weekly job to find popular questions**
+
+A scheduled job is triggered on Friday at 12:00AM from Vercel Cron using the `GET /api/popular-questions/job` route, which calls FastAPI's `GET /api/popular-questions`. FastAPI fetches all questions from the last 7 days in Pinecone, groups similar ones using k-means clustering for each unique province and company combination, and treats each cluster centroid as a popular question. These popular questions are then saved to Firestore in the `popular_questions` collection. Each document is stored with `createdAt` and `expiresAt` fields. The expiry date is set to 7 days + 1 hour (buffer) ahead of the creation time. 
+
+*Recommendation*: enable Firestore TTL on `expiresAt` to auto-delete stale documents.
+
+3. **Retrieving and displaying suggestions**
+
+When a user opens a new chat, the frontend calls Next.js route `POST /api/popular-questions` with the user's province and company, which fetches the relevant popular questions from Firestore. Three questions are displayed to the user. When there are less than three popular questions, the remaining questions shown are hardcoded questions.
+
 ## Testing & Edge Case Handling
 
 This project includes a mix of automated test scripts and manual validation.
@@ -331,8 +362,8 @@ These files follow the format: `**/test/**/*.test.ts`, `**/test/**/*.test.tsx`.
 #### Python Tests (Pytest)
 Python tests are located in the `AIService/tests` directory.
 
-> GitHub Actions runs both Jest and Pytest on each pull request.  
-> This ensures all tests pass before merging into `main`.
+> GitHub Actions runs both Jest and Pytest on each pull request to `develop` or `main`.  
+> This ensures all tests pass before merging.
 
 
 ### Manual Feature Testing
