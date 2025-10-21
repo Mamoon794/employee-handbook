@@ -118,11 +118,7 @@ On the Paywall Page:
 
 The demo is as follows:
 
-<video width="320" height="240" controls>
-  <source src="deliverables/D2/images/demo.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
-
+[Watch Demo Video](deliverables/D2/images/demo.mp4)
 
 ## Target Users
 
