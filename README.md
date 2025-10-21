@@ -158,10 +158,6 @@ The demo is as follows:
 - Partner meetings twice a week (Fridays & Mondays)
 - Team meetings on Tuesdays (12–1pm) & Sundays (12–1pm)
 
-## Intellectual Property
-
-Students will only reference the work they did in their resume, interviews, etc. They agree to not share the code or software in any capacity with anyone unless their partner has agreed to it.
-
 ## Partner
 
 **Arshad Merali**  
@@ -178,11 +174,3 @@ We follow a collaborative, branch-based development process on GitHub:
 - **Continuous Integration:** Our app is deployed via Vercel whenever changes are pushed to the `main` branch, ensuring quick feedback and stable releases.
 
 This workflow ensures that our team collaborates smoothly, avoids merge conflicts, and maintains clean, working code throughout development.
-
-## License
-
-Proprietary – not open source. Code cannot be published or shared externally.
-
-## Support
-
-If you have questions or need help, feel free to [open an issue](https://github.com/csc301-2025-y/project-16-rivvi/issues) on GitHub.
