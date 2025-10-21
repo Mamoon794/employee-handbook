@@ -44,22 +44,22 @@ The app can be accessed at https://employee-handbook-app.vercel.app/.
 Access the link above.
 
 On landing, select your province/territory.
-<img width="1440" height="772" alt="Screenshot 2025-08-05 at 7 56 29 PM" src="https://github.com/user-attachments/assets/21f82ced-f55f-4b57-8b7e-1010224162c3" />
+![Starting](deliverables/D2/images/starting.png)
 
 Then, you may select any of the suggested questions, or type in your own question related to workplace rights/regulations.
-<img width="1440" height="777" alt="Screenshot 2025-08-05 at 7 57 15 PM" src="https://github.com/user-attachments/assets/81a72a1b-fab8-488b-8368-a789e89311da" />
+![Landing](deliverables/D2/images/landing.png)
 
 The chatbot will give you an answer given your selected province/territory and you can take a closer look at any of the sources by clicking on them.
-<img width="1440" height="777" alt="Screenshot 2025-08-05 at 7 58 04 PM" src="https://github.com/user-attachments/assets/cc186c21-d7b4-44ac-ae16-3932c2d49c08" />
+![Question](deliverables/D2/images/question.png)
 
 The province dropdown allows you to change your province. The chatbot will tailor its answers to this province.
-<img width="1440" height="861" alt="Screenshot 2025-08-05 at 8 28 33 PM" src="https://github.com/user-attachments/assets/24aba4e7-a2ed-45ab-a9e1-0304e628f599" />
+![Dropdown](deliverables/D2/images/dropdown.png)
 
 You can also choose to log in or sign up using the buttons at the top right. Upon pressing the **Log in** button, you will be redirected to the Clerk login page.
 ![Login](deliverables/D2/images/login.png)
 
 After logging in, you will be able to create new chats, see your chat history and your messages will be stored.
-<img width="1440" height="777" alt="Screenshot 2025-08-05 at 8 18 00 PM" src="https://github.com/user-attachments/assets/3f8a5e6c-05b3-492b-a9e8-4f5098f0246b" />
+![Chats](deliverables/D2/images/chats.png)
 
 If you don't have an account, you can sign up using the **Sign Up** button. You will be asked whether you want to continue as an employee or an employer.
 ![Sign Up](deliverables/D2/images/signup.png)
@@ -68,23 +68,23 @@ If you choose to sign up as an employee, you will be taken to the sign up page b
 ![Employee Sign Up](deliverables/D2/images/employee_signup.png)
 
 If you choose to sign up as an employer, you will see the same page but upon completion, you will be taken to the dashboard which allows you to upload documents, view analytics and more. 
-<img width="1824" height="862" alt="image" src="https://github.com/user-attachments/assets/81009b0e-a410-4d68-b4fd-c89cd269e872" />
+![Signup2](deliverables/D2/images/signup2.png)
 
 As an employer, you can upload your company policies and documents, add employees, view finances, view analytics and access the chatbot.
-<img width="1440" height="900" alt="Screenshot 2025-08-05 at 8 16 19 PM" src="https://github.com/user-attachments/assets/d0adaaf0-3dbb-426f-a5fb-1a987f9cdc71" />
+![Document](deliverables/D2/images/document.png)
 
 Owners can then add employees to their company by sending invites through email. They can view pending, expired and accepted invitations. Additionally, they have the option to delete a pending invitation, effectively making it expired.
-<img width="1851" height="877" alt="image" src="https://github.com/user-attachments/assets/aae8773d-1cf7-4d5d-a3ba-1de4250db794" />
+![Dashboard](deliverables/D2/images/dashboard.png)
 
 Invited employees will recieve an email in which clicking the provided link allows them to join the company.
-<img width="1574" height="819" alt="image" src="https://github.com/user-attachments/assets/4140b06a-846f-46eb-8570-414139822bcd" />
-![Welcome](https://github.com/user-attachments/assets/0aefd6d6-1c70-4865-8127-ca31bbe95557)
+![email](deliverables/D2/images/email.png)
+![Welcome](deliverables/D2/images/invited.JPG)
 
 The analytics page will show you the number of employees, total questions asked and more.
-<img width="1440" height="778" alt="Screenshot 2025-08-05 at 8 31 58 PM" src="https://github.com/user-attachments/assets/cf2fd3ad-6067-4194-b08a-d22abc10dd08" />
+![Management](deliverables/D2/images/management.png)
 
 The finance page will show the current subscription status, billing details, and pricing tiers.
-<img width="1440" height="777" alt="Screenshot 2025-08-05 at 8 08 05 PM" src="https://github.com/user-attachments/assets/1770835f-1e73-4222-b8e7-dba27e8dbbd0" />
+![Subscription](deliverables/D2/images/subscription.png)
 
 ## Things to Know
 ### Chat History
@@ -118,8 +118,10 @@ On the Paywall Page:
 
 The demo is as follows:
 
-
-https://github.com/user-attachments/assets/69b32d97-e35e-4fc9-ae34-767261e2a50e
+<video width="320" height="240" controls>
+  <source src="deliverables/D2/images/demo.mov" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
 
 
 ## Target Users
