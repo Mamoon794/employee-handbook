@@ -117,8 +117,8 @@ On the Paywall Page:
 - Once that’s done, they’ll have full access to all premium features on their Dashboard.
 
 The demo is as follows:
+https://github.com/user-attachments/assets/400e09f3-abd6-4668-8f03-4685015534a7
 
-[Watch Demo Video](deliverables/D2/images/demo.mp4)
 
 ## Target Users
 
@@ -126,6 +126,10 @@ The demo is as follows:
 - **Private Users:** Employees granted access to their employer’s internal policies via secure login
 
 ## MVP - Minimum Viable Product
+
+
+
+
 
 1. **Public Q&A:** Users can ask legal work-related questions through the chatbot.
 2. **Private Login & Q&A:** Logged-in users access company-specific policy documents and ask personalized questions.
